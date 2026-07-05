@@ -69,9 +69,10 @@ Pilot items + per-document certification reports stored in the
   standalone scripts (examples, modal-runners) use kebab-case per repo rules.
 - MemoryBlock auxiliary kv_pages representation omitted (MVP notes allow
   primary-only; compacted KV lives in checkpoints; YAGNI).
-- Pilot runs: 154 items at target 200, then a scaled run at target 1000
-  (filters keep ~40%). The full ~100–150k corpus remains the later,
-  human-triggered step per BUILD.md 3.
+- Pilot dataset: 765 items (target 1000; strict counterfactual filters keep
+  ~38%). Within pilot scale; reaching exactly 1–2k is a `target_items`
+  parameter. The full ~100–150k corpus remains the later, human-triggered
+  step per BUILD.md 3.
 - After eviction, page alignment shifts, so delta reuse degrades across an
   eviction boundary — acceptable at MVP scale (BUILD.md forbids performance
   work before green tests).
@@ -102,9 +103,11 @@ transformers 4.55.2, safetensors 0.5.3, py3.12), model weights cached in the
   context). Per-document certification at eviction fraction 0.40:
   mean KL 0.0095–0.0240, MCQ accuracy delta 0.0 on the aggregation axis;
   pointwise axis reported separately with lost-fact rates 0.0–1.0 depending
-  on whether needles fell inside the evicted range. A scaled run
-  (target 1000 items) stores `pilot-mcq-items.json` and
-  `pilot-certification-reports.json` in the `memsub-artifacts` volume.
+  on whether needles fell inside the evicted range. The scaled run kept
+  **765 items** (filter keep-rate ≈38%; set target ≈2.5× desired size) with
+  per-document certification: mean KL 0.0066–0.0448, lost-fact rates
+  0.33–1.0. Artifacts `pilot-mcq-items.json` and
+  `pilot-certification-reports.json` live in the `memsub-artifacts` volume.
   certification_id:
   `evfid-v1:Qwen/Qwen3-4B-Instruct-2507#cfg=sha256:48a2eb73...:evict-oldest-nonsink-v1:evict-0.40`
 
