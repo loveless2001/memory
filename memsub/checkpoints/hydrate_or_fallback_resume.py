@@ -78,7 +78,13 @@ class HydrateOrFallbackResumer:
             text = "\n".join(parts)
             path = "fallback_summary"
         else:
-            text = self.archive.full_text(thread_id)
+            # L0 re-prefill from surviving raw spans. Redacted spans are
+            # excluded, not read: the thread resumes without their content
+            # (reading them would fail closed, and must — GT5).
+            text = "".join(
+                self.archive.get_span_text(row["span_id"])
+                for row in self.archive.spans_for_thread(thread_id)
+                if not row["redacted"])
             path = "fallback_full"
         token_ids = self.runtime.tokenizer.encode(text, add_special_tokens=False)
         cache, _ = self.runtime.prefill(token_ids)

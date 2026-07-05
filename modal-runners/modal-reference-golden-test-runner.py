@@ -48,6 +48,14 @@ def run_golden_tests() -> dict:
 
 
 @app.function(image=image, gpu=GPU, volumes=VOLUMES, timeout=3600)
+def run_selected_tests(selection: str) -> dict:
+    """Run a subset with long tracebacks, e.g. selection='tests/test_x.py::test_y'."""
+    code, out = _run(["python", "-m", "pytest", *selection.split(), "-q", "--tb=long"])
+    hf_cache.commit()
+    return {"exit_code": code, "tail": out[-6000:]}
+
+
+@app.function(image=image, gpu=GPU, volumes=VOLUMES, timeout=3600)
 def run_smokes() -> dict:
     results = {}
     for name in ("m0-text-substrate-smoke.py",

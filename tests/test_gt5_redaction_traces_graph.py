@@ -62,6 +62,27 @@ def test_gt5_redaction_invalidates_all_derived_artifacts(substrate):
 
 
 @pytest.mark.golden
+def test_gt5_resume_survives_when_redaction_kills_every_block(substrate):
+    """If redaction invalidates ALL blocks, the L0 fallback must re-prefill
+    from surviving spans only — never read the redacted span, never crash."""
+    thread_id = substrate.new_thread()
+    substrate.append_turns(thread_id, [
+        {"role": "user", "text": "opener " * 30},
+        {"role": "assistant", "text": "sensitive middle content " * 20},
+        {"role": "user", "text": "harmless tail " * 20},
+    ])
+    cache = substrate.prefill_thread(thread_id)
+    results = substrate.compact_under_pressure(thread_id, cache, 1)  # one block
+    assert len(results) == 1
+    substrate.redact(results[0].block.derived_from[0])
+    assert not substrate.blocks(thread_id)  # every block invalidated
+
+    outcome = substrate.resume(thread_id)
+    assert outcome.path_taken == "fallback_full"
+    assert outcome.prefill_token_count > 0
+
+
+@pytest.mark.golden
 def test_gt5_redaction_of_unrelated_span_leaves_artifacts_alive(substrate):
     thread_id, cache, results, ckpt = _build(substrate)
     block = results[0].block

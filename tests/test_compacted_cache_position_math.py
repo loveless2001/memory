@@ -10,7 +10,11 @@ tokens get logical RoPE positions. Any offset/mask bug breaks this equality.
 import pytest
 import torch
 
-from conftest import corpus_token_ids
+from conftest import REFERENCE, corpus_token_ids
+
+# fp32 CPU is near-exact; bf16 GPU compares different kernel paths (batched
+# dense prefill vs incremental decode), so compare distributions, not logits.
+PROB_TOL = 0.02 if REFERENCE else 1e-4
 
 
 @pytest.mark.golden
@@ -45,4 +49,9 @@ def test_evicted_continuation_matches_dense_masked_forward(runtime):
         out = runtime.model(input_ids=full, attention_mask=mask.to(dtype))
     logits_dense = out.logits[0, T:].float()
 
-    torch.testing.assert_close(logits_compact, logits_dense, rtol=1e-3, atol=1e-3)
+    probs_compact = torch.softmax(logits_compact, dim=-1)
+    probs_dense = torch.softmax(logits_dense, dim=-1)
+    assert (probs_compact.argmax(-1) == probs_dense.argmax(-1)).all(), \
+        "argmax token diverged between compacted and dense-masked paths"
+    max_delta = float((probs_compact - probs_dense).abs().max())
+    assert max_delta < PROB_TOL, f"max prob delta {max_delta}"
