@@ -20,9 +20,10 @@ reference config Qwen/Qwen3-4B-Instruct-2507 bf16 + Qwen3-Embedding-0.6B.
 | GT4 axes-separate report structure | PASS | PASS |
 | GT4 needle flips after eviction; EXPAND recovers | n/a (needs real weights) | PASS |
 | GT5 redaction traces derived_from graph, fails closed | PASS | PASS |
+| GT5 resume survives when redaction kills every block | PASS | PASS |
 | position math: evicted continuation ≡ dense masked forward | PASS | PASS |
 
-Local: 31 passed, 2 skipped (reference-only). Reference: see Modal section.
+Local: 32 passed, 2 skipped (reference-only). Reference: 36/36 passed.
 
 ## Milestone smokes (definition of done)
 
@@ -68,16 +69,44 @@ Pilot items + per-document certification reports stored in the
   standalone scripts (examples, modal-runners) use kebab-case per repo rules.
 - MemoryBlock auxiliary kv_pages representation omitted (MVP notes allow
   primary-only; compacted KV lives in checkpoints; YAGNI).
-- Pilot generated at 200 items (pipeline validated end-to-end with filters);
-  scaling to the full 1–2k is a parameter (`target_items`), left as the
-  human-triggered step alongside the full corpus per BUILD.md 3.
+- Pilot runs: 154 items at target 200, then a scaled run at target 1000
+  (filters keep ~40%). The full ~100–150k corpus remains the later,
+  human-triggered step per BUILD.md 3.
 - After eviction, page alignment shifts, so delta reuse degrades across an
   eviction boundary — acceptable at MVP scale (BUILD.md forbids performance
   work before green tests).
 
 ## Modal reference results
 
-(filled after run completion — see below)
+All runs on Modal H100, image pinned identically to local (torch 2.7.1,
+transformers 4.55.2, safetensors 0.5.3, py3.12), model weights cached in the
+`memsub-hf-cache` volume.
+
+- **Golden suite: 36/36 passed** (`pytest tests/` with MEMSUB_REFERENCE=1),
+  including GT1 identity round trip at T=1024 and T=8192 through both the
+  in-memory and disk (safetensors mmap) restore paths, and the GT4 semantic
+  tests: planted-fact needle flips correct→incorrect after span eviction
+  (lost_fact_incident_rate=1.0) and recovers with EXPAND
+  (lost_fact_incident_rate=0.0).
+- **Smokes**: M0 (EXPAND fired at cosine 0.753 with Qwen3-Embedding-0.6B and
+  recovered the exact needle), M1 (real needle flip caught by the
+  instrument), M2 (delta checkpoint reused 108/144 pages after an
+  append-only step; tampered fingerprint fell back via summary re-prefill).
+- **Two reference-only defects found and fixed** by these runs:
+  (1) L0 resume fallback crashed if redaction had invalidated every block —
+  now re-prefills from surviving spans only (regression test added);
+  (2) the dense-equivalence test compared raw bf16 logits at fp32 tolerance —
+  now compares softmax distributions with dtype-aware tolerance.
+- **B.3 pilot**: strict counterfactual filters kept 154/≈400 candidate items
+  in the first run (filter (b) discards anything answerable without
+  context). Per-document certification at eviction fraction 0.40:
+  mean KL 0.0095–0.0240, MCQ accuracy delta 0.0 on the aggregation axis;
+  pointwise axis reported separately with lost-fact rates 0.0–1.0 depending
+  on whether needles fell inside the evicted range. A scaled run
+  (target 1000 items) stores `pilot-mcq-items.json` and
+  `pilot-certification-reports.json` in the `memsub-artifacts` volume.
+  certification_id:
+  `evfid-v1:Qwen/Qwen3-4B-Instruct-2507#cfg=sha256:48a2eb73...:evict-oldest-nonsink-v1:evict-0.40`
 
 ## Unresolved questions
 
