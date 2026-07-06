@@ -27,3 +27,14 @@
   `plans/reports/build-260706-0150-memsub-mvp-final-report.md`.
 - Explicitly deferred per BUILD.md 7: M3 selector/gate, M3.5 compactor,
   vLLM tier, HTTP API, channels/soft-slots/latent compression, any training.
+
+## 2026-07-06 (later) — B.3 four-domain test corpus + 2k-item MCQ set
+
+- Assembled real corpus per spec B.3 domains into `memsub-artifacts` volume:
+  SEC 10-K filings, US court opinions, permissive-license code, literature —
+  7,232 docs, ~155M est. tokens (`modal-runners/modal-b3-corpus-pipeline.py`).
+- Generated 2,000 filter-verified MCQ items (500/domain, 4×H100 parallel).
+- Certified untrained eviction at 0.40 over 12 contexts: aggregation axis
+  nearly unmoved (KL ~1e-2, no MCQ delta), pointwise axis flips where the
+  needle chunk is evicted — spec 4.7 two-workload split reproduced on real data.
+- Report: plans/reports/corpus-260706-0341-b3-four-domain-corpus-run.md
