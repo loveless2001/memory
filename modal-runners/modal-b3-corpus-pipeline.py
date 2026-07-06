@@ -42,25 +42,29 @@ hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
 VOLUMES = {"/root/.cache/huggingface": hf_cache, "/artifacts": artifacts}
 
-# (hub parquet path, extractor) per domain; extractor -> doc text or None
+# Shards are discovered from the hub (some datasets hash-suffix their file
+# names); n_shards caps how many parquet files are read per domain — sized so
+# a full assembly lands near the spec's ~1B total tokens.
 SOURCES = {
-    "financial": {
-        "shards": ["datasets/eloukas/edgar-corpus@refs/convert/parquet/full/partial-train/000{i}.parquet"],
-        "n_shards": 2,
-    },
-    "legal": {
-        "shards": ["datasets/HFforLegal/case-law@refs/convert/parquet/default/partial-us/000{i}.parquet"],
-        "n_shards": 2,
-    },
-    "code": {
-        "shards": ["datasets/codeparrot/github-code-clean/data/train-0000{i}-of-00880.parquet"],
-        "n_shards": 4,
-    },
-    "literature": {
-        "shards": ["datasets/sedthh/gutenberg_english/data/train-0000{i}-of-00037-f5fce855b93d2d02.parquet"],
-        "n_shards": 1,
-    },
+    "financial": {"repo": "eloukas/edgar-corpus", "revision": "refs/convert/parquet",
+                  "prefix": "full/partial-train/", "n_shards": 16},
+    "legal": {"repo": "HFforLegal/case-law", "revision": "refs/convert/parquet",
+              "prefix": "default/partial-us/", "n_shards": 10},
+    "code": {"repo": "codeparrot/github-code-clean", "revision": None,
+             "prefix": "data/train-", "n_shards": 32},
+    "literature": {"repo": "sedthh/gutenberg_english", "revision": None,
+                   "prefix": "data/train-", "n_shards": 12},
 }
+
+
+def _shard_paths(api, spec) -> list[str]:
+    files = api.list_repo_files(spec["repo"], repo_type="dataset",
+                                revision=spec["revision"])
+    rev = f"@{spec['revision']}" if spec["revision"] else ""
+    return [f"datasets/{spec['repo']}{rev}/{f}"
+            for f in sorted(files)
+            if f.startswith(spec["prefix"]) and f.endswith(".parquet")
+            ][:spec["n_shards"]]
 MIN_CHARS = 24_000     # ~6k tokens: docs must dwarf the 1k-token chunk size
 MAX_CHARS = 200_000    # bound memory per doc
 DOCS_PER_DOMAIN = 2000
@@ -83,19 +87,19 @@ def _extract(domain: str, row: dict):
 def assemble_corpus(docs_per_domain: int = DOCS_PER_DOMAIN) -> dict:
     import os
     import pyarrow.parquet as pq_mod
-    from huggingface_hub import HfFileSystem
+    from huggingface_hub import HfApi, HfFileSystem
 
     fs = HfFileSystem()
+    api = HfApi()
     os.makedirs("/artifacts/corpus", exist_ok=True)
     manifest = {}
     for domain, spec in SOURCES.items():
         kept, total_chars = 0, 0
         out_path = f"/artifacts/corpus/{domain}.jsonl"
         with open(out_path, "w") as out:
-            for i in range(spec["n_shards"]):
+            for path in _shard_paths(api, spec):
                 if kept >= docs_per_domain:
                     break
-                path = spec["shards"][0].format(i=i)
                 try:
                     with fs.open(path, "rb") as f:
                         table = pq_mod.ParquetFile(f)
@@ -152,6 +156,77 @@ def generate_domain_items(domain: str, target_items: int) -> dict:
     return {"domain": domain, "kept": len(items)}
 
 
+@app.function(image=gpu_image, gpu=GPU, volumes=VOLUMES, timeout=43200,
+              memory=32768)
+def generate_domain_slice(domain: str, slice_idx: int, n_slices: int,
+                          target_items: int) -> dict:
+    """Full-scale worker: one slice of one domain's docs, resume-safe.
+
+    Progress (group cursor + kept items) persists to the volume after every
+    doc group, so a preempted/restarted worker resumes instead of redoing or
+    duplicating work."""
+    import os
+    import sys
+    sys.path.insert(0, "/root/repo")
+    from memsub.certification import McqItem, PilotMcqPipeline
+    from memsub.reference_config import build_runtime
+
+    os.makedirs(f"/artifacts/corpus-mcq-full/{domain}", exist_ok=True)
+    state_path = f"/artifacts/corpus-mcq-full/{domain}/slice-{slice_idx:02d}.state.json"
+    state = {"next_group": 0, "items": []}
+    if os.path.exists(state_path):
+        with open(state_path) as f:
+            state = json.load(f)
+
+    doc_list = []
+    with open(f"/artifacts/corpus/{domain}.jsonl") as f:
+        for n, line in enumerate(f):
+            if n % n_slices == slice_idx:
+                rec = json.loads(line)
+                doc_list.append((rec["doc_id"], rec["text"]))
+
+    runtime = build_runtime(reference=True)
+    GROUP_DOCS = 100
+    groups = [doc_list[i:i + GROUP_DOCS] for i in range(0, len(doc_list), GROUP_DOCS)]
+    for g in range(state["next_group"], len(groups)):
+        if len(state["items"]) >= target_items:
+            break
+        pipeline = PilotMcqPipeline(runtime, chunk_tokens=1024,
+                                    seed=(hash(domain) + slice_idx * 1000 + g) % 10**6)
+        remaining = target_items - len(state["items"])
+        got = pipeline.generate(dict(groups[g]),
+                                target_items=min(remaining, 4 * GROUP_DOCS),
+                                per_doc=4)
+        state["items"].extend(i.__dict__ for i in got)
+        state["next_group"] = g + 1
+        with open(state_path, "w") as f:
+            json.dump(state, f)
+        artifacts.commit()
+        print(f"{domain}[{slice_idx}] group {g + 1}/{len(groups)}: "
+              f"{len(state['items'])}/{target_items} kept")
+    return {"domain": domain, "slice": slice_idx, "kept": len(state["items"])}
+
+
+@app.function(image=cpu_image, volumes={"/artifacts": artifacts}, timeout=3600)
+def merge_full_items() -> dict:
+    import glob
+    import os
+    counts, merged = {}, []
+    for path in sorted(glob.glob("/artifacts/corpus-mcq-full/*/slice-*.state.json")):
+        domain = path.split("/")[-2]
+        with open(path) as f:
+            items = json.load(f)["items"]
+        counts[domain] = counts.get(domain, 0) + len(items)
+        merged.extend(items)
+    os.makedirs("/artifacts/corpus-mcq-full", exist_ok=True)
+    with open("/artifacts/corpus-mcq-full/all-items.json", "w") as f:
+        json.dump(merged, f)
+    with open("/artifacts/corpus-mcq-full/counts.json", "w") as f:
+        json.dump(counts, f, indent=1)
+    artifacts.commit()
+    return {"total": len(merged), **counts}
+
+
 @app.function(image=gpu_image, gpu=GPU, volumes=VOLUMES, timeout=7200)
 def certify_domain(domain: str, evict_fraction: float = 0.4,
                    contexts: int = 3) -> list[dict]:
@@ -203,11 +278,37 @@ def certify_domain(domain: str, evict_fraction: float = 0.4,
 
 @app.local_entrypoint()
 def generate_and_certify(target_items: int = 2000):
-    import os
     per_domain = target_items // len(SOURCES)
     gen = list(generate_domain_items.starmap(
         [(d, per_domain) for d in SOURCES]))
     print("generation:", gen)
+    certs = list(certify_domain.map(list(SOURCES)))
+    for domain_reports in certs:
+        for r in domain_reports:
+            print(r["certification_id"],
+                  "kl=", r["aggregation_axis"]["mean_kl"],
+                  "lost=", r["pointwise_axis"]["lost_fact_incident_rate"])
+
+
+@app.local_entrypoint()
+def full_run_launch(target_items: int = 100000, slices_per_domain: int = 8):
+    """Fire-and-forget launcher for the full-scale run (use with --detach).
+    Workers persist progress to the volume; finalize separately."""
+    per_slice = target_items // (len(SOURCES) * slices_per_domain)
+    handles = []
+    for domain in SOURCES:
+        for s in range(slices_per_domain):
+            handles.append(generate_domain_slice.spawn(
+                domain, s, slices_per_domain, per_slice))
+    print(f"spawned {len(handles)} workers, {per_slice} items each")
+    for h in handles:
+        print(h.object_id)
+
+
+@app.local_entrypoint()
+def full_run_finalize():
+    """Merge slice outputs and certify per domain over the full item set."""
+    print("merge:", merge_full_items.remote())
     certs = list(certify_domain.map(list(SOURCES)))
     for domain_reports in certs:
         for r in domain_reports:
