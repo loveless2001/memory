@@ -66,20 +66,21 @@ class StillAmortizedKVCompactor(nn.Module):
         out_pos = torch.linspace(region_lo, region_hi - 1, self.t).round().long()
 
         dev = cache.layer_kv(0)[0].device
-        dt = cache.layer_kv(0)[0].dtype
-        cos_in, sin_in = model_rope_cos_sin(self.config, positions, dt, dev)
-        cos_out, sin_out = model_rope_cos_sin(self.config, out_pos, dt, dev)
+        cache_dt = cache.layer_kv(0)[0].dtype
+        work_dt = next(self.parameters()).dtype  # fp32 during training
+        cos_in, sin_in = model_rope_cos_sin(self.config, positions, work_dt, dev)
+        cos_out, sin_out = model_rope_cos_sin(self.config, out_pos, work_dt, dev)
 
         keys_out, values_out = [], []
         for idx, layer in enumerate(self.layers):
             k, v = cache.layer_kv(idx)
             k_sink, v_sink = k[:, :, :sink_n], v[:, :, :sink_n]
-            k_unrot = unrotate(k[:, :, sink_n:], cos_in, sin_in)
-            c_k_unrot, c_v = layer(k_unrot, v[:, :, sink_n:],
+            k_unrot = unrotate(k[:, :, sink_n:].to(work_dt), cos_in, sin_in)
+            c_k_unrot, c_v = layer(k_unrot, v[:, :, sink_n:].to(work_dt),
                                    positions.to(dev), out_pos.to(dev))
             c_k = apply_rotation(c_k_unrot, cos_out, sin_out)
-            keys_out.append(torch.cat([k_sink, c_k], dim=2))
-            values_out.append(torch.cat([v_sink, c_v], dim=2))
+            keys_out.append(torch.cat([k_sink, c_k.to(cache_dt)], dim=2))
+            values_out.append(torch.cat([v_sink, c_v.to(cache_dt)], dim=2))
 
         out = CompactedPrefixCache.from_tensors(
             keys_out, values_out,
