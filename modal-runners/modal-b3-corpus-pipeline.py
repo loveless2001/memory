@@ -159,7 +159,7 @@ def generate_domain_items(domain: str, target_items: int) -> dict:
 @app.function(image=gpu_image, gpu=GPU, volumes=VOLUMES, timeout=43200,
               memory=32768)
 def generate_domain_slice(domain: str, slice_idx: int, n_slices: int,
-                          target_items: int) -> dict:
+                          target_items: int, pass_idx: int = 0) -> dict:
     """Full-scale worker: one slice of one domain's docs, resume-safe.
 
     Progress (group cursor + kept items) persists to the volume after every
@@ -172,7 +172,9 @@ def generate_domain_slice(domain: str, slice_idx: int, n_slices: int,
     from memsub.reference_config import build_runtime
 
     os.makedirs(f"/artifacts/corpus-mcq-full/{domain}", exist_ok=True)
-    state_path = f"/artifacts/corpus-mcq-full/{domain}/slice-{slice_idx:02d}.state.json"
+    tag = f"-p{pass_idx}" if pass_idx else ""
+    state_path = (f"/artifacts/corpus-mcq-full/{domain}/"
+                  f"slice-{slice_idx:02d}{tag}.state.json")
     state = {"next_group": 0, "items": []}
     if os.path.exists(state_path):
         with open(state_path) as f:
@@ -192,7 +194,8 @@ def generate_domain_slice(domain: str, slice_idx: int, n_slices: int,
         if len(state["items"]) >= target_items:
             break
         pipeline = PilotMcqPipeline(runtime, chunk_tokens=1024,
-                                    seed=(hash(domain) + slice_idx * 1000 + g) % 10**6)
+                                    seed=(hash(domain) + pass_idx * 7_777_777
+                                          + slice_idx * 1000 + g) % 10**6)
         remaining = target_items - len(state["items"])
         got = pipeline.generate(dict(groups[g]),
                                 target_items=min(remaining, 4 * GROUP_DOCS),
@@ -227,19 +230,27 @@ def merge_full_items() -> dict:
     return {"total": len(merged), **counts}
 
 
-@app.function(image=gpu_image, gpu=GPU, volumes=VOLUMES, timeout=7200)
+@app.function(image=gpu_image, gpu=GPU, volumes=VOLUMES, timeout=14400,
+              memory=32768)
 def certify_domain(domain: str, evict_fraction: float = 0.4,
-                   contexts: int = 3) -> list[dict]:
+                   contexts: int = 3, use_full_set: bool = False) -> list[dict]:
     """Offline certification (spec 13.4) over sampled contexts of one domain,
-    using that domain's verified MCQ items as probes."""
+    using that domain's verified MCQ items as probes. use_full_set draws
+    probes from the merged full-scale item set instead of the 2k test set."""
     import os
     import sys
     sys.path.insert(0, "/root/repo")
-    from memsub.certification import OfflineCertificationHarness, PilotMcqPipeline
+    from memsub.certification import McqItem, OfflineCertificationHarness, PilotMcqPipeline
     from memsub.reference_config import build_runtime
 
-    os.makedirs("/artifacts/corpus-certification", exist_ok=True)
-    items = PilotMcqPipeline.load(f"/artifacts/corpus-mcq/{domain}.json")
+    out_dir = "/artifacts/corpus-certification" + ("-full" if use_full_set else "")
+    os.makedirs(out_dir, exist_ok=True)
+    if use_full_set:
+        with open("/artifacts/corpus-mcq-full/all-items.json") as f:
+            items = [McqItem(**d) for d in json.load(f)
+                     if d["doc_id"].startswith(domain + "/")]
+    else:
+        items = PilotMcqPipeline.load(f"/artifacts/corpus-mcq/{domain}.json")
     texts = {}
     with open(f"/artifacts/corpus/{domain}.jsonl") as f:
         for line in f:
@@ -270,7 +281,7 @@ def certify_domain(domain: str, evict_fraction: float = 0.4,
             evict_logical_range=(lo, lo + span),
             mcq_items=aggs, needle_items=needles[:8])
         reports.append(report.to_dict())
-    with open(f"/artifacts/corpus-certification/{domain}.json", "w") as f:
+    with open(f"{out_dir}/{domain}-evict{evict_fraction:.2f}.json", "w") as f:
         json.dump(reports, f, indent=1)
     artifacts.commit()
     return reports
@@ -306,11 +317,35 @@ def full_run_launch(target_items: int = 100000, slices_per_domain: int = 8):
 
 
 @app.local_entrypoint()
-def full_run_finalize():
-    """Merge slice outputs and certify per domain over the full item set."""
+def top_up_launch(target_total: int = 100000, pass_idx: int = 1):
+    """Second-pass workers (fresh chunk seeds) sized to each domain's
+    shortfall vs target_total/4. Use with --detach."""
+    import math
+    counts = merge_full_items.remote()
+    per_domain_target = target_total // len(SOURCES)
+    handles = []
+    for domain in SOURCES:
+        shortfall = per_domain_target - counts.get(domain, 0)
+        if shortfall <= 0:
+            print(f"{domain}: complete ({counts.get(domain)})")
+            continue
+        n = min(8, math.ceil(shortfall / 2600))  # ~2600 kept/worker fits timeout
+        per_slice = math.ceil(shortfall / n)
+        for s in range(n):
+            handles.append(generate_domain_slice.spawn(
+                domain, s, 8, per_slice, pass_idx))
+        print(f"{domain}: shortfall {shortfall} -> {n} workers x {per_slice}")
+    print(f"spawned {len(handles)} top-up workers")
+
+
+@app.local_entrypoint()
+def full_run_finalize(contexts: int = 5):
+    """Merge slice outputs and certify per domain over the FULL item set at
+    two eviction fractions (spec 13.4: certify per configuration)."""
     print("merge:", merge_full_items.remote())
-    certs = list(certify_domain.map(list(SOURCES)))
-    for domain_reports in certs:
+    jobs = [(d, frac, contexts, True)
+            for d in SOURCES for frac in (0.25, 0.40)]
+    for domain_reports in certify_domain.starmap(jobs):
         for r in domain_reports:
             print(r["certification_id"],
                   "kl=", r["aggregation_axis"]["mean_kl"],
