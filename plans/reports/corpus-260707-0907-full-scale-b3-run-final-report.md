@@ -29,12 +29,26 @@ spec range is "~100–150k".
 - Zero worker failures; per-group state checkpointing never needed for
   recovery but bounded worst-case loss to ~20 min of work.
 
-## Certification (spec 13.4, full item set as probes, 5 contexts/domain)
+## Certification (spec 13.4; 5 contexts/domain; see eval-protocol appendix)
 
-| Config | mean KL (aggregation) | mean lost-fact rate (pointwise) | contexts w/ loss |
+**Denominators** (full protocol embedded in every report object): pointwise =
+needle items whose source chunk lies in a fixed reference eviction window
+(identical partition across all arms); aggregation = disjoint same-document
+items. Compacted context = surviving KV only; EXPAND disabled.
+
+| Arm | mean KL (agg) | raw lost-fact | lost-fact given prior-correct |
 |---|---:|---:|---:|
-| evict 0.25 | 0.0303 | 0.708 | 15/20 |
-| evict 0.40 | 0.0339 | 0.808 | 17/20 |
+| evict 0.00 (control) | 0.0000 | 0.167 | 0.000 |
+| evict 0.25 contiguous | 0.0303 | 0.708 | **0.550** |
+| evict 0.40 contiguous | 0.0339 | 0.808 | **0.650** |
+| evict 0.25 matched-random | 0.1028 | 0.292 | 0.125 |
+
+The control arm puts the conditioned metric's noise floor at exactly 0 (raw
+floor 0.167 = never-knew items). Citable headline: **55% / 65% of
+demonstrably-known facts silently lost at 25% / 40% contiguous eviction**;
+a hand audit of the complete failure population (14 unique items) attributes
+≈80%+ of that to genuine forgetting. Full protocol, control/random analysis
+and audit: `certification-260707-0907-eval-protocol-appendix.md`.
 
 Per-axis reporting only — no blended score exists in any report object.
 certification_id family:

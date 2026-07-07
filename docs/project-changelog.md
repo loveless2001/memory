@@ -49,3 +49,17 @@
   axis flat, pointwise collapses — quantitative M1 verdict that untrained
   eviction needs the M3 gate for needle traffic.
 - Report: plans/reports/corpus-260707-0907-full-scale-b3-run-final-report.md
+
+## 2026-07-07 (later) — Certification made citable
+
+- eval_protocol embedded in every CertificationReport: per-axis item
+  partitions, compacted-context contents (surviving KV only), EXPAND state,
+  scoring rule; probe_records for audits.
+- Control arm (evict 0.0): conditioned lost-fact noise floor = 0.000
+  (raw floor 0.167 = never-knew items). New citable headline: 55%/65%
+  prior-correct facts silently lost at 25%/40% contiguous eviction.
+- Matched-random arm: 4x less pointwise loss, 3x more aggregation KL than
+  contiguous — recency structure concentrates and hides pointwise damage.
+- Complete hand audit of 14 unique failures: 11 genuine forgetting,
+  2 duplicate-option items, 1 question-gold mismatch, 0 format failures.
+- Appendix: plans/reports/certification-260707-0907-eval-protocol-appendix.md
