@@ -82,4 +82,5 @@ def sweep():
 
 @app.local_entrypoint()
 def iterative():
-    print(train_one.remote(512, True))
+    h = train_one.spawn(512, True)
+    print("spawned iterative:", h.object_id)
