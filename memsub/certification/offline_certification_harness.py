@@ -96,7 +96,9 @@ class OfflineCertificationHarness:
                 expand_fn=None, policy_version: str = "evict-oldest-nonsink-v1",
                 eviction_mode: str = "contiguous_span", random_seed: int = 0,
                 record_probes: bool = False,
-                protocol_notes: dict | None = None) -> CertificationReport:
+                protocol_notes: dict | None = None,
+                compaction_fn=None,
+                policy_version_override: str | None = None) -> CertificationReport:
         """Certify one configuration over one pilot context.
 
         full context (reference) vs compacted state (candidate) per spec 13.4.
@@ -109,7 +111,13 @@ class OfflineCertificationHarness:
         ids = rt.tokenizer.encode(context_text, add_special_tokens=False)
         full_cache, _ = rt.prefill(ids)
         compact_cache = full_cache.clone_detached()
-        if eviction_mode == "contiguous_span":
+        if compaction_fn is not None:
+            # Trained-compactor arm (M3.5): the policy replaces eviction;
+            # "eviction fraction" reports the physical size reduction so
+            # matched-budget rows are comparable across policies.
+            compact_cache = compaction_fn(compact_cache)
+            evicted = full_cache.physical_length - compact_cache.physical_length
+        elif eviction_mode == "contiguous_span":
             evicted = compact_cache.evict_logical_range(*evict_logical_range)
         elif eviction_mode == "random_nonsink_matched":
             span = evict_logical_range[1] - evict_logical_range[0]
@@ -162,6 +170,8 @@ class OfflineCertificationHarness:
                     "pred_compacted": pred_compact,
                     "expanded": expanded is not None})
 
+        if policy_version_override:
+            policy_version = policy_version_override
         eval_protocol = {
             # pointwise denominator: caller-selected needle items — probes
             # whose SOURCE CHUNK lies in the evicted window; aggregation
@@ -169,7 +179,8 @@ class OfflineCertificationHarness:
             "pointwise_denominator": "needle_items (source chunk in evicted window)",
             "aggregation_denominator": "mcq_items (disjoint from needles)",
             "axes_share_items": False,
-            "eviction_mode": eviction_mode,
+            "eviction_mode": ("trained_compactor" if compaction_fn is not None
+                              else eviction_mode),
             "compacted_context_contents": "surviving KV only — no summary text "
                                           "or auxiliary representation injected",
             "expand_enabled": expand_fn is not None,

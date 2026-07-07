@@ -118,6 +118,60 @@ class StillAmortizedKVCompactor(nn.Module):
         return model.to(device)
 
 
+def slice_cache(cache: CompactedPrefixCache, lo: int, hi: int,
+                ) -> CompactedPrefixCache:
+    """Physical slice [lo, hi) keeping the slots' logical positions."""
+    keys, vals = [], []
+    for i in range(cache.num_layers):
+        k, v = cache.layer_kv(i)
+        keys.append(k[:, :, lo:hi])
+        vals.append(v[:, :, lo:hi])
+    return CompactedPrefixCache.from_tensors(
+        keys, vals, logical_positions=list(cache.logical_positions[lo:hi]),
+        next_logical_position=int(cache.logical_positions[hi - 1]) + 1,
+        sink_token_count=cache.sink_token_count)
+
+
+def concat_caches(a: CompactedPrefixCache, b: CompactedPrefixCache,
+                  next_logical_position: int) -> CompactedPrefixCache:
+    keys, vals = [], []
+    for i in range(a.num_layers):
+        ka, va = a.layer_kv(i)
+        kb, vb = b.layer_kv(i)
+        keys.append(torch.cat([ka, kb], dim=2))
+        vals.append(torch.cat([va, vb], dim=2))
+    return CompactedPrefixCache.from_tensors(
+        keys, vals,
+        logical_positions=list(a.logical_positions) + list(b.logical_positions),
+        next_logical_position=next_logical_position,
+        sink_token_count=a.sink_token_count)
+
+
+def compact_prefix_keep_recent(compactor: StillAmortizedKVCompactor,
+                               cache: CompactedPrefixCache,
+                               recent_raw: int, depth: int = 1,
+                               ) -> CompactedPrefixCache:
+    """Deployment-shaped compaction (spec 4.5): compress the old prefix
+    (optionally under a recurrence of `depth` equal segments), keep the most
+    recent `recent_raw` slots exact."""
+    total = cache.physical_length
+    old_hi = total - recent_raw
+    if depth <= 1:
+        state = compactor.compact(slice_cache(cache, 0, old_hi))
+    else:
+        seg = (old_hi - 4) // depth
+        state = None
+        for i in range(depth):
+            lo = 0 if i == 0 else 4 + i * seg
+            hi = old_hi if i == depth - 1 else 4 + (i + 1) * seg
+            chunk = slice_cache(cache, lo, hi)
+            state = compactor.compact(
+                chunk if state is None else
+                concat_caches(state, chunk, int(cache.logical_positions[hi - 1]) + 1))
+    tail = slice_cache(cache, old_hi, total)
+    return concat_caches(state, tail, cache.next_logical_position)
+
+
 def assert_depth_allowed(compactor: StillAmortizedKVCompactor,
                          requested_depth: int) -> None:
     """Resume paths must refuse to stack compactions beyond the certified
