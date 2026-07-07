@@ -44,6 +44,26 @@ def reliability_curve(p: np.ndarray, y: np.ndarray, n_bins: int = 15) -> list[di
     return out
 
 
+def auc_score(p: np.ndarray, y: np.ndarray) -> float:
+    """Rank-based ROC AUC (no sklearn dependency)."""
+    order = np.argsort(p)
+    ranks = np.empty(len(p)); ranks[order] = np.arange(len(p))
+    pos = ranks[y == 1]
+    n_pos, n_neg = int((y == 1).sum()), int((y == 0).sum())
+    if n_pos == 0 or n_neg == 0:
+        return 0.5
+    return float((pos.sum() - n_pos * (n_pos - 1) / 2) / (n_pos * n_neg))
+
+
+def average_precision(p: np.ndarray, y: np.ndarray) -> float:
+    order = np.argsort(-p)
+    y_sorted = y[order]
+    cum_tp = np.cumsum(y_sorted)
+    precision_at_k = cum_tp / (np.arange(len(y_sorted)) + 1)
+    n_pos = max(int(y.sum()), 1)
+    return float((precision_at_k * y_sorted).sum() / n_pos)
+
+
 def precision_recall(p: np.ndarray, y: np.ndarray, threshold: float) -> dict:
     pred = p >= threshold
     tp = int((pred & (y == 1)).sum())
