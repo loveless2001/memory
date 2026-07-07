@@ -63,3 +63,16 @@
 - Complete hand audit of 14 unique failures: 11 genuine forgetting,
   2 duplicate-option items, 1 question-gold mismatch, 0 format failures.
 - Appendix: plans/reports/certification-260707-0907-eval-protocol-appendix.md
+
+## 2026-07-07 (evening) — M3 expansion gate complete (GATE.md)
+
+- 196,710 counterfactual labels (98,355 items × 2 fractions, ~$110 H100).
+- Dual-encoder gate (frozen shadow-v1 embeddings, linear-probe tier):
+  GT7 ECE 0.023/0.017; GT8 dominates classify-and-expand at every matched
+  expand-rate; GT9 FEASIBLE — lost-fact 0.143 at expand-rate 0.169 (vs
+  never 0.520, oracle 0 @ 0.194); GT10 budget tracing green; GT6 near-tie
+  documented (LODO AUC 0.78-0.87 confirms generalization).
+- Multi-hop slice (500 k=2 items): correctness holds (0.036) via 2.3×
+  over-expansion — spec 4.7 middle-of-spectrum cost, not correctness.
+- Checkpoint+calibration+grid in memsub-artifacts:/gate-eval; report:
+  plans/reports/gate-260707-1319-m3-expansion-gate-final-report.md

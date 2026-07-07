@@ -194,6 +194,77 @@ def _plots(grid: dict) -> None:
                 bbox_inches="tight")
 
 
+@app.function(image=image, gpu="L4",
+              volumes={"/artifacts": artifacts,
+                       "/root/.cache/huggingface":
+                       modal.Volume.from_name("memsub-hf-cache")},
+              timeout=7200, memory=32768)
+def evaluate_multihop() -> dict:
+    """GATE.md §5 multi-hop slice, reported separately: two gate rows per
+    composed question — (q, evicted block, y from counterfactual) and
+    (q, survived block, y=0)."""
+    import os
+    import sys
+    sys.path.insert(0, "/root/repo")
+    import numpy as np
+    import torch
+    from memsub.compilers import Qwen3ShadowEmbedder
+    from memsub.gate import DualEncoderExpansionGate, TrainConfig, end_to_end_lost_fact
+    from memsub.gate.gate_evaluation_metrics import auc_score, precision_recall
+    from memsub.gate.label_dataset_splits import GateDataset
+
+    with open("/artifacts/corpus-gate-labels/multihop-slice.json") as f:
+        slice_rows = json.load(f)
+    ck = torch.load("/artifacts/gate-eval/gate-checkpoint.pt", weights_only=False)
+    cfg = TrainConfig(**ck["config"])
+    emb = Qwen3ShadowEmbedder(device="cuda", dtype="bfloat16")
+
+    def batch_embed(texts, bs=64):
+        return np.concatenate([emb.embed(texts[i:i + bs])
+                               for i in range(0, len(texts), bs)]).astype(np.float32)
+
+    q_texts = [r["question"] + " || recent: " + r["ctx_tail_gloss"] for r in slice_rows]
+    q_emb = batch_embed(q_texts)
+    ev_emb = batch_embed([r["evicted_block_gloss"] for r in slice_rows])
+    sv_emb = batch_embed([r["survived_block_gloss"] for r in slice_rows])
+
+    n = len(slice_rows)
+    ds = GateDataset(
+        item_id=np.array([f"mh_{i}_{k}" for k in ("ev", "sv") for i in range(n)]),
+        doc_id=np.array([r["doc_id"] for r in slice_rows] * 2),
+        domain=np.array([r["domain"] for r in slice_rows] * 2),
+        fraction=np.full(2 * n, 0.25, dtype=np.float32),
+        y=np.array([r["y"] for r in slice_rows] + [0] * n),
+        overlap=np.array([1.0] * n + [0.0] * n, dtype=np.float32),
+        evicted=np.array([1] * n + [0] * n),
+        pointwise=np.ones(2 * n, dtype=np.int64),
+        raw_correct=np.ones(2 * n, dtype=np.int64),  # teacher-filtered
+        compact_correct=np.array(
+            [r["compact_correct"] for r in slice_rows] * 2),
+        q_emb=np.concatenate([q_emb, q_emb]),
+        b_emb=np.concatenate([ev_emb, sv_emb]))
+
+    model = DualEncoderExpansionGate(q_emb.shape[1], cfg)
+    model.load_state_dict(ck["state_dict"])
+    model.temperatures = ck["temperatures"]
+    idx = np.arange(2 * n)
+    p = model.predict_proba(ds, idx)
+    tau = ck["threshold"]
+    out = {
+        "n_questions": n,
+        "positive_rate_evicted_rows": float(ds.y[:n].mean()),
+        "auc": auc_score(p, ds.y),
+        **{f"pr_{k}": v for k, v in precision_recall(p, ds.y, tau).items()},
+        "gate_at_tau": end_to_end_lost_fact(ds, idx, p >= tau),
+        "never": end_to_end_lost_fact(ds, idx, np.zeros(2 * n, dtype=bool)),
+        "oracle": end_to_end_lost_fact(ds, idx, ds.y == 1),
+    }
+    with open("/artifacts/gate-eval/multihop-eval.json", "w") as f:
+        json.dump(out, f, indent=1, default=float)
+    artifacts.commit()
+    return out
+
+
 @app.local_entrypoint()
 def main(seed: int = 0):
     out = train_and_evaluate.remote(seed)
