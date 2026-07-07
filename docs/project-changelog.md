@@ -92,3 +92,12 @@
 - A5: domain_recalibration.py shipped — temperature with Platt escalation;
   all four LODO domains reach ECE ≤ 0.05 (0.014-0.035). Unit-tested.
 - Deliverable: ADDENDUM.md (root, per brief); eval-grid.json updated.
+
+## 2026-07-07 (late) — Paper draft in LaTeX
+
+- paper/main.tex + references.bib + figures, compiled to main.pdf
+  (tectonic). All draft.md fill-in tokens resolved from the ablation
+  artifacts: A2 verdict = mechanics (kept that §5.2 paragraph), evicted-only
+  AUC 0.622 headline, canonical baselines 0.453/0.551, GT9 frontier wording,
+  Platt-escalation recalibration in §5.5. Citations flagged for verification
+  against primaries before submission.
