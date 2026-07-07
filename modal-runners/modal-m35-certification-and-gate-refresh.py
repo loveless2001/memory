@@ -250,6 +250,191 @@ def relabel_slice(single_tag: str, t_latents: int, domain: str,
     return {"domain": domain, "slice": slice_idx, "rows": len(state["rows"])}
 
 
+@app.function(image=image, gpu="L4", volumes=VOLUMES, timeout=14400,
+              memory=65536, cpu=8)
+def refresh_gate() -> dict:
+    """Retrain the gate on compactor labels (GT16 + A2 decomposition redo).
+    Embeddings are reused via item_id alignment (glosses unchanged)."""
+    import glob
+    import sys
+    sys.path.insert(0, "/root/repo")
+    import numpy as np
+    import torch
+    from memsub.gate import TrainConfig, end_to_end_lost_fact, make_splits, train_gate
+    from memsub.gate.dual_encoder_expansion_gate import calibrate_temperature
+    from memsub.gate.gate_evaluation_metrics import (
+        auc_score, expected_calibration_error, operating_point, threshold_sweep)
+    from memsub.gate.label_dataset_splits import GateDataset
+
+    rows = []
+    for path in sorted(glob.glob(
+            "/artifacts/compactor-gate-labels/*/slice-*.state.json")):
+        with open(path) as f:
+            rows.extend(json.load(f)["rows"])
+    emb = np.load("/artifacts/corpus-gate-labels/embeddings.npz")
+    emb_row = {i: n for n, i in enumerate(emb["item_ids"])}
+    rows = [r for r in rows if r["item_id"] in emb_row]
+    idx = np.array([emb_row[r["item_id"]] for r in rows])
+    gold_ok = np.array([r["pred_compact_still"].strip().upper()[:1]
+                        == r["gold"].strip().upper()[:1] for r in rows])
+    ds = GateDataset(
+        item_id=np.array([r["item_id"] for r in rows]),
+        doc_id=np.array([r["doc_id"] for r in rows]),
+        domain=np.array([r["domain"] for r in rows]),
+        fraction=np.array([r["fraction_still"] for r in rows], dtype=np.float32),
+        y=np.array([r["y_still"] for r in rows]),
+        overlap=np.array([r["overlap_still"] for r in rows], dtype=np.float32),
+        evicted=np.array([r["evicted_still"] for r in rows]),
+        pointwise=np.array([int(r["pointwise_heuristic"]) for r in rows]),
+        raw_correct=np.array([int(r["raw_correct"]) for r in rows]),
+        compact_correct=gold_ok.astype(int),
+        q_emb=emb["q_emb"][idx].astype(np.float32),
+        b_emb=emb["b_emb"][idx].astype(np.float32))
+    splits = make_splits(ds, mode="document")
+    test_idx = np.flatnonzero(splits["test"])
+    cal_idx = np.flatnonzero(splits["cal"])
+    out: dict = {"n_rows": len(ds),
+                 "positive_rate": float(ds.y.mean())}
+
+    def variant(kind):
+        clone = ds.subset(np.ones(len(ds), dtype=bool))
+        if kind == "features_only":
+            clone.q_emb = np.zeros_like(ds.q_emb)
+            clone.b_emb = np.zeros_like(ds.b_emb)
+        elif kind == "embeddings_only":
+            clone.fraction = np.zeros_like(ds.fraction)
+            clone.overlap = np.zeros_like(ds.overlap)
+            clone.evicted = np.zeros_like(ds.evicted)
+            clone.domain = np.array(["none"] * len(ds))
+        return clone
+
+    ev_test = test_idx[ds.evicted[test_idx] == 1]
+    out["a2_still"] = {}
+    for kind in ("full", "features_only", "embeddings_only"):
+        dvar = variant(kind) if kind != "full" else ds
+        aucs = []
+        for seed in (0, 1, 2):
+            m = train_gate(dvar, splits["train"], TrainConfig(seed=seed),
+                           device="cuda").cpu()
+            calibrate_temperature(m, dvar, splits["cal"])
+            aucs.append(auc_score(m.predict_proba(dvar, ev_test),
+                                  ds.y[ev_test]))
+            if kind == "full" and seed == 0:
+                model = m
+        out["a2_still"][kind] = {"evicted_auc_mean": float(np.mean(aucs)),
+                                 "sd": float(np.std(aucs))}
+
+    p_cal = model.predict_proba(ds, cal_idx)
+    op = operating_point(threshold_sweep(ds, cal_idx, p_cal),
+                         target_lost=M3_E2E["lost"],
+                         max_expand_rate=M3_E2E["expand"])
+    p_test = model.predict_proba(ds, test_idx)
+    e2e = end_to_end_lost_fact(ds, test_idx, p_test >= op["threshold"])
+    out["gt16"] = {
+        "threshold": op["threshold"], **e2e,
+        "ece": expected_calibration_error(p_test, ds.y[test_idx]),
+        "m3_reference": M3_E2E,
+        "pass": bool(
+            e2e["lost_fact_rate_evicted_prior_correct"] <= M3_E2E["lost"]
+            and e2e["expand_rate_all"] <= M3_E2E["expand"])}
+    torch.save({"state_dict": model.state_dict(),
+                "temperatures": model.temperatures,
+                "threshold": op["threshold"]},
+               "/artifacts/gate-eval/gate-checkpoint-still.pt")
+    with open("/artifacts/gate-eval/gate-refresh-still.json", "w") as f:
+        json.dump(out, f, indent=1, default=float)
+    artifacts.commit()
+    return {k: out[k] for k in ("n_rows", "positive_rate", "a2_still", "gt16")}
+
+
+@app.function(image=image, gpu="L4", volumes=VOLUMES, timeout=14400,
+              memory=32768)
+def wp2_eval() -> dict:
+    """s1 set-scoring on the expanded multi-hop slice: GT17 + GT18."""
+    import sys
+    sys.path.insert(0, "/root/repo")
+    import numpy as np
+    import torch
+    from memsub.compilers import Qwen3ShadowEmbedder
+    from memsub.gate import DualEncoderExpansionGate, TrainConfig
+    from memsub.gate.label_dataset_splits import GateDataset, _doc_bucket
+    from memsub.gate.set_scoring_selector import SetScoringSelector, fit_tau_entry
+
+    with open("/artifacts/corpus-gate-labels/multihop-slice.json") as f:
+        rows = json.load(f)
+    ck = torch.load("/artifacts/gate-eval/gate-checkpoint.pt",
+                    weights_only=False)
+    emb = Qwen3ShadowEmbedder(device="cuda", dtype="bfloat16")
+
+    def batch(texts, bs=64):
+        return np.concatenate([emb.embed(texts[i:i + bs])
+                               for i in range(0, len(texts), bs)]).astype(np.float32)
+
+    n = len(rows)
+    q = batch([r["question"] + " || recent: " + r["ctx_tail_gloss"]
+               for r in rows])
+    b_ev = batch([r["evicted_block_gloss"] for r in rows])
+    b_sv = batch([r["survived_block_gloss"] for r in rows])
+
+    def gate_scores(bmat, evicted):
+        ds = GateDataset(
+            item_id=np.array([f"x{i}" for i in range(n)]),
+            doc_id=np.array([r["doc_id"] for r in rows]),
+            domain=np.array([r["domain"] for r in rows]),
+            fraction=np.full(n, 0.25, dtype=np.float32),
+            y=np.zeros(n, dtype=int),
+            overlap=np.full(n, 1.0 if evicted else 0.0, dtype=np.float32),
+            evicted=np.full(n, int(evicted)),
+            pointwise=np.ones(n, dtype=int), raw_correct=np.ones(n, dtype=int),
+            compact_correct=np.zeros(n, dtype=int), q_emb=q, b_emb=bmat)
+        model = DualEncoderExpansionGate(q.shape[1], TrainConfig())
+        model.load_state_dict(ck["state_dict"])
+        model.temperatures = ck["temperatures"]
+        return model.predict_proba(ds, np.arange(n))
+
+    s_ev, s_sv = gate_scores(b_ev, True), gate_scores(b_sv, False)
+    buckets = np.array([_doc_bucket(r["doc_id"]) for r in rows])
+    train_m, test_m = buckets < 0.7, buckets >= 0.7
+
+    scores = [[float(s_ev[i]), float(s_sv[i])] for i in range(n)]
+    needed = [[bool(r["y"]), False] for r in rows]
+    fit = fit_tau_entry([scores[i] for i in np.flatnonzero(train_m)],
+                        [needed[i] for i in np.flatnonzero(train_m)],
+                        target_recall=0.85)
+    sel = SetScoringSelector(tau_entry=fit["tau_entry"])
+
+    exp = hit = need = total = lost = q_expanded = 0
+    for i in np.flatnonzero(test_m):
+        dec = sel.decide(scores[i])
+        for e, nd in zip(dec.expand_mask, needed[i]):
+            need += nd
+            hit += nd and e
+            exp += e
+            total += 1
+        q_expanded += dec.entered
+        if rows[i]["y"] and not dec.expand_mask[0]:
+            lost += rows[i]["compact_correct"] == 0
+    n_test = int(test_m.sum())
+    oracle_rate = sum(sum(needed[i]) for i in np.flatnonzero(test_m)) / (2 * n_test)
+    out = {
+        "fit": fit, "n_test_questions": n_test,
+        "recall": hit / max(need, 1),
+        "expand_rate_blocks": exp / max(total, 1),
+        "oracle_rate_blocks": oracle_rate,
+        "expand_over_oracle": (exp / max(total, 1)) / max(oracle_rate, 1e-9),
+        "lost_fact_rate": lost / max(sum(bool(rows[i]['y'])
+                                         for i in np.flatnonzero(test_m)), 1),
+        "m3_reference_expand_over_oracle": 2.33,
+    }
+    out["gt17_pass"] = (out["expand_over_oracle"] <= 1.3
+                        and out["lost_fact_rate"] <= 0.05
+                        and out["recall"] >= 0.85)
+    with open("/artifacts/gate-eval/wp2-set-selector-eval.json", "w") as f:
+        json.dump(out, f, indent=1, default=float)
+    artifacts.commit()
+    return out
+
+
 @app.local_entrypoint()
 def launch_relabel(single_tag: str, t_latents: int, slices_per_domain: int = 3):
     for d in DOMAINS:
