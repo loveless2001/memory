@@ -1,5 +1,11 @@
 # M3 Expansion Gate — Final Report (GATE.md fulfilled)
 
+> **2026-07-07 late addendum (ABLATION.md)**: headline discrimination is the
+> EVICTED-ONLY AUC 0.622 (pooled 0.83 conflated tasks); the mechanism is a
+> calibrated eviction-mechanics classifier (features-only ≈ full model);
+> GT9 restated as frontier (bootstrap upper CI 0.156 > 0.15); canonical
+> never-expand baselines 0.453/0.551 per fraction. See `ADDENDUM.md`.
+
 Date: 2026-07-07 · Artifacts: Modal volume `memsub-artifacts` under
 `corpus-gate-labels/` and `gate-eval/` · Figures: `plans/reports/gate-figures/`
 
@@ -32,7 +38,7 @@ Date: 2026-07-07 · Artifacts: Modal volume `memsub-artifacts` under
 
 | GT | Status | Evidence |
 |---|---|---|
-| GT6 no leakage | **documented** | doc-split AUC 0.8283 vs item-split 0.8259 — a near-tie, not the expected leaky-higher gap. Reading: y is driven by eviction mechanics + query/block semantics that transfer across documents, so item leakage has nothing extra to exploit. LODO AUCs 0.78–0.87 independently confirm generalization over memorization. Doc split ships. |
+| GT6 no leakage | **resolved by A2 ablation** | doc-split AUC 0.8283 vs item-split 0.8259 near-tie. ABLATION.md A2 settled the open reading: features-only retrains match the full model on evicted-only AUC (0.621 vs 0.624), embeddings-only collapses to 0.536 — the signal is eviction MECHANICS, not document content, so item-level leakage had nothing to exploit. See ADDENDUM.md; the mechanism claim in this report is superseded accordingly. |
 | GT7 ECE ≤ 0.05 | **green** | 0.0229 (evict 0.25), 0.0168 (evict 0.40) on test |
 | GT8 dominates classify-and-expand | **green** | at every matched expand-rate 0.1–0.5: gate lost 0.277/0.092/0.0/0.0/0.0 vs classify 0.470/0.416/0.368/0.308/0.248 |
 | GT9 end-to-end | **green (feasible)** | τ=0.488 chosen on cal: test lost-fact 0.143 ≤ 0.15 (V2 floor = 0.000) at expand-rate 0.169 ≤ 0.5×always. vs baselines: never 0.520, oracle 0.000 @ 0.194 expand |

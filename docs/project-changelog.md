@@ -76,3 +76,19 @@
   over-expansion — spec 4.7 middle-of-spectrum cost, not correctness.
 - Checkpoint+calibration+grid in memsub-artifacts:/gate-eval; report:
   plans/reports/gate-260707-1319-m3-expansion-gate-final-report.md
+
+## 2026-07-07 (night) — M3 ablation addendum (ABLATION.md)
+
+- A1: headline discrimination corrected to EVICTED-ONLY AUC 0.622
+  [CI 0.608-0.636]; pooled 0.83 conflated evicted/survived separation.
+- A2: decomposition shows features-only ≈ full model (0.621 vs 0.624
+  evicted-only AUC); embeddings-only 0.536 — the gate is a calibrated
+  eviction-MECHANICS classifier; dual-encoder content pathway is a
+  negative result; GT6 near-tie explained.
+- A3: canonical M3-protocol never-expand rows 0.453/0.551 per fraction;
+  M1 numbers flagged as different protocol.
+- A4: GT9 restated as frontier (bootstrap upper CI 0.156 > 0.15; seeds
+  0.126±0.014 lost at 0.177±0.007 expand).
+- A5: domain_recalibration.py shipped — temperature with Platt escalation;
+  all four LODO domains reach ECE ≤ 0.05 (0.014-0.035). Unit-tested.
+- Deliverable: ADDENDUM.md (root, per brief); eval-grid.json updated.
