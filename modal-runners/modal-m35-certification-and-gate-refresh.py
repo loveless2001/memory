@@ -426,9 +426,62 @@ def wp2_eval() -> dict:
                                          for i in np.flatnonzero(test_m)), 1),
         "m3_reference_expand_over_oracle": 2.33,
     }
-    out["gt17_pass"] = (out["expand_over_oracle"] <= 1.3
-                        and out["lost_fact_rate"] <= 0.05
-                        and out["recall"] >= 0.85)
+    out["gt17_pass_s1"] = (out["expand_over_oracle"] <= 1.3
+                           and out["lost_fact_rate"] <= 0.05
+                           and out["recall"] >= 0.85)
+
+    # ---- s2: query-conditioned joint head (brief: only if s1 misses) ------
+    # Per-block logistic re-scorer trained on the slice's train split:
+    # features = [gate score, cosine(q, b), gate-score margin within the
+    # query's candidate set]. The margin term is the "joint" signal a
+    # per-block gate cannot see.
+    import torch as th
+    feats, labels, qidx = [], [], []
+    for i in range(n):
+        margin = s_ev[i] - s_sv[i]
+        for score, bmat, nd in ((s_ev[i], b_ev[i], bool(rows[i]["y"])),
+                                (s_sv[i], b_sv[i], False)):
+            cos = float(np.dot(q[i], bmat)
+                        / (np.linalg.norm(q[i]) * np.linalg.norm(bmat) + 1e-9))
+            feats.append([float(score), cos, float(margin)])
+            labels.append(float(nd))
+            qidx.append(i)
+    feats = th.tensor(feats); labels = th.tensor(labels)
+    tr_rows = th.tensor([bool(train_m[i]) for i in qidx])
+    lin = th.nn.Linear(3, 1)
+    opt2 = th.optim.AdamW(lin.parameters(), lr=0.05)
+    for _ in range(500):
+        opt2.zero_grad()
+        loss = th.nn.functional.binary_cross_entropy_with_logits(
+            lin(feats[tr_rows]).squeeze(-1), labels[tr_rows])
+        loss.backward(); opt2.step()
+    with th.no_grad():
+        p2 = th.sigmoid(lin(feats).squeeze(-1)).numpy()
+    p2_by_q = {}
+    for k, i in enumerate(qidx):
+        p2_by_q.setdefault(i, []).append(p2[k])
+    fit2 = fit_tau_entry([p2_by_q[i] for i in np.flatnonzero(train_m)],
+                         [needed[i] for i in np.flatnonzero(train_m)],
+                         target_recall=0.85)
+    sel2 = SetScoringSelector(tau_entry=fit2["tau_entry"])
+    exp = hit = need = total = lost = 0
+    for i in np.flatnonzero(test_m):
+        dec = sel2.decide(p2_by_q[i])
+        for e, nd in zip(dec.expand_mask, needed[i]):
+            need += nd; hit += nd and e; exp += e; total += 1
+        if rows[i]["y"] and not dec.expand_mask[0]:
+            lost += rows[i]["compact_correct"] == 0
+    out["s2"] = {
+        "fit": fit2,
+        "recall": hit / max(need, 1),
+        "expand_rate_blocks": exp / max(total, 1),
+        "expand_over_oracle": (exp / max(total, 1)) / max(oracle_rate, 1e-9),
+        "lost_fact_rate": lost / max(sum(bool(rows[i]['y'])
+                                         for i in np.flatnonzero(test_m)), 1),
+    }
+    out["gt17_pass"] = (out["s2"]["expand_over_oracle"] <= 1.3
+                        and out["s2"]["lost_fact_rate"] <= 0.05
+                        and out["s2"]["recall"] >= 0.85)
     with open("/artifacts/gate-eval/wp2-set-selector-eval.json", "w") as f:
         json.dump(out, f, indent=1, default=float)
     artifacts.commit()
