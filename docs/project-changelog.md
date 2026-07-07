@@ -38,3 +38,14 @@
   nearly unmoved (KL ~1e-2, no MCQ delta), pointwise axis flips where the
   needle chunk is evicted — spec 4.7 two-workload split reproduced on real data.
 - Report: plans/reports/corpus-260706-0341-b3-four-domain-corpus-run.md
+
+## 2026-07-07 — Full-scale B.3 dataset complete
+
+- 98,355 filter-verified MCQ items over the 927M-token 4-domain corpus
+  (pass 1: 74,196 in ~9h; shortfall-sized top-up: +24,159 in ~3h;
+  ~120 H100-hours ≈ $470–500, zero worker failures).
+- Full-set certification, 40 reports: evict 0.25 → mean KL 0.030 /
+  lost-fact 0.71; evict 0.40 → mean KL 0.034 / lost-fact 0.81. Aggregation
+  axis flat, pointwise collapses — quantitative M1 verdict that untrained
+  eviction needs the M3 gate for needle traffic.
+- Report: plans/reports/corpus-260707-0907-full-scale-b3-run-final-report.md
