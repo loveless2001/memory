@@ -32,17 +32,25 @@ class AggregationAxisReport:
 class PointwiseAxisReport:
     """Needle-class workload: the lost-fact instrument (spec 13.4, 17.1).
     lost_fact_incident_rate counts probes over evicted spans answered wrongly
-    WITHOUT an EXPAND call — the silent failure."""
+    WITHOUT an EXPAND call — the silent failure. Denominator = ALL needle
+    probes; lost_fact_rate_given_prior_correct conditions on probes the model
+    answered correctly under full context (true forgetting, not never-knew)."""
     needle_probe_count: int
     needle_correct_before_eviction: int
     needle_correct_after_eviction: int
     expand_calls: int
     lost_fact_incident_rate: float
+    lost_fact_rate_given_prior_correct: float = 0.0
 
 
 @dataclass
 class CertificationReport:
-    """No blended/aggregate score field exists by design (spec 4.7 corollary)."""
+    """No blended/aggregate score field exists by design (spec 4.7 corollary).
+
+    eval_protocol makes the numbers citable: exact item partition per axis,
+    what the compacted context contained during probing, and whether EXPAND
+    was enabled. probe_records (optional) carry per-needle predictions for
+    manual failure audits."""
     certification_id: str
     model_build: str
     compaction_policy_version: str
@@ -50,6 +58,8 @@ class CertificationReport:
     eq_policy: str
     aggregation_axis: AggregationAxisReport
     pointwise_axis: PointwiseAxisReport
+    eval_protocol: dict = field(default_factory=dict)
+    probe_records: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -84,16 +94,32 @@ class OfflineCertificationHarness:
                 mcq_items: list[McqItem], needle_items: list[McqItem],
                 continuation_text: str = " The discussion continued.",
                 expand_fn=None, policy_version: str = "evict-oldest-nonsink-v1",
-                ) -> CertificationReport:
+                eviction_mode: str = "contiguous_span", random_seed: int = 0,
+                record_probes: bool = False,
+                protocol_notes: dict | None = None) -> CertificationReport:
         """Certify one configuration over one pilot context.
 
         full context (reference) vs compacted state (candidate) per spec 13.4.
-        needle_items must probe facts inside the evicted span."""
+        needle_items must probe facts inside the evicted span (for
+        eviction_mode="random_nonsink_matched" the same needle set is kept and
+        the same NUMBER of tokens is evicted uniformly from non-sink
+        positions, isolating the effect of the policy's recency structure)."""
+        import random as random_mod
         rt = self.runtime
         ids = rt.tokenizer.encode(context_text, add_special_tokens=False)
         full_cache, _ = rt.prefill(ids)
         compact_cache = full_cache.clone_detached()
-        evicted = compact_cache.evict_logical_range(*evict_logical_range)
+        if eviction_mode == "contiguous_span":
+            evicted = compact_cache.evict_logical_range(*evict_logical_range)
+        elif eviction_mode == "random_nonsink_matched":
+            span = evict_logical_range[1] - evict_logical_range[0]
+            rng = random_mod.Random(random_seed)
+            candidates = [p for p in compact_cache.logical_positions
+                          if p >= compact_cache.sink_token_count]
+            evicted = compact_cache.evict_logical_positions(
+                rng.sample(candidates, min(span, len(candidates))))
+        else:
+            raise ValueError(f"unknown eviction_mode {eviction_mode!r}")
         eviction_fraction = evicted / max(len(ids), 1)
 
         cont_ids = rt.tokenizer.encode(continuation_text, add_special_tokens=False)
@@ -111,25 +137,47 @@ class OfflineCertificationHarness:
         acc_full, acc_compact = run_mcqs(full_cache), run_mcqs(compact_cache)
 
         # Pointwise axis: needle probes over the evicted span.
-        before = after = expands = lost = 0
+        before = after = expands = lost = lost_prior_correct = 0
+        probe_records: list[dict] = []
         for item in needle_items:
-            if eq_policy_v1(rt.answer_letter("", item.question, item.options,
-                                             cache=full_cache), item.gold_letter):
-                before += 1
+            pred_full = rt.answer_letter("", item.question, item.options,
+                                         cache=full_cache)
+            was_correct = eq_policy_v1(pred_full, item.gold_letter)
+            before += was_correct
             expanded = expand_fn(item) if expand_fn else None
-            if expanded is not None:
-                expands += 1
-                ok = eq_policy_v1(rt.answer_letter(expanded, item.question,
-                                                   item.options, cache=compact_cache),
-                                  item.gold_letter)
-            else:
-                ok = eq_policy_v1(rt.answer_letter("", item.question, item.options,
-                                                   cache=compact_cache), item.gold_letter)
+            pred_compact = rt.answer_letter(expanded or "", item.question,
+                                            item.options, cache=compact_cache)
+            expands += expanded is not None
+            ok = eq_policy_v1(pred_compact, item.gold_letter)
             if ok:
                 after += 1
             elif expanded is None:
                 lost += 1  # wrong WITHOUT an EXPAND call — the silent failure
+                lost_prior_correct += was_correct
+            if record_probes:
+                probe_records.append({
+                    "item_id": item.item_id, "question": item.question,
+                    "options": item.options, "gold": item.gold_letter,
+                    "pred_full_context": pred_full,
+                    "pred_compacted": pred_compact,
+                    "expanded": expanded is not None})
 
+        eval_protocol = {
+            # pointwise denominator: caller-selected needle items — probes
+            # whose SOURCE CHUNK lies in the evicted window; aggregation
+            # denominator: the disjoint mcq_items set (see caller notes).
+            "pointwise_denominator": "needle_items (source chunk in evicted window)",
+            "aggregation_denominator": "mcq_items (disjoint from needles)",
+            "axes_share_items": False,
+            "eviction_mode": eviction_mode,
+            "compacted_context_contents": "surviving KV only — no summary text "
+                                          "or auxiliary representation injected",
+            "expand_enabled": expand_fn is not None,
+            "kl_window_tokens": len(cont_ids),
+            "scoring": "argmax over option-letter logits (eq_policy_v1); "
+                       "greedy, no sampling",
+            **(protocol_notes or {}),
+        }
         model_build = rt.fingerprint().model_id
         return CertificationReport(
             certification_id=make_certification_id(model_build, policy_version,
@@ -149,5 +197,9 @@ class OfflineCertificationHarness:
                 needle_correct_before_eviction=before,
                 needle_correct_after_eviction=after,
                 expand_calls=expands,
-                lost_fact_incident_rate=round(lost / max(len(needle_items), 1), 4)),
+                lost_fact_incident_rate=round(lost / max(len(needle_items), 1), 4),
+                lost_fact_rate_given_prior_correct=round(
+                    lost_prior_correct / max(before, 1), 4)),
+            eval_protocol=eval_protocol,
+            probe_records=probe_records,
         )

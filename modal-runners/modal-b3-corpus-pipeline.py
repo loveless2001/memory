@@ -263,6 +263,13 @@ def certify_domain(domain: str, evict_fraction: float = 0.4,
     for it in items:
         by_doc.setdefault(it.doc_id, []).append(it)
 
+    # Probe partition is fixed by a REFERENCE window (fraction 0.25) so that
+    # control (evict 0.0), matched-random, and larger-fraction rows all probe
+    # the SAME needle/aggregation item sets — denominators comparable across
+    # configurations (eval-protocol requirement).
+    REF_FRACTION = 0.25
+    eviction_mode = "random_nonsink_matched" if evict_fraction < 0 else "contiguous_span"
+    frac = abs(evict_fraction)
     reports = []
     for doc_id, doc_items in list(by_doc.items()):
         if len(reports) >= contexts:
@@ -271,17 +278,41 @@ def certify_domain(domain: str, evict_fraction: float = 0.4,
         ids = tok.encode(texts[doc_id], add_special_tokens=False)
         ctx_start = max(0, anchor.chunk_token_start - 1024)
         ctx_ids = ids[ctx_start:ctx_start + 4096]
-        span = int(len(ctx_ids) * evict_fraction)
-        lo = max(4, min(anchor.chunk_token_start - ctx_start, len(ctx_ids) - span))
+        ref_span = int(len(ctx_ids) * REF_FRACTION)
+        lo = max(4, min(anchor.chunk_token_start - ctx_start,
+                        len(ctx_ids) - ref_span))
         needles = [i for i in doc_items
-                   if lo <= i.chunk_token_start - ctx_start < lo + span] or [anchor]
+                   if lo <= i.chunk_token_start - ctx_start < lo + ref_span] or [anchor]
+        needles = needles[:8]
         aggs = [i for i in doc_items if i not in needles][:8]
+        span = int(len(ctx_ids) * frac)  # 0 for the control row
+        in_ctx = sum(1 for a in aggs
+                     if 0 <= a.chunk_token_start - ctx_start <= len(ctx_ids) - 1024)
         report = harness.certify(
             context_text=tok.decode(ctx_ids),
             evict_logical_range=(lo, lo + span),
-            mcq_items=aggs, needle_items=needles[:8])
-        reports.append(report.to_dict())
-    with open(f"{out_dir}/{domain}-evict{evict_fraction:.2f}.json", "w") as f:
+            mcq_items=aggs, needle_items=needles,
+            eviction_mode=eviction_mode, random_seed=hash(doc_id) % 10**6,
+            record_probes=True,
+            protocol_notes={
+                "needle_window": "reference 0.25-fraction window; identical "
+                                 "item partition across all certified fractions",
+                "n_agg_items_chunk_inside_context": in_ctx,
+                "n_agg_items_chunk_outside_context": len(aggs) - in_ctx,
+                "agg_outside_context_note": "out-of-context aggregation items "
+                    "score ~chance under BOTH conditions; accuracy_delta is a "
+                    "paired comparison but its magnitude is diluted by them",
+                "context_doc_id": doc_id,
+            })
+        rd = report.to_dict()
+        # chunk excerpts for manual failure audits
+        for rec in rd["probe_records"]:
+            it = next(i for i in needles if i.item_id == rec["item_id"])
+            rec["chunk_excerpt"] = tok.decode(
+                ids[it.chunk_token_start:it.chunk_token_start + 1024])[:500]
+        reports.append(rd)
+    mode_tag = "random" if eviction_mode == "random_nonsink_matched" else "evict"
+    with open(f"{out_dir}/{domain}-{mode_tag}{frac:.2f}.json", "w") as f:
         json.dump(reports, f, indent=1)
     artifacts.commit()
     return reports
@@ -340,13 +371,17 @@ def top_up_launch(target_total: int = 100000, pass_idx: int = 1):
 
 @app.local_entrypoint()
 def full_run_finalize(contexts: int = 5):
-    """Merge slice outputs and certify per domain over the FULL item set at
-    two eviction fractions (spec 13.4: certify per configuration)."""
+    """Merge slice outputs and certify per domain over the FULL item set.
+
+    Config matrix per domain: evict 0.0 (control / noise floor), 0.25, 0.40
+    contiguous, and matched-random 0.25 (negative fraction flags random mode).
+    All configs share one probe partition (reference 0.25 window)."""
     print("merge:", merge_full_items.remote())
     jobs = [(d, frac, contexts, True)
-            for d in SOURCES for frac in (0.25, 0.40)]
+            for d in SOURCES for frac in (0.0, 0.25, 0.40, -0.25)]
     for domain_reports in certify_domain.starmap(jobs):
         for r in domain_reports:
-            print(r["certification_id"],
+            print(r["certification_id"], r["eval_protocol"]["eviction_mode"],
                   "kl=", r["aggregation_axis"]["mean_kl"],
-                  "lost=", r["pointwise_axis"]["lost_fact_incident_rate"])
+                  "lost=", r["pointwise_axis"]["lost_fact_incident_rate"],
+                  "lost|prior=", r["pointwise_axis"]["lost_fact_rate_given_prior_correct"])

@@ -101,6 +101,28 @@ class CompactedPrefixCache(DynamicCache):
         self.logical_positions = [self.logical_positions[i] for i in keep]
         return evicted
 
+    def evict_logical_positions(self, positions: list[int]) -> int:
+        """Evict an arbitrary (non-contiguous) set of logical positions.
+        Same sink guarantee as evict_logical_range: raises before any tensor
+        is touched if a pinned sink position is in the plan."""
+        targets = set(positions)
+        sinks = [p for p in targets if p < self.sink_token_count]
+        if sinks:
+            raise SinkEvictionError(
+                f"eviction plan contains pinned sink positions {sorted(sinks)}")
+        keep = [i for i, p in enumerate(self.logical_positions)
+                if p not in targets]
+        evicted = self.physical_length - len(keep)
+        if evicted == 0:
+            return 0
+        device = self.layers[0].keys.device
+        keep_idx = torch.tensor(keep, dtype=torch.long, device=device)
+        for layer in self.layers:
+            layer.keys = layer.keys.index_select(2, keep_idx)
+            layer.values = layer.values.index_select(2, keep_idx)
+        self.logical_positions = [self.logical_positions[i] for i in keep]
+        return evicted
+
     # -- serialization support (M2) ---------------------------------------------
     def layer_kv(self, layer_idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         layer = self.layers[layer_idx]

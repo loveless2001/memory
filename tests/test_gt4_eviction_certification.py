@@ -78,6 +78,14 @@ def test_gt4_axes_reported_separately_no_blended_metric(runtime):
     assert report.eq_policy == "eq_policy_v1"
     assert 0 < report.eviction_fraction < 1
 
+    # Eval protocol makes denominators citable (per-axis partition, context
+    # contents during probing, EXPAND state).
+    proto = report.eval_protocol
+    assert proto["axes_share_items"] is False
+    assert proto["expand_enabled"] is False
+    assert "surviving KV only" in proto["compacted_context_contents"]
+    assert proto["eviction_mode"] == "contiguous_span"
+
 
 @pytest.mark.golden
 @pytest.mark.reference
