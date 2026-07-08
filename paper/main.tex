@@ -63,10 +63,12 @@ and certify it under the same protocol: at $1/40$ of the published data
 recipe it does not displace untrained eviction on the aggregation axis
 (no-ship under our own rule), yet it \emph{halves} silent needle loss
 ($0.583 \rightarrow 0.271$), its recurrence collapses at depth 4, and the
-refreshed gate matches the eviction-regime operating point at $13\%$ lower
-expansion cost---while the mechanics-vs-content signal decomposition
-\emph{inverts}, making content the (weakly) better predictor under
-synthesis.
+compactor-plus-refreshed-gate system reproduces the eviction-regime
+operating point with the credit assignment flipped: the compressor now
+does most of the protective work and the gate's marginal reduction falls
+from $72\%$ to $22.5\%$---while the mechanics-vs-content signal
+decomposition \emph{inverts}, making content the (weakly) better predictor
+under synthesis.
 \end{abstract}
 
 \section{Introduction}
@@ -436,23 +438,29 @@ depth-validity envelope reported for Still-class compactors. We emit
 (weights hash included), and resume paths refuse to stack compactions past
 it.
 
-\paragraph{The gate signal changes family with the compressor.}
-Relabeling all 98{,}355 items under the compactor policy (old prefix
-synthesized, recent quarter raw; positive rate drops to $0.167$) and
-retraining the gate: the refreshed gate reaches lost-fact $0.146$ at
-expansion rate $\mathbf{0.147}$---the same end-to-end protection as the
-eviction-regime operating point ($0.146$ @ $0.168$) at $13\%$ lower
-expansion cost, ECE $0.007$. And the \S\ref{sec:mechanism} decomposition
-\emph{inverts}: embeddings-only ($0.567 \pm 0.005$) now beats
-features-only ($0.537 \pm 0.002$), full model $0.554 \pm 0.003$. Under
-synthesis there is no eviction window for mechanics features to read, and
-content becomes the better---though still weak---predictor. Both regimes'
-evicted-only AUCs (0.62 eviction, 0.55 synthesis) bound what any
-downstream selection can do: we verified that set-scoring grouped
-expansion (rank-then-cut at the largest marginal-score gap, plus a trained
-joint re-scorer) reduces the multi-hop cost overhang only from
-$2.33\times$ to $2.15$--$2.24\times$ oracle. The overhang is not a
-grouping problem; it is the content-signal gap, measured twice.
+\paragraph{The gate signal changes family with the compressor---and so
+does the credit assignment.} Relabeling all 98{,}355 items under the
+compactor policy (old prefix synthesized, recent quarter raw; positive
+rate drops to $0.167$) and retraining the gate, with baselines re-derived
+\emph{under this policy} rather than borrowed from the eviction frame:
+never-expand sits at $0.189$, the refreshed gate at $0.146$ @ expansion
+$0.147$ (ECE $0.007$), the oracle at $0.000$ @ $0.170$. The resulting
+system point numerically matches the eviction-regime operating point
+($0.146$ @ $0.168$)---but the mechanism is different. Under eviction the
+gate cuts silent loss by $72\%$ ($0.520 \rightarrow 0.146$); under
+synthesis the \emph{compressor} does most of the protective work and the
+gate adds a $22.5\%$ marginal reduction while consuming $86\%$ of the
+oracle's expansion budget. Consistent with that, the
+\S\ref{sec:mechanism} decomposition \emph{inverts}: embeddings-only
+($0.567 \pm 0.005$) now beats features-only ($0.537 \pm 0.002$; full
+$0.554 \pm 0.003$)---there is no eviction window for mechanics features to
+read, content becomes the better predictor, and both are weak. The two
+regimes' evicted-only AUCs (0.62 eviction, 0.55 synthesis) bound what any
+downstream selection can do: set-scoring grouped expansion (rank-then-cut
+at the largest marginal-score gap, plus a trained joint re-scorer) reduces
+the multi-hop cost overhang only from $2.33\times$ to
+$2.15$--$2.24\times$ oracle. The overhang is not a grouping problem; it is
+the content-signal gap, measured three ways.
 
 \section{Limitations}
 

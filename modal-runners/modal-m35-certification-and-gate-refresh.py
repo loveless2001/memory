@@ -337,6 +337,24 @@ def refresh_gate() -> dict:
         "pass": bool(
             e2e["lost_fact_rate_evicted_prior_correct"] <= M3_E2E["lost"]
             and e2e["expand_rate_all"] <= M3_E2E["expand"])}
+
+    # Baselines under THIS policy (never/always/oracle/classify): the gate's
+    # marginal value must be quoted against the compactor regime's own
+    # never-expand, not M3's eviction-regime reference frame.
+    from memsub.gate.gate_evaluation_metrics import baseline_decisions
+    _, aux_logits = model.predict_logits(ds, test_idx)
+    aux_p = 1 / (1 + np.exp(-aux_logits))
+    out["gt16_baselines"] = {
+        name: end_to_end_lost_fact(ds, test_idx, dec)
+        for name, dec in baseline_decisions(ds, test_idx, aux_p).items()}
+    never = out["gt16_baselines"]["never_expand"][
+        "lost_fact_rate_evicted_prior_correct"]
+    out["gt16_marginal_value"] = {
+        "never_expand_this_policy": never,
+        "gate_reduction_vs_never": 1 - e2e[
+            "lost_fact_rate_evicted_prior_correct"] / max(never, 1e-9),
+        "m3_eviction_reduction_reference": 1 - 0.146 / 0.520,
+    }
     torch.save({"state_dict": model.state_dict(),
                 "temperatures": model.temperatures,
                 "threshold": op["threshold"]},

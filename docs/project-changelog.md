@@ -123,3 +123,11 @@
   certification table, needle-halving finding, depth collapse, gate-signal
   family flip, set-scoring bound. Contribution (v) added; abstract,
   limitations, conclusion, compute ledger updated. 10 pages, compiles clean.
+
+## 2026-07-08 (v2) — GT16 baselines under the compactor policy
+
+- Emitted never/always/oracle/classify rows on the GT16 protocol:
+  never-expand = 0.189 under synthesis (not M3's 0.520). Gate marginal
+  reduction = 22.5% at 86% of oracle budget (vs 72% under eviction) —
+  credit assignment flips to the compressor; AUC-0.55 gate mostly rides
+  the lower base rate. ADDENDUM-M35 + paper §6/abstract reframed.

@@ -49,15 +49,29 @@ GT11 identity pass-through: green on tiny-config AND reference model before
 any training (the §12 position-bug detector). GT12: loss 0.42 → 0.058 by
 step 300 at t=512/T=4k (bar < 0.4).
 
-## Gate refresh under the new policy (GT16): frontier — matches M3 at lower cost
+## Gate refresh under the new policy (GT16): frontier — with its own baselines
 
 Relabeled all 98,355 items under the compactor policy (deployment-shaped:
 old prefix → t=1024 latents, recent 25% raw; y+ rate drops to 0.167 from
-eviction's ~0.25 — consistent with GT14). Refreshed gate at its operating
-point: **lost-fact 0.1461 at expand-rate 0.147** vs the M3 reference
-(0.146 @ 0.168) — a 0.0001 miss on the lost-fact target (formal GT16 fail)
-that is materially a win: the same end-to-end silent-loss level at **13%
-lower expansion cost**, ECE 0.0074.
+eviction's ~0.25 — consistent with GT14). All rows on the GT16 test
+protocol, per-policy baselines included:
+
+| decision rule (compactor policy) | lost-fact \| prior-correct | expand-rate |
+|---|---:|---:|
+| never-expand | 0.189 | 0.000 |
+| refreshed gate @ τ | 0.146 | 0.147 |
+| oracle | 0.000 | 0.170 |
+| always-expand | 0.000 | 1.000 |
+
+The system point (0.146 @ 0.147) numerically matches the M3
+eviction-regime operating point (0.146 @ 0.168) — but the credit
+assignment flips. Under eviction the gate cut silent loss 72%
+(0.520 → 0.146); under synthesis the COMPRESSOR does most of the work
+(never-expand is already 0.189 on this protocol) and the gate adds only a
+**22.5% marginal reduction** while spending 86% of the oracle budget.
+With evicted-only AUC 0.55, that residual is mostly calibration riding a
+lower base rate, not discrimination. Formal GT16: 0.0001 miss on the
+lost-fact target (frontier per escape clause); ECE 0.0074.
 
 **The A2 decomposition FLIPS under synthesis** (the brief's anticipated
 paper-relevant result): embeddings-only 0.567 ± 0.005 now beats
