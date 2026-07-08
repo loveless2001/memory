@@ -57,7 +57,16 @@ picture: on multi-hop questions the two-workload weakness appears on the
 \emph{cost} axis rather than the correctness axis---the gate protects
 correctness by over-expanding $2.3\times$ oracle---and gate discrimination
 transfers to held-out domains while calibration does not, making per-domain
-recalibration part of the definition of a deployable gate.
+recalibration part of the definition of a deployable gate. Finally, we
+train a Still-class amortized synthesis compactor against the frozen base
+and certify it under the same protocol: at $1/40$ of the published data
+recipe it does not displace untrained eviction on the aggregation axis
+(no-ship under our own rule), yet it \emph{halves} silent needle loss
+($0.583 \rightarrow 0.271$), its recurrence collapses at depth 4, and the
+refreshed gate matches the eviction-regime operating point at $13\%$ lower
+expansion cost---while the mechanics-vs-content signal decomposition
+\emph{inverts}, making content the (weakly) better predictor under
+synthesis.
 \end{abstract}
 
 \section{Introduction}
@@ -103,7 +112,14 @@ predominantly eviction mechanics rather than content;
 time: the multi-hop \emph{cost overhang}, where a well-calibrated single-hop
 gate protects multi-hop correctness only by systematically over-expanding,
 and \emph{calibration non-transfer}, where discrimination generalizes across
-domains but calibrated probabilities do not.
+domains but calibrated probabilities do not;
+\textbf{(v)} a small-scale but fully-certified comparison of trained
+amortized synthesis against untrained eviction under the identical
+protocol, showing the two compression families fail \emph{differently}:
+eviction deletes needles that synthesis partially preserves, synthesis
+degrades the aggregation axis that eviction leaves nearly intact at
+matched budget, and the sufficiency signal a gate can learn changes
+family with the compressor.
 
 \section{Related work}
 
@@ -360,15 +376,95 @@ literature & Platt & $0.116$ & $0.023$ \\
 \end{tabular}
 \end{table}
 
+\section{Does trained synthesis change the verdict?}
+\label{sec:compactor}
+
+The preceding sections certify \emph{untrained} eviction. We next train a
+Still-class amortized compactor---one Perceiver per transformer layer
+(per-KV-head latent banks, $d_l{=}256$, two pre-norm blocks with QK-normed
+cross-attention at logit scale $d_l$, no FFN, ${\approx}50$M parameters),
+with the RoPE-fix (keys inverse-rotated to a position-free frame,
+compactor-internal RoPE at base 10, compact keys re-rotated at evenly
+spaced output positions)---against the frozen base, and certify it under
+the identical protocol. Two sanity gates precede training: an
+identity-initialization pass-through test (with one latent per position,
+compact-cache logits must match full-cache logits \emph{before} training;
+this is the cheap detector for the position-metadata failure class) and a
+loss-sanity bar (forward KL on rationale-trace answer tokens, top-200
+teacher support, must fall below $0.4$ within 300 steps). Both passed.
+Training used ${\approx}25$k teacher-rationale triplets at 8k context for
+1{,}500 steps at effective batch 32---about $1/40$ of the published
+recipe's data volume---so the certification below judges \emph{our
+checkpoint}, not the method's ceiling.
+
+\begin{table}[t]
+\centering
+\caption{Trained synthesis vs.\ untrained eviction at matched retained
+budget (sinks + $t{=}1024$ latents + 1{,}024 recent raw slots of a
+4{,}096-token context; 12 contexts across 4 domains).}
+\label{tab:compactor}
+\begin{tabular}{lccc}
+\toprule
+arm & mean KL & acc.\ delta & lost-fact $\mid$ prior-correct \\
+\midrule
+control (no compression) & $0.000$ & $0.000$ & $0.000$ \\
+eviction @ matched budget & $\mathbf{0.122}$ & $-0.049$ & $0.583$ \\
+compactor, depth 1 & $0.263$ & $-0.090$ & $\mathbf{0.271}$ \\
+compactor, depth 4 (recurrence) & $2.292$ & $-0.056$ & $0.750$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{No-ship on the aggregation axis; a surprise on the pointwise
+axis.} Table~\ref{tab:compactor}: at matched budget our compactor is
+\emph{worse} than eviction on the aggregation axis (KL $0.263$ vs
+$0.122$), so under our own deployment rule it does not replace eviction as
+the default compressed tier. But the pointwise axis inverts: synthesis
+\emph{halves} silent needle loss ($0.271$ vs $0.583$)---compact latents
+are lossy blends that still carry needle content eviction deletes
+outright. Both numbers sit far above the $0.000$ floor, so the
+gate-mandatory rule re-attaches under every compaction regime measured.
+The two compression families fail \emph{differently}, which strengthens
+the case for certifying both axes rather than ranking compressors on
+either alone.
+
+\paragraph{Recurrence collapses.} Certifying at deployment recurrence
+depth (re-compacting accumulated state chunk by chunk), depth 4 degrades
+KL by $9\times$ (2.29) with $0.75$ needle loss---consistent with the
+depth-validity envelope reported for Still-class compactors. We emit
+\texttt{max\_certified\_depth}${}={}0$ into the compaction policy version
+(weights hash included), and resume paths refuse to stack compactions past
+it.
+
+\paragraph{The gate signal changes family with the compressor.}
+Relabeling all 98{,}355 items under the compactor policy (old prefix
+synthesized, recent quarter raw; positive rate drops to $0.167$) and
+retraining the gate: the refreshed gate reaches lost-fact $0.146$ at
+expansion rate $\mathbf{0.147}$---the same end-to-end protection as the
+eviction-regime operating point ($0.146$ @ $0.168$) at $13\%$ lower
+expansion cost, ECE $0.007$. And the \S\ref{sec:mechanism} decomposition
+\emph{inverts}: embeddings-only ($0.567 \pm 0.005$) now beats
+features-only ($0.537 \pm 0.002$), full model $0.554 \pm 0.003$. Under
+synthesis there is no eviction window for mechanics features to read, and
+content becomes the better---though still weak---predictor. Both regimes'
+evicted-only AUCs (0.62 eviction, 0.55 synthesis) bound what any
+downstream selection can do: we verified that set-scoring grouped
+expansion (rank-then-cut at the largest marginal-score gap, plus a trained
+joint re-scorer) reduces the multi-hop cost overhang only from
+$2.33\times$ to $2.15$--$2.24\times$ oracle. The overhang is not a
+grouping problem; it is the content-signal gap, measured twice.
+
 \section{Limitations}
 
-Single base model and scale (4B); one compression regime (untrained
-eviction---trained synthesis compressors will shift the aggregation axis,
-but published results indicate they do not rescue the pointwise axis, which
-is the case our protocol and gate address); extractive MCQ probes with a
-letter-match equivalence function rather than open-ended generation; greedy
-decoding; per-item single-turn contexts rather than multi-turn threads;
-multi-hop limited to $k{=}2$ within-document composition. The dead content
+Single base model and scale (4B). Our trained-synthesis comparison
+(\S\ref{sec:compactor}) uses $1/40$ of the published data recipe; the
+no-ship verdict certifies our checkpoint and budget, not the method---a
+full-recipe run could reverse the aggregation-axis ordering (though the
+depth-collapse and needle findings match the published pattern and should
+be robust). Extractive MCQ probes with a letter-match equivalence function
+rather than open-ended generation; greedy decoding; per-item single-turn
+contexts rather than multi-turn threads; multi-hop limited to $k{=}2$
+within-document composition. The dead content
 pathway of \S\ref{sec:mechanism} may be a gloss-quality artifact
 (extractive chunk prefixes and question-only query encodings) rather than a
 fundamental limit; probing that requires summary-grade glosses and is left
@@ -386,12 +482,15 @@ frozen scores, natively calibrated, dominating query-type routing, and
 recovering the pointwise axis at a fifth of always-expand cost. The
 ablation adds the honest mechanism: today that router earns its keep from
 eviction mechanics, not content understanding, which bounds what it can
-know and marks content-aware sufficiency as the open problem. What else
-does not come for free is exactly what the measurements localize: multi-hop
-queries expose a cost overhang that calls for set-level selection, and
-calibration is a per-domain property requiring a recalibration procedure.
-All three are precise targets rather than open mysteries, which is where we
-think a memory system's decision layer ought to leave its next iteration.
+know and marks content-aware sufficiency as the open problem. The
+trained-synthesis experiment sharpens the same conclusion from the other
+side: a compressor family that halves needle loss still cannot ship
+without the gate, the sufficiency signal changes family with the
+compressor, and both the gate's discrimination ceiling and the multi-hop
+cost overhang trace to one measured gap---content-aware sufficiency. That,
+plus per-domain recalibration as a shipped procedure, is a precise target
+rather than an open mystery, which is where we think a memory system's
+decision layer ought to leave its next iteration.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
@@ -453,8 +552,12 @@ RoPE config, attention implementation, KV layout, quantization, runtime,
 policy versions, kernel numeric probe) is stored with every KV artifact and
 validated all-or-nothing. Compute ledger: corpus ${\approx}\$500$; labels
 ${\approx}\$110$; gate training, evaluation, multi-hop slice, and ablations
-${\approx}\$30$. Gate checkpoint, calibration record (including per-domain
-recalibration entries), evaluation grid, and all per-item predictions are
-stored as content-addressed artifacts.
+${\approx}\$30$; trained-compactor experiment (rationale data prep,
+GT-gated 8$\times$H100 training sweep with an iterative family,
+certification, relabeling, gate refresh, set-scoring evaluation)
+${\approx}\$715$. Gate and compactor checkpoints, calibration records
+(including per-domain recalibration entries), compaction policy versions
+(weights hash + certified depth), evaluation grids, and all per-item
+predictions are stored as content-addressed artifacts.
 
 \end{document}

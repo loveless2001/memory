@@ -116,3 +116,10 @@
   overhang); diagnosed as bounded by gate discrimination (A2 headroom).
   GT18 green by construction.
 - Compute ≈ $715 (budget $850-1,400). ADDENDUM-M35.md at repo root.
+
+## 2026-07-08 (later) — Paper updated with M3.5 section
+
+- New §6 "Does trained synthesis change the verdict?": matched-budget
+  certification table, needle-halving finding, depth collapse, gate-signal
+  family flip, set-scoring bound. Contribution (v) added; abstract,
+  limitations, conclusion, compute ledger updated. 10 pages, compiles clean.
