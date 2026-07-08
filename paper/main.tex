@@ -523,7 +523,12 @@ Single base model and scale (4B). Our trained-synthesis comparison
 no-ship verdict certifies our checkpoint and budget, not the method---a
 full-recipe run could reverse the aggregation-axis ordering (though the
 depth-collapse and needle findings match the published pattern and should
-be robust). Extractive MCQ probes with a letter-match equivalence function
+be robust). A post-hoc review also found the shipped checkpoint's training
+loss used a support-construction variant that double-counted the gold
+token whenever it was already in the teacher top-$200$ (corrected in the
+released code); all certified numbers measure the checkpoint as trained,
+so this compounds the scale caveat rather than affecting any reported
+value. Extractive MCQ probes with a letter-match equivalence function
 rather than open-ended generation; greedy decoding; per-item single-turn
 contexts rather than multi-turn threads; multi-hop limited to $k{=}2$
 within-document composition. The dead content
@@ -563,7 +568,8 @@ decision layer ought to leave its next iteration.
 \label{app:protocol}
 Every certification report object embeds: (i) the item partition per
 axis---pointwise = needle items whose source chunk lies in the (reference)
-eviction window; aggregation = a disjoint same-document set, with the count
+eviction window (for synthesis arms: in the compacted-away region; no
+eviction is applied there); aggregation = a disjoint same-document set, with the count
 of aggregation items whose chunks fall outside the certification context
 (they score ${\approx}$chance under both conditions and dilute, but cannot
 bias, the paired delta); (ii) compacted-context contents (surviving KV
