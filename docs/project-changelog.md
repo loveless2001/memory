@@ -142,3 +142,20 @@
 - Appendix B extended with the second reconciliation pair (0.271
   certification vs 0.189 labeling) + explicit binding rule; abstract,
   contributions (v), conclusion rotated. 12 pages, compiles clean.
+
+## 2026-07-08 (v4) — External code-review fixes (3 findings, 4d67a13..HEAD)
+
+- **KL objective multiset bug**: `forward_kl_on_answer` duplicated gold in
+  the support when already top-k → overweighted gold. Fixed to set-support
+  (replace lowest entry only when gold missing); unit tests added
+  (`test_compactor_kl_gold_support_dedup.py`). Shipped M3.5 checkpoints
+  trained under old variant — certified numbers stand as-is; caveat noted
+  in ADDENDUM-M35.
+- **GT15 predicate**: depth-4 was certified on KL only; now every depth
+  uses the full GT13 predicate (KL + acc-delta) with contiguous-prefix
+  rule. No verdict change (max_certified_depth stays 0).
+- **Protocol label**: harness stamped "evicted window" pointwise
+  denominator on compaction_fn arms; now emits "compacted-away region".
+  Existing volume artifacts carry old label (numbers unaffected);
+  `eviction_mode="trained_compactor"` is the authoritative marker there.
+- Local suite: 54 passed / 2 skipped.

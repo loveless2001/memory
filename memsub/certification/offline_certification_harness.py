@@ -172,11 +172,18 @@ class OfflineCertificationHarness:
 
         if policy_version_override:
             policy_version = policy_version_override
+        # Pointwise denominator: caller-selected needle items. For eviction
+        # arms the compressed region IS the evicted window; for compaction_fn
+        # arms no eviction happens (evict_logical_range is ignored) and the
+        # needles live in the compacted-away region the caller selected —
+        # labeling them "evicted" would mis-state the protocol. Callers can
+        # refine either label via protocol_notes (merged last, wins).
+        pointwise_region = ("compacted-away region (compaction_fn arm; "
+                            "evict_logical_range not applied)"
+                            if compaction_fn is not None else "evicted window")
         eval_protocol = {
-            # pointwise denominator: caller-selected needle items — probes
-            # whose SOURCE CHUNK lies in the evicted window; aggregation
-            # denominator: the disjoint mcq_items set (see caller notes).
-            "pointwise_denominator": "needle_items (source chunk in evicted window)",
+            "pointwise_denominator":
+                f"needle_items (source chunk in {pointwise_region})",
             "aggregation_denominator": "mcq_items (disjoint from needles)",
             "axes_share_items": False,
             "eviction_mode": ("trained_compactor" if compaction_fn is not None

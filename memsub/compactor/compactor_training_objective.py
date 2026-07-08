@@ -24,7 +24,15 @@ def forward_kl_on_answer(teacher_logits: torch.Tensor,
     s = student_logits[answer_mask].float()
     gold = gold_ids[answer_mask]
     top = torch.topk(t, TOP_SUPPORT, dim=-1).indices           # [N, 200]
-    support = torch.cat([top, gold[:, None]], dim=-1)          # force gold in
+    # Force gold into support WITHOUT duplicating it: concatenating gold
+    # unconditionally puts the same vocab id in the support twice whenever
+    # gold is already top-k, turning both softmaxes into multiset
+    # distributions that overweight gold. Instead, replace the
+    # lowest-ranked support entry with gold only on rows where gold is
+    # missing (keeps a fixed [N, 200] shape for gather).
+    support = top.clone()
+    missing = ~(top == gold[:, None]).any(dim=-1)
+    support[missing, -1] = gold[missing]
     t_sup = torch.gather(t, 1, support)
     s_sup = torch.gather(s, 1, support)
     log_p = torch.log_softmax(t_sup, dim=-1)

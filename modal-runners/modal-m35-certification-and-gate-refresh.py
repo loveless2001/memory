@@ -144,14 +144,24 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int) -> dict:
               "lost_prior": agg(arm, ("pointwise_axis",
                                       "lost_fact_rate_given_prior_correct"))}
         for arm in arms}
-    summary["gt13_ship"] = (
-        summary["compactor-d1"]["mean_kl"] < summary["eviction-matched"]["mean_kl"]
-        and summary["compactor-d1"]["acc_delta"]
-        >= summary["eviction-matched"]["acc_delta"] - 0.02)
-    depth_ok = [1] if summary["gt13_ship"] else []
-    if summary["compactor-d4"]["mean_kl"] < summary["eviction-matched"]["mean_kl"]:
-        depth_ok.append(4)
-    summary["gt15_max_certified_depth"] = max(depth_ok, default=0)
+    def gt13_pass(arm: str) -> bool:
+        # The FULL certification bar (COMPACTOR.md GT13): beat matched-budget
+        # eviction on KL AND stay within 0.02 of its accuracy delta. Every
+        # candidate depth must clear the same predicate — KL alone would let
+        # a depth with better KL but collapsed accuracy into the policy.
+        ref = summary["eviction-matched"]
+        return (summary[arm]["mean_kl"] < ref["mean_kl"]
+                and summary[arm]["acc_delta"] >= ref["acc_delta"] - 0.02)
+
+    summary["gt13_ship"] = gt13_pass("compactor-d1")
+    # Certified depth = longest contiguous prefix of depths passing GT13;
+    # depth 4 cannot certify past a failing depth 1 (recurrence stacks).
+    max_depth = 0
+    for depth, arm in ((1, "compactor-d1"), (4, "compactor-d4")):
+        if not gt13_pass(arm):
+            break
+        max_depth = depth
+    summary["gt15_max_certified_depth"] = max_depth
 
     # emit depth + policy version into the shipped checkpoints
     for tag, comp, depth in ((single_tag, single, 1),

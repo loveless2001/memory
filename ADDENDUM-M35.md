@@ -104,6 +104,31 @@ data prep ≈ $120 · GT12 + sweep + iterative ≈ $420 (incl. one NCCL-teardown
 zombie, ~$60, root-caused and mitigated) · certification ≈ $35 · relabel +
 refresh ≈ $115 · WP2 ≈ $25. **Total ≈ $715** (budget $850–1,400).
 
+## Post-hoc code-review corrections (2026-07-08, external review 4d67a13..HEAD)
+
+1. **Training objective multiset bug (fixed forward).** `forward_kl_on_answer`
+   concatenated gold into the top-200 support unconditionally, duplicating the
+   vocab id whenever gold was already top-k → KL over a multiset that
+   overweights gold. The SHIPPED checkpoints (GT12 curve, all certified
+   numbers above) were trained under this variant; the numbers certify those
+   checkpoints as-is and remain valid, but any future training run uses the
+   corrected set-support objective (`support[missing, -1] = gold`; unit
+   tests: `tests/test_compactor_kl_gold_support_dedup.py`). One more reason
+   the 1/40-scale caveat, not this checkpoint, bounds the method.
+2. **GT15 depth predicate tightened.** Depth-4 was certified on mean-KL only
+   while depth-1 used KL + acc-delta. Both depths now share the full GT13
+   predicate (contiguous-prefix rule: depth 4 cannot certify past a failing
+   depth 1). No verdict changes: depth-1 and depth-4 both fail the stricter
+   bar too; max_certified_depth stays 0.
+3. **Protocol label on compactor certification artifacts.** The harness
+   stamped `pointwise_denominator: "source chunk in evicted window"` even on
+   compaction_fn arms, where no eviction occurs. Numbers unaffected
+   (label-only); harness now emits "compacted-away region (compaction_fn
+   arm)" for those arms. Existing JSONs in
+   `memsub-artifacts:/compactor-certification/` carry the old label — read
+   `eval_protocol.eviction_mode = "trained_compactor"` as the authoritative
+   arm marker there.
+
 ## Unresolved questions
 - The compactor's aggregation gap vs eviction may be a data-scale artifact
   (1/40 recipe); a full-scale run is a funding decision, not an engineering
