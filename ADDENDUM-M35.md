@@ -36,8 +36,11 @@ worth revisiting if a full-recipe training run is ever funded.
 
 ## Certified depth (GT15)
 
-Recurrence collapses on our workload exactly as the Still paper's §M.2
-warns: depth-4 KL 2.29 (9× worse than depth-1), lost-fact 0.75.
+Recurrence collapses on our workload exactly as the Still paper warns
+(§3.4 "Iterative compaction": beyond the training horizon, repeated
+compression collapses — verified against arXiv:2606.07878, 2026-07-09;
+the working notes' "§M.2" pointer was wrong): depth-4 KL 2.29 (9× worse
+than depth-1), lost-fact 0.75.
 **max_certified_depth = 0** (no depth clears GT13's certification bar);
 emitted into `compaction_policy_version`
 (`still-compact-v1:t1024:depth…:sha256:b04b5bfd…`), and resume paths refuse

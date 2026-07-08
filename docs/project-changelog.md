@@ -159,3 +159,14 @@
   Existing volume artifacts carry old label (numbers unaffected);
   `eviction_mode="trained_compactor"` is the authoritative marker there.
 - Local suite: 54 passed / 2 skipped.
+
+## 2026-07-09 — Bibliography verified against primaries
+
+- All 12 references.bib entries checked (arXiv abs pages, ACL Anthology,
+  venue records). Corrected: Still title ("Amortized KV Cache Compaction
+  in a Single Forward Pass") + full author list (O'Neill, Sandomirsky,
+  Partridge, Jayasekara, Kirkby); NSA upgraded to ACL 2025; RULER to
+  COLM 2024. Titles double-braced (plainnat was downcasing acronyms).
+- Content claims re-verified against Still primary: per-layer Perceiver ✓,
+  top-200 gold-forced forward-KL loss ✓, iterative-compaction collapse is
+  §3.4 (ADDENDUM-M35's "§M.2" pointer corrected).
