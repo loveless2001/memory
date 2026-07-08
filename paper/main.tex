@@ -14,13 +14,14 @@
 \newcommand{\lostfact}{lost-fact incident rate}
 \newcommand{\evfrac}[1]{$f{=}#1$}
 
-\title{One Cache, Two Workloads: Certifying KV Compression Along Pointwise
-and Aggregative Axes, with a Calibrated Expansion Gate}
+\title{Routable and Unroutable Loss: Certifying Compressed LLM Memory
+Along Pointwise and Aggregative Axes}
 
 \author{%
-  \textit{Draft v0.2 --- 2026-07-07 --- numbers frozen per ABLATION addendum}\\
-  \textit{Artifacts: \texttt{memsub-artifacts:/gate-eval/\{eval-grid,
-  ablation-results\}.json}}}
+  \textit{Draft v0.3 --- 2026-07-08 --- eviction+synthesis regimes; numbers
+  frozen per ABLATION and M3.5 addenda}\\
+  \textit{Artifacts: \texttt{memsub-artifacts:/\{gate-eval,
+  compactor-certification\}/*.json}}}
 \date{}
 
 \begin{document}
@@ -30,45 +31,40 @@ and Aggregative Axes, with a Calibrated Expansion Gate}
 ``Long context'' conflates a serving problem---fitting the tokens---with two
 capability problems that separate the moment full attention becomes
 unaffordable: \emph{pointwise} recall of exact, low-redundancy facts, and
-\emph{aggregative} understanding of distributed, redundant content. We argue
-these are antagonistic optimization targets under any lossy cache
-compression, and we introduce a certification protocol that scores the two
-axes separately and forbids blending them. Applying the protocol to
-untrained KV eviction on Qwen3-4B over a ${\sim}1$B-token, four-domain
-corpus of 98{,}355 counterfactually filtered questions, we find the axes
-split almost completely: next-token KL against the full-context teacher
-stays near $3{\times}10^{-2}$ while $0.45$--$0.55$ of facts residing in
-evicted spans are silently lost (measurement noise floor: $0.000$). We then
-show the pointwise axis can be restored by a \emph{decoupled sufficiency
-gate}: a lightweight probe, trained for ${\approx}\$140$ on counterfactual
-sufficiency labels produced by the frozen base model, that decides per query
-whether compressed memory suffices or exact re-expansion is required. The
-gate is natively calibrated (test ECE $0.017$--$0.023$), strictly dominates
-a query-type-routing baseline at every matched expansion rate, and at its
-operating point cuts silent loss from $0.45$--$0.55$ to $0.146$
-(bootstrap 95\% CI $[0.136, 0.156]$; statistically indistinguishable from
-the $0.15$ target) while expanding on only $16.8\%$ of queries (oracle:
-$19.4\%$). A signal decomposition, however, shows the gate's discrimination
-(evicted-only AUC $0.622$) is carried almost entirely by eviction-mechanics
-features rather than content embeddings---we therefore characterize the
-shipped gate as a \emph{calibrated mechanics classifier} and identify
-content-aware sufficiency as open headroom. Two further findings refine the
-picture: on multi-hop questions the two-workload weakness appears on the
-\emph{cost} axis rather than the correctness axis---the gate protects
-correctness by over-expanding $2.3\times$ oracle---and gate discrimination
-transfers to held-out domains while calibration does not, making per-domain
-recalibration part of the definition of a deployable gate. Finally, we
-train a Still-class amortized synthesis compactor against the frozen base
-and certify it under the same protocol: at $1/40$ of the published data
-recipe it does not displace untrained eviction on the aggregation axis
-(no-ship under our own rule), yet it \emph{halves} silent needle loss
-($0.583 \rightarrow 0.271$), its recurrence collapses at depth 4, and the
-compactor-plus-refreshed-gate system reproduces the eviction-regime
-operating point with the credit assignment flipped: the compressor now
-does most of the protective work and the gate's marginal reduction falls
-from $72\%$ to $22.5\%$---while the mechanics-vs-content signal
-decomposition \emph{inverts}, making content the (weakly) better predictor
-under synthesis.
+\emph{aggregative} understanding of distributed, redundant content. We
+introduce a certification protocol that scores the two axes separately,
+forbids blending them, and requires every configuration to ship with its
+own noise-floor and baseline rows --- then apply it to BOTH major families
+of KV compression on Qwen3-4B over a ${\sim}1$B-token, four-domain corpus
+of 98{,}355 counterfactually filtered questions. Under untrained eviction
+the axes split almost completely: next-token KL stays near
+$3{\times}10^{-2}$ while $0.45$--$0.55$ of facts in evicted spans are
+silently lost (noise floor $0.000$). A decoupled sufficiency gate ---
+a ${\approx}\$140$ calibrated probe over frozen embeddings (test ECE
+$0.017$--$0.023$) --- cuts that loss by $72\%$ ($0.52 \rightarrow 0.146$
+[bootstrap CI $0.136$--$0.156$]) at $16.8\%$ expansion (oracle $19.4\%$),
+strictly dominating query-type routing. Under a trained Still-class
+synthesis compactor, certified with the identical protocol at matched
+retained budget, the picture inverts: the compactor \emph{halves} untreated
+needle loss ($0.583 \rightarrow 0.271$ on the certification protocol) but
+degrades the aggregation axis past eviction and collapses at recurrence
+depth 4 --- and the refreshed gate's marginal value drops to $22.5\%$
+($0.189 \rightarrow 0.146$ on the labeling protocol) at $86\%$ of the
+oracle budget. This is the paper's central finding, an asymmetry we call
+\textbf{routable vs.\ unroutable loss}: eviction produces large loss that
+is highly routable (its cause is mechanical --- overlap with the eviction
+window --- so a gate needs no content understanding, evicted-only AUC
+$0.62$ carried almost entirely by mechanics features), while synthesis
+produces smaller loss that is largely unroutable (its cause is what the
+compactor failed to keep, demanding content signal that neither mechanics
+nor frozen embeddings supply; AUC $0.55$, decomposition inverted).
+Compressor choice therefore determines gate-ability, and a memory system
+must report not just how much it loses but how much of that loss its
+router can recover. Supporting findings: a multi-hop cost overhang
+($2.2$--$2.3\times$ oracle expansion, bounded by the same content-signal
+gap), calibration non-transfer across domains (repaired by a shipped
+per-domain Platt procedure), and depth-certification machinery that
+refuses to stack compactions past the certified recurrence depth.
 \end{abstract}
 
 \section{Introduction}
@@ -115,13 +111,18 @@ time: the multi-hop \emph{cost overhang}, where a well-calibrated single-hop
 gate protects multi-hop correctness only by systematically over-expanding,
 and \emph{calibration non-transfer}, where discrimination generalizes across
 domains but calibrated probabilities do not;
-\textbf{(v)} a small-scale but fully-certified comparison of trained
-amortized synthesis against untrained eviction under the identical
-protocol, showing the two compression families fail \emph{differently}:
-eviction deletes needles that synthesis partially preserves, synthesis
+\textbf{(v)} the headline result, from a small-scale but fully-certified
+comparison of trained amortized synthesis against untrained eviction under
+the identical protocol: the \emph{routable/unroutable loss} asymmetry.
+Eviction deletes needles that synthesis partially preserves, and synthesis
 degrades the aggregation axis that eviction leaves nearly intact at
-matched budget, and the sufficiency signal a gate can learn changes
-family with the compressor.
+matched budget---but the deeper difference is what a router can do about
+the residue. Eviction's loss is mechanically caused and therefore highly
+routable (a gate removes $72\%$ of it without any content understanding);
+synthesis's loss is content-dependent and largely unroutable with the
+signals available to a decoupled gate ($22.5\%$ marginal reduction).
+Compressor choice determines gate-ability, so a compressed-memory system
+must be certified on loss \emph{and} on the routability of that loss.
 
 \section{Related work}
 
@@ -184,7 +185,7 @@ context during probing (surviving KV only; no summary text), confirmation
 that expansion was disabled, and the scoring rule (argmax over answer-letter
 logits, greedy---format failures are structurally impossible).
 
-\section{The axes split: measurement at 1B-token scale}
+\section{The eviction regime I: the axes split at 1B-token scale}
 \label{sec:split}
 
 \paragraph{Setup.} Base model Qwen3-4B-Instruct-2507 (bf16, greedy, pinned
@@ -223,7 +224,7 @@ numbers above are re-stated under the per-item randomized-placement protocol
 used throughout this paper, with the reconciliation in
 Appendix~\ref{app:reconciliation}.)}
 
-\section{A decoupled sufficiency gate}
+\section{The eviction regime II: a decoupled sufficiency gate}
 
 \subsection{Labels, model, calibration}
 
@@ -378,7 +379,7 @@ literature & Platt & $0.116$ & $0.023$ \\
 \end{tabular}
 \end{table}
 
-\section{Does trained synthesis change the verdict?}
+\section{The synthesis regime: a trained amortized compactor}
 \label{sec:compactor}
 
 The preceding sections certify \emph{untrained} eviction. We next train a
@@ -403,7 +404,9 @@ checkpoint}, not the method's ceiling.
 \centering
 \caption{Trained synthesis vs.\ untrained eviction at matched retained
 budget (sinks + $t{=}1024$ latents + 1{,}024 recent raw slots of a
-4{,}096-token context; 12 contexts across 4 domains).}
+4{,}096-token context; 12 contexts across 4 domains). All rows on the
+CERTIFICATION protocol (needle-anchored contexts); do not compare against
+labeling-protocol numbers --- see Appendix~\ref{app:reconciliation}.}
 \label{tab:compactor}
 \begin{tabular}{lccc}
 \toprule
@@ -438,29 +441,80 @@ depth-validity envelope reported for Still-class compactors. We emit
 (weights hash included), and resume paths refuse to stack compactions past
 it.
 
-\paragraph{The gate signal changes family with the compressor---and so
-does the credit assignment.} Relabeling all 98{,}355 items under the
-compactor policy (old prefix synthesized, recent quarter raw; positive
-rate drops to $0.167$) and retraining the gate, with baselines re-derived
-\emph{under this policy} rather than borrowed from the eviction frame:
-never-expand sits at $0.189$, the refreshed gate at $0.146$ @ expansion
-$0.147$ (ECE $0.007$), the oracle at $0.000$ @ $0.170$. The resulting
-system point numerically matches the eviction-regime operating point
-($0.146$ @ $0.168$)---but the mechanism is different. Under eviction the
-gate cuts silent loss by $72\%$ ($0.520 \rightarrow 0.146$); under
-synthesis the \emph{compressor} does most of the protective work and the
-gate adds a $22.5\%$ marginal reduction while consuming $86\%$ of the
-oracle's expansion budget. Consistent with that, the
-\S\ref{sec:mechanism} decomposition \emph{inverts}: embeddings-only
-($0.567 \pm 0.005$) now beats features-only ($0.537 \pm 0.002$; full
-$0.554 \pm 0.003$)---there is no eviction window for mechanics features to
-read, content becomes the better predictor, and both are weak. The two
-regimes' evicted-only AUCs (0.62 eviction, 0.55 synthesis) bound what any
-downstream selection can do: set-scoring grouped expansion (rank-then-cut
-at the largest marginal-score gap, plus a trained joint re-scorer) reduces
-the multi-hop cost overhang only from $2.33\times$ to
-$2.15$--$2.24\times$ oracle. The overhang is not a grouping problem; it is
-the content-signal gap, measured three ways.
+\paragraph{Gate refresh under the synthesis policy.} A new compaction
+policy is a new label distribution, so we relabel all 98{,}355 items under
+the compactor (old prefix synthesized, recent quarter raw; positive rate
+drops to $0.167$) and retrain the gate. All operating-point and baseline
+numbers in this paragraph and \S\ref{sec:routability} are on the LABELING
+protocol (randomized context placement; Appendix~\ref{app:reconciliation}
+reconciles it against the certification protocol above). Refreshed gate:
+lost-fact $0.146$ at expansion $0.147$, ECE $0.007$; never-expand $0.189$;
+oracle $0.000$ at $0.170$. The signal decomposition of
+\S\ref{sec:mechanism} \emph{inverts}: embeddings-only ($0.567 \pm 0.005$)
+now beats features-only ($0.537 \pm 0.002$; full $0.554 \pm 0.003$) ---
+there is no eviction window for mechanics features to read, content
+becomes the better predictor, and both are weak. What these numbers mean
+for the router is the subject of the next section.
+
+\section{Routable and unroutable loss}
+\label{sec:routability}
+
+Define a configuration's \emph{routability} as the fraction of its silent
+pointwise loss that a calibrated per-query gate removes at an expansion
+budget no larger than the oracle's. The two compression regimes, evaluated
+on the same 98{,}355 items, the same test split, and the same (labeling)
+protocol, differ far more in routability than in headline loss:
+
+\begin{table}[t]
+\centering
+\caption{The routability asymmetry (labeling protocol, test split).
+``Reduction'' is the gate's marginal effect vs.\ never-expand under the
+SAME policy; ``budget use'' is gate expansion over oracle expansion.}
+\label{tab:routability}
+\begin{tabular}{lcccccc}
+\toprule
+regime & never & gate @ $\tau$ & oracle & reduction & budget use &
+evicted-only AUC \\
+\midrule
+eviction & $0.520$ & $0.146$ @ $0.168$ & $0$ @ $0.194$ & $\mathbf{72\%}$
+& $0.87$ & $0.62$ (mechanics) \\
+synthesis & $0.189$ & $0.146$ @ $0.147$ & $0$ @ $0.170$ & $\mathbf{22.5\%}$
+& $0.86$ & $0.55$ (content) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:routability}: the two \emph{systems} land on the same
+operating point ($0.146$), but the credit assignment is opposite. Under
+eviction the gate does the protective work; under synthesis the compressor
+does, and the gate---spending the same $86$--$87\%$ of the oracle
+budget---recovers only a fifth of what remains. The explanation is causal,
+not incidental. Eviction's loss is \emph{mechanically} determined: a fact
+is lost iff its span overlapped the eviction window, a condition legible
+from bookkeeping features alone---which is exactly what the signal
+decomposition found (features-only $\approx$ full model). Synthesis's loss
+is \emph{content}-determined: it depends on what the compactor's latents
+failed to preserve, a per-fact property that neither bookkeeping features
+(no window to read) nor frozen gloss embeddings (AUC $0.55$) capture. The
+same gap appears a third time in the multi-hop experiment: set-scoring
+grouped expansion (rank-then-cut at the largest marginal-score gap, plus a
+trained joint re-scorer) reduces the multi-hop cost overhang only from
+$2.33\times$ to $2.15$--$2.24\times$ oracle, because grouping cannot
+manufacture per-block discrimination the underlying scores do not carry.
+
+Three design consequences. First, compressor choice determines
+gate-ability: a compressor that loses less can still yield a \emph{worse}
+routed system if its residual loss is unroutable, so certification must
+report loss and routability together---neither number alone ranks
+compressors. Second, the popular intuition that better compression
+obviates routing is backwards on our evidence: as the compressor improves,
+the router's job gets \emph{harder} per remaining failure, and the
+lossless raw path (expansion) remains the only mechanism with a
+correctness guarantee. Third, the binding constraint everywhere we looked
+--- the gate's discrimination ceiling under both regimes and the multi-hop
+overhang --- is one measured quantity, content-aware sufficiency
+estimation, which we leave as the decision layer's open problem.
+
 
 \section{Limitations}
 
@@ -482,22 +536,22 @@ specific numbers are not.
 \section{Conclusion}
 
 Single-number long-context evaluation is incoherent under compression: the
-pointwise and aggregative axes are antagonistic, and at 1B-token scale they
-split almost completely. The resolution is architectural---a lossy tier for
-aggregation, a lossless path for needles, and a router between them---and
-the router turns out to be cheap: a ${\approx}\$140$ decoupled probe over
-frozen scores, natively calibrated, dominating query-type routing, and
-recovering the pointwise axis at a fifth of always-expand cost. The
-ablation adds the honest mechanism: today that router earns its keep from
-eviction mechanics, not content understanding, which bounds what it can
-know and marks content-aware sufficiency as the open problem. The
-trained-synthesis experiment sharpens the same conclusion from the other
-side: a compressor family that halves needle loss still cannot ship
-without the gate, the sufficiency signal changes family with the
-compressor, and both the gate's discrimination ceiling and the multi-hop
-cost overhang trace to one measured gap---content-aware sufficiency. That,
-plus per-domain recalibration as a shipped procedure, is a precise target
-rather than an open mystery, which is where we think a memory system's
+pointwise and aggregative axes are antagonistic, and at 1B-token scale
+they split almost completely. But the deeper lesson of certifying both
+major compression families under one protocol is that loss itself is not
+one thing. Eviction produces large, \emph{routable} loss: mechanically
+caused, predictable from bookkeeping features, and removable at $72\%$ by
+a ${\approx}\$140$ calibrated probe that never reads content. Synthesis
+produces smaller, largely \emph{unroutable} loss: content-caused,
+invisible to the same signals, leaving the gate a $22.5\%$ marginal
+effect at the same relative budget. A compressed-memory system therefore
+owes its users two numbers per configuration --- how much it loses, and
+how much of that loss its router can recover --- and the architectural
+conclusion stands regardless of compressor: a lossy tier, a lossless raw
+path, and a calibrated router between them, with the router's
+discrimination --- content-aware sufficiency estimation --- as the single
+measured open problem, and per-domain recalibration as a shipped
+procedure rather than a remark. That is where we think a memory system's
 decision layer ought to leave its next iteration.
 
 \bibliographystyle{plainnat}
@@ -536,6 +590,21 @@ determinism), so no never-knew inflation. (3) \emph{Pooling}: the pooled
 $0.520$ mixes both fractions. The paper uses only the canonical per-item
 protocol; the earlier numbers remain in the certification artifacts flagged
 as a different protocol.
+
+The same reconciliation applies to the synthesis regime, where never-expand
+has two values in the record: $0.271$ on the CERTIFICATION protocol
+(Table~\ref{tab:compactor}: needle-anchored 4{,}096-token contexts,
+needles guaranteed inside the compacted region, matched-budget arms) and
+$0.189$ on the LABELING protocol (Table~\ref{tab:routability}:
+hash-randomized context placement, partial chunk overlaps counted as
+compacted-away at $>0.5$, recent-raw window present). The certification
+protocol is adversarial by construction and upper-bounds the loss; the
+labeling protocol reflects the marginal placement distribution and is the
+one the gate is trained and operated on. Binding rule used throughout:
+Table~\ref{tab:compactor} and all axis-certification claims quote the
+certification protocol; all operating-point, baseline, and routability
+claims (Table~\ref{tab:routability}) quote the labeling protocol; the two
+are never mixed within one comparison.
 
 \section{Decomposition, seeds, and uncertainty}
 Table~\ref{tab:decomposition} gives the three-variant decomposition

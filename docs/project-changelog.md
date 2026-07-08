@@ -131,3 +131,14 @@
   reduction = 22.5% at 86% of oracle budget (vs 72% under eviction) —
   credit assignment flips to the compressor; AUC-0.55 gate mostly rides
   the lower base rate. ADDENDUM-M35 + paper §6/abstract reframed.
+
+## 2026-07-08 (v3) — Paper restructured around the routability asymmetry
+
+- Title → "Routable and Unroutable Loss: Certifying Compressed LLM Memory
+  Along Pointwise and Aggregative Axes". §4-5 = eviction regime, §6 =
+  synthesis regime (protocol-bound: Table 4 certification protocol only),
+  NEW §7 = routability asymmetry (Table 5, labeling protocol only, both
+  regimes same frame: 72% vs 22.5% reduction at 86-87% oracle budget).
+- Appendix B extended with the second reconciliation pair (0.271
+  certification vs 0.189 labeling) + explicit binding rule; abstract,
+  contributions (v), conclusion rotated. 12 pages, compiles clean.
