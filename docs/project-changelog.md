@@ -101,3 +101,18 @@
   AUC 0.622 headline, canonical baselines 0.453/0.551, GT9 frontier wording,
   Platt-escalation recalibration in §5.5. Citations flagged for verification
   against primaries before submission.
+
+## 2026-07-08 — M3.5 complete (COMPACTOR.md): no-ship verdict, frontiers documented
+
+- WP1: Still-class compactor trained (GT11/GT12 green; sweep t∈{128,512,1024}
+  + iterative). GT13 NO-SHIP: aggregation KL 0.263 vs eviction 0.122 at
+  matched budget (1/40-scale training caveat). GT14 surprise: synthesis
+  HALVES silent needle loss (0.271 vs 0.583) but gate stays mandatory.
+  GT15: depth-4 recurrence collapses (KL 2.29); max_certified_depth=0,
+  refusal guard tested. GT16: refreshed gate matches M3 end-to-end at 13%
+  lower expand cost (0.1461@0.147 vs 0.146@0.168); A2 decomposition FLIPS
+  under synthesis (content > mechanics, both weak).
+- WP2: s1/s2 set-scoring — GT17 frontier (2.15-2.24x vs 2.33x oracle
+  overhang); diagnosed as bounded by gate discrimination (A2 headroom).
+  GT18 green by construction.
+- Compute ≈ $715 (budget $850-1,400). ADDENDUM-M35.md at repo root.

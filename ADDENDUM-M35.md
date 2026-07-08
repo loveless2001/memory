@@ -49,9 +49,22 @@ GT11 identity pass-through: green on tiny-config AND reference model before
 any training (the §12 position-bug detector). GT12: loss 0.42 → 0.058 by
 step 300 at t=512/T=4k (bar < 0.4).
 
-## Gate refresh under the new policy (GT16)
+## Gate refresh under the new policy (GT16): frontier — matches M3 at lower cost
 
-⟨filled after relabel + refresh completes — see gate-refresh-still.json⟩
+Relabeled all 98,355 items under the compactor policy (deployment-shaped:
+old prefix → t=1024 latents, recent 25% raw; y+ rate drops to 0.167 from
+eviction's ~0.25 — consistent with GT14). Refreshed gate at its operating
+point: **lost-fact 0.1461 at expand-rate 0.147** vs the M3 reference
+(0.146 @ 0.168) — a 0.0001 miss on the lost-fact target (formal GT16 fail)
+that is materially a win: the same end-to-end silent-loss level at **13%
+lower expansion cost**, ECE 0.0074.
+
+**The A2 decomposition FLIPS under synthesis** (the brief's anticipated
+paper-relevant result): embeddings-only 0.567 ± 0.005 now beats
+features-only 0.537 ± 0.002 (full 0.554 ± 0.003). Under a compactor,
+eviction-mechanics features lose their signal and content becomes the
+better predictor — but all evicted-only AUCs drop (~0.55 vs eviction's
+0.62): synthesized loss is intrinsically harder to predict than deletion.
 
 ## WP2 — set-scoring selector (GT17/GT18): frontier documented
 
