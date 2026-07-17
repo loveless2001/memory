@@ -1,0 +1,84 @@
+{
+ "n": 30068,
+ "n_train": 21072,
+ "n_test": 8996,
+ "univariate_auc": {
+  "rarity_min": 0.5321,
+  "rarity_mean": 0.5256,
+  "ans_rel_offset": 0.5102,
+  "ans_found": 0.5241,
+  "span_len": 0.5,
+  "dist_to_raw": 0.5172,
+  "overlap": 0.5102,
+  "fact_type=number": 0.5163,
+  "fact_type=name/entity": 0.5221,
+  "fact_type=code symbol": 0.5019,
+  "fact_type=date": 0.5071,
+  "fact_type=common phrase": 0.5005,
+  "domain=financial": 0.5,
+  "domain=legal": 0.5,
+  "domain=code": 0.5,
+  "domain=literature": 0.5
+ },
+ "flagged_ge_060": [],
+ "c0": {
+  "test_auc": 0.5642,
+  "ci95": [
+   0.5525,
+   0.575
+  ],
+  "per_domain_test_auc": {
+   "financial": 0.5729,
+   "legal": 0.5424,
+   "code": 0.5624,
+   "literature": 0.5793
+  }
+ },
+ "c0_plus_domain": {
+  "test_auc": 0.564,
+  "ci95": [
+   0.5534,
+   0.5766
+  ],
+  "per_domain_test_auc": {
+   "financial": 0.573,
+   "legal": 0.5426,
+   "code": 0.5618,
+   "literature": 0.5791
+  }
+ },
+ "c0_coefficients": {
+  "rarity_min": 0.1269,
+  "rarity_mean": -0.0479,
+  "ans_rel_offset": -0.0321,
+  "ans_found": -0.142,
+  "dist_to_raw": 0.0334,
+  "overlap": 0.0274,
+  "fact=number": -0.0059,
+  "fact=name/entity": -0.0626,
+  "fact=code symbol": 0.0118,
+  "fact=date": 0.067
+ },
+ "fact_type_dist": {
+  "number": {
+   "n": 12590,
+   "y1_rate": 0.5195
+  },
+  "name/entity": {
+   "n": 7023,
+   "y1_rate": 0.4528
+  },
+  "code symbol": {
+   "n": 8216,
+   "y1_rate": 0.4966
+  },
+  "date": {
+   "n": 1937,
+   "y1_rate": 0.555
+  },
+  "common phrase": {
+   "n": 302,
+   "y1_rate": 0.5265
+  }
+ }
+}

@@ -1,0 +1,512 @@
+[
+ {
+  "item_id": "mcq_financial/00408_13827_107",
+  "domain": "financial",
+  "question": "What was the amount of net reserves established by CIGNA in the third quarter of 1993 for future legal and associated expenses for reported environmental pollution claims?",
+  "options": [
+   "$268 million  ",
+   "$335 million  ",
+   "$300 million  ",
+   "$200 million  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "number",
+  "rarity_min": -4.0734,
+  "chunk_gloss": "The estimation of reserves for reported environmental pollution claims is difficult and likely to change as additional information emerges. Even if coverage issues on a particular claim are ultimately resolved in favor of the policyholder, that result may not be useful in setting reserves on other claims because of complex factual variations between sites, policyholders and policies. For example, at any given Superfund site, the allocation of liability varies greatly, depending on such factors as the amount and relative toxicity of the material contributed, extent of impairment to the environm"
+ },
+ {
+  "item_id": "mcq_financial/00490_4404_142",
+  "domain": "financial",
+  "question": "How many employees did Waldbaum employ at December 31, 1993?",
+  "options": [
+   "1,300  ",
+   "1,550  ",
+   "1,600  ",
+   "1,450  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -2.177,
+  "chunk_gloss": ". Farm Fresh holds a permit with the Los Angeles County Sanitation District to discharge industrial waste into the Sanitation District's sewage system. Crystal Foods and Waldbaum have permits to discharge waste products into available sewer systems and maintain discharge ponds for certain wastes. Sunnyside is licensed by the State of New Jersey Department of Environmental Protection to spray, as irrigation, its waste water on property it leases.\nEMPLOYEES\nThe Company employed approximately 2,550 employees at December 31, 1993. Of this total, Waldbaum employed approximately 1,300 full-time and "
+ },
+ {
+  "item_id": "mcq_code/08848_7039_8",
+  "domain": "code",
+  "question": "What is the value of the magic number used in the debug assertion to check for invalid memory in the `exit_aborted_clients` function?",
+  "options": [
+   "0xdeadbeef  ",
+   "0xdeadface  ",
+   "0xcafebabe  ",
+   "0xdeadbeef00  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "code symbol",
+  "rarity_min": -5.2468,
+  "chunk_gloss": " > 0)\n\t{\n\t\tRB_DLINK_FOREACH_SAFE(ptr, ptr_next, source_p->serv->users.head)\n\t\t{\n\t\t\ttarget_p = ptr->data;\n\t\t\ttarget_p->flags |= FLAGS_KILLED;\n\t\t\tadd_nd_entry(target_p->name);\n\n\t\t\tif(!IsDead(target_p) && !IsClosing(target_p))\n\t\t\t\texit_remote_client(NULL, target_p, &me, comment);\n\t\t}\n\t}\n\telse\n\t{\n\t\tRB_DLINK_FOREACH_SAFE(ptr, ptr_next, source_p->serv->users.head)\n\t\t{\n\t\t\ttarget_p = ptr->data;\n\t\t\ttarget_p->flags |= FLAGS_KILLED;\n\n\t\t\tif(!IsDead(target_p) && !IsClosing(target_p))\n\t\t\t\texit_remote_client(NULL, target_p, &me, comment);\n\t\t}\n\t}\t\n\n\tRB_DLINK_FOREACH_SAFE(ptr, ptr_next, source_p->serv->servers"
+ },
+ {
+  "item_id": "mcq_legal/02290_3611_173",
+  "domain": "legal",
+  "question": "What is the case number assigned to Nesbitt v. Frederick in the passage?",
+  "options": [
+   "Ms. 1040060  ",
+   "1050478  ",
+   "825 So. 2d  ",
+   "853 So. 2d  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "code symbol",
+  "rarity_min": -5.266,
+  "chunk_gloss": "gment motion is as follows:\n\"'\"We review this case de novo,\napplying \nthe \noft-stated \nprinciples\ngoverning appellate review of a trial\ncourt's grant or denial of a summary\njudgment motion:\n\"'\"'We apply the same standard of\nreview the trial court used in\ndetermining \nwhether \nevidence\npresented to the trial court\ncreated \na \ngenuine \nissue \nof\nmaterial fact.  Once a party\nmoving for a summary judgment\nestablishes that no genuine issue\nof material fact exists, the\nburden shifts to the nonmovant to\npresent \nsubstantial \nevidence\ncreating such a genuine issue of\nmaterial \nfact. \n \n\"Substantial\nev"
+ },
+ {
+  "item_id": "mcq_code/02688_13128_46",
+  "domain": "code",
+  "question": "What is the name of the mutex used to protect bio allocation in the dm-crypt code?",
+  "options": [
+   "bio_alloc_lock  ",
+   "page_pool_lock  ",
+   "cc_lock  ",
+   "bio_lock  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "code symbol",
+  "rarity_min": -5.7538,
+  "chunk_gloss": " * concurrently, there is a possibility of deadlock. For example, if we have\n * mempool of 256 pages, two processes, each wanting 256, pages allocate from\n * the mempool concurrently, it may deadlock in a situation where both processes\n * have allocated 128 pages and the mempool is exhausted.\n *\n * In order to avoid this scenario we allocate the pages under a mutex.\n *\n * In order to not degrade performance with excessive locking, we try\n * non-blocking allocations without a mutex first but on failure we fallback\n * to blocking allocations with a mutex.\n */\nstatic struct bio *crypt_alloc_buffe"
+ },
+ {
+  "item_id": "mcq_code/03685_1952_83",
+  "domain": "code",
+  "question": "What is the ID of the virtual page fixture used in the testCanEdit method?",
+  "options": [
+   "vp1  ",
+   "vp2  ",
+   "vp3  ",
+   "vp4  "
+  ],
+  "gold": "C",
+  "pred_raw": "C",
+  "pred_compact_still": "A",
+  "fact_type": "code symbol",
+  "rarity_min": -5.5181,
+  "chunk_gloss": " $vpLive->Content);\n\n        // Publishing the virtualpage should, however, trigger publishing of the live page\n        $vpDraft->publishRecursive();\n\n        // Everything is published live\n        $vpLive = Versioned::get_by_stage(VirtualPage::class, Versioned::LIVE)->byID($vp->ID);\n        $this->assertEquals('draft content', $vpLive->CopyContentFrom()->Content);\n        $this->assertEquals('draft content', $vpLive->Content);\n    }\n\n    public function testCantPublishVirtualPagesBeforeTheirSource()\n    {\n        // An unpublished source page\n        $p = new Page();\n        $p->Content = \"t"
+ },
+ {
+  "item_id": "mcq_code/01741_7269_29",
+  "domain": "code",
+  "question": "What is the value of the constant CFQ_SLICE_SCALE used in the cfq_prio_slice function?",
+  "options": [
+   "4  ",
+   "5  ",
+   "6  ",
+   "8  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "number",
+  "rarity_min": -2.2733,
+  "chunk_gloss": " (wl_class == IDLE_WORKLOAD)\n\t\treturn cfqg->service_tree_idle.count;\n\n\treturn cfqg->service_trees[wl_class][ASYNC_WORKLOAD].count +\n\t\tcfqg->service_trees[wl_class][SYNC_NOIDLE_WORKLOAD].count +\n\t\tcfqg->service_trees[wl_class][SYNC_WORKLOAD].count;\n}\n\nstatic inline int cfqg_busy_async_queues(struct cfq_data *cfqd,\n\t\t\t\t\tstruct cfq_group *cfqg)\n{\n\treturn cfqg->service_trees[RT_WORKLOAD][ASYNC_WORKLOAD].count +\n\t\tcfqg->service_trees[BE_WORKLOAD][ASYNC_WORKLOAD].count;\n}\n\nstatic void cfq_dispatch_insert(struct request_queue *, struct request *);\nstatic struct cfq_queue *cfq_get_queue(struct cfq_dat"
+ },
+ {
+  "item_id": "mcq_legal/05032_16723_48",
+  "domain": "legal",
+  "question": "What is the page number where the citation \"Adams, 598 P.2d at 510\" appears in the passage?",
+  "options": [
+   "129  ",
+   "130  ",
+   "131  ",
+   "132  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -2.177,
+  "chunk_gloss": " in some way to the return of th[e] indictment.\u201d129 And an invalid indictment \u2014 whether the error that made it invalid was jurisdictional or nonjurisdictional \u2014requires a remedy. None of the State\u2019s arguments against reversal as a remedy overcome the concern we expressed in Adams that affirming a conviction based on an invalid indictment would render the right to indictment by grand jury a \u201cnullity.\u201d130 Nor do the State\u2019s arguments show that we were incorrect in Taggard to conclude that dismissal of an indictment subsequent to conviction need not result in injustice; after all, we said, defend"
+ },
+ {
+  "item_id": "mcq_literature/00768_37353_184",
+  "domain": "literature",
+  "question": "What was the height of the main body of aeroplanes observed by the narrator?",
+  "options": [
+   "500 feet  ",
+   "1000 feet  ",
+   "1500 feet  ",
+   "2000 feet  "
+  ],
+  "gold": "D",
+  "pred_raw": "D",
+  "pred_compact_still": "B",
+  "fact_type": "number",
+  "rarity_min": -3.8864,
+  "chunk_gloss": " signified nothing and consumed\r\n\r\neverything, this mere fever of fighting. I saw how little and feeble is the\r\n\r\nlife of man, a thing of chances, preposterously unable to find the will to\r\n\r\nrealise even the most timid of its dreams. And I wondered if always it would be\r\n\r\nso, if man was a doomed animal who would never to the last days of his time\r\n\r\ntake hold of fate and change it to his will. Always, it may be, he will remain\r\n\r\nkindly but jealous, desirous but discursive, able and unwisely impulsive, until\r\n\r\nSaturn who begot him shall devour him in his turn....\r\n\r\n\r\n\u2018I was roused from the"
+ },
+ {
+  "item_id": "mcq_literature/05918_8574_71",
+  "domain": "literature",
+  "question": "What is the height of Arum Lilies when transplanted into 6-in. pots in August?",
+  "options": [
+   "6 ft.  ",
+   "3 ft.  ",
+   "1 ft.  ",
+   "2 ft.  "
+  ],
+  "gold": "D",
+  "pred_raw": "D",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -5.214,
+  "chunk_gloss": " evergreen shrubs need the same treatment as\r\n\r\nArbutos. A. Uva-ursi, or Creeping Arbutos, is a pretty prostrate\r\n\r\nevergreen, which flowers in May, and is only 3 in. high.\r\nArctotis.\u2014A showy and interesting half-hardy annual. Raise the\r\n\r\nseed in a frame in March, and transplant in May. It succeeds best in a\r\n\r\nmixture of loam and peat. It flowers in June. Height, 1 ft.\r\nArctotis Grandis.\u2014A very handsome, half-hardy annual producing\r\n\r\nlarge daisy-like flowers on long wiry stems, the upper part being white\r\n\r\nand the base yellow and lilac, while the reverse of the petals are of a\r\n\r\nlight lil"
+ },
+ {
+  "item_id": "mcq_financial/08395_6665_101",
+  "domain": "financial",
+  "question": "What is the annual management fee percentage paid to John W. Henry & Company, Inc. under the Management Agreements?",
+  "options": [
+   "1/6 of 1%  ",
+   "1/3 of 1%  ",
+   "2%  ",
+   "4%  "
+  ],
+  "gold": "D",
+  "pred_raw": "D",
+  "pred_compact_still": "B",
+  "fact_type": "number",
+  "rarity_min": -3.2133,
+  "chunk_gloss": "0 Units during the offering period of the Partnership.\nSmith Barney Futures Management Inc. is the general partner (the \"General Partner\") of the Partnership. Smith Barney Inc. (\"SB\"), an affiliate of the General Partner, acts as commodity broker for the Partnership (see Note 3c). The General Partner and each limited partner share in the profits and losses of the Partnership in proportion to the amount of partnership interest owned by each except that no limited partner shall be liable for obligations of the Partnership in excess of his initial capital contribution and profits, if any, net of "
+ },
+ {
+  "item_id": "mcq_financial/01454_14573_197",
+  "domain": "financial",
+  "question": "How much did the company pay in cash for the restructuring charge in 1994?",
+  "options": [
+   "$1.5 million  ",
+   "$2.1 million  ",
+   "$1.1 million  ",
+   "$800,000  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -4.0734,
+  "chunk_gloss": " margins received on this equipment in 1992 prior to the purchase of Quality Automation, Inc. and Q.A. Engineering, Inc. (collectively \"QA\") in September 1992.\n1994 VS. 1993\nResearch spending declined slightly both in dollars and as a percentage of sales. The decline is primarily due to personnel reductions made as a part of the Company's restructuring. The Company focused its research and development efforts in 1994 on its strategic growth markets, namely automated handling systems, Windows-based EDA software design tools and low-priced application specific IC programmers and expects to conti"
+ },
+ {
+  "item_id": "mcq_literature/01578_13168_170",
+  "domain": "literature",
+  "question": "How many soldiers did Mannstein take into the palace to capture Duke Biron?",
+  "options": [
+   "20  ",
+   "30  ",
+   "10  ",
+   "15  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "number",
+  "rarity_min": -2.1067,
+  "chunk_gloss": " as a portion of one of\r\n\r\n      his own regiments was to-day on duty at the imperial palace.\r\n\r\n    \r\n\r\n\r\n      Unimpeded, stayed by no one, Munnich penetrated to the apartments of Anna\r\n\r\n      Leopoldowna. She was awaiting him, and at his side she descended to\r\n\r\n      receive the homage of the officers and soldiers, who had been commanded by\r\n\r\n      Munnich to submit themselves to her.\r\n\r\n    \r\n\r\n\r\n      With glowing words she described to the listening soldiers all the insults\r\n\r\n      and injuries to which the regent had subjected herself, her husband, and\r\n\r\n      their son the emperor"
+ },
+ {
+  "item_id": "mcq_literature/07971_18199_187",
+  "domain": "literature",
+  "question": "What is the name of the warrior who stood by Abraham in the combat and whose share of the booty was not taken?",
+  "options": [
+   "Aner  ",
+   "Mamre  ",
+   "Escol  ",
+   "Melchisedec  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "C",
+  "fact_type": "name/entity",
+  "rarity_min": -4.4459,
+  "chunk_gloss": " sword-slaughter. Abraham brought back again2090\r\n\r\nthe treasure and brides of the southlanders, the children\r\n\r\nof the nobles nearer their homes, the maidens to their\r\n\r\nfamilies. Of all men living here [on earth], no one everPage 177\r\n\r\nachieved a more worthy military expedition with a2095\r\n\r\nsmall force which was attacking so great a multitude.\r\n\r\n\r\n  XXV.\r\n\r\n\r\nToC\r\n\r\n\r\nThen the people of Sodoma was southward from\r\n\r\nthere, to bear the news as to what rout of their fierce\r\n\r\nfoes had occurred. Forthwith the king of the people,\r\n\r\nbereft of his nobles and stripped of friends, went out to\r\n\r\n"
+ },
+ {
+  "item_id": "mcq_legal/08881_493_24",
+  "domain": "legal",
+  "question": "What is the date of the in camera hearing held on March 28, 2008?",
+  "options": [
+   "March 28, 2007  ",
+   "April 8, 2008  ",
+   "March 6, 2008  ",
+   "May 1, 2008  "
+  ],
+  "gold": "D",
+  "pred_raw": "D",
+  "pred_compact_still": "C",
+  "fact_type": "date",
+  "rarity_min": -4.9089,
+  "chunk_gloss": " trial court so desires.  (People v. Superior Court \n(Humberto S.) (2008) 43 Cal.4th 737, 750-752.)  We find that the Court of Appeal \nalso erred in categorically denying the People the right to discover the identity of \nthe subpoenaed party and the nature of the documents sought under the third party \nsubpoena (including the identity of the person to whom the documents pertain), \ninasmuch as the People\u201fs due process right to a meaningful opportunity to be \nheard may typically require at least that much information.  The constitutional \nrights of the defendant can usually be protected by redac"
+ },
+ {
+  "item_id": "mcq_code/01328_8862_104",
+  "domain": "code",
+  "question": "What is the value of the XHTML_NAMESPACE variable?",
+  "options": [
+   "'http://www.w3.org/1999/xml'  ",
+   "'http://www.w3.org/2000/xhtml'  ",
+   "'http://www.w3.org/1999/xhtml'  ",
+   "'http://www.w3.org/2000/xml'  "
+  ],
+  "gold": "C",
+  "pred_raw": "C",
+  "pred_compact_still": "B",
+  "fact_type": "code symbol",
+  "rarity_min": -6.0529,
+  "chunk_gloss": "white\">\n<tr bgcolor=\"#70b0f0\" class=\"table-header\">\n  <td colspan=\"2\" class=\"table-header\">\n    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n      <tr valign=\"top\">\n        <td align=\"left\"><span class=\"table-header\">Variables</span></td>\n        <td align=\"right\" valign=\"top\"\n         ><span class=\"options\">[<a href=\"#section-Variables\"\n         class=\"privatelink\" onclick=\"toggle_private();\"\n         >hide private</a>]</span></td>\n      </tr>\n    </table>\n  </td>\n</tr>\n<tr class=\"private\">\n    <td width=\"15%\" align=\"right\" valign=\"top\" class=\"summary\">\n      <span class=\"s"
+ },
+ {
+  "item_id": "mcq_code/02680_8671_54",
+  "domain": "code",
+  "question": "What is the name of the PCM device for analog I/O as defined in the code?",
+  "options": [
+   "ATI IXP MC97 Analog  ",
+   "ATI PCMDEV_CAPTURE  ",
+   "ATI IXP MC97  ",
+   "ATI PCMDEV_ANALOG  "
+  ],
+  "gold": "C",
+  "pred_raw": "C",
+  "pred_compact_still": "D",
+  "fact_type": "name/entity",
+  "rarity_min": -5.7452,
+  "chunk_gloss": "_pcm_hw_params,\n\t.hw_free =\tsnd_atiixp_pcm_hw_free,\n\t.prepare =\tsnd_atiixp_capture_prepare,\n\t.trigger =\tsnd_atiixp_pcm_trigger,\n\t.pointer =\tsnd_atiixp_pcm_pointer,\n};\n\nstatic atiixp_dma_ops_t snd_atiixp_playback_dma_ops = {\n\t.type = ATI_DMA_PLAYBACK,\n\t.llp_offset = ATI_REG_MODEM_OUT_DMA1_LINKPTR,\n\t.dt_cur = ATI_REG_MODEM_OUT_DMA1_DT_CUR,\n\t.enable_dma = atiixp_out_enable_dma,\n\t.enable_transfer = atiixp_out_enable_transfer,\n\t.flush_dma = atiixp_out_flush_dma,\n};\n\t\nstatic atiixp_dma_ops_t snd_atiixp_capture_dma_ops = {\n\t.type = ATI_DMA_CAPTURE,\n\t.llp_offset = ATI_REG_MODEM_IN_DMA_LINKPTR,\n\t.dt_cu"
+ },
+ {
+  "item_id": "mcq_financial/07081_7804_184",
+  "domain": "financial",
+  "question": "What is the file number of the Registrant's Registration Statement on Form SB-2 filed on January 17, 1996?",
+  "options": [
+   "333-326-LA  ",
+   "333-326-96  ",
+   "333-326-LA-96  ",
+   "333-326-1996  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "C",
+  "fact_type": "code symbol",
+  "rarity_min": -4.5919,
+  "chunk_gloss": " reference from the Registrant's Registration Statement on Form SB-2 (file no. 333-326-LA), as amended, filed on January 17, 1996. ++ Incorporated by reference from the Registrant's Quarterly Report on Form 10-Q for the period ended June 30, 1996.\n* Management contract or compensatory plan or arrangement required to be filed as an exhibit to this form.\n(b) Reports on Form 8-K.\nNone.\n(c) Exhibits.\nSee Item 14(a) hereof.\n(d) Financial Statement Schedules.\nAll financial statement schedules have been omitted because they are not applicable or the required information is shown in the financial stat"
+ },
+ {
+  "item_id": "mcq_legal/05400_4072_134",
+  "domain": "legal",
+  "question": "What is the case citation referenced in the passage for the quote \u201ca change in circumstances is unlikely to be substantial enough to \u2018overcome our deep reluctance to shuttle children back and forth between parents\u2019 unless the change affects the children\u2019s welfare and \u2018reflect[s] more than mere passage of time\u2019\u201d?",
+  "options": [
+   "Hope P. v. Flynn G., 355 P.3d 559  ",
+   "C.R.B. v. C.C., 959 P.2d 375  ",
+   "Rego v. Rego, 259 P.3d 447  ",
+   "Barrett v. Alguire, 35 P.3d 1  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "B",
+  "fact_type": "name/entity",
+  "rarity_min": -6.0375,
+  "chunk_gloss": " its physical and legal custody analyses\u201d and in doing so failed to recognize that her claim to legal custody rested on the parties\u2019 failure to communicate rather than the other changed circumstances that the court addressed explicitly in its written order. But the order explicitly recognized that Branwen sought modification of both legal and physical custody, noting that the two types of custody had previously been decided on different dates, and ultimately denied \u201cBranwen\u2019s motion to modify custody seeking sole legal and primary physical custody.\u201d We find it implicit in the superior court\u2019s "
+ },
+ {
+  "item_id": "mcq_legal/09226_21093_117",
+  "domain": "legal",
+  "question": "What is the name of the organization that opposes Proposition 35 and is listed as \"No On Prop. 35\"?",
+  "options": [
+   "Taxpayers for Fair Competition  ",
+   "YesProp35.com  ",
+   "Steve Hopcraft  ",
+   "NoonProp35.org  "
+  ],
+  "gold": "C",
+  "pred_raw": "C",
+  "pred_compact_still": "D",
+  "fact_type": "name/entity",
+  "rarity_min": -6.2498,
+  "chunk_gloss": " no fiscal impact on local governments because they generally can now contract \nfor these services.  \n   \n \n  \nAnalysis by the Legislative Analyst \n  \nArgument in Favor of Proposition 35 \n  \nRebuttal to Argument in Favor of Proposition 35 \n \n \nvi\n  \nArgument Against Proposition 35 \n  \nRebuttal to Argument Against Proposition 35 \n   \n \n \nvii\nVote 2000 Home | Ballot Pamphlet Home | Campaign Finance | Secretary of State Home \n32  | 33  | 34  | 35  | 36  | 37  | 38  | 39  \nPROPOSITION \n2000 General\n35 \nPUBLIC WORKS PROJECTS.  \nUSE OF PRIVATE CONTRACTORS FOR \nENGINEERING AND ARCHITECTURAL SERVICES."
+ },
+ {
+  "item_id": "mcq_financial/05922_17319_81",
+  "domain": "financial",
+  "question": "What was the total amount of proceeds received from the sale of retail notes in 1994?",
+  "options": [
+   "$726 million  ",
+   "$560 billion  ",
+   "$48.0 million  ",
+   "$35.5 million  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "A",
+  "fact_type": "number",
+  "rarity_min": -4.4953,
+  "chunk_gloss": " 1994.\nFinance income earned on retail notes was $333 million this year compared with $293 million in 1994, an increase of 14 percent. The average balance of the retail note portfolio financed during 1995 was seven percent higher than the comparable 1994 average balance.\nRevenues earned on revolving charge accounts amounted to $84 million in 1995, a 26 percent increase over revenues of $67 million earned during 1994. This increase was primarily due to a 23 percent increase in the average balance of Farm Plan receivables financed and a 28 percent increase in the average balance of John Deere Cr"
+ },
+ {
+  "item_id": "mcq_financial/00077_1416_21",
+  "domain": "financial",
+  "question": "What percentage of homes passed in a local market can a broadcast network acquire in a cable television system under the revised FCC regulations?",
+  "options": [
+   "10%  ",
+   "20%  ",
+   "30%  ",
+   "50%  "
+  ],
+  "gold": "D",
+  "pred_raw": "D",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -3.2133,
+  "chunk_gloss": " degree of regulation of the cable television industry. Under the 1992 Cable Act's definition of effective competition, nearly all cable television systems in the United States, including those owned and managed by the General Partner, are subject to rate regulation of basic cable services. In addition, the 1992 Cable Act allows the FCC to regulate rates for non-basic service tiers other than premium services in response to complaints filed by franchising authorities and/or cable subscribers. In April 1993, the FCC adopted regulations governing rates for basic and non-basic services and ordere"
+ },
+ {
+  "item_id": "mcq_financial/01551_16886_204",
+  "domain": "financial",
+  "question": "How many shares were received and distributed in 1994 in lieu of cash on exercise of stock options?",
+  "options": [
+   "30  ",
+   "11  ",
+   "18  ",
+   "12  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "D",
+  "fact_type": "number",
+  "rarity_min": -2.177,
+  "chunk_gloss": "% or more ownership is commenced, the rightholders, except such beneficial owners, may purchase one-quarter share of the preferred stock at $65 per share. If other triggering events constituting a change in control occur, the same rightholders may, for $65, purchase shares of either the Company's or the acquirer's common stock at one-half its market value. The Company's stock option plan provides for granting either nonqualified or incentive stock options to key employees to purchase no earlier than six months after the grant date shares of common stock at its market value on the grant date. A"
+ },
+ {
+  "item_id": "mcq_legal/05625_2583_6",
+  "domain": "legal",
+  "question": "Which case is cited in the passage as an example of a decision upholding budgetary control over fiscal operations of political subdivisions?",
+  "options": [
+   "Hicks v. Krigbaum  ",
+   "Bank of Lowell v. Cox  ",
+   "McDonald v. Frohmiller  ",
+   "Lee v. Coleman  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "C",
+  "fact_type": "name/entity",
+  "rarity_min": -5.7389,
+  "chunk_gloss": " the work which could be, and no doubt is, readily handled by one officer. The interpretation which I urge should be given this statute would keep it in line with our pronouncement in Hicks v. Krigbaum, supra, to the effect that statutes should receive a sensible construction, such as will effect the legislative intention, and, if possible, so as to avoid an unjust or absurd conclusion. Secondly, the majority's concept of the operation of the budget law is so at variance with my ideas of the governing principles that I most vigorously dissent from that portion of their decision which holds in "
+ },
+ {
+  "item_id": "mcq_code/03202_15337_1",
+  "domain": "code",
+  "question": "What is the option value for the country \"Seychelles\"?",
+  "options": [
+   "243  ",
+   "186  ",
+   "187  ",
+   "188  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -2.3758,
+  "chunk_gloss": ">\n                                        <option value=\"243\">Serbia</option>\n                                        <option value=\"186\">Seychelles</option>\n                                        <option value=\"187\">Sierra Leone</option>\n                                        <option value=\"188\">Singapore</option>\n                                        <option value=\"189\">Slovak Republic</option>\n                                        <option value=\"190\">Slovenia</option>\n                                        <option value=\"191\">Solomon Islands</option>\n                                 "
+ },
+ {
+  "item_id": "mcq_literature/03270_27368_16",
+  "domain": "literature",
+  "question": "How many days had elapsed since Bob Yancy's trial when Murrell first heard of the fugitives being bound for west Tennessee?",
+  "options": [
+   "Five days  ",
+   "Ten days  ",
+   "Two days  ",
+   "One week  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -5.5699,
+  "chunk_gloss": "\r\n\r\n      attempt to resume the conversation. A day later they rumbled into\r\n\r\n      Washington, and as Betty descended from the coach, Carrington stepped to\r\n\r\n      her side.\r\n\r\n    \r\n\r\n\r\n      \u201cI suppose you'll stop here, Miss Malroy?\u201d he said, indicating the tavern\r\n\r\n      before which the stage had come to a stand. \u201cYes,\u201d said Betty briefly.\r\n\r\n    \r\n\r\n\r\n      \u201cIf I can be of any service to you\u2014\u201d he began, with just a touch of\r\n\r\n      awkwardness in his manner.\r\n\r\n    \r\n\r\n\r\n      \u201cNo, I thank you, Mr. Carrington,\u201d said Betty quickly.\r\n\r\n    \r\n\r\n\r\n      \u201cGood night... good-by,\u201d he turned"
+ },
+ {
+  "item_id": "mcq_financial/04488_1019_127",
+  "domain": "financial",
+  "question": "What is the fixed percentage intended to reflect increases in productivity under the Interim Price Cap Plan?",
+  "options": [
+   "3.0%  ",
+   "4.0%  ",
+   "5.0%  ",
+   "6.0%  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "C",
+  "fact_type": "number",
+  "rarity_min": -3.2133,
+  "chunk_gloss": " are interexchange carriers; AT&T is the largest single customer. Other customers include business customers and government agencies with their own special access network connections, wireless companies and other local exchange carriers (\"LECs\") which resell network connections to their own customers.\nThe Small Business Services LOB markets communications and information ----------------------- services to small businesses (customers having up to 20 access lines).\nThe Large Business Services LOB markets communications and information ----------------------- services to large businesses (custom"
+ },
+ {
+  "item_id": "mcq_code/03750_13799_108",
+  "domain": "code",
+  "question": "What is the value assigned to globalBucket[2][1] if it is 0 or NaN?",
+  "options": [
+   "99.99  ",
+   "100  ",
+   "0  ",
+   "100.00  "
+  ],
+  "gold": "B",
+  "pred_raw": "B",
+  "pred_compact_still": "A",
+  "fact_type": "number",
+  "rarity_min": -1.8836,
+  "chunk_gloss": " upmRank, cMarks, upmMarks, mMarks, maxMarks,ulb_region]);\r\n                searchBarULBs.push(city);\r\n            }else{*/\r\n                markerLocations.push([lat, lon, city, grad, attValX, attValY, annualTarget, cRank, mRank, upmRank, cMarks, upmMarks, mMarks, maxMarks,ulb_region]);\r\n                searchBarULBs.push(city);\r\n            //}\r\n        }\r\n\t\t\r\n\t\t//console.log('dummycount'+dummycount);\r\n\t\t\r\n\t\t/*if((attributeNameX.indexOf(\"UPM-\") > -1) && (dummycount == 110))\r\n\t\t\tdocument.getElementById(\"titleText\").innerHTML = \"<b style='color:red'>Since financial year starts from April. Prev"
+ },
+ {
+  "item_id": "mcq_legal/09104_5144_78",
+  "domain": "legal",
+  "question": "What is the name of the case cited in the passage as an example of a decision describing merger and bar in claim preclusion?",
+  "options": [
+   "Busick v. Workmen\u2019s Comp. Appeals Bd.  ",
+   "Mycogen Corp. v. Monsanto Co.  ",
+   "DKN Holdings  ",
+   "Taylor v. Sturgell  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "C",
+  "fact_type": "name/entity",
+  "rarity_min": -5.7189,
+  "chunk_gloss": " for claim preclusion.  Claim \npreclusion can prevent reassertion of a claim without regard to \nwhether a plaintiff won or lost in an initial action.  (See Busick \nv. Workmen\u2019s Comp. Appeals Bd. (1972) 7 Cal.3d 967, 973 \nGRANDE v. EISENHOWER MEDICAL CENTER \nOpinion of the Court by Cantil-Sakauye, C. J. \n \n11 \n[describing merger and bar]; see also Mycogen Corp. v. Monsanto \nCo. (2002) 28 Cal.4th 888, 896\u2013897; Rest.2d Judgments (1982) \n\u00a7 17, p. 148.)  Allowing nonmutual claim preclusion would thus \nexert pressure akin to a mandatory joinder rule.  If claims \nagainst nonparties would be extinguis"
+ },
+ {
+  "item_id": "mcq_literature/07045_8718_156",
+  "domain": "literature",
+  "question": "What is the name of the band advertised to perform during dinner at the Savoy Hotel?",
+  "options": [
+   "Herr Wurms  ",
+   "The Savoy Band  ",
+   "The Diet of Wurms  ",
+   "The English Band  "
+  ],
+  "gold": "A",
+  "pred_raw": "A",
+  "pred_compact_still": "C",
+  "fact_type": "name/entity",
+  "rarity_min": -4.4141,
+  "chunk_gloss": "IDER.\"\u2014Get out.\r\n\"TOTTIE TOTTS.\"\u2014Here for private consultation from 5\r\n\r\n    to 7 P.M.\r\n\"RICHARD.\"\u2014Buy Bizzy B's, Sell Early\r\n\r\n    P's, and Spoiled Fives. Buy Jingoes.\r\n\"BRUNO.\"\u2014\"Bear\" your burdens.\r\n\"ADA WITH THE GOLDENHAIR.\"\u2014Send photo at once. Cannot\r\n\r\n    advise until we know your figure.\r\n\r\n\r\n\"CROESUS,\r\nE.C.\"\r\n\r\n\r\n[pg 234]\r\n\r\nConscientiousness\r\nCONSCIENTIOUSNESS.\r\n\r\n\r\n        Miss Fitzogre. \"WELL, GOOD-BYE, PERCIVAL, AND BE\r\n\r\n        A GOOD BOY!\"\r\nPercival (a very good boy, who has just been\r\n\r\n        specially warned not to make personal remarks about People\r\n\r\n        in their prese"
+ }
+]

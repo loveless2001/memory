@@ -129,13 +129,17 @@ def main():
     ap.add_argument("--lr", type=float, default=4e-5)
     ap.add_argument("--iterative", action="store_true")
     ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--seed", type=int, default=1234)
+    ap.add_argument("--legacy-kl-multiset", action="store_true",
+                    help="pre-f214c0f objective variant; only for controlled "
+                         "replication of shipped checkpoints (PREPROBE E1)")
     args = ap.parse_args()
 
     dist.init_process_group("nccl")
     rank, world = dist.get_rank(), dist.get_world_size()
     device = f"cuda:{rank}"
     torch.cuda.set_device(device)
-    torch.manual_seed(1234 + rank)
+    torch.manual_seed(args.seed + rank)
 
     model, tok = load_model(device)
     compactor = StillAmortizedKVCompactor(model.config, args.t_latents) \
@@ -197,7 +201,9 @@ def main():
             mask = torch.zeros(len(seq), dtype=torch.bool, device=device)
             mask[n_prompt - 1:len(seq) - 1] = True   # predict answer tokens
             gold = torch.tensor(seq[1:] + [tok.eos_token_id], device=device)
-            loss = forward_kl_on_answer(t_logits, s_logits, mask, gold) / accum
+            loss = forward_kl_on_answer(
+                t_logits, s_logits, mask, gold,
+                legacy_multiset_support=args.legacy_kl_multiset) / accum
             loss.backward()
             step_loss += float(loss) * accum
         torch.nn.utils.clip_grad_norm_(compactor.parameters(), 1.0)
