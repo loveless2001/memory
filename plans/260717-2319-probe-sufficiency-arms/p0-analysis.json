@@ -1,0 +1,43 @@
+{
+ "n": 1000,
+ "y_rate": 0.5,
+ "p1_battery_top15": {
+  "m_rec/last_prompt/mean": 0.5362,
+  "m_rec/steps_mean/mean": 0.5344,
+  "m_rec/decode1/mean": 0.5337,
+  "m_rec/decode2/mean": 0.5326,
+  "max_lat_abs/decode3/max": 0.5319,
+  "m_lat/last_prompt/max": 0.5288,
+  "m_lat/last_prompt/mean": 0.5256,
+  "m_rec/decode3/mean": 0.5252,
+  "max_lat_abs/last_prompt/mean": 0.5231,
+  "m_sink/decode1/mean": 0.5227,
+  "m_sink/decode2/mean": 0.52,
+  "m_sink/last_prompt/mean": 0.5196,
+  "m_rec/decode3/max": 0.5185,
+  "lookback/last_prompt/max": 0.5179,
+  "m_rec/last_prompt/max": 0.5162
+ },
+ "p1_best": {
+  "stat": "m_rec/last_prompt/mean",
+  "auc": 0.5362
+ },
+ "p2_selfcheck_auc": 0.6587,
+ "p2_direction_note": "score = P(No | sufficiency question)",
+ "trial_mismatch_sanity_auc": 0.979,
+ "c3a_pilot_battery": {
+  "c3a/needle_share_ratio/mean": 0.5026,
+  "c3a/needle_share_ratio/max": 0.5026,
+  "c3a/lstar_purity/mean": 0.5,
+  "c3a/lstar_purity/max": 0.5,
+  "c3a/lstar_entropy/mean": 0.5,
+  "c3a/lstar_entropy/max": 0.5,
+  "c3a/top_needle_frac/mean": 0.5,
+  "c3a/top_needle_frac/max": 0.5
+ },
+ "gt19": {
+  "c1_decision": "c1 DEMOTED to per-head analysis inside c2 sweep (all < 0.55)",
+  "p2_floor": 0.6587,
+  "p2_changes_cost_story": true
+ }
+}

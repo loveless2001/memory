@@ -1,0 +1,17 @@
+{
+ "best_arm": "stack",
+ "n_test_queries": 664,
+ "tau_entry": -2.495737706109837,
+ "recall": 0.8314,
+ "expand_rate_blocks": 0.3803,
+ "oracle_rate_blocks": 0.192,
+ "expand_over_oracle": 1.9804,
+ "lost_fact_rate": 0.1686,
+ "comparators": {
+  "m3_gate": 2.33,
+  "s1": 2.24,
+  "s2": 2.15
+ },
+ "design_note": "entry-gated retry: evicted block expanded iff arm score >= tau; survived block never expanded (evicted-vs-survived is system metadata)",
+ "gt23_pass": false
+}
