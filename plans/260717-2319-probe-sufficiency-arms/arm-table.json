@@ -170,5 +170,43 @@
   "F1_verdict": "smear dominates; branch (iii)",
   "F2_reading": "near chance -> 0.85 is substantially answer-confidence; downgrade to behavioral-divergence predictor",
   "F3_ladder": "p2 free 0.638 -> sinkheads (+2 hooks) 0.762 -> stack 0.854"
+ },
+ "f4_context_only_nonlinear": {
+  "per_layer_linear": {
+   "L10": 0.4989,
+   "L15": 0.5027,
+   "L20": 0.4962,
+   "L25": 0.5036,
+   "L30": 0.506,
+   "L36": 0.5036
+  },
+  "mlp_best_layer": 0.5084,
+  "concat_linear": 0.5012,
+  "concat_mlp": 0.5018,
+  "max_auc": 0.5084,
+  "decision": "upgrades",
+  "note": "context-only; null upgrades \u2014 no decodable signal linear/nonlinear any layer"
+ },
+ "f5_sinkheads_eviction": {
+  "refit_auc": 0.7829,
+  "ci95": [
+   0.7601,
+   0.8078
+  ],
+  "per_domain": {
+   "code": 0.729,
+   "financial": 0.7548,
+   "legal": 0.8122,
+   "literature": 0.8129
+  },
+  "transfer_compactor_to_eviction": 0.7439,
+  "transfer_eviction_to_compactor": 0.7166,
+  "shadow_gate_mechanics": 0.622,
+  "regime_general": true,
+  "note": "8-scalar sink/mem-mass monitor under eviction f=0.40; beats mechanics shadow gate, transfers zero-shot"
+ },
+ "_followup2_verdicts": {
+  "F4": "upgrades",
+  "F5": "regime-general"
  }
 }

@@ -450,7 +450,13 @@ own attention behavior); the trained stack ($0.854$; capture $+$ \$3 of probe
 training per capacity point). End-to-end at natural prevalence, the
 stack-gated system reaches \lostfact{} $0.146$ at expansion rate
 $\mathbf{0.050}$---the shadow gate's correctness at one third of its budget,
-strictly inside its curve, with oracle at $0/0.170$. Per-capacity retraining
+strictly inside its curve, with oracle at $0/0.170$. The head-monitor rung
+is regime-general (F5): the same eight scalars, with the memory region
+redefined as the surviving compacted span, predict eviction-regime loss at
+$0.783$ $[0.760, 0.808]$---above the shadow gate's own evicted-only
+discrimination ($0.622$)---and transfer zero-shot between regimes
+($0.72$--$0.74$ either direction), so under-attention-to-memory is a cheap,
+compressor-independent insufficiency sensor. Per-capacity retraining
 is required (transfer to $t{=}512$ drops $0.21$, consistent with
 cross-capacity label $\kappa$ $0.455$); per-domain temperature repair carries
 over from \S\ref{sec:lodo}.
@@ -468,8 +474,11 @@ certification protocol \emph{defines} sufficiency counterfactually, as a
 relation over (query, memory) pairs, and the control shows the model's
 internals agree---there is no query-independent sufficiency signal to read,
 because sufficiency is not a property the memory state has on its own.
-(Scope: the null is for linear decodability at the probed layer; nonlinear
-or multi-layer context-only readouts are untested.)
+The null holds under a harder test (F4): linear \emph{and} nonlinear
+(256-hidden MLP) probes at every layer of a $\{10,15,20,25,30,36\}$ sweep,
+and a concat-of-layers probe, all reach at most AUC $0.508$ against $0.813$
+with the question --- so there is no query-free sufficiency signal to read
+at any probed depth, not merely none linearly decodable at layer 30.
 
 \section{Fragility is a property of the fact, not the checkpoint}
 \label{sec:fragility}
@@ -537,7 +546,9 @@ MCQ probes, letter-match equivalence, greedy decoding, single-turn contexts;
 multi-hop $k{=}2$, one evicted candidate per query; the end-to-end
 routability point is weighted at natural prevalence on the captured sample;
 F1's needle features exclude the $22\%$ of test items without a locatable
-in-prefix answer; the F2 null is scoped to linear decodability at layer 30.
+in-prefix answer; the context-only null (F2/F4) covers linear and MLP probes
+across a six-layer sweep and a concat-of-layers probe (max AUC $0.508$),
+leaving depths outside the sweep and probe families beyond MLP untested.
 Probe claims are per-capacity and per-instance by measurement
 (\S\ref{sec:ladder}, \S\ref{sec:fragility}), and the probe predicts
 behavioral divergence rather than certifying memory contents
@@ -631,8 +642,8 @@ Pinned environment (torch 2.7.1, transformers 4.55.2, safetensors 0.5.3); a
 validated all-or-nothing. Compute ledger: corpus ${\approx}\$500$; labels
 ${\approx}\$110$; eviction gate, multi-hop, ablations ${\approx}\$30$;
 trained-compactor experiment ${\approx}\$715$; PREPROBE ${\approx}\$62$;
-PROBE ${\approx}\$89$; FOLLOWUP ${\approx}\$9$. Total ${\approx}\$1{,}100$
-marginal (corpus/gate/compactor/probes). Checkpoints, calibration records,
+PROBE ${\approx}\$89$; FOLLOWUP ${\approx}\$9$; FOLLOWUP2 ${\approx}\$14$.
+Total ${\approx}\$1{,}100$ marginal (corpus/gate/compactor/probes). Checkpoints, calibration records,
 compaction policy versions (weights hash $+$ certified depth), evaluation
 grids, probe scores, and all per-item predictions are content-addressed
 artifacts.
@@ -649,7 +660,22 @@ $0.813$. Verdict: the $0.85$ is a behavioral-divergence predictor, not a
 memory-content readout. \textbf{F3 (sink-head monitor).} 8-scalar logistic
 $0.762$ $[0.753, 0.771]$; end-to-end \lostfact{} $0.149$ at expansion
 $0.060$. Ladder rung between the free self-check ($0.638$) and the trained
-stack ($0.854$). Verdicts, CIs, and artifacts in \texttt{FOLLOWUP-REPORT.md}
-and \texttt{memsub-artifacts:/probe/followup-*}.
+stack ($0.854$).
+
+\medskip
+\noindent\textbf{F4 (context-only null, hardened).} On the same 5{,}090-item
+subsample, per-layer linear probes over $\{10,15,20,25,30,36\}$ span
+$0.496$--$0.506$; a 256-hidden MLP (3 seeds) on the best layer reaches
+$0.508$; concat-of-layers linear/MLP reach $0.501$/$0.502$ --- max $0.508$
+vs $0.813$ question-conditioned. Verdict: the null \emph{upgrades} to ``no
+decodable signal, linear or nonlinear, at any probed layer.''
+\textbf{F5 (sink-head monitor under eviction).} The eight-scalar monitor,
+memory region redefined as the surviving compacted span, refits to $0.783$
+$[0.760, 0.808]$ on 5{,}022 evicted rows ($f{=}0.40$) --- above the eviction
+shadow gate's evicted-only mechanics AUC ($0.622$); zero-shot transfer is
+$0.744$ (compactor$\rightarrow$eviction) and $0.717$
+(eviction$\rightarrow$compactor). Verdict: the middle rung is regime-general.
+Verdicts, CIs, and artifacts in \texttt{FOLLOWUP-REPORT.md},
+\texttt{FOLLOWUP2-REPORT.md}, and \texttt{memsub-artifacts:/probe/followup*}.
 
 \end{document}

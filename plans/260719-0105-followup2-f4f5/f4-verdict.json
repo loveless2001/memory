@@ -1,0 +1,73 @@
+{
+ "n": 5090,
+ "layers": [
+  10,
+  15,
+  20,
+  25,
+  30,
+  36
+ ],
+ "cells": {
+  "linear_L10": {
+   "auc": 0.4989,
+   "ci95": [
+    0.4841,
+    0.5146
+   ]
+  },
+  "linear_L15": {
+   "auc": 0.5027,
+   "ci95": [
+    0.4872,
+    0.519
+   ]
+  },
+  "linear_L20": {
+   "auc": 0.4962,
+   "ci95": [
+    0.4812,
+    0.5118
+   ]
+  },
+  "linear_L25": {
+   "auc": 0.5036,
+   "ci95": [
+    0.4889,
+    0.5195
+   ]
+  },
+  "linear_L30": {
+   "auc": 0.506,
+   "ci95": [
+    0.4902,
+    0.5217
+   ]
+  },
+  "linear_L36": {
+   "auc": 0.5036,
+   "ci95": [
+    0.4879,
+    0.5185
+   ]
+  },
+  "mlp_L30_3seed": {
+   "auc": 0.5084,
+   "sd": 0.0041
+  },
+  "concat_linear": {
+   "auc": 0.5012,
+   "ci95": [
+    0.4854,
+    0.5173
+   ]
+  },
+  "concat_mlp": {
+   "auc": 0.5018
+  }
+ },
+ "max_auc": 0.5084,
+ "decision": "upgrades",
+ "verdict": "null UPGRADES: no decodable signal (linear or nonlinear, any probed layer) reaches 0.55; best 0.508",
+ "question_conditioned_ref": 0.813
+}

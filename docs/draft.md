@@ -1,6 +1,6 @@
 # Reading the Computation: How Compression Regime Determines Whether Lost Memory Is Routable
 
-**Draft v0.3 — 2026-07-18.** Supersedes v0.2; FOLLOWUP ledger resolved (branch iii, §6.4 variant B, F3 rung filled). Markdown master; ready for LaTeX conversion and the citation-verification pass.
+**Draft v0.3 — 2026-07-19.** Supersedes v0.2; FOLLOWUP ledger resolved (branch iii, §6.4 variant B, F3 rung filled) plus FOLLOWUP2 (F4 context-only null hardened across a 6-layer × linear/MLP/concat sweep; F5 sink-head rung shown regime-general). Markdown master; ready for LaTeX conversion and the citation-verification pass.
 
 ---
 
@@ -174,7 +174,13 @@ corpus-side approach); the head monitor (0.762, end-to-end lost-fact 0.149 at ex
 and notably the prompted self-check adds nothing on top of it (0.763
 combined): the model's verbalized self-report is subsumed by its own
 attention behavior); the trained stack (0.854; capture + $3 of probe
-training per capacity point).
+training per capacity point). The head-monitor rung is regime-general
+(F5): the same eight scalars, memory region redefined as the surviving
+compacted span, predict eviction-regime loss at 0.783 [0.760, 0.808] —
+above the eviction shadow gate's own evicted-only discrimination (0.622) —
+and transfer zero-shot between regimes (0.72–0.74 either direction), so
+under-attention-to-memory is a cheap, compressor-independent insufficiency
+sensor.
 End-to-end at natural prevalence, the stack-gated system reaches
 lost-fact 0.146 at expansion rate **0.050** — the shadow gate's
 correctness at one third of its budget — strictly inside its curve,
@@ -194,9 +200,12 @@ deflation: our certification protocol *defines* sufficiency
 counterfactually, as a relation over (query, memory) pairs, and the
 control shows the model's internals agree — there is no
 query-independent sufficiency signal to read, because sufficiency is
-not a property the memory state has on its own. (Scope: the null is
-for linear decodability at the probed layer; nonlinear or multi-layer
-context-only readouts are untested.)
+not a property the memory state has on its own. The null holds under a
+harder test (F4): linear *and* nonlinear (256-hidden MLP) probes at every
+layer of a {10, 15, 20, 25, 30, 36} sweep, and a concat-of-layers probe,
+all reach at most AUC 0.508 against 0.813 with the question — there is no
+query-free sufficiency signal to read at any probed depth, not merely none
+linearly decodable at layer 30.
 
 ## 7. Fragility is a property of the fact, not the checkpoint
 Cross-reseed relabeling: κ 0.745 with the weaker instance's failure set
@@ -260,8 +269,10 @@ full-recipe synthesis; extractive MCQ probes, letter-match equivalence,
 greedy decoding, single-turn contexts; multi-hop k=2, one evicted
 candidate per query; GT22 weighted at natural prevalence on the
 captured sample; F1's needle features exclude the 22% of test items
-without a locatable in-prefix answer; the F2 null is scoped to linear
-decodability at layer 30. Probe claims are per-capacity and
+without a locatable in-prefix answer; the context-only null (F2/F4) covers
+linear and MLP probes across a six-layer sweep and a concat-of-layers probe
+(max AUC 0.508), leaving depths outside the sweep and probe families beyond
+MLP untested. Probe claims are per-capacity and
 per-instance by measurement (§6.3, §7), and the probe predicts
 behavioral divergence rather than certifying memory contents (§6.4).
 
@@ -288,7 +299,7 @@ C. decompositions + seeds/CIs · D. corpus construction · E. LODO &
 recalibration · F. position-kernel collapse evidence (entropy tables,
 loss-curve-vs-routing figure) · G. retrieval-head inventory ·
 H. reproducibility & compute ledger (total ≈ $1,100 across
-corpus/gate/compactor/probes) · I. FOLLOWUP results (F1–F3: kernel-lattice extraction, context-only control, sink-head monitor; verdicts and CIs).
+corpus/gate/compactor/probes) · I. FOLLOWUP results (F1–F5: kernel-lattice extraction, context-only control, sink-head monitor; F4 hardened context-only null across a 6-layer × linear/MLP/concat sweep, max 0.508; F5 regime-general sink-head monitor under eviction 0.783 > shadow-gate 0.622 with zero-shot cross-regime transfer; verdicts and CIs).
 
 ### Figures
 1. two-regime axis plot (aggregation × pointwise, both regimes +
