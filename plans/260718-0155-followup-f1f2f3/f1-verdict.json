@@ -1,0 +1,59 @@
+{
+ "n_context_only_items": 5090,
+ "n_needle_locatable": 3962,
+ "F1_uni": {
+  "d_min": {
+   "feature": "d_min",
+   "auc": 0.5089,
+   "ci95": [
+    0.4989,
+    0.5187
+   ],
+   "oriented": "raw"
+  },
+  "d_mean": {
+   "feature": "d_mean",
+   "auc": 0.5037,
+   "ci95": [
+    0.4857,
+    0.522
+   ],
+   "oriented": "flipped"
+  },
+  "frac_needle_kept": {
+   "feature": "frac_needle_kept",
+   "auc": 0.5037,
+   "ci95": [
+    0.4852,
+    0.5206
+   ],
+   "oriented": "raw"
+  }
+ },
+ "mechanics_with_kernel_arm": {
+  "c0_only_auc": 0.5467,
+  "c0_only_ci": [
+   0.5344,
+   0.5593
+  ],
+  "kernel_only_auc": 0.5196,
+  "kernel_only_ci": [
+   0.5072,
+   0.5317
+  ],
+  "c0_plus_kernel_auc": 0.5496,
+  "c0_plus_kernel_ci": [
+   0.5366,
+   0.5628
+  ],
+  "delta_over_c0": 0.0029
+ },
+ "c2_residualization": {
+  "spearman_c2_vs_dmin": 0.0446,
+  "p": 0.00502427281632818,
+  "spearman_c2_vs_frac_needle_kept": 0.0061
+ },
+ "branch": "iii",
+ "verdict": "smear dominates; branch (iii)",
+ "kept_kernel": "stride ~S/1024 (=2.998 at S=3068) delta lattice, head- and item-invariant; density 1/3"
+}

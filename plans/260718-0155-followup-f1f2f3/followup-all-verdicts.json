@@ -1,0 +1,121 @@
+{
+ "F1": {
+  "n_context_only_items": 5090,
+  "n_needle_locatable": 3962,
+  "F1_uni": {
+   "d_min": {
+    "feature": "d_min",
+    "auc": 0.5089,
+    "ci95": [
+     0.4989,
+     0.5187
+    ],
+    "oriented": "raw"
+   },
+   "d_mean": {
+    "feature": "d_mean",
+    "auc": 0.5037,
+    "ci95": [
+     0.4857,
+     0.522
+    ],
+    "oriented": "flipped"
+   },
+   "frac_needle_kept": {
+    "feature": "frac_needle_kept",
+    "auc": 0.5037,
+    "ci95": [
+     0.4852,
+     0.5206
+    ],
+    "oriented": "raw"
+   }
+  },
+  "mechanics_with_kernel_arm": {
+   "c0_only_auc": 0.5467,
+   "c0_only_ci": [
+    0.5344,
+    0.5593
+   ],
+   "kernel_only_auc": 0.5196,
+   "kernel_only_ci": [
+    0.5072,
+    0.5317
+   ],
+   "c0_plus_kernel_auc": 0.5496,
+   "c0_plus_kernel_ci": [
+    0.5366,
+    0.5628
+   ],
+   "delta_over_c0": 0.0029
+  },
+  "c2_residualization": {
+   "spearman_c2_vs_dmin": 0.0446,
+   "p": 0.00502427281632818,
+   "spearman_c2_vs_frac_needle_kept": 0.0061
+  },
+  "branch": "iii",
+  "verdict": "smear dominates; branch (iii)",
+  "kept_kernel": "stride ~S/1024 (=2.998 at S=3068) delta lattice, head- and item-invariant; density 1/3"
+ },
+ "F2": {
+  "n": 5090,
+  "F2_refit_auc": 0.5024,
+  "F2_refit_ci95": [
+   0.4873,
+   0.5178
+  ],
+  "F2_zeroshot_auc": 0.5082,
+  "F2_zeroshot_ci95": [
+   0.4927,
+   0.5229
+  ],
+  "question_conditioned_probe_sanity": {
+   "train_auc": 0.8999,
+   "val_auc": 0.8241,
+   "test_auc": 0.813
+  },
+  "reading": "near chance -> 0.85 is substantially answer-confidence; downgrade to behavioral-divergence predictor"
+ },
+ "F3": {
+  "F3_AUC": 0.7619,
+  "F3_ci95": [
+   0.7526,
+   0.771
+  ],
+  "per_domain": {
+   "code": 0.7277,
+   "financial": 0.7835,
+   "legal": 0.7922,
+   "literature": 0.7829
+  },
+  "p2_plus_sinkheads_auc": 0.7626,
+  "F3_e2e_p2_plus_sinkheads": {
+   "val_chosen_tau": {
+    "tau": 1.1668877160549163,
+    "lost_prior_correct": 0.1442,
+    "expand_evicted": 0.0783,
+    "expand_all_est": 0.0652
+   },
+   "test_at_tau": {
+    "tau": 1.1668877160549163,
+    "lost_prior_correct": 0.1487,
+    "expand_evicted": 0.0714,
+    "expand_all_est": 0.0595
+   },
+   "comparators": {
+    "p2_free_auc": 0.638,
+    "full_stack_auc": 0.854,
+    "stack_gate_e2e": {
+     "lost": 0.146,
+     "expand": 0.05
+    },
+    "refreshed_gate": {
+     "lost": 0.146,
+     "expand": 0.147
+    }
+   }
+  },
+  "ladder": "p2 free 0.638 -> sinkheads (+2 hooks) 0.762 -> stack 0.854"
+ }
+}

@@ -1,292 +1,305 @@
-# One Cache, Two Workloads: Certifying KV Compression Along Pointwise and Aggregative Axes, with a Calibrated Expansion Gate
+# Reading the Computation: How Compression Regime Determines Whether Lost Memory Is Routable
 
-**Draft v0.1 — 2026-07-07.** Working title; alternatives at end. Markdown master; convert to LaTeX after numbers freeze.
-
-> **FILL-IN LEDGER (for Claude Code, from the ABLATION.md addendum artifacts):**
-> every ⟨…⟩ token below maps to a field in the updated `eval-grid.json` /
-> ADDENDUM.md. Numbers quoted without brackets are from the 2026-07-07 M3
-> report and survive the addendum unchanged unless the ledger says otherwise.
-> ⟨A1-AUC⟩ evicted-only test AUC · ⟨A1-PR⟩ evicted-only PR-AUC ·
-> ⟨A2-verdict⟩ one of {content | mechanics | complementary} + the three-row
-> table · ⟨A3-never⟩ canonical never-expand per fraction under the M3
-> protocol · ⟨A4-CI⟩ 95% bootstrap CIs + seed SDs for every headline number ·
-> §5.2 contains three pre-drafted mechanism paragraphs — keep exactly one
-> per ⟨A2-verdict⟩ and delete the other two.
+**Draft v0.3 — 2026-07-18.** Supersedes v0.2; FOLLOWUP ledger resolved (branch iii, §6.4 variant B, F3 rung filled). Markdown master; ready for LaTeX conversion and the citation-verification pass.
 
 ---
 
 ## Abstract
 
-"Long context" conflates a serving problem — fitting the tokens — with two
-capability problems that separate the moment full attention becomes
-unaffordable: *pointwise* recall of exact, low-redundancy facts, and
-*aggregative* understanding of distributed, redundant content. We argue these
-are antagonistic optimization targets under any lossy cache compression, and
-we introduce a certification protocol that scores the two axes separately and
-forbids blending them. Applying the protocol to untrained KV eviction on
-Qwen3-4B over a ~1B-token, four-domain corpus of 98,355 counterfactually
-filtered questions, we find the axes split almost completely: next-token KL
-against the full-context teacher stays near 3×10⁻² while
-⟨A3-never⟩ of facts residing in evicted spans are silently lost (measurement
-noise floor: 0.000). We then show the pointwise axis can be restored by a
-*decoupled sufficiency gate*: a dual encoder over frozen sentence embeddings,
-trained on counterfactual sufficiency labels produced by the frozen base
-model, that decides per query whether compressed memory suffices or exact
-re-expansion is required. The gate is natively calibrated (test ECE
-0.017–0.023), strictly dominates a query-type-routing baseline at every
-matched expansion rate, and at its chosen operating point cuts silent loss
-from ⟨A3-never⟩ to 0.143 ⟨A4-CI⟩ while expanding on only 16.9% of queries
-(oracle: 19.4%). Two further findings refine the picture: on multi-hop
-questions the two-workload weakness appears on the *cost* axis rather than
-the correctness axis — the gate protects correctness by over-expanding 2.3×
-oracle — and gate *discrimination* transfers to held-out domains
-(AUC 0.78–0.87) while *calibration* does not (ECE degrades to 0.05–0.11),
-making per-domain recalibration part of the definition of a deployable gate.
-Total marginal cost of the gate experiment was ≈ $140 of rented compute.
+Lossy compression of a language model's context memory produces silent
+failures: facts the model once held are answered wrongly, with full
+confidence, and no signal at generation time. We show that *which* signals
+can predict — and therefore route around — this loss depends on the
+compression regime, and we measure the full picture on one certification
+protocol, one frozen 4B model, and a ~1B-token four-domain corpus of
+98,355 counterfactually filtered probes. Under **contiguous eviction**,
+loss is governed by observable mechanics: a $140 dual-encoder gate over
+text shadows cuts silent loss 72% at a fifth of always-expand cost, ECE
+≤ 0.023. Under a **trained compactor**, the same gate class collapses to
+surface-statistics performance (AUC 0.55 ≈ a five-feature logistic at
+0.56): the loss becomes invisible to write-side and corpus-side signals.
+It does not become unpredictable — it becomes *internal and
+query-conditioned*. A linear probe on the frozen model's residual stream
+(layer 30), with the question present, predicts answer divergence at
+0.819; a small stack reaches 0.854 and, deployed as a gate, matches the
+shadow gate's correctness at one third of its expansion budget. A
+context-only control shows the signal is *relational*: without the
+question, the same layer carries no linearly decodable trace (AUC 0.502)
+— consistent with sufficiency being a property of (query, memory) pairs
+rather than of the memory state alone. We
+further show (i) a deployment ladder of increasing cost — a prompted
+self-check (0.638, one forward, no training), a two-hook attention-head
+monitor (0.762), and the trained probe stack (0.854); (ii) that probe
+scores rank an instance-independent *fragility ordering* validated across
+compactor reseeds (κ=0.745; Kendall τ 0.57); and (iii) a mechanistic
+surprise: our 1/40-scale compactor's cross-attention consists of exact
+positional delta kernels — it performs strided subsampling, not content
+synthesis (**position-kernel collapse**; the learned kernel is a uniform stride-3
+lattice, identical across heads and items, and its geometry is
+loss-blind — needle-to-kept-position distance predicts survival at
+0.509), which reframes both its certification failure and its
+unexpectedly *better* pointwise retention versus eviction at matched
+budget (0.27 vs 0.58 silent loss). Total
+marginal compute across all experiments: ≈ $1,100.
 
 ## 1. Introduction
 
-Benchmarks, methods papers, and product claims routinely report a single
-"long-context" score. This paper's starting point is that no such single
-number can be coherent once the context no longer fits in exact form. A
-needle-class query — an identifier, a figure, a verbatim clause — concentrates
-its answer in exact bytes with near-zero redundancy against the surrounding
-context; any lossy transform destroys it at a rate proportional to the
-compression ratio, and the optimal mechanism for it is selection, indexing,
-and exact lookup. An integration-class query — summarization, theme tracking,
-most document reasoning — lives on distributed, redundant information; it is
-compression-tolerant and often mildly compression-benefited. The two are not
-merely different but antagonistic: compression bought for the aggregative
-workload is paid for in pointwise fidelity, and exact retention kept for
-needles is memory that compression was meant to free.
+[carries v0.1 §1's two-workload framing — pointwise vs. aggregative,
+antagonistic under lossy compression — then pivots:] The antagonism makes
+a *router* the critical component: a calibrated per-query estimate of
+whether compressed memory suffices. This paper's question is what
+information such a router can be built from, and the answer turns out to
+be regime-dependent in a way we believe has not been measured before.
 
-If the antagonism is real, three things follow. Evaluation must report the
-two axes separately, because a blended score lets a method win the aggregate
-while being needle-dead. Compressed-memory systems need a *routed two-path
-architecture* — a lossy tier for aggregation and a lossless raw path for
-pointwise traffic — rather than a single representation with a quality knob.
-And the router itself becomes the critical learned component: a calibrated,
-per-query estimate of whether the compressed representation suffices.
-
-We contribute, in order: **(i)** a two-axis certification protocol for
-compressed LLM memory, with counterfactually filtered probes such that a
-correct answer proves the information flowed through the (compressed) cache;
-**(ii)** a measurement at ~1B-token scale across four document domains
-showing the axes split under untrained KV eviction — aggregative fidelity
-essentially intact, pointwise fidelity collapsing, the gap widening with
-eviction fraction; **(iii)** a decoupled sufficiency gate — trained entirely
-outside the frozen base model for ≈ $140 — that restores the pointwise axis
-at a fifth of the always-expand cost, with calibration good enough to expose
-as a probability; **(iv)** two phenomena we believe are documented here for
-the first time: the multi-hop *cost overhang*, where a well-calibrated
-single-hop gate protects multi-hop correctness only by systematically
-over-expanding, and *calibration non-transfer*, where discrimination
-generalizes across domains but calibrated probabilities do not.
+Contributions: **(i)** a two-axis certification protocol (aggregation /
+pointwise, never blended) with counterfactually filtered probes;
+**(ii)** its application to two compression regimes at matched retained
+budget, showing the axes *trade* — eviction preserves aggregation and
+destroys needles; our compactor degrades aggregation while halving
+silent needle loss; **(iii)** the routability result: eviction loss is
+mechanics-routable (0.72 reduction from shadow features), compactor loss
+is routable only by reading the computation (0.85 AUC from the residual
+stream; 0.56 from everything outside it); **(iv)** a three-rung
+deployment ladder with measured cost/benefit at each rung; **(v)**
+position-kernel collapse as a failure mode of small-scale learned
+compaction, with cross-attention entropy as its certification-time
+diagnostic; **(vi)** instance-independent fragility ordering; **(vii)**
+multi-hop entry-gating beating per-block selection (1.98× vs 2.33×
+oracle cost).
 
 ## 2. Related work
-
-*KV-cache reduction.* Per-context selection scores tokens at inference and
-evicts the rest (H2O, SnapKV, StreamingLLM); amortized selection learns the
-scorer (KV-Distill); per-context and amortized synthesis write new compact
-entries rather than keeping original rows (Attention Matching; Still), and
-architecture-level lines bake reduction into the model (MLA, native sparse
-attention). Our work is orthogonal to the choice of compressor: we certify
-compressors along two axes and supply the decision layer their lossiness
-requires. Notably, the strongest published synthesis results themselves show
-the axis split we formalize — near-full aggregative utility with
-needle-retrieval collapse — which we take as independent evidence for the
-two-workload framing. *(verify all citations against primaries before
-submission; drafted from working notes)*
-
-*Selective prediction and abstention.* The gate is a selective-prediction
-head over an external memory: it estimates, per query, whether the model's
-conditioning state supports the answer. It is related to answerability and
-abstention heads in retrieval-augmented settings, with two differences: the
-label is *counterfactual* (answers under compressed vs. raw conditioning are
-compared, rather than correctness being judged in isolation), and the head is
-trained fully decoupled from the backbone, using the backbone only offline as
-a teacher — an amortization move analogous to learned retrieval indexers in
-sparse-attention serving systems.
-
-*Memory-augmented agents.* OS-style memory hierarchies (MemGPT-class) page
-text in and out of context but do not certify fidelity or route by workload;
-our protocol and gate are directly applicable to such systems.
+[v0.1 §2 carries over: KV reduction (selection / amortized selection /
+synthesis / architecture-level), selective prediction & abstention,
+memory-augmented agents. Add: probing & representation reading (linear
+probes on residual streams; truthfulness/uncertainty probes) — our probe
+is a *sufficiency* probe over an external memory tier, supervised by
+counterfactual behavioral labels rather than truth labels. Add:
+attention-sink literature — we repurpose sink-mass anomaly as an
+insufficiency sensor (§6.3). verify-all-citations flag stands.]
 
 ## 3. Two axes and a certification protocol
+[v0.1 §3 verbatim: definitions of counterfactual validity, aggregation
+axis, pointwise axis (lost-fact incident rate), per-axis certification,
+gate-mandatory rule, zero-compression noise floor (measured 0.000).]
 
-**Definitions.** Fix a base model f, a compression policy C, and a corpus of
-(context, question, answer) items where each question is generated from a
-specific source span. An item is *counterfactually valid* if f answers it
-correctly with the context and incorrectly without it — so a correct answer
-under compression proves the information traversed the compressed cache. The
-**aggregation axis** is measured over integrative behavior: next-token KL
-between f conditioned on the full cache and f conditioned on C(cache), plus
-answer-accuracy deltas on items whose source spans survive compression. The
-**pointwise axis** is the *lost-fact incident rate*: among counterfactually
-valid items whose source span was compressed away, the fraction answered
-incorrectly *without* any expansion mechanism — the silent-failure rate.
+## 4. Regime I — contiguous eviction: mechanics-routable loss
 
-**Protocol.** A configuration is certified per axis, never as a blend; the
-noise floor is established by running the identical probe battery at zero
-compression; and a configuration certified only on the aggregation axis may
-ship only behind an active, calibrated expansion gate for pointwise traffic.
-The last clause converts the antagonism from an observation into a deployment
-rule.
+### 4.1 Setup and axis split
+[v0.1 §4: corpus, filters, eq_policy, evict-oldest-nonsink 0.25/0.40,
+sink pinning; canonical never-expand per protocol; KL ~0.03 while
+evicted-span silent loss dominates.]
 
-## 4. The axes split: measurement at 1B-token scale
+### 4.2 The shadow gate
+[v0.1 §5.1/5.3: dual encoder, native calibration (ECE 0.023/0.017),
+strict dominance over classify-and-expand, operating point 0.143 @
+0.169 vs oracle 0.194; A2 decomposition: features-only ≈ full —
+**the signal is eviction mechanics**, and that is enough here.]
 
-**Setup.** Base model Qwen3-4B-Instruct-2507 (bf16, greedy, pinned runtime
-fingerprint). Corpus: 40,000 long documents across financial filings (238M
-tokens), literature (416M), case law (119M), and source code (154M);
-98,355 extractive multiple-choice items generated by the base model from
-random ~1k-token sub-chunks, teacher-verified answerable with context and
-discarded if answerable without (98.4% of the 100k target; code has the
-lowest filter survival). Equivalence is answer-letter exact match; a manual
-audit of pointwise failures found 0% format noise. Compression policy:
-evict-oldest-non-sink at fractions 0.25 and 0.40, with the first four
-positions pinned as attention sinks. Contexts are 4096-token per-item
-prefills with item placement randomized by hash, giving natural exposure to
-eviction.
+### 4.3 What travels and what doesn't
+[v0.1 §5.5: LODO — discrimination transfers (AUC 0.78–0.87),
+calibration does not (ECE 0.05–0.11); 200-item per-domain temperature
+repair. Retained as the deployment procedure for every gate tier in
+this paper.]
 
-**Result.** The zero-eviction control gives a lost-fact noise floor of
-0.000. Under eviction, the aggregation axis barely moves — mean KL 0.0303
-(0.25) and 0.0339 (0.40) against the full-context teacher, answer deltas on
-surviving-span items ≈ 0 — while the pointwise axis collapses: ⟨A3-never⟩
-of facts in evicted spans are silently lost, worsening with fraction
-⟨A4-CI⟩. The residual recoverable fraction is consistent with the summary
-path carrying a minority of needles forward (surviving representations were
-computed while the evicted span was still present). One artifact, two
-workloads, opposite outcomes.
+## 5. Regime II — a trained compactor: the axes cross, the gate goes blind
 
-*(A3 note: an earlier certification pass under packed multi-item contexts
-gave 0.708/0.808; the canonical numbers above are re-stated under the
-per-item protocol used throughout this paper, with the reconciliation in
-Appendix ⟨A3⟩.)*
+### 5.1 Compactor, certification, no-ship
+Still-canonical per-layer Perceiver (50M params) trained at 1/40 the
+published data scale against the frozen base; certified on the same
+protocol at matched retained budget. Aggregation axis: *worse* than
+eviction (KL 0.263 vs 0.122; recurrence depth 4 collapses to 2.29 →
+max_certified_depth = 0). Pointwise axis: *better* — silent needle loss
+0.271 vs eviction's 0.583. The regimes trade axes at this scale.
 
-## 5. A decoupled sufficiency gate
+### 5.2 Position-kernel collapse
+Captured cross-attention is exactly positional: delta rows, entropy
+0.000 across 1,000 items × 36 layers × 8 heads. The compactor never
+left its position-dominated initialization — compaction here is strided
+subsampling of [K;V] plus leakage smear, not content synthesis — the
+kept set is exactly `round(k·(S−1)/1023)`, a uniform stride-≈3 lattice,
+invariant across all heads and all items. This
+(a) renames the regime honestly (subsampling, with true synthesis
+untested at this scale); (b) explains the pointwise advantage
+(subsampled latents smuggle partial content forward; deletion destroys
+it); (c) explains the cross-reseed nesting of failure sets (§7);
+(d) yields a certification diagnostic: **report compactor
+cross-attention entropy; a near-zero value means the artifact is a
+subsampler regardless of its loss curve** (ours hit KL 0.058 by step
+300 while never routing content). We name the failure mode
+position-kernel collapse, the compactor-side sibling of recurrent-gate
+collapse.
 
-### 5.1 Labels, model, calibration
+### 5.3 The gate goes blind
+Relabeling under the compactor and retraining the shadow gate: the A2
+decomposition *flips* (embeddings 0.567 > features 0.537) but everything
+lands at ~0.55 — statistically indistinguishable from a five-feature
+surface logistic (0.564 [0.553, 0.575]). Engineered interference-
+geometry features add nothing (0.568). The refreshed gate still
+*calibrates* (ECE 0.0074) and rides the lower base rate to a nominal
+operating point, but its marginal reduction is 22.5% at 86% of oracle's
+budget: it is calibrated always-expand-lite, not a router. **The loss
+did not become smaller-and-harder; it became internal.**
 
-For each of the 98,355 items and each eviction fraction we produce a
-counterfactual sufficiency label: y = 1 iff the answer under the compacted
-cache differs from the answer under the raw span (196,710 rows; items whose
-source span survived eviction enter as natural y = 0 rows). Splits are
-grouped by source document, domain-stratified, with an additional
-leave-one-domain-out rotation. The gate is a dual encoder over frozen
-Qwen3-Embedding-0.6B — the same embedding model that produces the memory
-blocks' retrieval shadows — with a 256-d normalized projection interaction,
-a small feature head (eviction fraction, query–block overlap, evicted flag,
-domain), and an auxiliary query-workload head. A frozen-embedder linear
-probe sufficed. Per-fraction temperature search returned T = 1.0 for both
-fractions: the probe is natively calibrated, with test ECE 0.023 (0.25) and
-0.017 (0.40). Marginal cost of the entire gate experiment — labels,
-training, evaluation, figures — was ≈ $140.
+## 6. Reading the computation
 
-### 5.2 What the gate learned
+### 6.1 Probes
+All probes trained on GT16-protocol counterfactual labels, evicted-only
+evaluation, doc-level splits, fixed capacity; fragility-ordering row
+(Kendall τ vs the cross-reseed nesting) reported for every arm.
 
-⟨A2-verdict: keep exactly one of the following three paragraphs.⟩
+### 6.2 Results
+| signal source | AUC [95% CI] | τ |
+|---|---|---|
+| surface features (floor) | 0.564 [0.553, 0.575] | — |
+| + interference geometry | 0.568 [0.557, 0.579] | — |
+| prompted self-check (1 fwd) | 0.638 [0.628, 0.649] | 0.20 |
+| sink/retrieval-head monitor (2 hooks, 8 scalars) | 0.762 [0.753, 0.771] | — |
+| per-head attention probe | 0.767 [0.758, 0.777] | 0.46 |
+| residual linear, layer 30 | 0.819 [0.811, 0.827] | 0.45 |
+| residual MLP (3 seeds) | 0.852 [0.844, 0.859] | 0.47 |
+| stack | **0.854 [0.846, 0.862]** | **0.57** |
 
-⟨IF content⟩ Restricting evaluation to evicted-span rows — removing the
-near-deterministic evicted-vs-survived separation from the task — the gate
-retains AUC ⟨A1-AUC⟩ (PR-AUC ⟨A1-PR⟩), and the embeddings-only ablation
-matches the full model within seed noise while the features-only ablation
-falls to ⟨A2-feat-AUC⟩. The signal is content: the gate reads, from the
-query and the block's shadow, whether this particular fact class survives
-this compressor.
+The layer curve is monotone through the last third of the stack (0.53
+at L15 → 0.65 → 0.81 → peak L30): sufficiency estimation crystallizes
+late. Aggregated attention statistics fail (best 0.536) while individual
+late-layer heads reach 0.72 — including a cluster whose signal is
+*anomalous sink mass*: under-attention to memory parks probability on
+sink positions, turning the attention-sink phenomenon into a sensor.
 
-⟨IF mechanics⟩ Restricting evaluation to evicted-span rows, the full model
-reaches AUC ⟨A1-AUC⟩ — but the features-only ablation reaches ⟨A2-feat-AUC⟩,
-within seed noise of the full model, while embeddings-only falls to
-⟨A2-emb-AUC⟩. The learned signal is predominantly eviction mechanics
-(fraction, overlap, position), not content semantics; this also explains
-the near-tie between document-level and item-level splits (there is little
-content signal for item leakage to exploit). We therefore describe the gate
-as a calibrated mechanics classifier and treat content-aware sufficiency as
-open headroom.
+### 6.3 The deployment ladder
+Three rungs, each with its measured cost: the prompted self-check
+(0.638; one extra forward, zero training — and already above every
+corpus-side approach); the head monitor (0.762, end-to-end lost-fact 0.149 at expansion rate
+0.060; two scalar hooks on one forward, no capture infrastructure —
+and notably the prompted self-check adds nothing on top of it (0.763
+combined): the model's verbalized self-report is subsumed by its own
+attention behavior); the trained stack (0.854; capture + $3 of probe
+training per capacity point).
+End-to-end at natural prevalence, the stack-gated system reaches
+lost-fact 0.146 at expansion rate **0.050** — the shadow gate's
+correctness at one third of its budget — strictly inside its curve,
+with oracle at 0/0.170. Per-capacity retraining is required (transfer
+to t=512 drops 0.21, consistent with cross-capacity label κ 0.455);
+per-domain temperature repair carries over from §4.3.
 
-⟨IF complementary⟩ Restricting evaluation to evicted-span rows, the full
-model reaches AUC ⟨A1-AUC⟩, with features-only at ⟨A2-feat-AUC⟩ and
-embeddings-only at ⟨A2-emb-AUC⟩ — both materially below the full model. The
-signal decomposes: eviction mechanics carry the base rate, content
-embeddings decide the hard cases, and the combination is what clears the
-routing baseline in §5.3.
+### 6.4 What the probe reads
+A context-only control — the same compact context, no question, same
+layer — drops to chance: a fresh probe reaches 0.502 [0.487, 0.518] and
+the question-conditioned probe applied zero-shot reaches 0.508, against
+0.813 with the question present. The probe is therefore a
+**behavioral-divergence predictor** — it reads the model's answer-time
+state, question included — and should not be interpreted as a readout
+of memory contents. We regard this as confirmation rather than
+deflation: our certification protocol *defines* sufficiency
+counterfactually, as a relation over (query, memory) pairs, and the
+control shows the model's internals agree — there is no
+query-independent sufficiency signal to read, because sufficiency is
+not a property the memory state has on its own. (Scope: the null is
+for linear decodability at the probed layer; nonlinear or multi-layer
+context-only readouts are untested.)
 
-### 5.3 Operating point and baselines
+## 7. Fragility is a property of the fact, not the checkpoint
+Cross-reseed relabeling: κ 0.745 with the weaker instance's failure set
+nested inside the stronger's (P = 0.945) and protocol determinism
+exactly 1.0 — loss follows an instance-independent fragility ordering
+that better compactors peel from the top. Probe scores rank this
+ordering (τ 0.57, CI excludes 0). Qualitatively, fragility concentrates
+in key→value *binding* under confusable-sibling pressure — neighboring
+table rows, near-identical identifiers, common-token values in crowded
+neighborhoods — with token rarity mildly *inversely* predictive: what
+dies is binding, not content.
 
-At the operating threshold τ = 0.488 (chosen on the calibration split), the
-gate reaches test lost-fact 0.143 ⟨A4-CI⟩ at expansion rate 0.169, against
-never-expand ⟨A3-never⟩, always-expand at rate 1.0, and the oracle at 0.000
-loss / 0.194 rate. Against the interpretable baseline — classify the query
-as pointwise vs. aggregative and expand iff pointwise — the gate strictly
-dominates at every matched expansion rate from 0.1 to 0.5 (lost-fact
-0.277 / 0.092 / 0.000 / 0.000 / 0.000 vs. 0.470 / 0.416 / 0.368 / 0.308 /
-0.248). The full cost–correctness plane is Figure 1; the gate's curve lies
-inside the routing baseline everywhere and reaches ≈ 0 loss at ~0.30
-expansion rate.
+## 8. Discussion
 
-### 5.4 Multi-hop: the weakness moves to the cost axis
+### 8.1 The routability ladder
+One protocol, two regimes, three signal classes:
 
-On a 500-item slice of teacher-filtered two-fact questions composed within
-single documents, the gate at the single-hop threshold *holds correctness* —
-lost-fact 0.036 vs. 0.376 never-expand — but does so by over-expanding:
-recall 0.904 at precision 0.388, expansion rate 0.438 against an oracle of
-0.188 (2.3×). The predicted mid-spectrum weakness of retrieval-then-
-integration queries is real, but it lands on cost, not correctness: a
-calibrated single-hop gate defends multi-hop questions by firing too often.
-This cleanly scopes the next component — a selector that scores block *sets*
-so a multi-hop query triggers one grouped expansion — and gives it a
-quantitative target (recover ~2.3× → ~1× oracle cost at held recall).
+```text
+eviction      loss follows visible mechanics   → shadow gate: −72% loss
+subsampling   kernel geometry loss-blind        → shadows blind (0.55),
+              (this work's "compactor")            kernel mechanics blind
+                                                   (0.55); query-conditioned
+                                                   computation-reading 0.85
+                                                  → same loss at ⅓ budget
+true synthesis                                  → untested at this scale
+```
 
-### 5.5 Calibration does not transfer; discrimination does
+### 8.2 Is subsampling loss mechanics-routable after all?
+No — and the test was as favorable as it could be made. The kernel is
+fully known (the exact stride-3 lattice, item-invariant), yet
+needle-to-nearest-kept-position distance predicts survival at 0.509
+[0.499, 0.519], the mechanics-with-kernel gate adds +0.003 over the
+surface floor (0.550 [0.537, 0.563]), and the residual-stream probe's
+scores correlate with kernel distance at ρ = 0.045 — almost none of the
+0.85 is kernel geometry. Because every span of three or more tokens
+contains a lattice point, what varies is only the phase of the answer
+tokens relative to the lattice, and phase carries no signal: survival
+is decided by leakage smear and by how downstream layers use the
+subsampled cache. The internality claim stands in full, with one
+refinement from the context-only control: the loss is not merely
+internal to the model — it is internal to the *query-conditioned*
+computation. Write-side blind, question-free read-side blind; only the
+encounter between the question and the memory carries the signal.
 
-Under leave-one-domain-out evaluation the gate's discrimination holds
-(AUC 0.781–0.865, near-zero lost-fact at ~0.26 expansion), but calibration
-degrades to ECE 0.05–0.11. Fitting a single scalar temperature on ~200
-labeled items from the new domain restores ECE ≤ 0.05 in every rotation.
-The practical statement: a "calibrated gate" is not a checkpoint but a
-checkpoint plus a per-domain recalibration procedure, and deployment to a
-new domain carries a small, explicit labeling cost.
+### 8.3 Consequences for memory-system design
+Gate-mandatory is regime-independent; gate-*class* is regime-dependent.
+Certification must include the probe: any retrained compactor gets its
+divergence-predictability measured per instance and per capacity, its
+cross-attention entropy reported, and — if the kernel is nontrivial —
+the kernel-geometry test rerun (a full-recipe compactor that escapes
+position-kernel collapse may make write-time geometry loss-bearing
+again; ours did not). Multi-hop: content-aware *entry*
+(per-query sufficiency score) beats per-block ranking (1.98× vs
+2.15–2.33× oracle) — the binding constraint was never block scoring.
 
-## 6. Limitations
+## 9. Limitations
+Single 4B base; one tokenizer (fragility neighborhoods are partly
+tokenizer artifacts); the compactor is 1/40-recipe and mechanistically
+a subsampler — Regime II results certify this artifact class, not
+full-recipe synthesis; extractive MCQ probes, letter-match equivalence,
+greedy decoding, single-turn contexts; multi-hop k=2, one evicted
+candidate per query; GT22 weighted at natural prevalence on the
+captured sample; F1's needle features exclude the 22% of test items
+without a locatable in-prefix answer; the F2 null is scoped to linear
+decodability at layer 30. Probe claims are per-capacity and
+per-instance by measurement (§6.3, §7), and the probe predicts
+behavioral divergence rather than certifying memory contents (§6.4).
 
-Single base model and scale (4B); one compression regime (untrained
-eviction — trained synthesis compressors will shift the aggregation axis
-but published results indicate they do not rescue the pointwise axis, which
-is the case our protocol and gate address); extractive MCQ probes with a
-letter-match equivalence function rather than open-ended generation; greedy
-decoding; per-item single-turn contexts rather than multi-turn threads;
-multi-hop limited to k = 2 within-document composition. The two-axis
-protocol itself is compressor-agnostic and model-agnostic; the specific
-numbers are not.
-
-## 7. Conclusion
-
-Single-number long-context evaluation is incoherent under compression: the
-pointwise and aggregative axes are antagonistic, and at 1B-token scale they
-split almost completely. The resolution is architectural — a lossy tier for
-aggregation, a lossless path for needles, and a router between them — and
-the router turns out to be cheap: a $140 decoupled probe over frozen
-embeddings, natively calibrated, dominating query-type routing, and
-recovering the pointwise axis at a fifth of always-expand cost. What does
-not come for free is exactly what the measurements localize: multi-hop
-queries expose a cost overhang that calls for set-level selection, and
-calibration is a per-domain property requiring a recalibration procedure.
-Both are precise targets rather than open mysteries, which is where we
-think a memory system's decision layer ought to leave its next iteration.
+## 10. Conclusion
+Silent memory loss under compression is not one problem. Delete, and
+the damage follows mechanics anyone can see; subsample-and-smear, and
+the damage moves inside the model — and further in than that: it is not
+stored in the memory state at all, but materializes in the encounter
+between query and memory, where a linear probe on the residual stream
+recovers what every external signal missed, for a third of the routing
+budget. The practical statement
+is a ladder — ask the model (free), watch two attention heads (cheap),
+read the residual stream (small) — and the scientific one is that
+*routability, not just fidelity, is a certifiable property of a
+compression regime.* We think that is the property long-context memory
+systems should be certifying next.
 
 ---
 
-### Appendices (to assemble from artifacts)
-A. Eval-protocol appendix (V1): item partitions per axis, probing
-   conditions, sampling parameters. B. Baseline reconciliation (A3).
-C. Signal decomposition full table (A2) + seed SDs (A4). D. Corpus
-   construction and filter-survival statistics. E. Recalibration procedure
-   and LODO tables. F. Reproducibility: fingerprint record, pinned
-   versions, compute ledger (corpus ≈ $500, labels ≈ $110, gate ≈ $30).
+### Appendices
+A. eval-protocol definitions & item partitions · B. baseline
+reconciliations (A3-class, incl. 0.271-vs-0.189 protocol note) ·
+C. decompositions + seeds/CIs · D. corpus construction · E. LODO &
+recalibration · F. position-kernel collapse evidence (entropy tables,
+loss-curve-vs-routing figure) · G. retrieval-head inventory ·
+H. reproducibility & compute ledger (total ≈ $1,100 across
+corpus/gate/compactor/probes) · I. FOLLOWUP results (F1–F3: kernel-lattice extraction, context-only control, sink-head monitor; verdicts and CIs).
+
+### Figures
+1. two-regime axis plot (aggregation × pointwise, both regimes +
+control) · 2. routability bar chart (signal class × regime) ·
+3. deployment ladder cost/benefit · 4. layer curve · 5. end-to-end
+cost/correctness plane (all gates + oracle) · 6. fragility nesting
+diagram.
 
 ### Title alternatives
-1. "Expand When It Matters: A Calibrated Sufficiency Gate for Compressed
-   LLM Memory"
-2. "Needles Don't Compress: Two-Axis Certification for Lossy LLM Memory"
-3. "The Pointwise–Aggregative Split: Measuring and Routing Around the
-   Antagonism in Compressed Long Context"
+1. "Delete or Blur: Compression Regime Determines Where Memory Loss
+   Can Be Predicted"
+2. "The Loss Moved Inside: Routing Around Compressed-Memory Failure by
+   Reading the Residual Stream"
+3. "Routability Is a Certifiable Property of Memory Compression"

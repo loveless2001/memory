@@ -120,5 +120,55 @@
    "delta_over_p2": 0.2161
   },
   "GT25_best_arm_tau_excludes_0": true
+ },
+ "f1_mechanics_with_kernel": {
+  "test_auc": 0.5496,
+  "ci95": [
+   0.5366,
+   0.5628
+  ],
+  "delta_over_c0": 0.0029,
+  "univariate_dmin_auc": 0.5089,
+  "branch": "iii",
+  "note": "kernel geometry loss-blind; smear dominates"
+ },
+ "f3_sinkheads": {
+  "test_auc": 0.7619,
+  "ci95": [
+   0.7526,
+   0.771
+  ],
+  "per_domain": {
+   "code": 0.7277,
+   "financial": 0.7835,
+   "legal": 0.7922,
+   "literature": 0.7829
+  },
+  "p2_plus_sinkheads_auc": 0.7626,
+  "e2e_lost_at_expand": [
+   0.1487,
+   0.0595
+  ],
+  "note": "4 inventory heads x {m_lat,m_sink}=8 scalars, 2 hooks, no capture infra"
+ },
+ "f2_context_only": {
+  "refit_auc": 0.5024,
+  "refit_ci95": [
+   0.4873,
+   0.5178
+  ],
+  "zeroshot_auc": 0.5082,
+  "zeroshot_ci95": [
+   0.4927,
+   0.5229
+  ],
+  "question_conditioned_ref_auc": 0.813,
+  "note": "context-only layer-30 at chance -> 0.85 is answer-confidence / behavioral-divergence"
+ },
+ "_followup_verdicts": {
+  "F1_branch": "iii",
+  "F1_verdict": "smear dominates; branch (iii)",
+  "F2_reading": "near chance -> 0.85 is substantially answer-confidence; downgrade to behavioral-divergence predictor",
+  "F3_ladder": "p2 free 0.638 -> sinkheads (+2 hooks) 0.762 -> stack 0.854"
  }
 }

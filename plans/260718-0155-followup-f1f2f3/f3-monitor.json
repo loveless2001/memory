@@ -1,0 +1,41 @@
+{
+ "F3_AUC": 0.7619,
+ "F3_ci95": [
+  0.7526,
+  0.771
+ ],
+ "per_domain": {
+  "code": 0.7277,
+  "financial": 0.7835,
+  "legal": 0.7922,
+  "literature": 0.7829
+ },
+ "p2_plus_sinkheads_auc": 0.7626,
+ "F3_e2e_p2_plus_sinkheads": {
+  "val_chosen_tau": {
+   "tau": 1.1668877160549163,
+   "lost_prior_correct": 0.1442,
+   "expand_evicted": 0.0783,
+   "expand_all_est": 0.0652
+  },
+  "test_at_tau": {
+   "tau": 1.1668877160549163,
+   "lost_prior_correct": 0.1487,
+   "expand_evicted": 0.0714,
+   "expand_all_est": 0.0595
+  },
+  "comparators": {
+   "p2_free_auc": 0.638,
+   "full_stack_auc": 0.854,
+   "stack_gate_e2e": {
+    "lost": 0.146,
+    "expand": 0.05
+   },
+   "refreshed_gate": {
+    "lost": 0.146,
+    "expand": 0.147
+   }
+  }
+ },
+ "ladder": "p2 free 0.638 -> sinkheads (+2 hooks) 0.762 -> stack 0.854"
+}
