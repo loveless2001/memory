@@ -1,6 +1,6 @@
 # Reading the Computation: How Compression Regime Determines Whether Lost Memory Is Routable
 
-**Draft v0.3 — 2026-07-19.** Supersedes v0.2; FOLLOWUP ledger resolved (branch iii, §6.4 variant B, F3 rung filled) plus FOLLOWUP2 (F4 context-only null hardened across a 6-layer × linear/MLP/concat sweep; F5 sink-head rung shown regime-general). Markdown master; ready for LaTeX conversion and the citation-verification pass.
+**Draft v0.4 — 2026-07-19.** Supersedes v0.3; FOLLOWUP2 folded (F4: context-only null upgraded to full probe sweep; F5: sink-head monitor regime-general, added to §4.2/§6.3/Fig. 2). Experimental content frozen — remaining work is figures, LaTeX, citation verification.
 
 ---
 
@@ -24,12 +24,15 @@ query-conditioned*. A linear probe on the frozen model's residual stream
 0.819; a small stack reaches 0.854 and, deployed as a gate, matches the
 shadow gate's correctness at one third of its expansion budget. A
 context-only control shows the signal is *relational*: without the
-question, the same layer carries no linearly decodable trace (AUC 0.502)
-— consistent with sufficiency being a property of (query, memory) pairs
+question, no probe recovers it — linear or MLP, at any of six layers or
+over their concatenation (max AUC 0.508 vs 0.813 with the question) —
+consistent with sufficiency being a property of (query, memory) pairs
 rather than of the memory state alone. We
 further show (i) a deployment ladder of increasing cost — a prompted
 self-check (0.638, one forward, no training), a two-hook attention-head
-monitor (0.762), and the trained probe stack (0.854); (ii) that probe
+monitor (0.762; regime-general — it reaches 0.783 under eviction,
+above the shadow gate's own discrimination, and transfers zero-shot
+between regimes), and the trained probe stack (0.854); (ii) that probe
 scores rank an instance-independent *fragility ordering* validated across
 compactor reseeds (κ=0.745; Kendall τ 0.57); and (iii) a mechanistic
 surprise: our 1/40-scale compactor's cross-attention consists of exact
@@ -93,7 +96,11 @@ evicted-span silent loss dominates.]
 [v0.1 §5.1/5.3: dual encoder, native calibration (ECE 0.023/0.017),
 strict dominance over classify-and-expand, operating point 0.143 @
 0.169 vs oracle 0.194; A2 decomposition: features-only ≈ full —
-**the signal is eviction mechanics**, and that is enough here.]
+**the signal is eviction mechanics**, and that is enough here. §6.3's
+head monitor later exceeds this gate's evicted-only discrimination even
+in this regime (0.783 vs 0.622); the gate's end-to-end value — built on
+calibration and free evicted/survived metadata — stands, but its
+discrimination tier is dominated by two attention hooks.]
 
 ### 4.3 What travels and what doesn't
 [v0.1 §5.5: LODO — discrimination transfers (AUC 0.78–0.87),
@@ -174,14 +181,14 @@ corpus-side approach); the head monitor (0.762, end-to-end lost-fact 0.149 at ex
 and notably the prompted self-check adds nothing on top of it (0.763
 combined): the model's verbalized self-report is subsumed by its own
 attention behavior); the trained stack (0.854; capture + $3 of probe
-training per capacity point). The head-monitor rung is regime-general
-(F5): the same eight scalars, memory region redefined as the surviving
-compacted span, predict eviction-regime loss at 0.783 [0.760, 0.808] —
-above the eviction shadow gate's own evicted-only discrimination (0.622) —
-and transfer zero-shot between regimes (0.72–0.74 either direction), so
-under-attention-to-memory is a cheap, compressor-independent insufficiency
-sensor.
-End-to-end at natural prevalence, the stack-gated system reaches
+training per capacity point).
+The rung is regime-general: the same eight-scalar monitor, with the
+memory region redefined as the surviving compacted span, predicts
+eviction-regime loss at 0.783 [0.760, 0.808] — above the shadow gate's
+own evicted-only discrimination (0.622) — and transfers zero-shot
+between regimes (0.72–0.74 either direction), so
+under-attention-to-memory is a cheap, compressor-independent
+insufficiency sensor. End-to-end at natural prevalence, the stack-gated system reaches
 lost-fact 0.146 at expansion rate **0.050** — the shadow gate's
 correctness at one third of its budget — strictly inside its curve,
 with oracle at 0/0.170. Per-capacity retraining is required (transfer
@@ -200,12 +207,11 @@ deflation: our certification protocol *defines* sufficiency
 counterfactually, as a relation over (query, memory) pairs, and the
 control shows the model's internals agree — there is no
 query-independent sufficiency signal to read, because sufficiency is
-not a property the memory state has on its own. The null holds under a
-harder test (F4): linear *and* nonlinear (256-hidden MLP) probes at every
-layer of a {10, 15, 20, 25, 30, 36} sweep, and a concat-of-layers probe,
-all reach at most AUC 0.508 against 0.813 with the question — there is no
-query-free sufficiency signal to read at any probed depth, not merely none
-linearly decodable at layer 30.
+not a property the memory state has on its own. Scope: the null holds for linear *and* nonlinear (256-hidden MLP)
+probes at every layer of a {10, 15, 20, 25, 30, 36} sweep and for a
+concat-of-layers probe — max context-only AUC 0.508 vs 0.813 with the
+question — so there is no query-free sufficiency signal to read at any
+probed depth, not merely none linearly decodable at layer 30.
 
 ## 7. Fragility is a property of the fact, not the checkpoint
 Cross-reseed relabeling: κ 0.745 with the weaker instance's failure set
@@ -224,7 +230,8 @@ dies is binding, not content.
 One protocol, two regimes, three signal classes:
 
 ```text
-eviction      loss follows visible mechanics   → shadow gate: −72% loss
+eviction      loss follows visible mechanics   → shadow gate: −72% loss;
+                                                   head monitor 0.78 too
 subsampling   kernel geometry loss-blind        → shadows blind (0.55),
               (this work's "compactor")            kernel mechanics blind
                                                    (0.55); query-conditioned
@@ -269,10 +276,10 @@ full-recipe synthesis; extractive MCQ probes, letter-match equivalence,
 greedy decoding, single-turn contexts; multi-hop k=2, one evicted
 candidate per query; GT22 weighted at natural prevalence on the
 captured sample; F1's needle features exclude the 22% of test items
-without a locatable in-prefix answer; the context-only null (F2/F4) covers
-linear and MLP probes across a six-layer sweep and a concat-of-layers probe
-(max AUC 0.508), leaving depths outside the sweep and probe families beyond
-MLP untested. Probe claims are per-capacity and
+without a locatable in-prefix answer; the context-only null covers linear and MLP probes across a six-layer
+sweep and a concat-of-layers probe (max AUC 0.508); depths outside the
+sweep and probe families beyond MLP are untested. F5's eviction-regime
+monitor row is measured at f=0.40 only. Probe claims are per-capacity and
 per-instance by measurement (§6.3, §7), and the probe predicts
 behavioral divergence rather than certifying memory contents (§6.4).
 
@@ -299,11 +306,13 @@ C. decompositions + seeds/CIs · D. corpus construction · E. LODO &
 recalibration · F. position-kernel collapse evidence (entropy tables,
 loss-curve-vs-routing figure) · G. retrieval-head inventory ·
 H. reproducibility & compute ledger (total ≈ $1,100 across
-corpus/gate/compactor/probes) · I. FOLLOWUP results (F1–F5: kernel-lattice extraction, context-only control, sink-head monitor; F4 hardened context-only null across a 6-layer × linear/MLP/concat sweep, max 0.508; F5 regime-general sink-head monitor under eviction 0.783 > shadow-gate 0.622 with zero-shot cross-regime transfer; verdicts and CIs).
+corpus/gate/compactor/probes) · I. FOLLOWUP results (F1–F3: kernel-lattice extraction, context-only control, sink-head monitor; verdicts and CIs).
 
 ### Figures
 1. two-regime axis plot (aggregation × pointwise, both regimes +
-control) · 2. routability bar chart (signal class × regime) ·
+control) · 2. routability bar chart (signal class × regime; incl. sink-head
+monitor cells in BOTH regimes — 0.78 eviction / 0.76 subsampling — vs
+mechanics 0.62 / 0.55) ·
 3. deployment ladder cost/benefit · 4. layer curve · 5. end-to-end
 cost/correctness plane (all gates + oracle) · 6. fragility nesting
 diagram.

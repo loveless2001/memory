@@ -20,7 +20,7 @@
 Whether Lost Memory Is Routable}
 
 \author{%
-  \textit{Draft v0.3 --- 2026-07-18 --- eviction + subsampling regimes}\\
+  \textit{Draft v0.4 --- 2026-07-19 --- eviction + subsampling regimes}\\
   \textit{Artifacts: \texttt{memsub-artifacts:/} \{\texttt{gate-eval},
   \texttt{compactor-certification}, \texttt{probe}\}}}
 \date{}
@@ -47,12 +47,15 @@ probe on the frozen model's residual stream (layer 30), with the question
 present, predicts answer divergence at $0.819$; a small stack reaches
 $0.854$ and, deployed as a gate, matches the shadow gate's correctness at
 one third of its expansion budget. A context-only control shows the signal
-is \emph{relational}: without the question, the same layer carries no
-linearly decodable trace (AUC $0.502$) --- consistent with sufficiency being
-a property of (query, memory) pairs rather than of the memory state alone.
-We further show (i) a deployment ladder of increasing cost --- a prompted
-self-check ($0.638$, one forward, no training), a two-hook attention-head
-monitor ($0.762$), and the trained probe stack ($0.854$); (ii) that probe
+is \emph{relational}: without the question, no probe recovers it --- linear
+or MLP, at any of six layers or over their concatenation (max AUC $0.508$ vs
+$0.813$ with the question) --- consistent with sufficiency being a property
+of (query, memory) pairs rather than of the memory state alone. We further
+show (i) a deployment ladder of increasing cost --- a prompted self-check
+($0.638$, one forward, no training), a two-hook attention-head monitor
+($0.762$; regime-general --- it reaches $0.783$ under eviction, above the
+shadow gate's own discrimination, and transfers zero-shot between regimes),
+and the trained probe stack ($0.854$); (ii) that probe
 scores rank an instance-independent \emph{fragility ordering} validated
 across compactor reseeds ($\kappa{=}0.745$; Kendall $\tau$ $0.57$); and
 (iii) a mechanistic surprise: our $1/40$-scale compactor's cross-attention
@@ -226,7 +229,11 @@ mechanics}, and that is enough here. At $\tau{=}0.488$ the gate reaches test
 \lostfact{} $0.146$ ($[0.136, 0.156]$) at expansion $0.168$ ($[0.163,
 0.173]$), against never-expand $0.453$--$0.551$ and oracle $0$ at $0.194$,
 strictly dominating query-type routing at every matched rate
-(Table~\ref{tab:gt8}, Figure~\ref{fig:plane}).
+(Table~\ref{tab:gt8}, Figure~\ref{fig:plane}). The head monitor of
+\S\ref{sec:ladder} later exceeds this gate's evicted-only discrimination
+even in this regime ($0.783$ vs $0.622$, F5); the gate's end-to-end
+value---built on calibration and free evicted/survived metadata---stands,
+but its discrimination tier is dominated by two attention hooks.
 
 \begin{table}[t]
 \centering
@@ -498,7 +505,7 @@ what dies is binding, not content.
 One protocol, two regimes, three signal classes:
 \begin{quote}
 \begin{tabular}{@{}ll@{}}
-eviction & loss follows visible mechanics $\rightarrow$ shadow gate: $-72\%$ loss \\
+eviction & loss follows visible mechanics $\rightarrow$ shadow gate $-72\%$; head monitor $0.78$ too \\
 subsampling & kernel geometry loss-blind $\rightarrow$ shadows blind ($0.55$), \\
 (this work's ``compactor'') & kernel mechanics blind ($0.55$); query-conditioned \\
  & computation-reading $0.85$ $\rightarrow$ same loss at $\tfrac{1}{3}$ budget \\
@@ -548,7 +555,8 @@ routability point is weighted at natural prevalence on the captured sample;
 F1's needle features exclude the $22\%$ of test items without a locatable
 in-prefix answer; the context-only null (F2/F4) covers linear and MLP probes
 across a six-layer sweep and a concat-of-layers probe (max AUC $0.508$),
-leaving depths outside the sweep and probe families beyond MLP untested.
+leaving depths outside the sweep and probe families beyond MLP untested;
+F5's eviction-regime monitor row is measured at $f{=}0.40$ only.
 Probe claims are per-capacity and per-instance by measurement
 (\S\ref{sec:ladder}, \S\ref{sec:fragility}), and the probe predicts
 behavioral divergence rather than certifying memory contents
