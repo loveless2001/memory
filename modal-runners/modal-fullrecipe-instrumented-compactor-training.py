@@ -109,7 +109,9 @@ def consolidate(n_shards: int) -> dict:
 
 
 def _train(tag: str, triplets: str, ctx_npy: str, steps: int,
-           save_every: int, seed: int = 1234) -> dict:
+           save_every: int, seed: int = 1234, lever: str = "none",
+           telemetry_every: int = 50,
+           tripwire_loss: float = 0.4) -> dict:
     import os
     import subprocess
     import time
@@ -124,7 +126,9 @@ def _train(tag: str, triplets: str, ctx_npy: str, steps: int,
            "--probe-ctx-npy", f"{BASE}/ctx-tokens-full.npy",
            "--t-latents", "1024", "--steps", str(steps),
            "--lr", "4e-5", "--out-dir", out_dir,
-           "--save-every", str(save_every), "--seed", str(seed)]
+           "--save-every", str(save_every), "--seed", str(seed),
+           "--telemetry-every", str(telemetry_every), "--lever", lever,
+           "--tripwire-loss", str(tripwire_loss)]
     proc = subprocess.Popen(cmd)
     # watchdog: commit progress every 2 min; reap NCCL zombie after DONE
     done_marker, waited_after_done = f"{out_dir}/DONE", 0
@@ -159,8 +163,11 @@ def _train(tag: str, triplets: str, ctx_npy: str, steps: int,
 @app.function(image=image, gpu="H100:8", volumes=VOLUMES, timeout=43200,
               memory=262144, cpu=32)
 def train(tag: str, triplets: str, ctx_npy: str, steps: int,
-          save_every: int) -> dict:
-    return _train(tag, triplets, ctx_npy, steps, save_every)
+          save_every: int, seed: int = 1234, lever: str = "none",
+          telemetry_every: int = 50,
+          tripwire_loss: float = 0.4) -> dict:
+    return _train(tag, triplets, ctx_npy, steps, save_every, seed, lever,
+                  telemetry_every, tripwire_loss)
 
 
 @app.local_entrypoint()
@@ -225,3 +232,30 @@ def extend_full():
                     f"{BASE}/triplets-full.json",
                     f"{BASE}/ctx-tokens-full.npy", 3000, 250)
     print("spawned extension:", h.object_id)
+
+
+ESCAPE_LEVERS = {"e1": "e1_sqrt_scale", "e2": "e2_learned_temp",
+                 "e3": "e3_anchor_noise", "e4": "e4_content_seed"}
+
+
+@app.local_entrypoint()
+def escape_arms(arms: str = "e1,e2,e3,e4", seed: int = 1234):
+    """ESCAPE.md E1-E4: mid-scale, one lever each, I1 every 25 steps."""
+    handles = []
+    for a in arms.split(","):
+        tag = f"escape-{a}-mid-t1024-T8k" + ("" if seed == 1234
+                                             else f"-seed{seed}")
+        handles.append(train.spawn(
+            tag, f"{BASE}/triplets-mid.json", f"{BASE}/ctx-tokens-mid.npy",
+            188, 47, seed, ESCAPE_LEVERS[a], 25))
+    print("spawned:", [h.object_id for h in handles])
+
+
+@app.local_entrypoint()
+def e1full(steps: int = 1500):
+    """E1FULL WP1: escaped config (scale sqrt(d_l)), full mixture, GT27
+    tripwire 0.45; rerun with --steps 3000 to extend (auto-resume)."""
+    h = train.spawn("e1full-t1024-T8k", f"{BASE}/triplets-full.json",
+                    f"{BASE}/ctx-tokens-full.npy", steps, 250, 1234,
+                    "e1_sqrt_scale", 50, 0.45)
+    print("spawned e1full:", h.object_id)

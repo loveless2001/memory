@@ -51,7 +51,13 @@ def install(n_layers: int, device: str) -> None:
         k = apply_rotation(self.k_proj(kv_normed) + self.k_anchor, k_cos, k_sin)
         q = F.normalize(q, dim=-1)
         k = F.normalize(k, dim=-1)
-        attn = torch.softmax(q @ k.transpose(-1, -2) * self.d_l, dim=-1)
+        # ESCAPE E2 lever: per-layer learned temperature (clamped) overrides
+        # the fixed d_l logit scale. Scale is folded into q BEFORE the matmul:
+        # multiplying the [., t, S] logits by a grad-requiring scalar would
+        # make autograd save the full logit tensor per layer (OOM at t=1024).
+        scale = (self._temp_ref.clamp(1.0, 256.0)
+                 if getattr(self, "_temp_ref", None) is not None else self.d_l)
+        attn = torch.softmax((q * scale) @ k.transpose(-1, -2), dim=-1)
         li = getattr(self, "_tele_layer", None)
         if TeleState.active and li is not None:
             with torch.no_grad():

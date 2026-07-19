@@ -74,6 +74,86 @@ def student_logits(model, cache, token_ids, device):
     return out.logits[0]
 
 
+def apply_escape_lever(lever, compactor, model, tok, device, rank):
+    """ESCAPE.md arms E1–E4: exactly one registered lever, else canonical."""
+    if lever == "none":
+        return
+    all_attn = [m for l in compactor.layers
+                for m in list(l.cross) + list(l.selfattn)]
+    if lever == "e1_sqrt_scale":
+        for m in all_attn:
+            m.d_l = 16                       # scale-only use of the attr
+    elif lever == "e2_learned_temp":
+        for layer in compactor.layers:
+            layer.attn_temp = torch.nn.Parameter(
+                torch.tensor(16.0, device=device))
+            for m in list(layer.cross) + list(layer.selfattn):
+                # bypass nn.Module.__setattr__: a plain attribute reference,
+                # NOT a registered (aliased) parameter — safetensors save
+                # rejects shared tensors in the state dict
+                object.__setattr__(m, "_temp_ref", layer.attn_temp)
+    elif lever == "e3_anchor_noise":
+        with torch.no_grad():
+            for m in all_attn:
+                m.q_anchor.add_(torch.randn_like(m.q_anchor) * 0.02)
+                m.k_anchor.add_(torch.randn_like(m.k_anchor) * 0.02)
+    elif lever == "e4_content_seed":
+        # latent banks <- per-(layer, head) k-means centroids of corpus
+        # [K_unrot; V]; content projections unzeroed (else centroid latents
+        # are routing-inert through zero W_Q/W_K)
+        with torch.no_grad():
+            for layer in compactor.layers:
+                for m in layer.cross:
+                    m.q_proj.weight.normal_(0.0, 0.02)
+                    m.k_proj.weight.normal_(0.0, 0.02)
+        if rank == 0:
+            from memsub.compactor.rope_rotation_helpers import (
+                model_rope_cos_sin, unrotate)
+            from memsub.runtime import CompactedPrefixCache
+            ctx_arr = np.load(
+                "/artifacts/corpus-fullrecipe/ctx-tokens-full.npy",
+                mmap_mode="r")
+            n_layers = len(compactor.layers)
+            pools = None                      # [L, H, n_items*S_sub, 2d]
+            with torch.no_grad():
+                for it in range(16):
+                    out = model(input_ids=torch.tensor([ctx_arr[it].tolist()],
+                                                       device=device),
+                                use_cache=True)
+                    cache = CompactedPrefixCache.from_prefill(
+                        out.past_key_values, ctx_arr.shape[1])
+                    pos = torch.tensor(cache.logical_positions[4:])
+                    cos, sin = model_rope_cos_sin(model.config, pos,
+                                                  torch.float32, device)
+                    sub = torch.randperm(len(pos))[:512]     # per-item sample
+                    per_layer = []
+                    for li in range(n_layers):
+                        k, v = cache.layer_kv(li)
+                        k_u = unrotate(k[:, :, 4:].float(), cos, sin)
+                        x = torch.cat([k_u, v[:, :, 4:].float()], -1)[0]
+                        per_layer.append(x[:, sub])          # [H, 512, 2d]
+                    stack = torch.stack(per_layer)           # [L, H, 512, 2d]
+                    pools = stack if pools is None else \
+                        torch.cat([pools, stack], dim=2)
+                g = torch.Generator(device="cpu").manual_seed(1234)
+                for li, layer in enumerate(compactor.layers):
+                    t_lat = layer.latents.shape[1]
+                    for h in range(layer.latents.shape[0]):
+                        X = pools[li, h]                     # [8192, 2d]
+                        cent = X[torch.randperm(X.shape[0], generator=g)
+                                 [:t_lat].to(X.device)].clone()
+                        for _ in range(10):                  # plain k-means
+                            asg = torch.cdist(X, cent).argmin(1)
+                            sums = torch.zeros_like(cent)
+                            sums.index_add_(0, asg, X)
+                            cnt = torch.bincount(asg, minlength=t_lat) \
+                                .unsqueeze(1).float()
+                            cent = torch.where(cnt > 0, sums / cnt.clamp(min=1),
+                                               cent)
+                        layer.latents[h] = cent
+            print("[e4] centroid latent banks seeded", flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--triplets-file", required=True)
@@ -90,7 +170,12 @@ def main():
     ap.add_argument("--telemetry-every", type=int, default=50)
     ap.add_argument("--save-every", type=int, default=250)
     ap.add_argument("--tripwire-step", type=int, default=300)
+    ap.add_argument("--tripwire-loss", type=float, default=0.4)
     ap.add_argument("--seed", type=int, default=1234)
+    ap.add_argument("--lever", default="none",
+                    choices=["none", "e1_sqrt_scale", "e2_learned_temp",
+                             "e3_anchor_noise", "e4_content_seed"],
+                    help="ESCAPE.md single-lever arms (canonical otherwise)")
     args = ap.parse_args()
 
     dist.init_process_group("nccl")
@@ -104,6 +189,10 @@ def main():
         .to(device, torch.float32)
     telemetry.install(int(model.config.num_hidden_layers), device)
     telemetry.mark_layers(compactor)
+    apply_escape_lever(args.lever, compactor, model, tok, device, rank)
+    # pin identical init across ranks regardless of lever randomness
+    for p in compactor.parameters():
+        dist.broadcast(p.data, 0)
 
     decay, nodecay = [], []
     for name, p in compactor.named_parameters():
@@ -206,6 +295,13 @@ def main():
         n = step + 1
         loss_t = torch.tensor([step_loss / accum], device=device)
         dist.all_reduce(loss_t)
+        # GT27 NaN/inf watchdog (E1FULL P0.3): abort rather than train on junk
+        if not torch.isfinite(loss_t).all():
+            if rank == 0:
+                with open(f"{args.out_dir}/TRIPWIRE", "w") as f:
+                    json.dump({"step": n, "reason": "nan_or_inf_loss"}, f)
+            dist.barrier()
+            os._exit(4)
         if rank == 0:
             curve.append(float(loss_t.item()) / world)
             if n % 25 == 0:
@@ -217,7 +313,7 @@ def main():
             flag = torch.zeros(1, device=device)
             if rank == 0:
                 recent = float(np.mean(curve[-25:]))
-                if recent > TRIPWIRE_LOSS:
+                if recent > args.tripwire_loss:
                     flag[0] = 1
                     with open(f"{args.out_dir}/TRIPWIRE", "w") as f:
                         json.dump({"step": n, "mean_loss_25": recent}, f)

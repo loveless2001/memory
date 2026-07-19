@@ -42,7 +42,7 @@ DOMAINS = ("financial", "legal", "code", "literature")
 
 @app.function(image=image, gpu="H100", volumes=VOLUMES, timeout=14400,
               memory=32768)
-def probe_checkpoint(tag: str, step: int = 0) -> dict:
+def probe_checkpoint(tag: str, step: int = 0, lever: str = "none") -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -103,8 +103,31 @@ def probe_checkpoint(tag: str, step: int = 0) -> dict:
                     texts[rec["doc_id"]] = rec["text"]
 
     runtime = build_runtime(reference=True)
-    comp = StillAmortizedKVCompactor.load(
-        ck, runtime.model.config, device=runtime.device).to(runtime.model.dtype)
+    if lever == "e2_learned_temp":
+        # E2 checkpoints carry per-layer attn_temp keys the base class does
+        # not know; filter them out and re-apply as fixed deployment scales
+        from safetensors import safe_open
+        from safetensors.torch import load_file
+        with safe_open(ck, framework="pt") as fh:
+            meta = fh.metadata()
+        comp = StillAmortizedKVCompactor(runtime.model.config,
+                                         int(meta["t"]))
+        sd = load_file(ck)
+        temps = {k: v for k, v in sd.items() if k.endswith("attn_temp")}
+        comp.load_state_dict({k: v for k, v in sd.items() if k not in temps})
+        comp = comp.to(runtime.device)
+        for li, layer in enumerate(comp.layers):
+            t_val = float(temps[f"layers.{li}.attn_temp"].clamp(1.0, 256.0))
+            for m in list(layer.cross) + list(layer.selfattn):
+                m.d_l = t_val                # scale-only use of the attr
+    else:
+        comp = StillAmortizedKVCompactor.load(
+            ck, runtime.model.config, device=runtime.device)
+    comp = comp.to(runtime.model.dtype)
+    if lever == "e1_sqrt_scale":
+        for layer in comp.layers:
+            for m in list(layer.cross) + list(layer.selfattn):
+                m.d_l = 16
     comp.layers[0].cross[0]._kept_layer0 = True
     tok = runtime.tokenizer
     doc_cache: dict[str, list[int]] = {}
@@ -165,13 +188,13 @@ def probe_checkpoint(tag: str, step: int = 0) -> dict:
 
 
 @app.local_entrypoint()
-def main(tag: str, step: int = 0):
-    print(probe_checkpoint.remote(tag, step))
+def main(tag: str, step: int = 0, lever: str = "none"):
+    print(probe_checkpoint.remote(tag, step, lever))
 
 
 @app.local_entrypoint()
-def sweep(tag: str, steps: str):
+def sweep(tag: str, steps: str, lever: str = "none"):
     """steps: comma-separated, e.g. '250,500,750,1000,1250,1500'."""
-    handles = [probe_checkpoint.spawn(tag, int(s))
+    handles = [probe_checkpoint.spawn(tag, int(s), lever)
                for s in steps.split(",")]
     print("spawned", len(handles), "i2 points")
