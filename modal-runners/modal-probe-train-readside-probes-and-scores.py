@@ -30,7 +30,8 @@ VOLUMES = {"/artifacts": artifacts}
 
 @app.function(image=image, gpu="L4", volumes=VOLUMES, timeout=14400,
               memory=65536, cpu=8)
-def train_probes() -> dict:
+def train_probes(shard_glob: str = "/artifacts/probe/capture-*.npz",
+                 out_name: str = "readside") -> dict:
     import glob
     import hashlib
 
@@ -51,7 +52,7 @@ def train_probes() -> dict:
         return float((r[pos].sum() - n1 * (n1 + 1) / 2) / (n1 * n0))
 
     ids, y, attn0, hidden, p2 = [], [], [], [], []
-    for npz_path in sorted(glob.glob("/artifacts/probe/capture-*.npz")):
+    for npz_path in sorted(glob.glob(shard_glob)):
         st_path = npz_path.replace(".npz", ".state.json")
         with open(st_path) as f:
             rows = {r["item_id"]: r for r in json.load(f)["rows"]}
@@ -181,13 +182,19 @@ def train_probes() -> dict:
         "p2_test_auc": round(auc(y[te], p2[te]), 4),
     }
     np.savez_compressed(
-        "/artifacts/probe/readside-scores.npz",
+        f"/artifacts/probe/{out_name}-scores.npz",
         item_ids=np.array(ids), split=split, y=y,
         c2_lin=c2_lin, c2_mlp=c2_mlp, c1d=c1d, p2=p2,
         curve_val=np.array(curve_val), curve_test=np.array(curve_test),
         best_layer=best_layer)
-    with open("/artifacts/probe/readside-metrics.json", "w") as f:
+    with open(f"/artifacts/probe/{out_name}-metrics.json", "w") as f:
         json.dump(out, f, indent=1)
     artifacts.commit()
     print(json.dumps(out, indent=1))
     return out
+
+
+@app.local_entrypoint()
+def main(shard_glob: str = "/artifacts/probe/capture-*.npz",
+         out_name: str = "readside"):
+    print(train_probes.remote(shard_glob, out_name))

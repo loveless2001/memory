@@ -55,7 +55,8 @@ DOMAINS = ("financial", "legal", "code", "literature")
 @app.function(image=image, gpu="H100", volumes=VOLUMES, timeout=43200,
               memory=65536)
 def run_capture(subset: str, slice_idx: int, n_slices: int,
-                light: bool = False) -> dict:
+                light: bool = False, tag: str = TAG,
+                manifest_path: str = "", out_prefix: str = "capture") -> dict:
     """light=True (post-GT19 trim): skip decode-step attentions (c1
     demoted) and the c3a compactor hook (cross-attn shown content-blind
     on the pilot — delta position kernel, zero variance). attn_stats
@@ -115,7 +116,7 @@ def run_capture(subset: str, slice_idx: int, n_slices: int,
     runtime = build_runtime(reference=True)
     model, tok = runtime.model, runtime.tokenizer
     comp = StillAmortizedKVCompactor.load(
-        f"/artifacts/compactor-checkpoints/{TAG}/compactor.safetensors",
+        f"/artifacts/compactor-checkpoints/{tag}/compactor.safetensors",
         model.config, device=runtime.device).to(model.dtype)
     for layer in comp.layers:
         layer.cross[0]._c3a_block1 = True
@@ -139,8 +140,9 @@ def run_capture(subset: str, slice_idx: int, n_slices: int,
     assert int(l1.argmax()) == int(l2.argmax()), "eager/sdpa argmax mismatch"
     set_attn("sdpa")
 
-    src = ("/artifacts/probe/multihop-capture-manifest.json" if subset == "mh"
-           else "/artifacts/probe/capture-manifest.json")
+    src = manifest_path or (
+        "/artifacts/probe/multihop-capture-manifest.json" if subset == "mh"
+        else "/artifacts/probe/capture-manifest.json")
     with open(src) as f:
         manifest = json.load(f)
     if subset == "pilot":
@@ -163,8 +165,8 @@ def run_capture(subset: str, slice_idx: int, n_slices: int,
                     texts[rec["doc_id"]] = rec["text"]
 
     name = f"{subset}-slice-{slice_idx:02d}"
-    state_path = f"/artifacts/probe/capture-{name}.state.json"
-    npz_path = f"/artifacts/probe/capture-{name}.npz"
+    state_path = f"/artifacts/probe/{out_prefix}-{name}.state.json"
+    npz_path = f"/artifacts/probe/{out_prefix}-{name}.npz"
     state = {"done": 0, "rows": []}
     attn_stats, hiddens, c3as, kept_ids = [], [], [], []
     if os.path.exists(state_path):
@@ -348,5 +350,16 @@ def run_capture(subset: str, slice_idx: int, n_slices: int,
 
 
 @app.local_entrypoint()
-def main(subset: str, slice_idx: int, n_slices: int, light: bool = False):
-    print(run_capture.remote(subset, slice_idx, n_slices, light))
+def main(subset: str, slice_idx: int, n_slices: int, light: bool = False,
+         tag: str = TAG, manifest_path: str = "", out_prefix: str = "capture"):
+    print(run_capture.remote(subset, slice_idx, n_slices, light, tag,
+                             manifest_path, out_prefix))
+
+
+@app.local_entrypoint()
+def fleet(subset: str, n_slices: int, light: bool, tag: str,
+          manifest_path: str, out_prefix: str):
+    handles = [run_capture.spawn(subset, k, n_slices, light, tag,
+                                 manifest_path, out_prefix)
+               for k in range(n_slices)]
+    print("spawned", len(handles), "capture slices ->", out_prefix)

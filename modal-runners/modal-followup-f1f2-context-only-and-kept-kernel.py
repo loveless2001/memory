@@ -75,7 +75,7 @@ def _doc_subsample_hash(iid: str) -> float:
 @app.function(image=image, gpu="H100", volumes=VOLUMES, timeout=43200,
               memory=65536)
 def run(subset: str, slice_idx: int, n_slices: int, frac: float = 0.55,
-        limit: int = 0, dump_argmax: bool = False) -> dict:
+        limit: int = 0, dump_argmax: bool = False, tag: str = TAG) -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -110,10 +110,11 @@ def run(subset: str, slice_idx: int, n_slices: int, frac: float = 0.55,
 
     spc._QKNormCrossAttention.forward = capturing_forward
 
+    suffix = "" if tag == TAG else f"-{tag}"
     runtime = build_runtime(reference=True)
     model, tok = runtime.model, runtime.tokenizer
     comp = StillAmortizedKVCompactor.load(
-        f"/artifacts/compactor-checkpoints/{TAG}/compactor.safetensors",
+        f"/artifacts/compactor-checkpoints/{tag}/compactor.safetensors",
         model.config, device=runtime.device).to(model.dtype)
     comp.layers[0].cross[0]._kept_layer0 = True    # canonical read-in only
 
@@ -145,8 +146,8 @@ def run(subset: str, slice_idx: int, n_slices: int, frac: float = 0.55,
                     texts[rec["doc_id"]] = rec["text"]
 
     name = f"slice-{slice_idx:02d}"
-    npz_path = f"/artifacts/probe/followup-f1f2-{name}.npz"
-    state_path = f"/artifacts/probe/followup-f1f2-{name}.state.json"
+    npz_path = f"/artifacts/probe/followup-f1f2{suffix}-{name}.npz"
+    state_path = f"/artifacts/probe/followup-f1f2{suffix}-{name}.state.json"
     ids_out, res_out, keep_out, S_out, y_out, dom_out, arg_out = (
         [], [], [], [], [], [], [])
     done = 0
@@ -251,5 +252,15 @@ def run(subset: str, slice_idx: int, n_slices: int, frac: float = 0.55,
 
 @app.local_entrypoint()
 def main(subset: str = "test", slice_idx: int = 0, n_slices: int = 1,
-         frac: float = 0.55, limit: int = 0, dump_argmax: bool = False):
-    print(run.remote(subset, slice_idx, n_slices, frac, limit, dump_argmax))
+         frac: float = 0.55, limit: int = 0, dump_argmax: bool = False,
+         tag: str = TAG):
+    print(run.remote(subset, slice_idx, n_slices, frac, limit, dump_argmax,
+                     tag))
+
+
+@app.local_entrypoint()
+def sweep(tag: str, n_slices: int = 4, frac: float = 0.55):
+    """FULLRECIPE Q3: same scaled subsample as F1, new checkpoint."""
+    handles = [run.spawn("test", k, n_slices, frac, 0, True, tag)
+               for k in range(n_slices)]
+    print("spawned", len(handles), "f1f2 slices for", tag)

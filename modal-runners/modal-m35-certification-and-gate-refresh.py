@@ -48,7 +48,8 @@ def _load_compactor(tag, config, device):
 
 @app.function(image=image, gpu=GPU, volumes=VOLUMES, timeout=43200,
               memory=65536)
-def certify_arms(single_tag: str, iterative_tag: str, t_latents: int) -> dict:
+def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
+                 out_name: str = "summary") -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -171,7 +172,7 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int) -> dict:
         comp.save(f"/artifacts/compactor-checkpoints/{tag}/compactor.safetensors")
         summary[f"policy_version_{tag}"] = comp.policy_version()
 
-    with open("/artifacts/compactor-certification/summary.json", "w") as f:
+    with open(f"/artifacts/compactor-certification/{out_name}.json", "w") as f:
         json.dump({"summary": summary, "reports": results}, f, indent=1,
                   default=float)
     artifacts.commit()
@@ -181,7 +182,8 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int) -> dict:
 @app.function(image=image, gpu=GPU, volumes=VOLUMES, timeout=43200,
               memory=32768)
 def relabel_slice(single_tag: str, t_latents: int, domain: str,
-                  slice_idx: int, n_slices: int) -> dict:
+                  slice_idx: int, n_slices: int,
+                  out_base: str = "/artifacts/compactor-gate-labels") -> dict:
     """§17.5 counterfactual labels with the compactor as C. Deployment-shaped
     context: old prefix compacted to t latents, recent 25% raw. Items whose
     chunk lies in the raw window are natural y=0 rows."""
@@ -193,8 +195,8 @@ def relabel_slice(single_tag: str, t_latents: int, domain: str,
     from memsub.compactor.still_amortized_kv_compactor import compact_prefix_keep_recent
     from memsub.reference_config import build_runtime
 
-    os.makedirs(f"/artifacts/compactor-gate-labels/{domain}", exist_ok=True)
-    state_path = (f"/artifacts/compactor-gate-labels/{domain}/"
+    os.makedirs(f"{out_base}/{domain}", exist_ok=True)
+    state_path = (f"{out_base}/{domain}/"
                   f"slice-{slice_idx:02d}.state.json")
     state = {"done": 0, "rows": []}
     if os.path.exists(state_path):
@@ -262,7 +264,8 @@ def relabel_slice(single_tag: str, t_latents: int, domain: str,
 
 @app.function(image=image, gpu="L4", volumes=VOLUMES, timeout=14400,
               memory=65536, cpu=8)
-def refresh_gate() -> dict:
+def refresh_gate(labels_base: str = "/artifacts/compactor-gate-labels",
+                 out_suffix: str = "still") -> dict:
     """Retrain the gate on compactor labels (GT16 + A2 decomposition redo).
     Embeddings are reused via item_id alignment (glosses unchanged)."""
     import glob
@@ -278,7 +281,7 @@ def refresh_gate() -> dict:
 
     rows = []
     for path in sorted(glob.glob(
-            "/artifacts/compactor-gate-labels/*/slice-*.state.json")):
+            f"{labels_base}/*/slice-*.state.json")):
         with open(path) as f:
             rows.extend(json.load(f)["rows"])
     emb = np.load("/artifacts/corpus-gate-labels/embeddings.npz")
@@ -368,8 +371,8 @@ def refresh_gate() -> dict:
     torch.save({"state_dict": model.state_dict(),
                 "temperatures": model.temperatures,
                 "threshold": op["threshold"]},
-               "/artifacts/gate-eval/gate-checkpoint-still.pt")
-    with open("/artifacts/gate-eval/gate-refresh-still.json", "w") as f:
+               f"/artifacts/gate-eval/gate-checkpoint-{out_suffix}.pt")
+    with open(f"/artifacts/gate-eval/gate-refresh-{out_suffix}.json", "w") as f:
         json.dump(out, f, indent=1, default=float)
     artifacts.commit()
     return {k: out[k] for k in ("n_rows", "positive_rate", "a2_still", "gt16")}
@@ -517,8 +520,10 @@ def wp2_eval() -> dict:
 
 
 @app.local_entrypoint()
-def launch_relabel(single_tag: str, t_latents: int, slices_per_domain: int = 3):
+def launch_relabel(single_tag: str, t_latents: int, slices_per_domain: int = 3,
+                   out_base: str = "/artifacts/compactor-gate-labels"):
     for d in DOMAINS:
         for s in range(slices_per_domain):
-            relabel_slice.spawn(single_tag, t_latents, d, s, slices_per_domain)
+            relabel_slice.spawn(single_tag, t_latents, d, s,
+                                slices_per_domain, out_base)
     print("relabel fleet spawned")

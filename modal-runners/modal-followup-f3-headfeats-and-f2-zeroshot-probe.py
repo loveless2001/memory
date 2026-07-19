@@ -46,14 +46,15 @@ def _bucket(iid: str) -> float:
 
 
 @app.function(image=image, volumes=VOLUMES, timeout=3600, memory=65536, cpu=8)
-def extract() -> dict:
+def extract(shard_glob: str = "/artifacts/probe/capture-*.npz",
+            out_suffix: str = "") -> dict:
     import numpy as np
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import roc_auc_score
 
     ids, y, p2, dom = [], [], [], []
     feats, hid30 = [], []
-    for npz_path in sorted(glob.glob("/artifacts/probe/capture-*.npz")):
+    for npz_path in sorted(glob.glob(shard_glob)):
         st = npz_path.replace(".npz", ".state.json")
         with open(st) as f:
             rows = {r["item_id"]: r for r in json.load(f)["rows"]}
@@ -92,7 +93,7 @@ def extract() -> dict:
           f"splits {tr.sum()}/{va.sum()}/{te.sum()}", flush=True)
 
     np.savez_compressed(
-        "/artifacts/probe/followup-f3-headfeats.npz",
+        f"/artifacts/probe/followup-f3-headfeats{out_suffix}.npz",
         item_ids=ids, feats=feats, y=y, split=split, domain=dom, p2=p2)
 
     # ---- F2 zero-shot probe: layer-30 linear logistic on train split -----
@@ -105,7 +106,7 @@ def extract() -> dict:
               "val_auc": round(float(roc_auc_score(y[va], s[va])), 4),
               "test_auc": round(float(roc_auc_score(y[te], s[te])), 4)}
     np.savez_compressed(
-        "/artifacts/probe/followup-f2-zeroshot-probe.npz",
+        f"/artifacts/probe/followup-f2-zeroshot-probe{out_suffix}.npz",
         mu=mu.astype(np.float32), sd=sd.astype(np.float32),
         w=clf.coef_[0].astype(np.float32), c=np.float32(clf.intercept_[0]),
         **{k: v for k, v in sanity.items()})
@@ -116,5 +117,6 @@ def extract() -> dict:
 
 
 @app.local_entrypoint()
-def main():
-    print(extract.remote())
+def main(shard_glob: str = "/artifacts/probe/capture-*.npz",
+         out_suffix: str = ""):
+    print(extract.remote(shard_glob, out_suffix))

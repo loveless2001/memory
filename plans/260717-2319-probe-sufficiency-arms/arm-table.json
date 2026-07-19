@@ -208,5 +208,60 @@
  "_followup2_verdicts": {
   "F4": "upgrades",
   "F5": "regime-general"
+ },
+ "fullrecipe_p2": {
+  "test_auc": 0.6016,
+  "regime": "fullrecipe synthesis",
+  "note": "prompted self-check, new labels y+ 0.325"
+ },
+ "fullrecipe_c1d": {
+  "test_auc": 0.7011,
+  "regime": "fullrecipe synthesis"
+ },
+ "fullrecipe_c2_lin": {
+  "test_auc": 0.7632,
+  "best_layer": 25,
+  "regime": "fullrecipe synthesis",
+  "note": "best layer moved 30->25"
+ },
+ "fullrecipe_c2_mlp": {
+  "test_auc": 0.7974,
+  "sd": 0.0013,
+  "regime": "fullrecipe synthesis"
+ },
+ "fullrecipe_stack": {
+  "test_auc": 0.802,
+  "ci95": [
+   0.7934,
+   0.8107
+  ],
+  "regime": "fullrecipe synthesis"
+ },
+ "fullrecipe_f3_sinkheads": {
+  "test_auc": 0.7304,
+  "regime": "fullrecipe synthesis"
+ },
+ "fullrecipe_f2_context_only": {
+  "test_auc": 0.5115,
+  "regime": "fullrecipe synthesis",
+  "note": "OOF GroupKFold refit, chance \u2014 relational null holds"
+ },
+ "_fullrecipe_verdicts": {
+  "Q4": "DEGRADED but readable: ladder p2 .602 < sinkheads .730 < c2_mlp .797 ~ stack .802 (vs .638/.762/.852/.854 under subsampler); F2 null holds (.512)",
+  "GT22_row": {
+   "lost_prior": 0.1457,
+   "expand_all": 0.0095,
+   "tau": 1.255,
+   "comparators": {
+    "refreshed_gate": [
+     0.139,
+     0.055
+    ],
+    "never_expand_this_policy": [
+     0.153,
+     0.0
+    ]
+   }
+  }
  }
 }
