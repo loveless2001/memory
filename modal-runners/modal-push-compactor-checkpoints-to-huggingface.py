@@ -82,7 +82,7 @@ def dry_run() -> dict:
                         "logit_scale": p["logit_scale"]} for p in plan]}
 
 
-CARD = """---
+CARD = r"""---
 license: apache-2.0
 library_name: pytorch
 tags: [kv-cache, compaction, long-context, qwen3]
@@ -121,15 +121,38 @@ for layer in comp.layers:                     # E1-class checkpoints only
 ## Checkpoints
 
 - **`e1full-t1024-T8k`** — the headline model: unfrozen routing (logit
-  scale 16), full 76k-item mixture, 3,000 steps. Passes a two-axis
-  certification against a matched-budget eviction baseline on a
-  **task-anchored** predicate (aggregation accuracy +0.042 vs −0.049;
-  silent fact loss 0.153 vs 0.597) at recurrence **depth 1**. It does
-  **not** pass the distributional (teacher-KL) predicate: 0.1385 vs
-  eviction's 0.1218. Certification scope matters — see below.
+  scale 16), full 76k-item mixture, 3,000 steps. On a two-axis
+  certification against a matched-budget eviction baseline (60 documents,
+  paired per-document 95% CIs, all differences CI-separated) it is the
+  **best-certified compactor in this repo**: lowest teacher KL (0.135 vs
+  the frozen arm's 0.282) and lowest silent fact loss (0.108 vs 0.171
+  given prior-correct), at recurrence **depth 1**.
+
+  Read the certification honestly, because the anchor decides the answer:
+
+  | arm (n=60) | agg KL ↓ | agg accΔ | silent loss ↓ | lost \| prior ↓ |
+  |---|---|---|---|---|
+  | eviction (baseline) | 0.0848 | −0.064 | 0.644 | 0.617 |
+  | `single-t1024-T8k` (1/40) | 0.2529 | +0.074 | 0.232 | 0.196 |
+  | `fullrecipe-full-*` (frozen) | 0.2820 | **+0.102** | 0.210 | 0.171 |
+  | **`e1full-*` (unfrozen)** | **0.1348** | +0.031 | **0.147** | **0.108** |
+
+  - The **distributional** predicate (beat eviction's KL) is met by **no
+    compactor here**, including this one.
+  - The **task-anchored** predicate (accuracy ≥ and silent loss ≤
+    eviction) is met by **all three** trained compactors — it does not
+    separate a subsampler from a synthesizer, and on its accuracy axis
+    the *frozen* subsampler wins. Passing it is not a distinguishing
+    claim, which is why the case for this checkpoint rests on KL and
+    silent loss instead.
+  - Depth-4 recurrence collapses without recurrence training (KL 14.4);
+    `max_certified_depth = 0` under the distributional predicate.
+
 - **`fullrecipe-full-t1024-T8k`** — same data, canonical logit scale: its
   attention kernel stays bitwise frozen at initialization for the whole
-  run (position-kernel collapse). Kept as the control the papers rest on.
+  run (position-kernel collapse). Kept as the control the papers rest on
+  — and, per the table above, it is not a strictly worse model: it wins
+  the aggregation-accuracy axis.
 - **`escape-e{1,2,3,4}-mid-*`** — 188-step mid-scale lever study
   (e1 = sqrt scale, e2 = learned temperature, e3 = anchor noise,
   e4 = content-seeded init), plus e1 seed replications.
@@ -145,8 +168,11 @@ trajectory; `compactor.safetensors` is the final state.
 
 One base model, one architecture family; extractive-MCQ certification with
 letter-match equivalence, single-turn contexts; depth-4 recurrence collapses
-without recurrence training. These are research artifacts, not a serving
-release.
+without recurrence training. Certification is reported at 60 documents with
+paired CIs — an earlier 12-document pass left both aggregation verdicts
+statistically unresolved, so treat any small-n compression certification
+(including ours, before this fix) with suspicion. These are research
+artifacts, not a serving release.
 """
 
 
@@ -193,6 +219,37 @@ def push(repo_id: str, private: bool = True) -> dict:
 @app.local_entrypoint()
 def show():
     print(json.dumps(dry_run.remote(), indent=1))
+
+
+@app.function(image=image, volumes=VOLUMES, timeout=1800, memory=8192,
+              secrets=[SECRET])
+def push_card_only(repo_id: str) -> dict:
+    """Refresh README.md + the per-checkpoint notes without re-uploading
+    weights (the card outlives any single certification pass)."""
+    import os
+    from huggingface_hub import HfApi
+    api = HfApi(token=os.environ["HF_TOKEN"])
+    api.upload_file(path_or_fileobj=CARD.encode(), path_in_repo="README.md",
+                    repo_id=repo_id, repo_type="model",
+                    commit_message="model card: n=60 certification, anchor scoping")
+    n = 0
+    for p in _plan():
+        note = (f"# {p['tag']}\n\n"
+                f"**Load at attention logit scale: {p['logit_scale']}**\n\n"
+                f"Files: {len(p['files'])} "
+                f"({round(p['bytes'] / 2**30, 2)} GiB). Optimizer state and "
+                f"training-only artifacts are not included.\n")
+        api.upload_file(path_or_fileobj=note.encode(),
+                        path_in_repo=f"{p['tag']}/CHECKPOINT.md",
+                        repo_id=repo_id, repo_type="model",
+                        commit_message=f"{p['tag']}: load note")
+        n += 1
+    return {"repo_id": repo_id, "card": True, "notes_refreshed": n}
+
+
+@app.local_entrypoint()
+def refresh_card(repo_id: str):
+    print(json.dumps(push_card_only.remote(repo_id), indent=1))
 
 
 @app.local_entrypoint()
