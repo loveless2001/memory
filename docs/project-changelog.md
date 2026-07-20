@@ -1,5 +1,13 @@
 # Project Changelog
 
+## 2026-07-21 — E1FULL certification invalidated
+
+- Found that 52/60 certification documents and 207/241 probes overlapped
+  full-recipe training. Withdrew all E1FULL certification, paired-CI,
+  task-anchored SHIP, ranking, and deployment claims.
+- Runtime `max_certified_depth = 0` remains authoritative. A clean holdout is
+  now reserved before manifest construction and bound into checkpoint metadata.
+
 ## 2026-07-06 — MVP M0–M2 initial implementation (branch `mvp`)
 
 - Repo re-initialized on orphan branch `mvp` (previous Zep history retired).

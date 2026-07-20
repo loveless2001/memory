@@ -1,5 +1,11 @@
 # memsub — Unified Memory Substrate for Long-Context LLM Threads
 
+> **INVALIDATED RESULT (2026-07-21):** The reported E1FULL n=60
+> certification was not held out from training. Its certification and
+> deployment claims are withdrawn pending a clean holdout retrain and rerun.
+> Existing compactor checkpoints remain research artifacts with
+> `max_certified_depth = 0`.
+
 A runtime for long-lived LLM conversation threads that keeps recent context
 exact, compresses older context, persists it to disk, and expands it back
 when the compressed form turns out to be insufficient — plus the
@@ -107,37 +113,14 @@ gradient).
 
 ### 7. The full-scale rematch (E1FULL)
 
-Trained at full recipe (3,000 steps — a pre-registered rule extended the
-run when routing was still learning at 1,500), the unfrozen compactor's
-kernel becomes genuinely item-adaptive, and the two pre-registered
-certification predicates **dissociate**:
-
-| (60 docs, paired CIs) | eviction baseline | frozen full-recipe | **unfrozen full-recipe** |
-|---|---:|---:|---:|
-| aggregation KL ↓ | **0.0848** | 0.2820 | 0.1348 |
-| aggregation accuracy Δ | −0.064 | **+0.102** | +0.031 |
-| silent fact loss ↓ | 0.644 | 0.210 | **0.147** |
-| lost \| prior-correct ↓ | 0.617 | 0.171 | **0.108** |
-
-It answers **better** than deletion while imitating the teacher's
-distribution **less exactly** — distributional NO-SHIP, task-anchored SHIP.
-And the two anchors don't even agree on which compressor wins: the frozen
-subsampler passes the same task predicate and beats the unfrozen one on
-accuracy, while losing 58% more facts and tripling the KL. Mild denoising
-registers as infidelity, so a KL anchor penalizes improvement; a task
-anchor can't tell a subsampler from a synthesizer. Which artifact gets
-"certified" is decided by the anchor, not the compressor — that turned out
-to be the most portable finding of the campaign.
-
-Downstream, everything sharpened rather than reorganized: write-time
-geometry stays loss-blind even under content routing (AUC 0.5003 — the
-internality claim's strongest test, passed); the text-shadow gate's
-marginal value completed a monotone slide to **zero** (72% → 22.5% → 9.0%
-→ 0%) while the computation-reading probe stack recovered fully (0.857) and
-still routes where the gate cannot; needle smuggling *grew* instead of
-being traded away; and fact fragility proved largely content-intrinsic
-(78–91% of the unfrozen compressor's losses nest inside the frozen
-lineage's).
+The 3,000-step training and routing diagnostics remain recorded, but the
+headline n=60 certification is invalid: 52 of 60 evaluation documents and
+207 of 241 probes appeared in full-recipe training. The former metric table,
+paired-CI interpretation, task-anchored SHIP claim, frozen-versus-unfrozen
+ranking, and depth-1 deployment recommendation are withdrawn. A deterministic
+60-document holdout is now reserved before manifest construction; the clean
+checkpoint and certification artifact will use new names and must report zero
+document and item overlap.
 
 ### The transferable lesson
 
@@ -178,7 +161,7 @@ report carries verdicts in the brief's own vocabulary):
 | `FOLLOWUP.md` / `FOLLOWUP2.md` | matching `*-REPORT.md` | geometry loss-blind; context-only null; sink-heads regime-general |
 | `FULLRECIPE.md` | `FULLRECIPE-REPORT.md` | collapse is not a scale artifact |
 | `ESCAPE.md` | `ESCAPE-REPORT.md` | saturation confirmed; √d_l escapes |
-| `E1FULL.md` | `E1FULL-REPORT.md` | predicates dissociate; task-anchored ship |
+| `E1FULL.md` | `E1FULL-REPORT.md` | certification invalidated; clean rerun pending |
 
 ## Running things
 
@@ -209,7 +192,7 @@ the `memsub-artifacts` Modal volume; `memsub-hf-cache` holds model weights.
 
 Roughly $2,100 of rented H100 time end to end: corpus construction ≈ $500,
 gate + labels ≈ $110, M3.5 compactor ≈ $715, probe campaigns ≈ $175,
-FULLRECIPE ≈ $440, ESCAPE ≈ $95, E1FULL ≈ $390.
+FULLRECIPE ≈ $440, ESCAPE ≈ $95, E1FULL ≈ $435.
 
 ## Status
 

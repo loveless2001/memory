@@ -17,6 +17,7 @@ import modal
 
 app = modal.App("memsub-fullrecipe-c2-manifest")
 image = modal.Image.debian_slim(python_version="3.12")
+image = image.add_local_dir("memsub", "/root/repo/memsub")
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
 DOMAINS = ("financial", "legal", "code", "literature")
 DOMAIN_CAP = 23563   # smallest B.3 domain count (code)
@@ -26,44 +27,54 @@ DOMAIN_CAP = 23563   # smallest B.3 domain count (code)
               memory=16384)
 def build_manifest() -> dict:
     import os
+    import sys
+    sys.path.insert(0, "/root/repo")
+    from memsub.certification import (
+        assert_train_eval_disjoint,
+        build_training_manifest,
+        canonical_sha256,
+    )
     with open("/artifacts/corpus-mcq-full/all-items.json") as f:
         all_items = json.load(f)
     with open("/artifacts/corpus-compactor-train/triplets.json") as f:
         traced_ids = {r["item_id"] for r in json.load(f)}
-
-    by_domain: dict[str, list[dict]] = {d: [] for d in DOMAINS}
-    for it in all_items:
-        d = it["doc_id"].split("/")[0]
-        by_domain[d].append(it)
-
-    manifest, remainder, counts = [], [], {}
-    for d in DOMAINS:
-        rows = sorted(by_domain[d], key=lambda i: (i["doc_id"], i["item_id"]))
-        sel = rows[:DOMAIN_CAP]
-        counts[d] = {"corpus": len(rows), "selected": len(sel),
-                     "traced": sum(1 for i in sel
-                                   if i["item_id"] in traced_ids)}
-        for i in sel:
-            has = i["item_id"] in traced_ids
-            manifest.append({"item_id": i["item_id"], "doc_id": i["doc_id"],
-                             "domain": d, "has_trace": has})
-            if not has:
-                remainder.append(i["item_id"])
-
-    # traced items NOT selected would break trace reuse — must be zero
-    sel_ids = {m["item_id"] for m in manifest}
-    orphans = sorted(traced_ids - sel_ids)
-
-    blob = json.dumps(manifest, sort_keys=True).encode()
-    digest = hashlib.sha256(blob).hexdigest()
+    holdout_path = (
+        "/artifacts/corpus-fullrecipe/certification-holdout-clean-v1.json")
+    with open(holdout_path) as f:
+        holdout = json.load(f)
+    holdout_payload = {k: v for k, v in holdout.items() if k != "sha256"}
+    if canonical_sha256(holdout_payload) != holdout["sha256"]:
+        raise ValueError("certification holdout hash mismatch")
+    holdout_docs = {row["doc_id"] for row in holdout["documents"]}
+    built = build_training_manifest(
+        all_items, traced_ids=traced_ids, holdout_doc_ids=holdout_docs,
+        domains=DOMAINS, domain_cap=DOMAIN_CAP)
+    if built["orphan_traced_item_ids"]:
+        raise ValueError(
+            "traced items outside selected training/holdout sets: "
+            f"{built['orphan_traced_item_ids'][:10]}")
+    overlap = assert_train_eval_disjoint(
+        built["items"], holdout["documents"])
+    payload = {
+        "domain_cap": DOMAIN_CAP,
+        "holdout_sha256": holdout["sha256"],
+        "counts": built["counts"],
+        "excluded_traced_item_ids": built["excluded_traced_item_ids"],
+        "orphan_traced": built["orphan_traced_item_ids"],
+        "overlap_audit": overlap,
+        "items": built["items"],
+    }
+    digest = canonical_sha256(payload)
     os.makedirs("/artifacts/corpus-fullrecipe", exist_ok=True)
     with open("/artifacts/corpus-fullrecipe/mixture-manifest.json", "w") as f:
-        json.dump({"domain_cap": DOMAIN_CAP, "sha256": digest,
-                   "counts": counts, "orphan_traced": orphans,
-                   "items": manifest}, f)
+        json.dump({**payload, "sha256": digest}, f)
     artifacts.commit()
-    return {"sha256": digest, "counts": counts, "total": len(manifest),
-            "remainder": len(remainder), "orphan_traced": len(orphans)}
+    return {"sha256": digest, "holdout_sha256": holdout["sha256"],
+            "counts": built["counts"], "total": len(built["items"]),
+            "remainder": len(built["remainder_item_ids"]),
+            "excluded_traced": len(built["excluded_traced_item_ids"]),
+            "orphan_traced": len(built["orphan_traced_item_ids"]),
+            "overlap_audit": overlap}
 
 
 @app.local_entrypoint()

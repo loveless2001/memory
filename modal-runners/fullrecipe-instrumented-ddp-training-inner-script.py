@@ -172,6 +172,8 @@ def main():
     ap.add_argument("--tripwire-step", type=int, default=300)
     ap.add_argument("--tripwire-loss", type=float, default=0.4)
     ap.add_argument("--seed", type=int, default=1234)
+    ap.add_argument("--training-manifest-sha256", required=True)
+    ap.add_argument("--certification-holdout-sha256", required=True)
     ap.add_argument("--lever", default="none",
                     choices=["none", "e1_sqrt_scale", "e2_learned_temp",
                              "e3_anchor_noise", "e4_content_seed"],
@@ -187,6 +189,9 @@ def main():
     model, tok = load_model(device)
     compactor = StillAmortizedKVCompactor(model.config, args.t_latents) \
         .to(device, torch.float32)
+    compactor.training_manifest_sha256 = args.training_manifest_sha256
+    compactor.certification_holdout_sha256 = \
+        args.certification_holdout_sha256
     telemetry.install(int(model.config.num_hidden_layers), device)
     telemetry.mark_layers(compactor)
     apply_escape_lever(args.lever, compactor, model, tok, device, rank)

@@ -38,6 +38,8 @@ class StillAmortizedKVCompactor(nn.Module):
                 t_latents=t_latents)
             for _ in range(int(config.num_hidden_layers)))
         self.max_certified_depth: int = 0   # set by certification (GT15)
+        self.training_manifest_sha256: str = ""
+        self.certification_holdout_sha256: str = ""
 
     # -- policy identity -------------------------------------------------------
     def weights_hash(self) -> str:
@@ -95,6 +97,9 @@ class StillAmortizedKVCompactor(nn.Module):
         from safetensors.torch import save_file
         meta = {"t": str(self.t),
                 "max_certified_depth": str(self.max_certified_depth),
+                "training_manifest_sha256": self.training_manifest_sha256,
+                "certification_holdout_sha256":
+                    self.certification_holdout_sha256,
                 "config": json.dumps({
                     "num_hidden_layers": int(self.config.num_hidden_layers),
                     "num_key_value_heads": int(self.config.num_key_value_heads),
@@ -112,6 +117,10 @@ class StillAmortizedKVCompactor(nn.Module):
         model = cls(config, t_latents=int(meta["t"]))
         model.load_state_dict(load_file(path))
         model.max_certified_depth = int(meta.get("max_certified_depth", 0))
+        model.training_manifest_sha256 = meta.get(
+            "training_manifest_sha256", "")
+        model.certification_holdout_sha256 = meta.get(
+            "certification_holdout_sha256", "")
         if expected_hash_prefix and \
                 not model.weights_hash().startswith(expected_hash_prefix):
             raise CompatibilityError("compactor weights hash mismatch")

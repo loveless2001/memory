@@ -116,6 +116,11 @@ def _train(tag: str, triplets: str, ctx_npy: str, steps: int,
     import subprocess
     import time
     out_dir = f"/artifacts/compactor-checkpoints/{tag}"
+    with open(f"{BASE}/train-mixture-stats.json") as f:
+        train_stats = json.load(f)
+    if not train_stats.get("mixture_sha256") or not train_stats.get(
+            "holdout_sha256"):
+        raise ValueError("training stats missing manifest/holdout provenance")
     os.makedirs(out_dir, exist_ok=True)
     for stale in ("DONE", "TRIPWIRE"):     # would trip the watchdog on resume
         if os.path.exists(f"{out_dir}/{stale}"):
@@ -128,7 +133,9 @@ def _train(tag: str, triplets: str, ctx_npy: str, steps: int,
            "--lr", "4e-5", "--out-dir", out_dir,
            "--save-every", str(save_every), "--seed", str(seed),
            "--telemetry-every", str(telemetry_every), "--lever", lever,
-           "--tripwire-loss", str(tripwire_loss)]
+           "--tripwire-loss", str(tripwire_loss),
+           "--training-manifest-sha256", train_stats["mixture_sha256"],
+           "--certification-holdout-sha256", train_stats["holdout_sha256"]]
     proc = subprocess.Popen(cmd)
     # watchdog: commit progress every 2 min; reap NCCL zombie after DONE
     done_marker, waited_after_done = f"{out_dir}/DONE", 0
@@ -190,6 +197,8 @@ def smoke_train() -> dict:
     import subprocess
     out_dir = "/artifacts/compactor-checkpoints/fullrecipe-smoke"
     subprocess.run(["rm", "-rf", out_dir])
+    with open(f"{BASE}/train-mixture-stats.json") as f:
+        train_stats = json.load(f)
     cmd = ["torchrun", "--standalone", "--nproc_per_node=2",
            "/root/repo/fullrecipe-instrumented-ddp-training-inner-script.py",
            "--triplets-file", f"{BASE}/triplets-mid.json",
@@ -197,7 +206,9 @@ def smoke_train() -> dict:
            "--probe-ctx-npy", f"{BASE}/ctx-tokens-full.npy",
            "--t-latents", "1024", "--steps", "2", "--lr", "4e-5",
            "--out-dir", out_dir, "--save-every", "2",
-           "--telemetry-every", "1"]
+           "--telemetry-every", "1",
+           "--training-manifest-sha256", train_stats["mixture_sha256"],
+           "--certification-holdout-sha256", train_stats["holdout_sha256"]]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     print(proc.stdout[-4000:])
     print(proc.stderr[-4000:])
@@ -259,3 +270,13 @@ def e1full(steps: int = 1500):
                     f"{BASE}/ctx-tokens-full.npy", steps, 250, 1234,
                     "e1_sqrt_scale", 50, 0.45)
     print("spawned e1full:", h.object_id)
+
+
+@app.local_entrypoint()
+def e1full_clean(steps: int = 1500):
+    """Leakage-free E1FULL run bound to the clean-v1 holdout manifest."""
+    h = train.spawn("e1full-clean-v1-t1024-T8k",
+                    f"{BASE}/triplets-full.json",
+                    f"{BASE}/ctx-tokens-full.npy", steps, 250, 1234,
+                    "e1_sqrt_scale", 50, 0.45)
+    print("spawned clean e1full:", h.object_id)

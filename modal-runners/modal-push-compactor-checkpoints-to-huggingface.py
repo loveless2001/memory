@@ -1,6 +1,10 @@
 """Push trained compactor checkpoints from the memsub-artifacts volume
 straight to a (private) HuggingFace repo — no local hop.
 
+INVALIDATED CERTIFICATION (2026-07-21): E1FULL evaluation overlapped
+training. The model card keeps all affected checkpoints at depth zero pending
+a clean holdout retrain and rerun.
+
 Uploads inference weights only: `compactor.safetensors` plus the
 step-tagged snapshots (the training trajectory the papers plot).
 EXCLUDED by default: `resume-state.pt` (1.3 GB optimizer state per run,
@@ -98,6 +102,11 @@ prefix of one 36-layer cache into `t` latent slots per KV head.
 drafts; numbers here are provided so the checkpoints are usable, not as a
 citable record.
 
+**INVALIDATED CERTIFICATION (2026-07-21).** The E1FULL n=60 evaluation
+overlapped training. Its certification, paired-CI, ranking, and deployment
+claims are withdrawn pending a clean holdout retrain and rerun. Existing
+checkpoints have `max_certified_depth = 0` and are not serving releases.
+
 ## Loading (read this first)
 
 The attention **logit scale is not stored in the safetensors metadata** and
@@ -120,33 +129,11 @@ for layer in comp.layers:                     # E1-class checkpoints only
 
 ## Checkpoints
 
-- **`e1full-t1024-T8k`** — the headline model: unfrozen routing (logit
-  scale 16), full 76k-item mixture, 3,000 steps. On a two-axis
-  certification against a matched-budget eviction baseline (60 documents,
-  paired per-document 95% CIs, all differences CI-separated) it is the
-  **best-certified compactor in this repo**: lowest teacher KL (0.135 vs
-  the frozen arm's 0.282) and lowest silent fact loss (0.108 vs 0.171
-  given prior-correct), at recurrence **depth 1**.
-
-  Read the certification honestly, because the anchor decides the answer:
-
-  | arm (n=60) | agg KL ↓ | agg accΔ | silent loss ↓ | lost \| prior ↓ |
-  |---|---|---|---|---|
-  | eviction (baseline) | 0.0848 | −0.064 | 0.644 | 0.617 |
-  | `single-t1024-T8k` (1/40) | 0.2529 | +0.074 | 0.232 | 0.196 |
-  | `fullrecipe-full-*` (frozen) | 0.2820 | **+0.102** | 0.210 | 0.171 |
-  | **`e1full-*` (unfrozen)** | **0.1348** | +0.031 | **0.147** | **0.108** |
-
-  - The **distributional** predicate (beat eviction's KL) is met by **no
-    compactor here**, including this one.
-  - The **task-anchored** predicate (accuracy ≥ and silent loss ≤
-    eviction) is met by **all three** trained compactors — it does not
-    separate a subsampler from a synthesizer, and on its accuracy axis
-    the *frozen* subsampler wins. Passing it is not a distinguishing
-    claim, which is why the case for this checkpoint rests on KL and
-    silent loss instead.
-  - Depth-4 recurrence collapses without recurrence training (KL 14.4);
-    `max_certified_depth = 0` under the distributional predicate.
+- **`e1full-t1024-T8k`** — historical unfrozen-routing checkpoint (logit
+  scale 16), trained on the full mixture for 3,000 steps. Its former n=60
+  certification is invalid because the evaluation documents overlapped its
+  training manifest. Do not infer quality, ranking, or deployment eligibility
+  from the historical table; `max_certified_depth = 0`.
 
 - **`fullrecipe-full-t1024-T8k`** — same data, canonical logit scale: its
   attention kernel stays bitwise frozen at initialization for the whole

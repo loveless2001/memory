@@ -1,19 +1,27 @@
 # E1FULL-REPORT.md — Full-Recipe Unfrozen Compactor: Third GT13 Attempt Under a Mobile Kernel
 
+> **INVALIDATED CERTIFICATION (2026-07-21).** The n=60 certification was
+> not held out from training: 52/60 documents and 207/241 probes overlap the
+> full-recipe training set. Certification, comparison, CI, SHIP, and deployment
+> claims below are retained only as a historical record and are not evidence.
+> The clean holdout retrain and recertification is pending; until it completes,
+> `max_certified_depth = 0` and the checkpoint is not deployable as L3.
+
 **Framing (per the brief):** FULLRECIPE established a law under a frozen
 kernel — aggregation kernel-bound, pointwise smear-bound, routability
 falling as compressors improve. This run dissolves the law's premise:
 every question below is "does X survive kernel mobility," with both
 survival and collapse pre-registered as reportable.
 
-Status: **COMPLETE** (2026-07-20; Q2'/Q5' re-measured at n = 60 documents
+Status: **INVALIDATED; CLEAN RERUN PENDING** (2026-07-21). The historical
+n=60 run completed on 2026-07-20 and is retained below
 with paired CIs the same day — see Q2'). Config: E1 fixed logit scale √d_l = 16
 (ESCAPE P0.2 selection), otherwise canonical; fixed harness; 75,998-item
-mixture (manifest sha 8e0bb280…). Spend ≈ $305.
+mixture (manifest sha 8e0bb280…). Historical spend ≈ $435.
 
 Verdict line: Q1' routing keeps learning and becomes item-adaptive ·
-Q2' predicates DISSOCIATE — primary NO-SHIP (KL), secondary (task-anchored)
-**SHIP** (but so does the frozen arm — the task predicate is a weak screen) · Q3' branch (iii) — geometry loss-blind even content-routed ·
+Q2' **INVALIDATED BY TRAIN/EVAL OVERLAP; NO CERTIFICATION VERDICT** ·
+Q3' branch (iii) — geometry loss-blind even content-routed ·
 Q4' probe ladder RECOVERS (stack 0.857); gate marginal value reaches **0%**;
 F2 null holds; F5 transfer regime-general · Q5' smuggling advantage GROWS
 (0.108, n=60) · Q6' mostly-nested shrinkage, minority reshuffle.
@@ -47,6 +55,10 @@ kernel touches essentially every source position across the probe batch
 content-conditioned routing.
 
 ## Q2' — GT13, third attempt: what the predicate you pick decides
+
+**This entire certification section is invalidated by train/evaluation
+overlap. Its values may describe the contaminated checkpoints on those
+documents, but cannot establish generalization or deployment eligibility.**
 
 **Re-run at n = 60 documents (2026-07-20).** The original verdict was
 computed on the harness default of 3 documents/domain (n = 12), where a
@@ -104,10 +116,8 @@ hold, and the effects are bounded.
     distributional fidelity and on silent fact loss the unfrozen one wins
     (KL 0.135 vs 0.282; lost|prior 0.108 vs 0.171). Which model you
     "certify" is decided by the anchor, not by the compressor.
-  - The defensible claim for the unfrozen compactor: **best-certified
-    compactor measured here** — it passes the task-anchored predicate and
-    holds the lowest KL and lowest pointwise loss of any compactor
-    tested — not "first certified".
+  - This historical "best-certified" claim is withdrawn by the overlap
+    finding. A clean held-out rerun is required before ranking compactors.
 - depth 4 without recurrence training still collapses (KL 14.4;
   accΔ and pointwise CIs straddle zero, KL does not).
   `max_certified_depth = 0` under the primary predicate. Policy version
@@ -115,14 +125,10 @@ hold, and the effects are bounded.
 
 ### Consequences for the spec (v0.3.7 change note — no silent flip)
 
-Unchanged in direction, corrected in scope: keep evict-oldest-nonsink as
-the default L3 path (no compactor meets the distributional predicate);
-add the unfrozen compactor as an OPT-IN L3 policy for task-anchored
-deployments, certified at depth 1, gated by
-`compaction_policy_version = …8238173715edc8f1`. The change note must
-state that the task-anchored predicate does not by itself distinguish
-this policy from the frozen one — the reasons to prefer it are its KL
-(74% of the gap closed) and its pointwise loss, both CI-separated.
+Keep evict-oldest-nonsink as the default L3 path. Withdraw the unfrozen
+compactor's opt-in deployment recommendation and depth-1 task certification.
+The shipped checkpoint metadata is authoritative: `max_certified_depth = 0`
+until the clean holdout rerun establishes otherwise.
 
 ## Q3' — F1 under per-item kernels: branch (iii), geometry stays loss-blind
 
@@ -181,11 +187,12 @@ across A/FR/E1F; 11,051 flips vs A), re-capture, probes retrained
 
 ## Q5' — Smuggling: the advantage grows; no trade
 
-Pointwise lost-given-prior-correct at matched budget, all on the n = 60
-protocol (n = 60 documents, every generation re-certified on the same
-documents): eviction 0.617 → 1/40 instance 0.196 → frozen full recipe 0.171 → **unfrozen 0.108**. Monotone across four compressor generations, and
-the 1/40 → frozen → unfrozen improvements are all CI-separated from
-eviction (−0.413, −0.435, −0.497 respectively). The registered
+Historical point estimates for lost-given-prior-correct at matched budget
+were eviction 0.617 → 1/40 instance 0.196 → frozen full recipe 0.171 →
+unfrozen 0.108. The report did not compute CIs for this conditioned metric;
+the previously printed differences (−0.413, −0.435, −0.497) were raw-loss
+differences mislabeled as conditioned-loss differences. No conditioned-loss
+CI or monotonic-generalization claim survives the overlap finding. The registered
 possibility that content routing would SPEND the needle-smuggling
 advantage to buy aggregation did not occur: both axes improved
 simultaneously (KL 0.282 → 0.135 AND pointwise 0.171 → 0.108). The gate
@@ -226,10 +233,8 @@ figure) and the ESCAPE overlay (all arms).
   under content routing** — geometry never becomes the loss signal;
   reading the computation stays the only read-out. This is a stronger,
   simpler claim than the anticipated flip.
-- §6 (certification): the two-verdict table IS the section — the
-  predicate dissociation (distributional NO-SHIP / task-anchored SHIP)
-  is the finding; title claims of "first certified" must be scoped to
-  the task-anchored predicate.
+- §6 (certification): remove the contaminated two-verdict table and all
+  SHIP/ranking claims until the clean held-out artifact exists.
 - §7/§8 (downstream): gate-trend endpoint 0% (not asymptotic-above-zero);
   ladder recovery (0.857); F5 regime-generality; fragility =
   mostly-nested shrinkage (correct the draft's reshuffle framing).
@@ -243,7 +248,8 @@ figure) and the ESCAPE overlay (all arms).
 
 WP1 1500 + extension ≈ $200 · I2 sweeps (12) ≈ $22 · certification ≈ $8
 · F1/F2 sweep ≈ $8 · relabel fleet ≈ $95 · 2k relabel ≈ $4 · capture
-fleet ≈ $45 · gate/probes/F3/CPU ≈ $8. **Total ≈ $390** (budget
+fleet ≈ $45 · gate/probes/F3/CPU ≈ $8 · invalid n=60 reruns ≈ $45.
+**Total ≈ $435** (budget
 $285–450; extension fired, as budgeted).
 
 ## Unresolved questions

@@ -110,7 +110,21 @@ def prep_slice(domain: str, slice_idx: int, n_slices: int = N_SLICES,
         stride = max(1, len(items) // sample_limit)
         items = items[::stride][:sample_limit]
         state_path = state_path.replace(".state.json", ".sample.json")
-    if state["done"] >= len(items):
+    else:
+        import glob
+        completed_ids = set()
+        for prior_path in glob.glob(
+                "/artifacts/corpus-fullrecipe/rationales/*.state.json"):
+            with open(prior_path) as f:
+                completed_ids.update(
+                    row["item_id"] for row in json.load(f).get("rows", []))
+        current_ids = {item["item_id"] for item in items}
+        state["rows"] = [row for row in state["rows"]
+                         if row["item_id"] in current_ids]
+        items = [item for item in items
+                 if item["item_id"] not in completed_ids]
+        state["done"] = 0
+    if not items:
         return {"domain": domain, "slice": slice_idx, "rows": len(state["rows"]),
                 "status": "already-complete"}
 
@@ -269,7 +283,8 @@ def merge() -> dict:
     for path in sorted(glob.glob(
             "/artifacts/corpus-fullrecipe/rationales/*.state.json")):
         with open(path) as f:
-            rows.extend(json.load(f)["rows"])
+            rows.extend(r for r in json.load(f)["rows"]
+                        if r["item_id"] in keep)
     seen = set()
     uniq = []
     for r in rows:
@@ -293,6 +308,7 @@ def merge() -> dict:
     blob = json.dumps([r["item_id"] for r in uniq]).encode()
     stats = {"full": len(uniq), "mid": len(mid), "per_domain": counts,
              "mixture_sha256": mixture["sha256"],
+             "holdout_sha256": mixture["holdout_sha256"],
              "train_ids_sha256": hashlib.sha256(blob).hexdigest()}
     with open("/artifacts/corpus-fullrecipe/train-mixture-stats.json", "w") as f:
         json.dump(stats, f, indent=2)

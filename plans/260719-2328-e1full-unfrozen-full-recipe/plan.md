@@ -1,5 +1,9 @@
 # E1FULL Campaign — Full-Recipe Unfrozen Compactor (Third GT13 Attempt)
 
+> **INVALIDATED CERTIFICATION (2026-07-21):** 52/60 evaluation documents
+> overlapped training. The clean holdout retrain/rerun is in progress; prior
+> certification and deployment conclusions are withdrawn.
+
 Brief: /E1FULL.md. Selected config (ESCAPE P0.2): E1 fixed logit scale √d_l = 16,
 otherwise canonical. Framing: every question is "does X survive kernel mobility."
 
@@ -13,7 +17,7 @@ otherwise canonical. Framing: every question is "does X survive kernel mobility.
 | WP1 train e1full-t1024-T8k (75,998 items, 1500 steps) | ✅ 00:13–02:1x; loss 0.165 (vs frozen 0.357); GT27 pass (0.217@300); entropy 0.815→1.62 still rising; kept-l0 8159/8188 |
 | WP1 extension decision (slope>0.01 nats over last 250) | ✅ FIRED: +0.0696 > 0.01 → extended to 3000 (launched ~02:2x, decision logged) |
 | Q1' trajectories (entropy, R6, R7, d_min) | ✅ entropy 0.815→1.78 (plateau at 3000); R6 1.000→0.550 ITEM-ADAPTIVE (<0.9 threshold); R7 →0.13 then re-organizes →0.29; d_min ~0.50 at all 12 ckpts; y+ →0.159 |
-| Q2' GT13 third attempt | ✅ RE-MEASURED n=60 + paired CIs (n=12 was underpowered): primary NO-SHIP (KL 0.1348 vs 0.0848, CI-sep; 74% of frozen gap closed); secondary SHIP (accΔ +0.031 vs −0.064, lost 0.147 vs 0.644) — **but frozen arm passes it too and wins accΔ (+0.102)** → 'first certified' retired, anchor problem is the finding |
+| Q2' GT13 third attempt | ❌ INVALIDATED by train/eval overlap; clean-v1 retrain and n=60 rerun pending |
 | Q5' smuggling | ✅ monotone across 4 generations on one protocol (n=60): 0.617 → 0.196 → 0.171 → 0.108; no trade |
 | Q3' F1 under per-item kernels | ✅ branch (iii): d_min 0.5003 [0.495,0.505] flat at chance; kept sets rich (mean 2,779) yet loss-blind — internality survives strongest test |
 | Q4' gate refresh | ✅ y+ 0.083; A2 weak-flat (.570/.568/.564); GT16 0.089 @ 0.000 expand; MARGINAL VALUE 0.0% — trend 72→22.5→9.0→0% |

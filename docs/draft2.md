@@ -1,5 +1,10 @@
 # The Compactor That Couldn't Learn Where to Look: Gradient Saturation, Position-Kernel Collapse, and the Anchor Problem in Compression Certification
 
+> **INVALIDATED DRAFT RESULT (2026-07-21).** The E1FULL certification set
+> overlapped the training set. All certification, paired-CI, task-anchored
+> SHIP, ranking, and deployment statements below are withdrawn pending the
+> clean holdout retrain and rerun. Runtime depth remains zero.
+
 **Draft v0.3 — 2026-07-20.** Certification re-measured at n=60 documents
 with paired CIs (n=12 left both aggregation verdicts unresolved), and the
 task-anchored predicate applied to the frozen arm as well — it passes too,
@@ -37,17 +42,10 @@ softmax is de-saturated from step 0 (entropy starts at 0.82 nats
 instead of the floor) and training then *raises* it, all eight KV-heads
 despecialize from the shared lattice, the kept sets become item-adaptive,
 and the unfrozen compactor overtakes the frozen one on the very objective
-that froze it. At full recipe (60 certification documents, paired per-document CIs) the
-two pre-registered predicates **dissociate — and disagree about which
-compressor is better**. Distributionally the unfrozen compactor still
-trails raw eviction (KL 0.135 vs 0.085, CI-separated; unfreezing closes
-74% of the frozen lineage's gap without crossing it). On the
-task-anchored predicate it ships (accuracy +0.031 vs −0.064; silent fact
-loss 0.147 vs 0.644) — but so does the frozen subsampler, which *beats*
-it on aggregation accuracy (+0.102) while losing 58% more facts and
-tripling the KL. A KL anchor penalizes denoising; a task anchor cannot
-tell a subsampler from a synthesizer. Which artifact gets "certified" is
-decided by the anchor, not the compressor.
+that froze it. The historical full-recipe certification cannot support a
+held-out comparison because its evaluation documents overlap training. Its
+predicate and compressor-ranking interpretations are withdrawn; the clean
+rerun is the only source permitted to restore those claims.
 Downstream, kernel mobility *sharpens* the routing landscape of our
 companion work rather than reorganizing it: write-time geometry stays
 loss-blind even for a content-routed, item-adaptive kernel (AUC 0.5003)
@@ -86,11 +84,9 @@ init-noise and content-seeded-init controls ruling out the alternative
 explanations; **(iii)** the cure — reduce the logit scale — validated
 from gradient wake-up through kernel mobility, head despecialization,
 item-adaptivity, and training-loss crossover, at three seeds; **(iv)**
-the consequence: at full recipe the two registered certification
-predicates dissociate — distributional NO-SHIP, task-anchored SHIP —
-and *rank compressors differently* — the frozen subsampler passes the
-same task predicate and wins on its accuracy axis — making the choice of
-certification anchor, not the compressor, the decisive design question; **(v)** the
+the consequence: the historical full-recipe certification is invalidated
+by train/holdout overlap, so no predicate or compressor-ranking conclusion
+is retained pending the clean rerun; **(v)** the
 downstream sharpening: write-time geometry remains loss-blind even
 under content routing (internality confirmed at its strongest test),
 the text-shadow gate's routable fraction reaches zero while
@@ -198,50 +194,11 @@ resolves the question for any implementation in minutes.
 
 ## 6. Certification: the predicates dissociate
 
-Full two-axis certification at matched retained budget against the
-eviction baseline, both pre-registered predicates, noise-floor row
-included:
-
-| arm (n=60 docs) | agg KL (↓) | agg accΔ | pointwise lost | lost \| prior-correct |
-|---|---:|---:|---:|---:|
-| eviction (matched budget) | **0.0848** | −0.064 | 0.644 | 0.617 |
-| frozen full-recipe | 0.2820 | **+0.102** | 0.210 | 0.171 |
-| **unfrozen full-recipe (d1)** | 0.1348 | +0.031 | **0.147** | **0.108** |
-| unfrozen, depth-4 (untrained-for) | 14.41 | −0.099 | 0.750 | 0.744 |
-| zero-compression control | 0.0000 | 0.000 | 0.056 | 0.000 |
-
-Paired per-document bootstrap differences vs eviction (95% CI): unfrozen
-KL +0.050 [+0.022, +0.078], accΔ +0.095 [+0.020, +0.174], pointwise
-−0.497 [−0.625, −0.364]; frozen +0.198 [+0.156, +0.242], +0.167
-[+0.093, +0.246], −0.435 [−0.575, −0.286]. All six exclude zero. (An
-earlier pass at the harness default of 3 docs/domain, n=12, resolved
-*neither* aggregation difference — KL +0.017 [−0.062, +0.070] — so we
-report per-axis CIs and treat n=12 certification as underpowered.)
-
-**Primary predicate (distributional): NO-SHIP** for both compactors;
-unfreezing closes 74% of the frozen lineage's gap to eviction
-(0.282 → 0.135 against 0.085) without crossing it. **Secondary
-predicate (task-anchored): SHIP — for both**, and on its accuracy axis
-the *frozen subsampler wins* (+0.102 vs +0.031: verbatim strided tokens
-serve extractive MCQ better than blended ones), while the unfrozen model
-wins on distributional fidelity (0.135 vs 0.282) and silent fact loss
-(0.108 vs 0.171).
-
-Three consequences. (i) A KL anchor *penalizes* improvement: mild
-denoising is distributional infidelity, and the reference being imitated
-is itself only ~67% accurate on these probes. (ii) A task anchor is a
-weak screen: every trained compactor here beats deletion on both task
-axes, so it cannot separate a subsampler from a synthesizer.
-(iii) "Certified" is therefore not a property of a compressor alone. We
-scope our claim accordingly: the unfrozen compactor is the
-**best-certified compactor we measure** — passing the task predicate
-with the lowest KL and lowest pointwise loss of any arm — not the first
-certified, since the frozen subsampler passes the same predicate.
-Untrained-for depth-4 recurrence collapses (KL 14.4), so
-max_certified_depth = 0 under the primary predicate, and the deployment
-recommendation is opt-in for task-anchored workloads rather than a
-default flip. Policy version `still-compact-v1:t1024:depth0` with
-weights hash and diagnostics attached.
+**Invalidated.** The historical table used 52/60 documents and 207/241
+probes that appeared in full-recipe training. It cannot establish either
+predicate, any frozen-versus-unfrozen ranking, or a deployment depth. The
+runtime remains at `max_certified_depth = 0`; this section will be populated
+only from the signed clean-holdout artifact.
 
 ## 7. Downstream: routing under a mobile kernel
 

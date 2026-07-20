@@ -73,3 +73,21 @@ def test_gt15_depth_refusal_unit():
     assert_depth_allowed(comp, 4)
     with pytest.raises(CompatibilityError):
         assert_depth_allowed(comp, 5)
+
+
+@pytest.mark.golden
+def test_compactor_checkpoint_round_trips_experiment_provenance(tmp_path):
+    """Weights bind the exact train/eval partition used to produce them."""
+    from transformers import Qwen3Config
+    cfg = Qwen3Config(vocab_size=128, hidden_size=64, num_hidden_layers=2,
+                      num_attention_heads=4, num_key_value_heads=2, head_dim=16)
+    comp = StillAmortizedKVCompactor(cfg, t_latents=8)
+    comp.training_manifest_sha256 = "train-sha"
+    comp.certification_holdout_sha256 = "holdout-sha"
+    path = tmp_path / "compactor.safetensors"
+
+    comp.save(str(path))
+    loaded = StillAmortizedKVCompactor.load(str(path), cfg)
+
+    assert loaded.training_manifest_sha256 == "train-sha"
+    assert loaded.certification_holdout_sha256 == "holdout-sha"

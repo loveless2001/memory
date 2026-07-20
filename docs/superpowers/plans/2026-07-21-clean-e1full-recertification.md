@@ -29,10 +29,10 @@
 **Interfaces:**
 - Produces: `canonical_sha256(value)`, `select_holdout_documents(...)`, `assert_train_eval_disjoint(...)`, and `paired_bootstrap_ci(...)`.
 
-- [ ] Write tests for order-independent 15-per-domain selection, insufficient candidates, both overlap levels, canonical hashes, and deterministic paired intervals.
-- [ ] Run the focused tests and confirm failures occur because the helpers do not exist.
-- [ ] Implement the minimal pure helpers and exports.
-- [ ] Run the focused tests until green.
+- [x] Write tests for order-independent 15-per-domain selection, insufficient candidates, both overlap levels, canonical hashes, and deterministic paired intervals.
+- [x] Run the focused tests and confirm failures occur because the helpers do not exist.
+- [x] Implement the minimal pure helpers and exports.
+- [x] Run the focused tests until green.
 
 ### Task 2: Holdout, Manifest, And Checkpoint Provenance
 
@@ -49,10 +49,10 @@
 - Consumes: Task 1 helpers.
 - Produces: `/artifacts/corpus-fullrecipe/certification-holdout-clean-v1.json`; a mixture manifest with `holdout_sha256`; checkpoint metadata fields `training_manifest_sha256` and `certification_holdout_sha256`.
 
-- [ ] Add failing metadata round-trip and source-level runner contract tests.
-- [ ] Run focused tests and observe the missing metadata/contract failures.
-- [ ] Add the holdout builder, require/exclude its documents in the mixture and merge paths, pass hashes into training, and persist them in safetensors.
-- [ ] Run focused tests until green.
+- [x] Add failing metadata round-trip and source-level runner contract tests.
+- [x] Run focused tests and observe the missing metadata/contract failures.
+- [x] Add the holdout builder, require/exclude its documents in the mixture and merge paths, pass hashes into training, and persist them in safetensors.
+- [x] Run focused tests until green.
 
 ### Task 3: Fail-Closed Certification And Complete Statistics
 
@@ -64,10 +64,10 @@
 - Consumes: holdout, training manifest, and checkpoint hash metadata from Task 2.
 - Produces: `summary-e1full-clean-v1-n60.json` with full provenance and intervals for all four metrics.
 
-- [ ] Add failing tests for the complete metric set and conservative depth mapping.
-- [ ] Run focused tests and confirm the failures.
-- [ ] Select only reserved documents, record every probe, assert exact holdout selection and zero overlap, verify checkpoint hashes, compute all paired intervals, and set single/iterative metadata from primary GT13 results only.
-- [ ] Run focused tests until green.
+- [x] Add failing tests for the complete metric set and conservative depth mapping.
+- [x] Run focused tests and confirm the failures.
+- [x] Select only reserved documents, record every probe, assert exact holdout selection and zero overlap, verify checkpoint hashes, compute all paired intervals, and set single/iterative metadata from primary GT13 results only.
+- [x] Run focused tests until green.
 
 ### Task 4: Invalidate Unsupported Claims And Repair Data
 
@@ -84,11 +84,11 @@
 **Interfaces:**
 - Produces: prose that labels the old n=60 result contaminated and non-deployable, plus strict JSON.
 
-- [ ] Add a repository test that strictly parses tracked JSON and checks the key documents do not retain the unsupported deployment/first-certification claims.
-- [ ] Run it and confirm it fails on the existing artifacts.
-- [ ] Replace unsupported claims with the contamination finding and pending-clean-rerun status; encode the infinite threshold as `null` with a descriptive mode.
-- [ ] Rebuild `paper2/main.pdf` after the TeX edit.
-- [ ] Run document/data tests until green.
+- [x] Add a repository test that strictly parses tracked JSON and checks the key documents do not retain the unsupported deployment/first-certification claims.
+- [x] Run it and confirm it fails on the existing artifacts.
+- [x] Replace unsupported claims with the contamination finding and pending-clean-rerun status; encode the infinite threshold as `null` with a descriptive mode.
+- [x] Rebuild `paper2/main.pdf` after the TeX edit.
+- [x] Run document/data tests until green.
 
 ### Task 5: Verify And Launch
 
@@ -98,7 +98,7 @@
 **Interfaces:**
 - Produces: live Modal function/job IDs and, after completion, the clean certification artifact copied into the repository.
 
-- [ ] Run `./.venv/bin/pytest tests/ -q`, `./.venv/bin/python -m compileall -q memsub modal-runners tests`, `git diff --check`, and strict JSON parsing.
+- [x] Run `./.venv/bin/pytest tests/ -q`, `./.venv/bin/python -m compileall -q memsub modal-runners tests`, `git diff --check`, and strict JSON parsing.
 - [ ] Run the remote holdout builder and manifest rebuild; inspect exact overlap counts and hashes.
 - [ ] Merge filtered triplets, repack contexts, and verify training stats bind the holdout hash.
 - [ ] Launch `e1full-clean-v1-t1024-T8k`; record the function call ID and stop if the tripwire fires.
