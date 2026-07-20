@@ -170,3 +170,127 @@
 - Content claims re-verified against Still primary: per-layer Perceiver ✓,
   top-200 gold-forced forward-KL loss ✓, iterative-compaction collapse is
   §3.4 (ADDENDUM-M35's "§M.2" pointer corrected).
+
+## 2026-07-17 — PREPROBE (E1/E2): fragility is content-structured
+
+- E1 reseed instance (seed 51234, legacy-KL flag so seed is the only diff):
+  κ(A↔B) 0.745 with B's failure set nested in A's (P 0.945); κ(A↔A2) 1.000
+  (GT16 labeling is exactly deterministic); κ(A↔C, t=512) 0.455 — capacity
+  transfer only partial. Per-instance base rates differ (0.500 vs 0.418):
+  quote rates per instance.
+- E2: no surface feature reaches 0.60 univariate; c0 logistic 0.564 ≈ the
+  trained gate's own evicted-only ceiling; failure signature is key→value
+  binding loss under confusable-sibling pressure; rarity INVERTED.
+- ≈$62. Report: /PREPROBE-REPORT.md.
+
+## 2026-07-18 — PROBE: sufficiency is readable, but only from the computation
+
+- Arm ladder (evicted-only AUC): p2 prompted self-check 0.638 · c1d per-head
+  attention 0.767 · c2 layer-30 linear 0.819 · c2 MLP 0.852 · stack 0.854
+  vs the c0 surface floor 0.564. GT22: stack-gated point matches the
+  refreshed gate's lost-fact at ⅓ its expansion budget; GT23 frontier 1.98×
+  oracle; GT24 capacity drop 0.214 (probes retrain per capacity).
+- KEY MECHANISM (drove every later campaign): the shipped compactor's
+  cross-attention is a DELTA POSITION KERNEL (purity 1.0, entropy 0.0) —
+  compaction ≈ strided subsampling; killed the c3a/c3b and c0.5 arms and
+  reframed the GT13 no-ship as "never entered the synthesis regime".
+- ≈$89. Report: /PROBE-REPORT.md.
+
+## 2026-07-18 (later) — FOLLOWUP F1/F2/F3
+
+- F1: kept set is a stride-≈3 delta lattice, head- and item-invariant;
+  needle-to-lattice distance is LOSS-BLIND (d_min AUC 0.509) → branch (iii).
+- F2 (big result): strip the question and layer-30 goes to chance (0.502
+  refit vs 0.813 question-conditioned) → the 0.85 is ANSWER-CONFIDENCE, not
+  memory content; paper claim downgraded to "behavioral-divergence
+  predictor" (still deployable — the question is present at gate time).
+- F3: 4 inventory heads' 8 scalars → 0.762 with 2 hooks and no capture
+  infra; ladder becomes p2 0.638 → sink-heads 0.762 → stack 0.854. ≈$9.
+
+## 2026-07-19 — FOLLOWUP2 F4/F5 + paper v0.4
+
+- F4: the context-only null hardens — no decodable signal at any probed
+  layer, linear or MLP (max 0.508 vs 0.813).
+- F5: sink-head monitor under EVICTION refits to 0.783 and transfers
+  zero-shot both directions (0.744 / 0.717) → the middle rung is
+  regime-general. ≈$14; paper #1 edited and recompiled (13pp).
+
+## 2026-07-19 — FULLRECIPE: position-kernel collapse is not a scale artifact
+
+- Corpus completion (C1/C2): only 19,619 of 98,355 items carried rationale
+  traces; batched teacher pass added the remainder → 75,998-item balanced
+  mixture (manifest sha 8e0bb280…, ≈$130).
+- **Q1 outcome (c)**: cross-attention entropy never leaves 1.16e-10 at ANY
+  scale (9.5k / 19.6k / 76k items; batch 4 and true batch 32) and the argmax
+  kernel is BITWISE frozen at initialization (Jaccard 1.000 on every layer,
+  every checkpoint). Collapse is an init fixed point, not a data-scale
+  artifact; the 3000-step extension was cancelled by its pre-registered rule.
+- Q2 GT13 retry: NO-SHIP again — aggregation KL 0.2566 vs eviction 0.1218
+  (1/40 scale gave 0.263: an 8× data increase moved it 2%). Q3: geometry
+  loss-blind (branch iii) at every checkpoint. Q4: probe ladder degraded but
+  readable (stack 0.802); F2 null holds. Q5: smuggling advantage grows
+  (0.188 vs 0.583). Gate marginal value 9.0% (trend 72 → 22.5 → 9.0).
+- **Harness finding**: the M3.5 DDP trainer called `module.compact()`,
+  bypassing the wrapper — gradients were NEVER all-reduced (verified with a
+  2-rank test). All shipped 1/40 checkpoints are single-replica batch-4
+  artifacts; behavioral numbers stand, training-scale attribution corrected
+  in the paper #1 arXiv v2 note. Fixed trainer used for every later run.
+- ≈$440. Report: /FULLRECIPE-REPORT.md.
+
+## 2026-07-20 — ESCAPE: the mechanism and its one-constant cure
+
+- G1/G2 gradient forensics (near-dispositive, ≈$3): at the canonical logit
+  scale d_l=256 the routing projections are numerically dead (W_Q 1.1e-11,
+  W_K 1.6e-10) while the value path sits at 17–22 — 11–12 orders along the
+  routing/value cut. Swapping ONLY the scale to √d_l=16 wakes them ×5.0e9 /
+  ×3.4e9 (value path moves a generic ×3.5). **D1 confirmed.**
+- Arms: E1 (√d_l) escapes — entropy rises 0.815 → 1.11, kernel Jaccard →
+  0.18, heads despecialize (cross-head J → 0.199), final loss 0.219 vs the
+  frozen 0.365, and 35% fewer facts lost (y+ 0.239 vs 0.370); replicated on
+  3 seeds. E2 (learned temperature) escapes independently (0.2104). E3
+  (anchor noise) stays frozen → not a tie-breaking problem. E4
+  (content-seeded init) stays flat and is quality-catastrophic → content
+  cannot substitute for gradient. No F1-flip at mid scale.
+- Selected arm per the pre-registered rule (loss tie → simplest lever):
+  E1 fixed √d_l. ≈$95. Report: /ESCAPE-REPORT.md.
+
+## 2026-07-20 — E1FULL: the certification predicates dissociate
+
+- WP1: full mixture, 1500 steps → the pre-registered extension rule fired
+  (entropy slope +0.070/250 steps) → 3000 steps. Entropy 0.815 → 1.78;
+  kernel becomes ITEM-ADAPTIVE (cross-item Jaccard 1.000 → 0.550); heads
+  scatter then re-organize; final loss 0.167 vs the frozen 0.357.
+- **Q2' GT13, third attempt — the predicates dissociate.** Primary
+  (distributional): NO-SHIP, KL 0.1385 vs eviction's 0.1218 (mobility closed
+  46% of the frozen gap). Secondary (task-anchored, registered beforehand):
+  **SHIP** — aggregation accΔ +0.042 vs −0.049 AND pointwise 0.153 vs 0.597.
+  Depth-4 untrained-for recurrence collapses (14.2). Policy
+  `still-compact-v1:t1024:depth0:sha256:8238173715edc8f1`.
+- Q3': geometry STILL loss-blind under content routing (d_min 0.5003) —
+  branch (iii); the internality claim survives its strongest test.
+- Q4': probe ladder RECOVERS (stack 0.857, sink-heads 0.764, best layer
+  drifts 30 → 25 → 33); F2 null holds (0.507); F5 transfer across the
+  frozen↔unfrozen divide 0.759/0.727; **the text-shadow gate's marginal
+  value reaches 0%** (trend 72 → 22.5 → 9.0 → 0) while the probe stack still
+  routes below never-expand (0.049 lost at 9.1% expansion).
+- Q5': smuggling advantage grows (0.083); no trade — both axes improved.
+- Q6': fragility is mostly-nested shrinkage — 91.0% of the unfrozen
+  instance's losses lie inside A's, 78.5% inside FR's; κ 0.28–0.42
+  cross-regime with the drop largely marginal-driven (base rates
+  0.499 → 0.418 → 0.321 → 0.172).
+- ≈$390. Report: /E1FULL-REPORT.md.
+
+## 2026-07-20 (later) — Documents reconciled to the measured record
+
+- Paper #2 written (`paper2/`, builds with tectonic) from the reports of
+  record; `docs/draft2.md` (markdown master) corrected in six places where
+  anticipated values had not materialized (geometry flip 0.71, fragility
+  nesting 0.44, distributional ship at KL 0.108, gate 4.1%, mid-scale
+  dynamics, compute ledger). Title scoped to "First Task-Certified".
+- Spec v0.3.7 §6.2 + changelog reconciled: task-anchored ship only, depth 1,
+  L3 default UNCHANGED (unfrozen compactor is an opt-in policy with the
+  probe stack as its routing tier); gate trend ends at 0%; fragility and
+  sink-head figures corrected.
+- `docs/revise.md` (paper #1 arXiv v2 note) rewritten to the measured
+  fragility values; its unmeasured within-regime reseed κ for the
+  content-routed class removed (no such experiment exists).

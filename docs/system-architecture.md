@@ -1,6 +1,9 @@
-# memsub — System Architecture (MVP M0–M2)
+# memsub — System Architecture (M0–M3.5 + research campaigns)
 
-Authoritative design: `unified_memory_substrate_spec_v0.3.6.1.md`; scope: `BUILD.md`.
+Authoritative design: `unified_memory_substrate_spec_v0.3.7.md` (M0–M2 built
+against v0.3.6.1); scope: `BUILD.md` for the MVP, campaign briefs
+(`GATE.md`, `COMPACTOR.md`, `PROBE.md`, `FULLRECIPE.md`, `ESCAPE.md`,
+`E1FULL.md`) for everything after M2.
 
 ## Layers
 
@@ -46,6 +49,51 @@ memsub/
   redaction_graph_invalidator.py     GT5: derived_from closure + conservative KV-overlap
   substrate_facade.py                wiring; cli.py thin argparse CLI
   reference_config.py                reference (Qwen3-4B GPU) vs tiny (CPU) builders
+
+  -- M3 decision layer (GATE.md / ABLATION.md) --
+  gate/dual_encoder_expansion_gate.py    frozen-shadow dual encoder + temperature
+                                         calibration; mechanics features dominate
+  gate/label_dataset_splits.py           GateDataset + document-level splits
+  gate/gate_evaluation_metrics.py        AUC/ECE, threshold sweep, operating point,
+                                         baseline decision rows (never/always/oracle)
+  gate/domain_recalibration.py           per-domain temperature + Platt escalation
+  gate/expansion_budget_harness.py       end-to-end lost-fact vs expand-rate
+  gate/set_scoring_selector.py           WP2 s1/s2 grouped multi-hop expansion
+
+  -- M3.5 compaction policy (COMPACTOR.md) --
+  compactor/still_perceiver_layer_compactor.py  per-layer Perceiver: t latent queries
+                                         per KV head, B=2 blocks, QK-norm, logit
+                                         scale d_l (the ESCAPE lever), identity init
+  compactor/still_amortized_kv_compactor.py     36-layer stack over a
+                                         CompactedPrefixCache; un-rotate -> compact ->
+                                         re-rotate at output positions; policy_version
+                                         binds weights hash + max_certified_depth
+  compactor/rope_rotation_helpers.py     model/internal RoPE apply + unrotate
+  compactor/compactor_training_objective.py  forward KL on answer tokens, top-200
+                                         teacher support with gold forced in (set-
+                                         support; the pre-f214c0f multiset variant is
+                                         reachable only via an explicit legacy flag)
+```
+
+## Research-campaign harnesses (`modal-runners/`, not runtime code)
+
+```
+fullrecipe-instrumented-ddp-training-inner-script.py  torchrun target: true batch 32
+                                     (explicit grad all-reduce — the M3.5 script
+                                     bypassed the DDP wrapper and never synced),
+                                     step-tagged resume, GT27 tripwire + NaN abort,
+                                     --lever {e1_sqrt_scale, e2_learned_temp,
+                                     e3_anchor_noise, e4_content_seed}
+fullrecipe-entropy-telemetry-capture-module.py  I1: per-layer block-1 cross-attn row
+                                     entropy + argmax-kernel histograms on a fixed
+                                     128-item probe batch (the collapse detector)
+modal-fullrecipe-i2-*.py             I2: per-checkpoint GT16 relabel fused with
+                                     kept-kernel capture -> d_min AUC trajectory
+modal-escape-g1g2-*.py               init-time per-group gradient forensics
+modal-m35-certification-and-gate-refresh.py  certify_arms / relabel_slice /
+                                     refresh_gate / wp2_eval (all policy-parameterized)
+modal-probe-*, modal-followup*       read-side probe capture/training, sink-head
+                                     monitor, context-only controls
 ```
 
 ## Key invariants
@@ -58,6 +106,17 @@ memsub/
 - Redaction: derived_from closure invalidates blocks/checkpoints; any checkpoint whose
   logical coverage includes a redacted span is invalidated (stale survivors, spec 13.1).
 - Certification reports the aggregation and pointwise axes separately, never blended.
+- A trained compaction policy is identified by `compaction_policy_version`
+  (weights hash + certified depth); relabels, gates, and probes are
+  policy-scoped artifacts — a policy change invalidates them along with the
+  caches (measured: label base rates and best probe layer both move).
+- E1-class checkpoints (ESCAPE lever) are trained AND deployed at logit scale
+  √d_l = 16: every harness takes `--lever e1_sqrt_scale`. Loading such a
+  checkpoint at the canonical scale silently changes its routing.
+- Compactor certification carries two mandatory pre-training diagnostics
+  (spec v0.3.7 §13.4): init-time gradient forensics and cross-attention
+  entropy telemetry — a compactor can optimize its loss for thousands of
+  steps while its routing pathway receives ~zero gradient.
 
 ## Compute split
 - Local (low-RAM laptop): tiny random Qwen3-config model on CPU exercises all logic,
