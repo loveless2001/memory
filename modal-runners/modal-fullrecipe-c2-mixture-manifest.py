@@ -51,7 +51,7 @@ def build_manifest() -> dict:
     holdout_docs = {row["doc_id"] for row in holdout["documents"]}
     built = build_training_manifest(
         all_items, traced_ids=traced_ids, holdout_doc_ids=holdout_docs,
-        domains=DOMAINS, domain_cap=DOMAIN_CAP)
+        domains=DOMAINS, domain_cap=DOMAIN_CAP, balance_to_smallest=True)
     if built["orphan_traced_item_ids"]:
         raise ValueError(
             "traced items outside selected training/holdout sets: "
@@ -59,10 +59,12 @@ def build_manifest() -> dict:
     overlap = assert_train_eval_disjoint(
         built["items"], holdout["documents"])
     payload = {
-        "domain_cap": DOMAIN_CAP,
+        "domain_cap": built["effective_domain_cap"],
+        "requested_domain_cap": DOMAIN_CAP,
         "holdout_sha256": holdout["sha256"],
         "counts": built["counts"],
         "excluded_traced_item_ids": built["excluded_traced_item_ids"],
+        "duplicate_item_ids": built["duplicate_item_ids"],
         "orphan_traced": built["orphan_traced_item_ids"],
         "overlap_audit": overlap,
         "items": built["items"],
@@ -73,9 +75,11 @@ def build_manifest() -> dict:
         json.dump({**payload, "sha256": digest}, f)
     artifacts.commit()
     return {"sha256": digest, "holdout_sha256": holdout["sha256"],
+            "domain_cap": built["effective_domain_cap"],
             "counts": built["counts"], "total": len(built["items"]),
             "remainder": len(built["remainder_item_ids"]),
             "excluded_traced": len(built["excluded_traced_item_ids"]),
+            "duplicate_items": len(built["duplicate_item_ids"]),
             "orphan_traced": len(built["orphan_traced_item_ids"]),
             "overlap_audit": overlap}
 

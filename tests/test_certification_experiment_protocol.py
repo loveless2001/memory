@@ -121,6 +121,27 @@ def test_training_manifest_excludes_entire_holdout_documents():
     assert result["counts"]["financial"]["heldout_excluded"] == 1
 
 
+def test_training_manifest_deduplicates_and_balances_after_holdout():
+    items = [
+        {"doc_id": "a/1", "item_id": "a1"},
+        {"doc_id": "a/1", "item_id": "a1"},
+        {"doc_id": "a/2", "item_id": "a2"},
+        {"doc_id": "a/3", "item_id": "a3"},
+        {"doc_id": "b/1", "item_id": "b1"},
+        {"doc_id": "b/2", "item_id": "b2"},
+    ]
+
+    result = build_training_manifest(
+        items, traced_ids=set(), holdout_doc_ids=set(),
+        domains=("a", "b"), domain_cap=3, balance_to_smallest=True)
+
+    assert result["effective_domain_cap"] == 2
+    assert result["duplicate_item_ids"] == ["a1"]
+    assert result["counts"]["a"]["selected"] == 2
+    assert result["counts"]["b"]["selected"] == 2
+    assert len({row["item_id"] for row in result["items"]}) == 4
+
+
 def test_paired_bootstrap_ci_is_deterministic_and_tracks_direction():
     ref = [1.0, 2.0, 3.0, 4.0]
     candidate = [0.0, 1.0, 2.0, 3.0]

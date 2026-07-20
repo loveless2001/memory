@@ -123,6 +123,7 @@ def build_training_manifest(
     holdout_doc_ids: set[str],
     domains: Sequence[str],
     domain_cap: int,
+    balance_to_smallest: bool = False,
 ) -> dict[str, Any]:
     """Build a balanced training manifest after whole-document exclusion."""
     by_domain: dict[str, list[Mapping[str, Any]]] = {
@@ -130,30 +131,43 @@ def build_training_manifest(
     }
     excluded_traced: set[str] = set()
     heldout_counts = {domain: 0 for domain in domains}
+    raw_counts = {domain: 0 for domain in domains}
+    seen_training_ids: set[str] = set()
+    duplicate_item_ids: set[str] = set()
     for item in items:
         doc_id = str(item["doc_id"])
         item_id = str(item["item_id"])
         domain = doc_id.split("/", 1)[0]
         if domain not in by_domain:
             continue
+        raw_counts[domain] += 1
         if doc_id in holdout_doc_ids:
             heldout_counts[domain] += 1
             if item_id in traced_ids:
                 excluded_traced.add(item_id)
             continue
+        if item_id in seen_training_ids:
+            duplicate_item_ids.add(item_id)
+            continue
+        seen_training_ids.add(item_id)
         by_domain[domain].append(item)
 
     manifest: list[dict[str, Any]] = []
     remainder: list[str] = []
     counts: dict[str, dict[str, int]] = {}
+    effective_cap = domain_cap
+    if balance_to_smallest:
+        effective_cap = min(
+            domain_cap, *(len(by_domain[domain]) for domain in domains)
+        )
     for domain in domains:
         rows = sorted(
             by_domain[domain],
             key=lambda item: (str(item["doc_id"]), str(item["item_id"])),
         )
-        selected = rows[:domain_cap]
+        selected = rows[:effective_cap]
         counts[domain] = {
-            "corpus": len(rows) + heldout_counts[domain],
+            "corpus": raw_counts[domain],
             "available_after_holdout": len(rows),
             "heldout_excluded": heldout_counts[domain],
             "selected": len(selected),
@@ -181,6 +195,8 @@ def build_training_manifest(
         "counts": counts,
         "excluded_traced_item_ids": sorted(excluded_traced),
         "orphan_traced_item_ids": sorted(orphan_traced),
+        "effective_domain_cap": effective_cap,
+        "duplicate_item_ids": sorted(duplicate_item_ids),
     }
 def paired_bootstrap_ci(
     reference: Sequence[float],
