@@ -22,13 +22,17 @@ artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
 
 @app.function(image=image, volumes={"/artifacts": artifacts}, timeout=3600,
               memory=16384)
-def rebuild() -> dict:
+def rebuild(labels_base: str =
+            "/artifacts/compactor-gate-labels-fullrecipe",
+            out_path: str =
+            "/artifacts/probe/capture-manifest-fullrecipe.json",
+            pred_key: str = "pred_compact_fullrecipe") -> dict:
     import glob
     with open("/artifacts/probe/capture-manifest.json") as f:
         manifest = json.load(f)
     new = {}
     for path in sorted(glob.glob(
-            "/artifacts/compactor-gate-labels-fullrecipe/*/slice-*.state.json")):
+            f"{labels_base}/*/slice-*.state.json")):
         with open(path) as f:
             for r in json.load(f)["rows"]:
                 new[r["item_id"]] = r
@@ -42,10 +46,10 @@ def rebuild() -> dict:
         row = dict(m)
         row["y_instanceA"] = m["y"]
         row["y"] = r["y_still"]
-        row["pred_compact_fullrecipe"] = r["pred_compact_still"]
+        row[pred_key] = r["pred_compact_still"]
         flipped += int(r["y_still"] != m["y"])
         out.append(row)
-    with open("/artifacts/probe/capture-manifest-fullrecipe.json", "w") as f:
+    with open(out_path, "w") as f:
         json.dump(out, f)
     artifacts.commit()
     return {"items": len(out), "missing_from_relabel": len(missing),
@@ -56,15 +60,16 @@ def rebuild() -> dict:
 
 @app.function(image=image, volumes={"/artifacts": artifacts}, timeout=3600,
               memory=16384)
-def population_stats() -> dict:
-    """(domain, y) counts over evicted rows of the full-recipe relabel base —
+def population_stats(labels_base: str =
+                     "/artifacts/compactor-gate-labels-fullrecipe") -> dict:
+    """(domain, y) counts over evicted rows of a relabel base —
     GT22 natural-prevalence weights."""
     import glob
     from collections import Counter
     pop = Counter()
     n_all = n_ev = 0
     for path in sorted(glob.glob(
-            "/artifacts/compactor-gate-labels-fullrecipe/*/slice-*.state.json")):
+            f"{labels_base}/*/slice-*.state.json")):
         with open(path) as f:
             for r in json.load(f)["rows"]:
                 n_all += 1
@@ -76,10 +81,13 @@ def population_stats() -> dict:
 
 
 @app.local_entrypoint()
-def main():
-    print(json.dumps(rebuild.remote(), indent=1))
+def main(labels_base: str = "/artifacts/compactor-gate-labels-fullrecipe",
+         out_path: str = "/artifacts/probe/capture-manifest-fullrecipe.json",
+         pred_key: str = "pred_compact_fullrecipe"):
+    print(json.dumps(rebuild.remote(labels_base, out_path, pred_key),
+                     indent=1))
 
 
 @app.local_entrypoint()
-def pop_stats():
-    print(json.dumps(population_stats.remote(), indent=1))
+def pop_stats(labels_base: str = "/artifacts/compactor-gate-labels-fullrecipe"):
+    print(json.dumps(population_stats.remote(labels_base), indent=1))

@@ -263,5 +263,64 @@
     ]
    }
   }
+ },
+ "e1full_p2": {
+  "test_auc": 0.6123,
+  "regime": "unfrozen synthesis (sqrt d_l)"
+ },
+ "e1full_c1d": {
+  "test_auc": 0.7387,
+  "regime": "unfrozen synthesis"
+ },
+ "e1full_c2_lin": {
+  "test_auc": 0.8358,
+  "best_layer": 33,
+  "note": "best layer 30->25->33 across policies"
+ },
+ "e1full_c2_mlp": {
+  "test_auc": 0.8559,
+  "sd": 0.0026,
+  "regime": "unfrozen synthesis"
+ },
+ "e1full_stack": {
+  "test_auc": 0.8565,
+  "ci95": [
+   0.8475,
+   0.8658
+  ],
+  "regime": "unfrozen synthesis"
+ },
+ "e1full_f3_sinkheads": {
+  "test_auc": 0.7636,
+  "f5_transfer": {
+   "FR_to_E1F": 0.7592,
+   "E1F_to_FR": 0.7266
+  }
+ },
+ "e1full_f2_context_only": {
+  "test_auc": 0.5073,
+  "note": "chance \u2014 null holds under content routing"
+ },
+ "_e1full_verdicts": {
+  "Q4": "RECOVERED: ladder p2 .612 < sinkheads .764 < c2_mlp .856 ~ stack .857 (frozen-FR dip .802 undone); F2 null holds (.507)",
+  "GT22_sweep": {
+   "0.089": {
+    "lost": 0.0858,
+    "expand_all": 0.0053
+   },
+   "0.075": {
+    "lost": 0.0773,
+    "expand_all": 0.0216
+   },
+   "0.06": {
+    "lost": 0.0597,
+    "expand_all": 0.0647
+   },
+   "0.05": {
+    "lost": 0.0491,
+    "expand_all": 0.0914
+   }
+  },
+  "gate_marginal_trend": "72% -> 22.5% -> 9.0% -> 0.0% (gate at floor; stack still routes below never-expand)"
  }
 }

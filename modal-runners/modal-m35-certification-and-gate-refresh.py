@@ -49,7 +49,7 @@ def _load_compactor(tag, config, device):
 @app.function(image=image, gpu=GPU, volumes=VOLUMES, timeout=43200,
               memory=65536)
 def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
-                 out_name: str = "summary") -> dict:
+                 out_name: str = "summary", lever: str = "none") -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -63,6 +63,11 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
                              runtime.device).to(runtime.model.dtype)
     iterative = _load_compactor(iterative_tag, runtime.model.config,
                                 runtime.device).to(runtime.model.dtype)
+    if lever == "e1_sqrt_scale":
+        for comp in (single, iterative):
+            for _layer in comp.layers:
+                for _m in list(_layer.cross) + list(_layer.selfattn):
+                    _m.d_l = 16            # deployment scale for E1 instances
     harness = OfflineCertificationHarness(runtime)
     tok = runtime.tokenizer
     os.makedirs("/artifacts/compactor-certification", exist_ok=True)
@@ -183,7 +188,8 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
               memory=32768)
 def relabel_slice(single_tag: str, t_latents: int, domain: str,
                   slice_idx: int, n_slices: int,
-                  out_base: str = "/artifacts/compactor-gate-labels") -> dict:
+                  out_base: str = "/artifacts/compactor-gate-labels",
+                  lever: str = "none") -> dict:
     """§17.5 counterfactual labels with the compactor as C. Deployment-shaped
     context: old prefix compacted to t latents, recent 25% raw. Items whose
     chunk lies in the raw window are natural y=0 rows."""
@@ -217,6 +223,10 @@ def relabel_slice(single_tag: str, t_latents: int, domain: str,
     runtime = build_runtime(reference=True)
     comp = _load_compactor(single_tag, runtime.model.config,
                            runtime.device).to(runtime.model.dtype)
+    if lever == "e1_sqrt_scale":
+        for _layer in comp.layers:
+            for _m in list(_layer.cross) + list(_layer.selfattn):
+                _m.d_l = 16                # deployment scale for E1 instances
     tok = runtime.tokenizer
     doc_cache: dict[str, list[int]] = {}
     reduction = 1 - (4 + t_latents + RECENT_RAW) / CTX
@@ -521,9 +531,10 @@ def wp2_eval() -> dict:
 
 @app.local_entrypoint()
 def launch_relabel(single_tag: str, t_latents: int, slices_per_domain: int = 3,
-                   out_base: str = "/artifacts/compactor-gate-labels"):
+                   out_base: str = "/artifacts/compactor-gate-labels",
+                   lever: str = "none"):
     for d in DOMAINS:
         for s in range(slices_per_domain):
             relabel_slice.spawn(single_tag, t_latents, d, s,
-                                slices_per_domain, out_base)
+                                slices_per_domain, out_base, lever)
     print("relabel fleet spawned")

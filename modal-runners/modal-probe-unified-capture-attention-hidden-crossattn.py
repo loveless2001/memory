@@ -56,7 +56,8 @@ DOMAINS = ("financial", "legal", "code", "literature")
               memory=65536)
 def run_capture(subset: str, slice_idx: int, n_slices: int,
                 light: bool = False, tag: str = TAG,
-                manifest_path: str = "", out_prefix: str = "capture") -> dict:
+                manifest_path: str = "", out_prefix: str = "capture",
+                lever: str = "none") -> dict:
     """light=True (post-GT19 trim): skip decode-step attentions (c1
     demoted) and the c3a compactor hook (cross-attn shown content-blind
     on the pilot — delta position kernel, zero variance). attn_stats
@@ -118,6 +119,10 @@ def run_capture(subset: str, slice_idx: int, n_slices: int,
     comp = StillAmortizedKVCompactor.load(
         f"/artifacts/compactor-checkpoints/{tag}/compactor.safetensors",
         model.config, device=runtime.device).to(model.dtype)
+    if lever == "e1_sqrt_scale":
+        for _layer in comp.layers:
+            for _m in list(_layer.cross) + list(_layer.selfattn):
+                _m.d_l = 16                # deployment scale for E1 instances
     for layer in comp.layers:
         layer.cross[0]._c3a_block1 = True
 
@@ -358,8 +363,8 @@ def main(subset: str, slice_idx: int, n_slices: int, light: bool = False,
 
 @app.local_entrypoint()
 def fleet(subset: str, n_slices: int, light: bool, tag: str,
-          manifest_path: str, out_prefix: str):
+          manifest_path: str, out_prefix: str, lever: str = "none"):
     handles = [run_capture.spawn(subset, k, n_slices, light, tag,
-                                 manifest_path, out_prefix)
+                                 manifest_path, out_prefix, lever)
                for k in range(n_slices)]
     print("spawned", len(handles), "capture slices ->", out_prefix)

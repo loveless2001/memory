@@ -41,7 +41,8 @@ DOMAINS = ("financial", "legal", "code", "literature")
 
 @app.function(image=image, gpu="H100", volumes=VOLUMES, timeout=43200,
               memory=32768)
-def relabel_sample(tag: str, out_name: str) -> dict:
+def relabel_sample(tag: str, out_name: str,
+                   lever: str = "none") -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -78,6 +79,10 @@ def relabel_sample(tag: str, out_name: str) -> dict:
     comp = StillAmortizedKVCompactor.load(
         f"/artifacts/compactor-checkpoints/{tag}/compactor.safetensors",
         runtime.model.config, device=runtime.device).to(runtime.model.dtype)
+    if lever == "e1_sqrt_scale":
+        for _layer in comp.layers:
+            for _m in list(_layer.cross) + list(_layer.selfattn):
+                _m.d_l = 16                # deployment scale for E1 instances
     t_latents = comp.t
     tok = runtime.tokenizer
     doc_cache: dict[str, list[int]] = {}
@@ -127,5 +132,5 @@ def relabel_sample(tag: str, out_name: str) -> dict:
 
 
 @app.local_entrypoint()
-def main(tag: str, out_name: str):
-    print(relabel_sample.remote(tag, out_name))
+def main(tag: str, out_name: str, lever: str = "none"):
+    print(relabel_sample.remote(tag, out_name, lever))

@@ -75,7 +75,8 @@ def _doc_subsample_hash(iid: str) -> float:
 @app.function(image=image, gpu="H100", volumes=VOLUMES, timeout=43200,
               memory=65536)
 def run(subset: str, slice_idx: int, n_slices: int, frac: float = 0.55,
-        limit: int = 0, dump_argmax: bool = False, tag: str = TAG) -> dict:
+        limit: int = 0, dump_argmax: bool = False, tag: str = TAG,
+        lever: str = "none") -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -116,6 +117,10 @@ def run(subset: str, slice_idx: int, n_slices: int, frac: float = 0.55,
     comp = StillAmortizedKVCompactor.load(
         f"/artifacts/compactor-checkpoints/{tag}/compactor.safetensors",
         model.config, device=runtime.device).to(model.dtype)
+    if lever == "e1_sqrt_scale":
+        for _layer in comp.layers:
+            for _m in list(_layer.cross) + list(_layer.selfattn):
+                _m.d_l = 16                # deployment scale for E1 instances
     comp.layers[0].cross[0]._kept_layer0 = True    # canonical read-in only
 
     def set_attn(mode):
@@ -259,8 +264,9 @@ def main(subset: str = "test", slice_idx: int = 0, n_slices: int = 1,
 
 
 @app.local_entrypoint()
-def sweep(tag: str, n_slices: int = 4, frac: float = 0.55):
+def sweep(tag: str, n_slices: int = 4, frac: float = 0.55,
+          lever: str = "none"):
     """FULLRECIPE Q3: same scaled subsample as F1, new checkpoint."""
-    handles = [run.spawn("test", k, n_slices, frac, 0, True, tag)
+    handles = [run.spawn("test", k, n_slices, frac, 0, True, tag, lever)
                for k in range(n_slices)]
     print("spawned", len(handles), "f1f2 slices for", tag)
