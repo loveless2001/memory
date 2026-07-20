@@ -75,8 +75,9 @@ The obvious explanation was undertraining. So we completed the training
 corpus (76k rationale-traced items) and trained at full recipe. The kernel
 did not move — **bitwise identical to its initialization**, at every
 checkpoint, at every data scale, while the loss fell normally from 0.58 to
-0.36. Aggregation KL was 0.2566 at full recipe versus 0.263 at 1/40 scale:
-an 8× data increase moved the certified number by 2%.
+0.36. Certified aggregation KL was 0.2529 at 1/40 scale and 0.2820 at full
+recipe (60-document protocol): an 8× data increase did not improve the
+certified number at all.
 
 The same campaign found a real bug: the multi-GPU trainer had been calling
 the model inside the DDP wrapper's `.module`, so **gradients were never

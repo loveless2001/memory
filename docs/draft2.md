@@ -124,8 +124,9 @@ lattice shared by all eight KV-heads and all items — **bitwise identical
 to initialization at every logged checkpoint of every run.** Meanwhile
 the loss falls (0.58 → 0.36 over 1,500 full-recipe steps) and the
 compactor's *behavior* improves monotonically: certified silent needle
-loss drops from 0.271 (1/40) to 0.188 (full recipe), with the later
-instance's failure set nested inside the earlier's (94.1%). Every
+loss drops from 0.196 (1/40) to 0.171 (full recipe) on the 60-document
+protocol, with the later instance's failure set nested inside the
+earlier's (94.1%). Every
 improvement is value-side learning over a frozen routing skeleton — the
 compactor learns what to write into fixed slots, never where to look.
 The loss curve is not merely uninformative about this; it is actively

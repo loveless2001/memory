@@ -16,7 +16,7 @@ Q2' predicates DISSOCIATE — primary NO-SHIP (KL), secondary (task-anchored)
 **SHIP** (but so does the frozen arm — the task predicate is a weak screen) · Q3' branch (iii) — geometry loss-blind even content-routed ·
 Q4' probe ladder RECOVERS (stack 0.857); gate marginal value reaches **0%**;
 F2 null holds; F5 transfer regime-general · Q5' smuggling advantage GROWS
-(0.083) · Q6' mostly-nested shrinkage, minority reshuffle.
+(0.108, n=60) · Q6' mostly-nested shrinkage, minority reshuffle.
 
 ---
 
@@ -188,9 +188,9 @@ the 1/40 → frozen → unfrozen improvements are all CI-separated from
 eviction (−0.413, −0.435, −0.497 respectively). The registered
 possibility that content routing would SPEND the needle-smuggling
 advantage to buy aggregation did not occur: both axes improved
-simultaneously (KL 0.257 → 0.139 AND pointwise 0.188 → 0.083). The gate
-remains formally mandatory under §13.4 (pointwise 0.153 ≫ noise floor
-0.069), but its practical marginal value is now zero (Q4').
+simultaneously (KL 0.282 → 0.135 AND pointwise 0.171 → 0.108). The gate
+remains formally mandatory under §13.4 (pointwise 0.147 ≫ noise floor
+0.056), but its practical marginal value is now zero (Q4').
 
 ## Q6' — Fragility: mostly-nested shrinkage, minority reshuffle
 
@@ -255,4 +255,4 @@ $285–450; extension fired, as budgeted).
   — excluded by the do-not-build list; the depth-4 collapse is expected,
   not diagnostic.
 - Whether a compressor class exists whose pointwise loss approaches the
-  noise floor (0.069) — E1F's 0.153 is within 2.2× of it.
+  noise floor (0.056) — E1F's 0.147 is within 2.6× of it.
