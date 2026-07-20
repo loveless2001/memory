@@ -335,7 +335,14 @@ distribution less exactly than deletion does --- the dissociation the
 frozen lineage first exposed, now on the shipping side of the line. The
 pointwise row also settles the registered trade question: content
 routing did NOT spend the needle-smuggling advantage
-($0.188 \to 0.083$); both axes improved together. Depth-4 recurrence
+($0.188 \to 0.083$); both axes improved together, leaving the unfrozen
+compressor within $2.2\times$ of the zero-compression noise floor
+($0.069$) on the pointwise axis. Mild denoising is distributional
+infidelity: a KL-anchored certification \emph{penalizes} improvement
+over the teacher's degraded-context behavior, so any certification
+regime for learned compaction must choose --- and disclose --- its
+anchor. Our ``first certified'' claim is therefore scoped precisely:
+first under the task-anchored predicate, at depth 1. Depth-4 recurrence
 without recurrence training still collapses;
 \texttt{max\_certified\_depth}$\,=0$ under the primary predicate;
 policy version \texttt{still-compact-v1:t1024:depth0:8238173\ldots}
@@ -381,8 +388,10 @@ expand-nothing --- marginal silent-loss reduction $\mathbf{0\%}$,
 completing the monotone trend $72\% \to 22.5\% \to 9.0\% \to 0\%$.
 Yet the computation-reading stack still routes where the gate cannot:
 it matches never-expand at $0.5\%$ expansion and pushes below it
-($0.049$ lost at $9.1\%$ expansion). Text-shadow gating dies with
-compressor quality; reading the computation does not.
+($0.049$ lost at $9.1\%$ expansion). The refined ladder statement: as compressors improve,
+externally-visible routing signal is exhausted first; the
+computation-reading tier is the last to retain routing power, and at
+this generation it is the only one that does.
 
 \section{Fragility across the regime change}
 \label{sec:fragility}
@@ -403,13 +412,16 @@ $91\%$ of the unfrozen instance's failure set lies inside the frozen
 $\kappa$ drop is marginal-driven (base rates $0.172$ vs $0.499$ cap
 $\kappa$ even under perfect containment); genuinely novel losses are a
 minority ($9$--$21.5\%$). The corrected claim --- filed as an arXiv v2
-note on the companion paper --- is that \textbf{fragility is largely
-content-intrinsic, surviving even a kernel-class change; the shared
-frozen lattice inflated measured stability modestly (nesting $0.94$ vs
-${\sim}0.8$), and a minority regime-relative component is real.}
-Practically: gate labels and calibration remain compaction-policy-scoped
-artifacts; a policy change invalidates the decision layer's training
-data along with the caches.
+note on the companion paper --- is \textbf{narrower than we ourselves
+anticipated while drafting}: the shared frozen kernel accounts for the
+elevation from ${\sim}0.8$ to $0.94$ nesting, not for the nesting
+phenomenon itself, which survives a kernel-class change largely intact.
+Fragility is largely content-intrinsic, with a real but minority
+regime-relative component. The per-policy rules stand regardless: gate
+labels, calibration, and probes are compaction-policy-scoped artifacts
+(the best-layer drift $30 \to 25 \to 33$ alone guarantees this); a
+policy change invalidates the decision layer's training data along with
+the caches.
 
 \section{Diagnostics (the transferable deliverable)}
 \label{sec:diagnostics}
@@ -431,7 +443,8 @@ identity-style initialization with large logit scales.
 One base model (4B); one compactor architecture and recipe family;
 escape levers swept at mid scale (188 steps) with the selected lever
 alone run to full recipe; the full-recipe unfrozen run is single-seed
-(mid-scale escape is three-seed); certification uses extractive-MCQ
+(mid-scale escape is three-seed; no within-regime $\kappa$ exists yet
+for the unfrozen class); certification uses extractive-MCQ
 probes with letter-match equivalence, single-turn contexts, depths
 $\leq 4$; published-recipe deltas beyond logit scale unexplored --- the
 collapse claim is scoped to the canonical configuration as we implement
@@ -451,8 +464,9 @@ could not see it; a one-pass gradient check and an entropy log see it
 immediately. One constant later, routing learns, heads specialize, the
 kernel reads content, and the unfrozen compactor beats the frozen one
 on the objective that froze it --- then splits the certification down
-its pre-registered seam: still short of eviction distributionally,
-decisively past it on task accuracy and silent loss. The downstream
+its pre-registered seam --- still short of eviction distributionally,
+decisively past it on task accuracy and silent loss --- forcing the
+choice of certification anchor into the open as a first-order finding. The downstream
 measurements reorganize on cue, but not as a legibility story:
 geometry stays unreadable, the text-shadow gate's value falls to zero,
 and the only signal that keeps routing is the computation itself. The generalizable lesson is the method: certify per axis,
