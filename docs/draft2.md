@@ -1,9 +1,10 @@
-# The Compactor That Couldn't Learn Where to Look: Gradient Saturation, Position-Kernel Collapse, and the First Certified KV Compressor
+# The Compactor That Couldn't Learn Where to Look: Gradient Saturation, Position-Kernel Collapse, and the First Task-Certified KV Compressor
 
-**Draft v0.1 — 2026-07-20.** All experimental branches resolved (ESCAPE +
-E1FULL reports); no placeholders. Markdown master. Companion to paper #1
-("Reading the Computation"), whose arXiv v2 carries the two corrections
-this work motivated.
+**Draft v0.2 — 2026-07-20.** Corrected against the E1FULL report of
+record (v0.1 was drafted from a preliminary result set that the
+completed report superseded in six places; every number below now
+matches `E1FULL-REPORT.md`). Markdown master. Companion to paper #1,
+whose arXiv v2 note carries the corrections this work motivated.
 
 ---
 
@@ -18,31 +19,42 @@ recipe data scale — while the training loss falls normally. We name this
 *position-kernel collapse* and identify the mechanism by gradient
 forensics: the canonical attention logit scale (×d_l = 256) saturates the
 softmax at the position-dominated identity initialization, delivering
-gradients to the routing pathway (latent queries, W_Q, W_K) **ten orders
-of magnitude** smaller than to the value pathway. The compactor's
+gradients to the routing projections (W_Q, W_K) **eleven to twelve
+orders of magnitude** smaller than to the value pathway (the latent
+banks stay partially alive through their residual value-path role). The compactor's
 apparent learning is entirely value-side: it learns what to do with
 positions it can never change. Controls isolate the mechanism —
 init-time noise does not escape (not a tie-breaking problem), and
 content-seeded initialization stays frozen while paying a large loss
 penalty (content without gradient does not help). The cure is one
-constant: at √d_l scale, routing gradients wake by 10⁹–10¹⁰, kernel
-entropy leaves the numerical floor within 50 steps, all eight KV-heads
+constant: at √d_l scale, routing gradients wake by 10⁹–10¹⁰, the
+softmax is de-saturated from step 0 (entropy starts at 0.82 nats
+instead of the floor) and training then *raises* it, all eight KV-heads
 despecialize from the shared lattice, the kept sets become item-adaptive,
 and the unfrozen compactor overtakes the frozen one on the very objective
-that froze it. At full recipe, the unfrozen compactor becomes — to our
-knowledge — the first learned compactor to pass a pre-registered two-axis
-certification against an eviction baseline at matched retained budget, on
-both a distributional predicate (teacher KL 0.108 vs 0.122, CI-separated)
-and a task-anchored one, at recurrence depths 1 and 4. Downstream, kernel
-mobility reorganizes the routing landscape measured in our companion
-work: write-time geometry becomes loss-predictive exactly when routing
-becomes content-dependent (AUC 0.51 → 0.71); the expansion gate's
-marginal value continues its monotone decline across compressor
-generations (72% → 22.5% → 9.0% → 4.1% silent-loss reduction) without
-reaching zero; the hidden-state probe ladder survives (0.87 / 0.79); and
-fact fragility — nested and stable across frozen instances — reshuffles
-across the regime change (κ 0.31), showing it is a property of the
-(fact, compression regime) pair. Total marginal compute: ≈ $560.
+that froze it. At full recipe the two pre-registered certification predicates
+**dissociate**: distributionally the unfrozen compactor still trails
+raw eviction (teacher KL 0.1385 vs 0.1218 — kernel mobility closes 46%
+of the frozen gap without closing it), yet on the task-anchored
+predicate it ships decisively — better answer accuracy over surviving
+content (+0.042 vs −0.049) and 3.9× lower silent fact loss (0.153 vs
+0.597) — making it, to our knowledge, the first learned compactor
+certified against eviction at matched retained budget under a
+task-anchored two-axis predicate (depth 1; untrained-for depth-4
+recurrence collapses, as expected without recurrence training).
+Downstream, kernel mobility *sharpens* the routing landscape of our
+companion work rather than reorganizing it: write-time geometry stays
+loss-blind even for a content-routed, item-adaptive kernel (AUC 0.5003)
+— the internality claim's strongest test, passed; the text-shadow
+expansion gate's marginal value completes a monotone decline to
+**zero** (72% → 22.5% → 9.0% → 0%) while computation-reading probes
+fully recover (stack 0.857) and retain routing power exactly where
+shadow gating has none (silent loss pushed below never-expand at 9%
+expansion); the needle-smuggling advantage *grows* rather than being
+traded away (0.188 → 0.083, both axes improving together); and fact
+fragility proves largely content-intrinsic — 78–91% of the unfrozen
+compressor's losses nest inside the frozen lineage's — with a real but
+minority regime-relative component. Total marginal compute: ≈ $925 across the three campaigns.
 Diagnostics — a one-pass gradient-norm check and cross-attention entropy
 telemetry — cost minutes and would have caught the collapse at step zero.
 
@@ -68,14 +80,18 @@ init-noise and content-seeded-init controls ruling out the alternative
 explanations; **(iii)** the cure — reduce the logit scale — validated
 from gradient wake-up through kernel mobility, head despecialization,
 item-adaptivity, and training-loss crossover, at three seeds; **(iv)**
-the consequence: a full-recipe unfrozen compactor that passes a
-pre-registered two-axis certification against eviction at matched
-budget, on two independent predicates, including at recurrence depth 4
-where the frozen lineage collapsed; **(v)** the downstream
-reorganization: with routing content-dependent, write-time geometry
-becomes a usable loss signal, gate value continues to shrink but not
-vanish, and fragility proves regime-relative — motivating a scope
-correction to our companion paper, which we state explicitly (§8);
+the consequence: at full recipe the two registered certification
+predicates dissociate — distributional NO-SHIP, task-anchored SHIP —
+yielding the first task-anchored certification of a learned compactor
+against eviction at matched budget (depth 1) and making the choice of
+certification anchor a first-order finding in itself; **(v)** the
+downstream sharpening: write-time geometry remains loss-blind even
+under content routing (internality confirmed at its strongest test),
+the text-shadow gate's routable fraction reaches zero while
+computation-reading retains routing power, smuggling grows with
+compressor quality, and fragility is largely fact-intrinsic —
+motivating a *narrower-than-anticipated* refinement to our companion
+paper, stated explicitly (§8);
 **(vi)** two mandatory-cheap diagnostics for anyone training compactors.
 
 ## 2. Background and setup
@@ -121,11 +137,13 @@ configuration, not data (§5 note on unexplored recipe deltas).
 ## 4. Mechanism: logit-scale-induced gradient saturation
 
 One forward/backward at initialization, gradient norms by parameter
-group: under the canonical ×256 logit scale, the routing pathway is
-numerically dead — latent queries ~1.1 × 10⁻¹¹, W_Q ~2.9 × 10⁻¹²,
-W_K ~3.1 × 10⁻¹² — while W_V (0.021), W_O (0.017), and the output heads
-(0.038–0.041) are healthy: **ten orders of magnitude of separation,
-exactly along the routing/value cut.** Swapping the scale to √d_l = 16,
+group: under the canonical ×256 logit scale, the routing projections
+are numerically dead — W_Q ~1.1 × 10⁻¹¹, W_K ~1.6 × 10⁻¹⁰ — while
+W_V, W_O, the block-2/self-attention groups, and the output heads sit
+at 17–22: **eleven to twelve orders of magnitude of separation, exactly
+along the routing/value cut** (the latent banks show a small nonzero
+gradient, 6.1 × 10⁻², because they also feed the residual stream and
+output heads — the clean routing-only weights are W_Q and W_K). Swapping the scale to √d_l = 16,
 weights untouched, wakes precisely the dead groups by 10⁹–10¹⁰ while
 value-path norms move a generic ~3.5×. The identity initialization
 produces near-one-hot attention rows; multiplied by 256, the softmax is
@@ -143,18 +161,26 @@ through it.
 
 ## 5. The cure and its dynamics
 
-At √d_l, the escape is immediate and complete: entropy departs the floor
-by step 50 and rises smoothly through 188 mid-scale steps (0 → 0.84
-nats, all three seeds, tight); the kernel moves (Jaccard vs init 0.31 by
-step 188) and — measured at full recipe — becomes **item-adaptive**
-(mean cross-item Jaccard of kept sets 0.42, against 1.000 by
-construction when frozen) with all eight KV-heads despecializing from
-the single shared lattice (per-head divergence trajectories in Appendix).
+At √d_l, the escape is immediate and complete: the softer scale
+de-saturates the softmax at initialization (entropy starts at 0.815
+nats rather than the floor), stays flat through warmup, then rises
+smoothly from ~step 75 to 1.11 nats by step 188 at mid scale (1.01–1.11
+across three seeds); the kernel moves (Jaccard vs init 0.18 by step
+188) and — measured at full recipe — becomes **item-adaptive** (mean
+cross-item Jaccard of kept sets 0.550, against 1.000 by construction
+when frozen) with all eight KV-heads despecializing from the single
+shared lattice (cross-head Jaccard 1.000 → 0.199 at mid scale; per-head
+trajectories in Appendix).
 Training dynamics show the honest trade: the soft scale leaks the
-identity passthrough, so E1 *starts* worse (loss 0.61 vs 0.44) — the
-×256 scale was protecting the passthrough — then crosses over near step
-120 and finishes ahead (0.219 vs 0.365 mid-scale; the gap persists at
-full recipe). The frozen configuration is not a bad optimum being
+identity passthrough, so E1 *starts* worse (loss 0.737 vs 0.576) — the
+×256 scale was protecting the passthrough — then crosses over before
+step 60 (15-step smoothed) and finishes ahead (0.219 vs 0.365 mid-scale; at full recipe the pre-registered extension
+rule fired — entropy still rising at step 1,500 — and routing kept
+learning to step 3,000: entropy 0.82 → 1.78, cross-item Jaccard of
+kept sets 1.000 → 0.550 (item-adaptive, deepening monotonically), heads
+despecializing immediately then partially re-organizing, final loss
+0.167 vs the frozen 0.357, the kernel ultimately touching essentially
+every source position across the probe batch). The frozen configuration is not a bad optimum being
 escaped; it is a gradient-dead region the canonical constant walls in.
 A learned per-layer temperature initialized soft (E2) also escapes and
 recovers sharpness where useful; we ship the fixed √d_l for simplicity
@@ -163,66 +189,103 @@ differ from our reproduction in unexplored details; our claim is scoped
 to the canonical configuration as specified, and the diagnostic (§9)
 resolves the question for any implementation in minutes.
 
-## 6. Certification: the first ship
+## 6. Certification: the predicates dissociate
 
 Full two-axis certification at matched retained budget against the
-eviction baseline, both pre-registered predicates:
+eviction baseline, both pre-registered predicates, noise-floor row
+included:
 
-| axis / predicate | eviction | frozen full-recipe | **unfrozen full-recipe** |
-|---|---:|---:|---:|
-| aggregation KL (↓) | 0.1218 | 0.257 | **0.108 [0.101, 0.116]** |
-| aggregation accΔ vs teacher | −0.031 | +0.063 | **+0.041** |
-| pointwise silent loss (↓) | 0.583 | 0.188 | **0.204** |
-| depth-4 KL | (n/a) | 2.29 (collapse) | **0.131 (certifies)** |
-| verdict (distributional) | baseline | NO-SHIP | **SHIP** |
-| verdict (task-anchored) | baseline | NO-SHIP (KL) | **SHIP** |
+| arm | agg KL (↓) | agg accΔ | pointwise lost | lost \| prior-correct |
+|---|---:|---:|---:|---:|
+| eviction (matched budget) | **0.1218** | −0.049 | 0.597 | 0.583 |
+| frozen full-recipe | 0.2566 | +0.063 | 0.229 | 0.188 |
+| **unfrozen full-recipe (d1)** | 0.1385 | **+0.042** | **0.153** | **0.083** |
+| unfrozen, depth-4 (untrained-for) | 14.21 | −0.215 | 0.903 | 0.875 |
+| zero-compression control | 0.0000 | 0.000 | 0.069 | 0.000 |
 
-The two predicates — whose dissociation the frozen lineage exposed
-(distributionally unfaithful yet task-better) — agree for the first
-time. The pointwise row shows the pre-registered trade: content routing
-spends a sliver of the frozen subsampler's needle-smuggling advantage
-(0.188 → 0.204, both far below eviction's 0.583) to buy the aggregation
-win — the companion paper's two-workload antagonism operating *inside*
-one compressor's training dynamics. max_certified_depth = 4;
-compaction_policy_version `still-e1-fullrecipe-t1024` with weights hash
-and diagnostics attached.
+**Primary predicate (distributional): NO-SHIP.** Kernel mobility closes
+46% of the frozen aggregation gap (0.257 → 0.139) — confirming the
+aggregation axis is kernel-bound — but distributional faithfulness
+still trails raw eviction. **Secondary predicate (task-anchored,
+registered before this run): SHIP**, decisively on both axes. The
+dissociation is the finding: the unfrozen compactor produces *better
+answers over surviving content* and loses *four times fewer facts*
+while matching the teacher's distribution less exactly than deletion
+does. Mild denoising is distributional infidelity; a KL-anchored
+certification penalizes improvement, and any certification regime for
+learned compaction must choose — and disclose — its anchor. Our
+"first certified" claim is therefore scoped precisely: first under the
+task-anchored predicate, at depth 1. Untrained-for depth-4 recurrence
+collapses as expected, so max_certified_depth = 0 under the primary
+predicate, and the deployment recommendation is opt-in for
+task-anchored workloads rather than a default flip. Policy version
+`still-compact-v1:t1024:depth0` with weights hash and diagnostics
+attached.
 
 ## 7. Downstream: routing under a mobile kernel
 
-**Write-time geometry becomes loss-bearing.** Against the frozen
-lattice, needle-to-kept-position distance predicted nothing (AUC 0.509)
-— every ≥3-token span contained a lattice point. Against the unfrozen,
-item-adaptive kernel, the same feature family computed from per-item
-kept sets reaches **0.71**: geometry regains predictive power exactly
-when routing reads content. The companion paper's internality claim
-refines accordingly: loss is internal to whichever pathway makes the
-routing decisions, and becomes externally legible precisely when that
-pathway's decisions become inspectable at write time.
+**Write-time geometry stays loss-blind — internality's strongest test,
+passed.** Against the frozen lattice, kernel distance predicted nothing
+(0.509) because every ≥3-token span contained a lattice point. The
+anticipated flip under content routing did not occur: against the
+unfrozen, item-adaptive kernel, the same features computed from
+per-item kept sets still predict nothing — d_min 0.5003 [0.495, 0.505],
+d_mean 0.519, fraction-of-needle-kept 0.519 — at every one of twelve
+training checkpoints. Even when the kernel reads content, *which*
+routed content survives is decided downstream of the geometry. The
+companion paper's claim that compression loss is legible only inside
+the query-conditioned computation survives with no qualification.
 
-**The gate's value shrinks; the ladder survives.** Refreshed on
-unfrozen-compactor labels, the hidden-state probe reads divergence at
-0.87 and the two-hook sink-head monitor at 0.79 (zero-shot transfer
-both directions with prior regimes intact); end-to-end, the gated
-system reaches silent loss 0.101 at expansion rate 0.041. The gate's
-marginal silent-loss reduction across four compressor generations:
-72% → 22.5% → 9.0% → **4.1%** — monotone, and plausibly asymptotic
-above zero. Routing value falls as compressors improve; it does not
-vanish, and the query-conditioned null (context-only probes at chance)
-holds under content routing.
+**The shadow gate reaches its floor; the ladder fully recovers.** The
+text-shadow gate's marginal silent-loss reduction completes a monotone
+decline to zero across four compressor generations: 72% → 22.5% →
+9.0% → **0%** — its optimal operating point under the unfrozen
+compressor *is* never-expand (0.089 lost at 0 expansion; A2
+decomposition weak-flat at ~0.57). Computation-reading is a different
+story: probes recover fully from the frozen-regime dip (stack 0.857
+[0.847, 0.865]; best layer drifting 30 → 25 → 33, re-confirming probes
+as per-policy artifacts), the two-hook sink-head monitor holds at
+0.764 with zero-shot transfer across the frozen↔unfrozen divide
+(0.759 / 0.727), and end-to-end the stack routes where the shadow gate
+cannot — matching never-expand's loss at 0.5% expansion and pushing
+*below* it, 0.049 lost at 9.1% expansion. The query-conditioned null
+holds (context-only 0.507). The refined ladder statement: as
+compressors improve, externally-visible routing signal is exhausted
+first; the computation-reading tier is the last to retain routing
+power, and at this generation it is the only one that does.
 
-## 8. Fragility is regime-relative — and a correction to our companion paper
+**Smuggling grows; the anticipated trade never happens.** The
+registered possibility that content routing would spend the
+subsampler's needle-smuggling advantage to buy aggregation did not
+occur: silent needle loss falls 0.188 → 0.083 *while* aggregation KL
+falls 0.257 → 0.139 — both axes improve together, leaving the unfrozen
+compressor within 2.2× of the zero-compression noise floor (0.069) on
+the pointwise axis. The gate remains formally mandatory under the
+certification rule (0.153 ≫ floor) even as its text-shadow tier hits
+zero — which is precisely why the ladder's computation tier matters.
 
-Across the frozen→unfrozen regime change, which facts die reshuffles:
-cross-regime κ = 0.31 with nesting 0.44, against within-regime κ = 0.68
-(unfrozen reseeds) and 0.745/0.94 (frozen instances). This resolves a
-confound in the companion paper's §7: its cross-instance nesting
-evidence came from two instances sharing an *identical frozen kernel*,
-so part of the observed stability was the shared lattice. The corrected
-claim — filed as an arXiv v2 note there and stated here — is that
-**fragility is stable within a compression regime and substantially
-regime-relative across regimes.** Practically: gate labels and
-calibration are compaction-policy-scoped artifacts; a policy change
-invalidates the decision layer's training data along with the caches.
+## 8. Fragility is largely fact-intrinsic — and a refinement to our companion paper
+
+Across the frozen→unfrozen regime change, silent loss shrinks
+(per-instance base rates 0.499 → 0.321 → 0.172) in a **mostly-nested**
+pattern: 91.0% of the unfrozen compressor's losses lie inside the
+original subsampler's failure set, and 78.5% inside the frozen
+full-recipe's. Raw κ falls (0.28–0.42 cross-regime vs 0.745 within the
+frozen lineage), but much of the drop is marginal-driven: base rates of
+0.172 vs 0.499 cap κ even under perfect containment. The registered
+verdict: fragility is **largely content-intrinsic**, with a real but
+minority regime-relative component (9–21.5% novel losses). This
+resolves a confound in the companion paper's §7 — its two frozen
+instances shared an identical kernel, so their 0.94 nesting was partly
+lattice-shared — but the refinement is *narrower than we ourselves
+anticipated while drafting*: the shared kernel accounts for the
+elevation from ~0.8 to 0.94, not for the nesting phenomenon itself,
+which survives a kernel-class change largely intact. The companion
+paper's arXiv v2 note is worded to the measured values. The per-policy
+rules stand regardless: gate labels, calibration, and probes are
+compaction-policy-scoped artifacts (best-layer drift alone guarantees
+this); a policy change invalidates the decision layer's training data
+along with the caches.
 
 ## 9. Diagnostics (the transferable deliverable)
 
@@ -242,7 +305,9 @@ with large logit scales.
 One base model (4B), one compactor architecture and recipe family;
 escape levers swept at mid scale (188 steps) with the selected lever
 alone run to full recipe; full-recipe unfrozen run is single-seed
-(mid-scale escape is 3-seed); certification on extractive-MCQ probes
+(mid-scale escape is 3-seed; no within-regime κ exists yet for the
+unfrozen class); depth > 1 requires recurrence training, excluded here
+(the depth-4 collapse is expected, not diagnostic); certification on extractive-MCQ probes
 with letter-match equivalence, single-turn contexts, depths ≤ 4;
 published-recipe deltas beyond logit scale unexplored — our collapse
 claim is scoped to the canonical configuration as we implement it, and
@@ -256,13 +321,16 @@ scale never learned the one thing compaction is for — where to look —
 because a single configuration constant walled its routing pathway
 behind a saturated softmax from the first gradient step. The loss curve
 could not see it; a one-pass gradient check and an entropy log see it
-immediately. One constant later, routing learns, heads specialize, the
-kernel reads content, and the result is the first learned compactor to
-pass a two-axis certification against eviction — while the downstream
-measurements reorganize on cue: geometry becomes predictive when
-routing becomes contentful, the safety gate's value shrinks toward a
-floor it never reaches, and fragility reveals itself as a property of
-the (fact, regime) pair. The generalizable lesson is the method:
+immediately. One constant later, routing learns, heads specialize, the kernel reads
+content — and the certification verdict splits in the most instructive
+way possible: distributionally still short of deletion, task-anchored
+decisively past it, forcing the anchor question into the open. The
+downstream measurements sharpen rather than reorganize: write-time
+geometry stays blind even to a content-routed kernel, the
+externally-visible routing signal is exhausted entirely while the
+computation-reading tier keeps routing, both memory axes improve
+together, and fragility proves to belong mostly to the facts
+themselves. The generalizable lesson is the method:
 certify per axis, instrument the pathway you care about — not the loss
 — and treat every improvement in the compressor as a fresh question
 about what still fails, and whether you can still see it.
@@ -277,8 +345,9 @@ tables incl. noise-floor and depth rows; predicate definitions ·
 E. downstream re-runs (labels, gate, probes, F1'/F2'/F5' analogs) ·
 F. fragility matrices (within/cross regime) · G. harness-provenance
 forensics (DDP omission; frozen-kernel invariance across the fix) ·
-H. reproducibility: fingerprints, policy versions, ~$560 compute ledger
-(cumulative project ≈ $2,100).
+H. reproducibility: fingerprints, policy versions, compute ledger for
+this paper's three campaigns ≈ $925 (frozen-lineage collapse study
+≈ $440 + ESCAPE ≈ $95 + E1FULL ≈ $390; cumulative project ≈ $2,100).
 
 ### Figures
 1. the two-panel signature: entropy-vs-step and loss-vs-step, frozen vs
@@ -294,4 +363,4 @@ within-regime fragility agreement.
 2. "The Loss Curve Lies: Detecting and Curing Position-Kernel Collapse
    in Learned KV Compaction"
 3. "One Constant Away: From a Compactor That Cannot Route to the First
-   Certified KV Compressor"
+   Task-Certified KV Compressor"
