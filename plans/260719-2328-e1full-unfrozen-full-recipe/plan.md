@@ -9,12 +9,18 @@ otherwise canonical. Framing: every question is "does X survive kernel mobility.
 
 ## Status
 
+Clean-rerun remediation (2026-07-21): holdout `64043bca…8882d` (60 docs,
+15/domain, 193 probes); balanced manifest `16e3ef0e…066aff` (94,056 unique
+items, 23,514/domain); training triplets 75,834 with zero document/item
+overlap. Two-step smoke passed. Clean training launched as Modal app
+`ap-097DkF1cSG3c8VDhBus4ZP`, call `fc-01KY0NTV5M9DKVAWP66XQNN83A`.
+
 | Item | Status |
 |---|---|
 | P0.1 ESCAPE closeout (E2, 3-seed, R3/R4, R6/R7) | ✅ committed (feat(escape)) |
 | P0.2 arm selection | ✅ E1 fixed √d_l (tie with E2 → simplest lever) |
 | P0.3 GT27 (init<1.5, tripwire<0.45@300, NaN watchdog) | ✅ wired (--tripwire-loss, isfinite abort) |
-| WP1 train e1full-t1024-T8k (75,998 items, 1500 steps) | ✅ 00:13–02:1x; loss 0.165 (vs frozen 0.357); GT27 pass (0.217@300); entropy 0.815→1.62 still rising; kept-l0 8159/8188 |
+| WP1 clean retrain `e1full-clean-v1-t1024-T8k` (75,834 items, 1500-step decision point) | 🔄 launched 04:10; app `ap-097DkF1cSG3c8VDhBus4ZP`, call `fc-01KY0NTV5M9DKVAWP66XQNN83A` |
 | WP1 extension decision (slope>0.01 nats over last 250) | ✅ FIRED: +0.0696 > 0.01 → extended to 3000 (launched ~02:2x, decision logged) |
 | Q1' trajectories (entropy, R6, R7, d_min) | ✅ entropy 0.815→1.78 (plateau at 3000); R6 1.000→0.550 ITEM-ADAPTIVE (<0.9 threshold); R7 →0.13 then re-organizes →0.29; d_min ~0.50 at all 12 ckpts; y+ →0.159 |
 | Q2' GT13 third attempt | ❌ INVALIDATED by train/eval overlap; clean-v1 retrain and n=60 rerun pending |
