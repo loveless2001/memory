@@ -49,7 +49,8 @@ def _load_compactor(tag, config, device):
 
 
 @app.function(image=image, volumes=VOLUMES, timeout=7200, memory=32768, cpu=8)
-def build_clean_holdout(docs_per_domain: int = 15) -> dict:
+def build_clean_holdout(docs_per_domain: int = 15,
+                        candidate_pool_per_domain: int = 256) -> dict:
     """Reserve the exact certification documents before manifest creation."""
     import hashlib
     import os
@@ -61,7 +62,16 @@ def build_clean_holdout(docs_per_domain: int = 15) -> dict:
     with open("/artifacts/corpus-mcq-full/all-items.json", "rb") as f:
         item_blob = f.read()
     raw_items = json.loads(item_blob)
-    wanted_docs = {row["doc_id"] for row in raw_items}
+    doc_ids_by_domain = {
+        domain: sorted({row["doc_id"] for row in raw_items
+                        if row["doc_id"].startswith(f"{domain}/")})
+        for domain in DOMAINS
+    }
+    wanted_docs = {
+        doc_id
+        for domain in DOMAINS
+        for doc_id in doc_ids_by_domain[domain][:candidate_pool_per_domain]
+    }
     tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B-Instruct-2507")
     document_lengths = {}
     corpus_hasher = hashlib.sha256()
@@ -92,6 +102,7 @@ def build_clean_holdout(docs_per_domain: int = 15) -> dict:
             "item_span_tokens": 1024,
             "anchor_lookback": 512,
             "max_items_per_axis": 8,
+            "candidate_pool_per_domain": candidate_pool_per_domain,
         },
         "documents": documents,
     }
