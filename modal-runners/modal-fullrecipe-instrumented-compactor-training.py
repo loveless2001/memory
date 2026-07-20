@@ -121,6 +121,10 @@ def _train(tag: str, triplets: str, ctx_npy: str, steps: int,
     if not train_stats.get("mixture_sha256") or not train_stats.get(
             "holdout_sha256"):
         raise ValueError("training stats missing manifest/holdout provenance")
+    overlap = train_stats.get("overlap_audit", {})
+    if overlap.get("document_overlap") != [] or overlap.get(
+            "item_overlap") != []:
+        raise ValueError("training triplets have not passed the overlap audit")
     os.makedirs(out_dir, exist_ok=True)
     for stale in ("DONE", "TRIPWIRE"):     # would trip the watchdog on resume
         if os.path.exists(f"{out_dir}/{stale}"):

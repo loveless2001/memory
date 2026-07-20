@@ -35,6 +35,7 @@ gpu_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install(*PINNED)
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
+    .add_local_dir("memsub", "/root/repo/memsub")
 )
 hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
@@ -274,10 +275,17 @@ def merge() -> dict:
     file (deterministic shuffle, seed 1234) + the 1/8 mid-scale subset."""
     import glob
     import random
+    import sys
+    sys.path.insert(0, "/root/repo")
+    from memsub.certification import assert_train_eval_disjoint
     with open("/artifacts/corpus-compactor-train/triplets.json") as f:
         rows = json.load(f)
     with open("/artifacts/corpus-fullrecipe/mixture-manifest.json") as f:
         mixture = json.load(f)
+    with open(
+            "/artifacts/corpus-fullrecipe/certification-holdout-clean-v1.json"
+    ) as f:
+        holdout = json.load(f)
     keep = {m["item_id"] for m in mixture["items"]}
     rows = [r for r in rows if r["item_id"] in keep]
     for path in sorted(glob.glob(
@@ -291,6 +299,9 @@ def merge() -> dict:
         if r["item_id"] not in seen:
             seen.add(r["item_id"])
             uniq.append(r)
+    if not seen <= keep:
+        raise ValueError("merged triplets contain items outside the manifest")
+    overlap_audit = assert_train_eval_disjoint(uniq, holdout["documents"])
     rng = random.Random(1234)
     rng.shuffle(uniq)
     counts = {}
@@ -309,7 +320,8 @@ def merge() -> dict:
     stats = {"full": len(uniq), "mid": len(mid), "per_domain": counts,
              "mixture_sha256": mixture["sha256"],
              "holdout_sha256": mixture["holdout_sha256"],
-             "train_ids_sha256": hashlib.sha256(blob).hexdigest()}
+             "train_ids_sha256": hashlib.sha256(blob).hexdigest(),
+             "overlap_audit": overlap_audit}
     with open("/artifacts/corpus-fullrecipe/train-mixture-stats.json", "w") as f:
         json.dump(stats, f, indent=2)
     artifacts.commit()
