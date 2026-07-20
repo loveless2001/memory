@@ -167,6 +167,12 @@ format (`compactor-certification/summary-fullrecipe.json`):
 | compactor-d4 (recurrence, untrained-for) | 15.82 | −0.236 | 0.944 | 0.917 |
 | control-0 (noise floor) | 0.0000 | +0.0000 | 0.069 | 0.000 |
 
+> **Superseded (2026-07-20):** these are n = 12-document measurements.
+> All arms were re-certified at n = 60 with paired CIs; the frozen
+> full-recipe row becomes KL 0.2820 / accΔ +0.1019 / pointwise 0.210
+> against eviction 0.0842 / −0.0650 / 0.644, all CI-separated. The
+> verdict below is unchanged in direction. See E1FULL-REPORT Q2'.
+
 GT13 predicate (beat eviction KL AND stay within 0.02 accΔ): **fails on
 KL** (0.257 vs 0.122, ~2.1×) despite the accuracy delta flipping positive.
 M3.5's 1/40-scale caveat is now resolved: at full recipe the aggregation

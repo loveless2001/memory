@@ -19,10 +19,10 @@
 
 \title{The Compactor That Couldn't Learn Where to Look:\\
 Gradient Saturation, Position-Kernel Collapse,\\
-and the First Task-Certified KV Compressor}
+and an Unfrozen KV Compressor}
 
 \author{%
-  \textit{Draft v0.2 --- 2026-07-20 --- all branches resolved (ESCAPE + E1FULL)}\\
+  \textit{Draft v0.3 --- 2026-07-20 --- certification re-measured at $n{=}60$ documents}\\
   \textit{Artifacts: \texttt{memsub-artifacts:/} \{\texttt{escape},
   \texttt{fullrecipe-telemetry}, \texttt{compactor-checkpoints},
   \texttt{compactor-certification}\}}}
@@ -59,14 +59,20 @@ froze it (final mid-scale loss $0.219$ vs $0.365$; three seeds) while
 losing $35\%$ fewer facts on a fixed counterfactual subsample ($0.239$ vs
 $0.370$). At full recipe (3{,}000 steps; a pre-registered extension rule fired at
 1{,}500) the unfrozen compactor's kernel becomes item-adaptive
-(cross-item Jaccard $0.550$) and the two pre-registered certification
-predicates \textbf{dissociate}: distributionally it still trails raw
-eviction (KL $0.139$ vs $0.122$ --- kernel mobility closed $46\%$ of the
-frozen lineage's aggregation gap), yet on the task-anchored predicate it
-\textbf{ships} --- better accuracy over surviving content ($+0.042$ vs
-$-0.049$) and $3.9\times$ lower silent needle loss ($0.153$ vs $0.597$)
-at matched budget, with the smuggling advantage growing across all four
-compressor generations ($0.583 \to 0.271 \to 0.188 \to 0.083$).
+(cross-item Jaccard $0.550$) and its certification (60 documents, paired
+per-document CIs) exposes a problem in the certification itself: the two
+pre-registered predicates \textbf{dissociate, and they disagree about
+which compressor is better}. Distributionally the unfrozen compactor
+still trails raw eviction (KL $0.135$ vs $0.085$, CI-separated ---
+unfreezing closed $74\%$ of the frozen lineage's aggregation gap without
+crossing it); on the task-anchored predicate it ships (accuracy $+0.031$
+vs $-0.064$; silent fact loss $0.147$ vs $0.644$) --- but so does the
+frozen subsampler, which \emph{beats} it on aggregation accuracy
+($+0.102$) while losing $58\%$ more facts and tripling the KL. A
+KL anchor penalizes a compressor for denoising; a task anchor cannot
+tell a subsampler from a synthesizer. Which artifact you certify is
+decided by the anchor, not by the compressor --- a result we think
+generalizes beyond this architecture.
 Downstream, the reorganization is not what a routing-becomes-legible
 story predicts: write-time geometry stays loss-blind even under
 content routing ($d_{\min}$ AUC $0.500$, all twelve checkpoints and the
@@ -106,9 +112,9 @@ content-seeded-init controls ruling out the alternative explanations;
 gradient wake-up through kernel mobility, head despecialization,
 item-adaptivity, and training-loss crossover, at three seeds;
 \textbf{(iv)} the consequence: a full-recipe unfrozen compactor whose
-two pre-registered certification predicates dissociate --- distributional
-NO-SHIP, task-anchored SHIP --- making the predicate tension itself a
-finding about what ``certified'' should mean for learned compressors; \textbf{(v)} the downstream reorganization of routing
+two pre-registered certification predicates dissociate \emph{and rank
+compressors differently}, making the choice of certification anchor --- not
+the compressor --- the decisive design question; \textbf{(v)} the downstream reorganization of routing
 signals under a mobile kernel, including the correction this work forced
 onto our companion paper's fragility claim (\S\ref{sec:fragility});
 \textbf{(vi)} two mandatory-cheap diagnostics for anyone training
@@ -175,8 +181,11 @@ operational point of \S\ref{sec:diagnostics}.
 
 Aggregation-axis certification is likewise scale-invariant under the
 frozen kernel: teacher KL $0.263$ at 1/40 scale and $0.2566$ at full
-recipe against eviction's $0.1218$ --- an $8\times$ increase in traced
-training data moved the certified aggregation number by $2\%$. What a
+recipe against eviction's $0.1218$ (all $n{=}12$ documents) --- an
+$8\times$ increase in traced training data moved the certified
+aggregation number by $2\%$. Re-measured at $n{=}60$ with paired CIs
+(\S\ref{sec:certification}) the frozen full-recipe row is $0.2820$
+against eviction's $0.0842$; the invariance conclusion is unchanged. What a
 frozen kernel can improve (value-side needle smuggling) improved; what
 it cannot (aggregation over surviving content) did not.
 
@@ -301,54 +310,64 @@ intentionally leaks) is trained on the full 75{,}998-item mixture and
 re-enters the companion protocol's certification: matched retained
 budget against eviction, per-axis, noise-floor row, recurrence depths
 $\{1,4\}$, and \emph{two} pre-registered predicates --- the original
-distributional one (beat eviction's KL $0.1218$ within $0.02$ accuracy
-delta) and a task-anchored one registered after the frozen lineage
+distributional one (beat the eviction baseline's KL within $0.02$
+accuracy delta) and a task-anchored one registered after the frozen lineage
 exposed the KL/accuracy dissociation (aggregation accuracy delta
-$\geq$ eviction's \emph{and} pointwise loss $\leq$ eviction's). Fixed
-comparators from the frozen record: eviction
-$\{$KL $0.1218$, acc$\Delta$ $-0.049$, pointwise $0.583\}$; frozen
-full recipe $\{$KL $0.2566$, acc$\Delta$ $+0.063$, pointwise $0.188$,
-depth-4 KL $15.8\}$.
+$\geq$ eviction's \emph{and} pointwise loss $\leq$ eviction's). All arms are re-measured
+here at $n{=}60$ certification documents with paired per-document
+bootstrap CIs; the frozen full-recipe compactor is re-certified on the
+same documents as the comparator.
 
 \begin{center}
 \begin{tabular}{lrrrr}
 \toprule
-arm & agg KL$\downarrow$ & agg acc$\Delta$ & pointwise$\downarrow$ & lost$\mid$prior \\
+arm ($n{=}60$ docs) & agg KL$\downarrow$ & agg acc$\Delta$ & pointwise$\downarrow$ & lost$\mid$prior \\
 \midrule
-eviction (matched budget) & $0.1218$ & $-0.049$ & $0.597$ & $0.583$ \\
-frozen full recipe & $0.2566$ & $+0.063$ & $0.229$ & $0.188$ \\
-\textbf{unfrozen full recipe} & $\mathbf{0.1385}$ & $\mathbf{+0.042}$ & $\mathbf{0.153}$ & $\mathbf{0.083}$ \\
-depth-4 recurrence (untrained-for) & $14.2$ & $-0.215$ & $0.903$ & $0.875$ \\
-noise floor & $0.0000$ & $+0.000$ & $0.069$ & $0.000$ \\
+eviction (matched budget) & $0.0848$ & $-0.064$ & $0.644$ & $0.617$ \\
+frozen full recipe & $0.2820$ & $\mathbf{+0.102}$ & $0.210$ & $0.171$ \\
+\textbf{unfrozen full recipe} & $\mathbf{0.1348}$ & $+0.031$ & $\mathbf{0.147}$ & $\mathbf{0.108}$ \\
+depth-4 recurrence (untrained-for) & $14.4$ & $-0.099$ & $0.750$ & $0.744$ \\
+noise floor & $0.0000$ & $+0.000$ & $0.056$ & $0.000$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{The predicates dissociate.} Primary (distributional): NO-SHIP
---- KL $0.1385$ vs $0.1218$; kernel mobility closed $46\%$ of the frozen
-aggregation gap but distributional faithfulness still trails raw
-eviction. Secondary (task-anchored): \textbf{SHIP} --- accuracy over
-surviving content beats eviction ($+0.042$ vs $-0.049$) and silent
-needle loss is $3.9\times$ lower ($0.153$ vs $0.597$). The unfrozen
-compactor produces better answers while matching the teacher's
-distribution less exactly than deletion does --- the dissociation the
-frozen lineage first exposed, now on the shipping side of the line. The
-pointwise row also settles the registered trade question: content
-routing did NOT spend the needle-smuggling advantage
-($0.188 \to 0.083$); both axes improved together, leaving the unfrozen
-compressor within $2.2\times$ of the zero-compression noise floor
-($0.069$) on the pointwise axis. Mild denoising is distributional
-infidelity: a KL-anchored certification \emph{penalizes} improvement
-over the teacher's degraded-context behavior, so any certification
-regime for learned compaction must choose --- and disclose --- its
-anchor. Our ``first certified'' claim is therefore scoped precisely:
-first under the task-anchored predicate, at depth 1. Depth-4 recurrence
-without recurrence training still collapses;
-\texttt{max\_certified\_depth}$\,=0$ under the primary predicate;
-policy version \texttt{still-compact-v1:t1024:depth0:8238173\ldots}
-The shipped task-anchored verdict routes the L3-default question to a
-spec v0.3.7 change note (opt-in policy, depth 1, full table embedded;
-never a silent default flip).
+Paired per-document bootstrap differences against eviction (95\% CI):
+unfrozen KL $+0.050$ $[+0.022, +0.078]$, acc$\Delta$ $+0.095$
+$[+0.020, +0.174]$, pointwise $-0.497$ $[-0.625, -0.364]$; frozen
+$+0.198$ $[+0.156, +0.242]$, $+0.167$ $[+0.093, +0.246]$, $-0.435$
+$[-0.575, -0.286]$. All six exclude zero. (An earlier pass used the
+harness default of 3 documents/domain, $n{=}12$, at which \emph{neither}
+aggregation difference resolved --- KL $+0.017$ $[-0.062, +0.070]$ ---
+so we report per-axis CIs and treat $n{=}12$ certification as
+underpowered.)
+
+\textbf{The predicates dissociate --- and disagree.} Primary
+(distributional): NO-SHIP for both compactors; the unfrozen one closes
+$74\%$ of the frozen lineage's gap to eviction ($0.282 \to 0.135$ against
+$0.085$) without crossing it. Secondary (task-anchored): SHIP --- but
+for \emph{both} compactors, and on the accuracy axis the frozen
+subsampler wins ($+0.102$ vs $+0.031$; verbatim strided tokens serve
+extractive MCQ better than blended ones), while the unfrozen one wins
+decisively on distributional fidelity ($0.135$ vs $0.282$) and on silent
+fact loss ($0.108$ vs $0.171$).
+
+Three consequences. (i) A KL anchor \emph{penalizes} improvement: mild
+denoising is distributional infidelity, and the reference being imitated
+is itself only ${\sim}67\%$ accurate on these probes. (ii) A task anchor
+is a weak screen: every trained compactor here beats deletion on both
+task axes, so it cannot separate a subsampler from a synthesizer.
+(iii) Therefore ``certified'' is not a property of a compressor alone.
+We scope our own claim accordingly: the unfrozen compactor is the
+\textbf{best-certified compactor we measure} --- passing the
+task-anchored predicate with the lowest KL and lowest pointwise loss of
+any arm --- not the first to be certified, since the frozen subsampler
+passes the same predicate. Depth-4 recurrence without recurrence
+training collapses (KL $14.4$); \texttt{max\_certified\_depth}$\,=0$
+under the primary predicate; policy version
+\texttt{still-compact-v1:t1024:depth0:8238173\ldots} The deployment
+recommendation is opt-in for task-anchored workloads, never a silent
+default flip.
 
 \section{Downstream: routing under a mobile kernel}
 \label{sec:downstream}
@@ -464,9 +483,10 @@ could not see it; a one-pass gradient check and an entropy log see it
 immediately. One constant later, routing learns, heads specialize, the
 kernel reads content, and the unfrozen compactor beats the frozen one
 on the objective that froze it --- then splits the certification down
-its pre-registered seam --- still short of eviction distributionally,
-decisively past it on task accuracy and silent loss --- forcing the
-choice of certification anchor into the open as a first-order finding. The downstream
+its pre-registered seam. Still short of deletion distributionally,
+decisively past it on task axes --- but so is the frozen subsampler it
+replaced, which the accuracy anchor actually prefers. The compressor
+improved; what ``certified'' means did not survive contact with it. The downstream
 measurements reorganize on cue, but not as a legibility story:
 geometry stays unreadable, the text-shadow gate's value falls to zero,
 and the only signal that keeps routing is the computation itself. The generalizable lesson is the method: certify per axis,

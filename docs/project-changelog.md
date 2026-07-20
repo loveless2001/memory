@@ -294,3 +294,33 @@
 - `docs/revise.md` (paper #1 arXiv v2 note) rewritten to the measured
   fragility values; its unmeasured within-regime reseed κ for the
   content-routed class removed (no such experiment exists).
+
+## 2026-07-20 (later) — Certification re-measured at n=60; the anchor problem
+
+- **Power fix.** The harness defaulted to 3 documents/domain (n=12), at
+  which a paired bootstrap leaves *both* aggregation verdicts unresolved
+  (KL +0.017, CI [−0.062, +0.070]; accΔ +0.090, CI [−0.090, +0.264]).
+  Added `--docs-per-domain` and paired per-document CIs to the summary;
+  re-certified all four compressor generations at n=60 on the same
+  documents (≈$45). Every difference now excludes zero and every
+  direction reported at n=12 holds.
+- Re-measured table (n=60): eviction KL 0.0848 / accΔ −0.064 / pointwise
+  0.644; 1/40 instance 0.2529 / +0.074 / 0.232; frozen full recipe
+  0.2820 / +0.102 / 0.210; unfrozen full recipe 0.1348 / +0.031 / 0.147.
+  Unfreezing closes **74%** of the frozen aggregation gap (was reported
+  as 46% at n=12). Silent loss falls monotonically across generations:
+  0.617 → 0.196 → 0.171 → 0.108.
+- **Correction — "first task-certified" retired.** The task-anchored
+  predicate was registered in E1FULL.md and applied only to the unfrozen
+  arm. Applied to the other arms from the same runs, *all three trained
+  compactors pass it*, and on its accuracy axis the frozen subsampler
+  beats the unfrozen model (+0.102 vs +0.031). The predicate is a weak
+  screen; the distributional predicate discriminates strongly but no
+  compactor passes it. The two anchors therefore rank compressors
+  differently — which is now the papers' framing ("the anchor problem"),
+  replacing the first-certified claim. The unfrozen compactor's
+  defensible status: best-certified compactor measured (task predicate +
+  lowest KL + lowest pointwise loss).
+- Propagated to E1FULL-REPORT (Q2'/Q5' rewritten), FULLRECIPE-REPORT
+  (n=12 rows marked superseded), paper2 (title, abstract, §3, §6,
+  conclusion), docs/draft2.md, spec v0.3.7 §6.2 + changelog, README.

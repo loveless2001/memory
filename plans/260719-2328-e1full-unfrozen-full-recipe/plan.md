@@ -13,8 +13,8 @@ otherwise canonical. Framing: every question is "does X survive kernel mobility.
 | WP1 train e1full-t1024-T8k (75,998 items, 1500 steps) | ✅ 00:13–02:1x; loss 0.165 (vs frozen 0.357); GT27 pass (0.217@300); entropy 0.815→1.62 still rising; kept-l0 8159/8188 |
 | WP1 extension decision (slope>0.01 nats over last 250) | ✅ FIRED: +0.0696 > 0.01 → extended to 3000 (launched ~02:2x, decision logged) |
 | Q1' trajectories (entropy, R6, R7, d_min) | ✅ entropy 0.815→1.78 (plateau at 3000); R6 1.000→0.550 ITEM-ADAPTIVE (<0.9 threshold); R7 →0.13 then re-organizes →0.29; d_min ~0.50 at all 12 ckpts; y+ →0.159 |
-| Q2' GT13 third attempt (primary + secondary predicates) | ✅ DISSOCIATED: primary NO-SHIP (KL 0.1385 vs 0.1218; frozen gap 46% closed); secondary SHIP (accΔ +0.042 vs −0.049 AND lost 0.153 vs 0.597); d4 collapses 14.2; policy 8238173…; → spec v0.3.7 change note |
-| Q5' smuggling | ✅ ADVANTAGE GROWS: lost|prior 0.083 (vs FR 0.188, eviction 0.583) — no trade; both axes improved |
+| Q2' GT13 third attempt | ✅ RE-MEASURED n=60 + paired CIs (n=12 was underpowered): primary NO-SHIP (KL 0.1348 vs 0.0848, CI-sep; 74% of frozen gap closed); secondary SHIP (accΔ +0.031 vs −0.064, lost 0.147 vs 0.644) — **but frozen arm passes it too and wins accΔ (+0.102)** → 'first certified' retired, anchor problem is the finding |
+| Q5' smuggling | ✅ monotone across 4 generations on one protocol (n=60): 0.617 → 0.196 → 0.171 → 0.108; no trade |
 | Q3' F1 under per-item kernels | ✅ branch (iii): d_min 0.5003 [0.495,0.505] flat at chance; kept sets rich (mean 2,779) yet loss-blind — internality survives strongest test |
 | Q4' gate refresh | ✅ y+ 0.083; A2 weak-flat (.570/.568/.564); GT16 0.089 @ 0.000 expand; MARGINAL VALUE 0.0% — trend 72→22.5→9.0→0% |
 | Q4' probes+GT22'+F5 | ✅ ladder RECOVERS: stack .857 [.847,.865], sinkheads .764, c2 L33 .856; F2 null .507; F5 .759/.727; GT22' stack routes below never-expand (.049@9.1%) |
@@ -31,4 +31,4 @@ otherwise canonical. Framing: every question is "does X survive kernel mobility.
   {KL 0.2566, accΔ +0.0625, lost|prior 0.188}; gate marginal trend 72→22.5→9.0%.
 
 ## Cost ledger (running)
-- Actual ≈ $390 total (WP1+ext $200, I2 $22, cert $8, F1 $8, relabel $95, 2k $4, capture $45, probes/gate $8).
+- Actual ≈ $435 total (incl. ≈$45 n=60 re-certification of all four generations) (WP1+ext $200, I2 $22, cert $8, F1 $8, relabel $95, 2k $4, capture $45, probes/gate $8).

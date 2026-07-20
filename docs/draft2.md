@@ -1,4 +1,9 @@
-# The Compactor That Couldn't Learn Where to Look: Gradient Saturation, Position-Kernel Collapse, and the First Task-Certified KV Compressor
+# The Compactor That Couldn't Learn Where to Look: Gradient Saturation, Position-Kernel Collapse, and the Anchor Problem in Compression Certification
+
+**Draft v0.3 — 2026-07-20.** Certification re-measured at n=60 documents
+with paired CIs (n=12 left both aggregation verdicts unresolved), and the
+task-anchored predicate applied to the frozen arm as well — it passes too,
+which retires the "first certified" framing.
 
 **Draft v0.2 — 2026-07-20.** Corrected against the E1FULL report of
 record (v0.1 was drafted from a preliminary result set that the
@@ -32,16 +37,17 @@ softmax is de-saturated from step 0 (entropy starts at 0.82 nats
 instead of the floor) and training then *raises* it, all eight KV-heads
 despecialize from the shared lattice, the kept sets become item-adaptive,
 and the unfrozen compactor overtakes the frozen one on the very objective
-that froze it. At full recipe the two pre-registered certification predicates
-**dissociate**: distributionally the unfrozen compactor still trails
-raw eviction (teacher KL 0.1385 vs 0.1218 — kernel mobility closes 46%
-of the frozen gap without closing it), yet on the task-anchored
-predicate it ships decisively — better answer accuracy over surviving
-content (+0.042 vs −0.049) and 3.9× lower silent fact loss (0.153 vs
-0.597) — making it, to our knowledge, the first learned compactor
-certified against eviction at matched retained budget under a
-task-anchored two-axis predicate (depth 1; untrained-for depth-4
-recurrence collapses, as expected without recurrence training).
+that froze it. At full recipe (60 certification documents, paired per-document CIs) the
+two pre-registered predicates **dissociate — and disagree about which
+compressor is better**. Distributionally the unfrozen compactor still
+trails raw eviction (KL 0.135 vs 0.085, CI-separated; unfreezing closes
+74% of the frozen lineage's gap without crossing it). On the
+task-anchored predicate it ships (accuracy +0.031 vs −0.064; silent fact
+loss 0.147 vs 0.644) — but so does the frozen subsampler, which *beats*
+it on aggregation accuracy (+0.102) while losing 58% more facts and
+tripling the KL. A KL anchor penalizes denoising; a task anchor cannot
+tell a subsampler from a synthesizer. Which artifact gets "certified" is
+decided by the anchor, not the compressor.
 Downstream, kernel mobility *sharpens* the routing landscape of our
 companion work rather than reorganizing it: write-time geometry stays
 loss-blind even for a content-routed, item-adaptive kernel (AUC 0.5003)
@@ -51,7 +57,7 @@ expansion gate's marginal value completes a monotone decline to
 fully recover (stack 0.857) and retain routing power exactly where
 shadow gating has none (silent loss pushed below never-expand at 9%
 expansion); the needle-smuggling advantage *grows* rather than being
-traded away (0.188 → 0.083, both axes improving together); and fact
+traded away (0.171 → 0.108, both axes improving together); and fact
 fragility proves largely content-intrinsic — 78–91% of the unfrozen
 compressor's losses nest inside the frozen lineage's — with a real but
 minority regime-relative component. Total marginal compute: ≈ $925 across the three campaigns.
@@ -82,9 +88,9 @@ from gradient wake-up through kernel mobility, head despecialization,
 item-adaptivity, and training-loss crossover, at three seeds; **(iv)**
 the consequence: at full recipe the two registered certification
 predicates dissociate — distributional NO-SHIP, task-anchored SHIP —
-yielding the first task-anchored certification of a learned compactor
-against eviction at matched budget (depth 1) and making the choice of
-certification anchor a first-order finding in itself; **(v)** the
+and *rank compressors differently* — the frozen subsampler passes the
+same task predicate and wins on its accuracy axis — making the choice of
+certification anchor, not the compressor, the decisive design question; **(v)** the
 downstream sharpening: write-time geometry remains loss-blind even
 under content routing (internality confirmed at its strongest test),
 the text-shadow gate's routable fraction reaches zero while
@@ -195,32 +201,46 @@ Full two-axis certification at matched retained budget against the
 eviction baseline, both pre-registered predicates, noise-floor row
 included:
 
-| arm | agg KL (↓) | agg accΔ | pointwise lost | lost \| prior-correct |
+| arm (n=60 docs) | agg KL (↓) | agg accΔ | pointwise lost | lost \| prior-correct |
 |---|---:|---:|---:|---:|
-| eviction (matched budget) | **0.1218** | −0.049 | 0.597 | 0.583 |
-| frozen full-recipe | 0.2566 | +0.063 | 0.229 | 0.188 |
-| **unfrozen full-recipe (d1)** | 0.1385 | **+0.042** | **0.153** | **0.083** |
-| unfrozen, depth-4 (untrained-for) | 14.21 | −0.215 | 0.903 | 0.875 |
-| zero-compression control | 0.0000 | 0.000 | 0.069 | 0.000 |
+| eviction (matched budget) | **0.0848** | −0.064 | 0.644 | 0.617 |
+| frozen full-recipe | 0.2820 | **+0.102** | 0.210 | 0.171 |
+| **unfrozen full-recipe (d1)** | 0.1348 | +0.031 | **0.147** | **0.108** |
+| unfrozen, depth-4 (untrained-for) | 14.41 | −0.099 | 0.750 | 0.744 |
+| zero-compression control | 0.0000 | 0.000 | 0.056 | 0.000 |
 
-**Primary predicate (distributional): NO-SHIP.** Kernel mobility closes
-46% of the frozen aggregation gap (0.257 → 0.139) — confirming the
-aggregation axis is kernel-bound — but distributional faithfulness
-still trails raw eviction. **Secondary predicate (task-anchored,
-registered before this run): SHIP**, decisively on both axes. The
-dissociation is the finding: the unfrozen compactor produces *better
-answers over surviving content* and loses *four times fewer facts*
-while matching the teacher's distribution less exactly than deletion
-does. Mild denoising is distributional infidelity; a KL-anchored
-certification penalizes improvement, and any certification regime for
-learned compaction must choose — and disclose — its anchor. Our
-"first certified" claim is therefore scoped precisely: first under the
-task-anchored predicate, at depth 1. Untrained-for depth-4 recurrence
-collapses as expected, so max_certified_depth = 0 under the primary
-predicate, and the deployment recommendation is opt-in for
-task-anchored workloads rather than a default flip. Policy version
-`still-compact-v1:t1024:depth0` with weights hash and diagnostics
-attached.
+Paired per-document bootstrap differences vs eviction (95% CI): unfrozen
+KL +0.050 [+0.022, +0.078], accΔ +0.095 [+0.020, +0.174], pointwise
+−0.497 [−0.625, −0.364]; frozen +0.198 [+0.156, +0.242], +0.167
+[+0.093, +0.246], −0.435 [−0.575, −0.286]. All six exclude zero. (An
+earlier pass at the harness default of 3 docs/domain, n=12, resolved
+*neither* aggregation difference — KL +0.017 [−0.062, +0.070] — so we
+report per-axis CIs and treat n=12 certification as underpowered.)
+
+**Primary predicate (distributional): NO-SHIP** for both compactors;
+unfreezing closes 74% of the frozen lineage's gap to eviction
+(0.282 → 0.135 against 0.085) without crossing it. **Secondary
+predicate (task-anchored): SHIP — for both**, and on its accuracy axis
+the *frozen subsampler wins* (+0.102 vs +0.031: verbatim strided tokens
+serve extractive MCQ better than blended ones), while the unfrozen model
+wins on distributional fidelity (0.135 vs 0.282) and silent fact loss
+(0.108 vs 0.171).
+
+Three consequences. (i) A KL anchor *penalizes* improvement: mild
+denoising is distributional infidelity, and the reference being imitated
+is itself only ~67% accurate on these probes. (ii) A task anchor is a
+weak screen: every trained compactor here beats deletion on both task
+axes, so it cannot separate a subsampler from a synthesizer.
+(iii) "Certified" is therefore not a property of a compressor alone. We
+scope our claim accordingly: the unfrozen compactor is the
+**best-certified compactor we measure** — passing the task predicate
+with the lowest KL and lowest pointwise loss of any arm — not the first
+certified, since the frozen subsampler passes the same predicate.
+Untrained-for depth-4 recurrence collapses (KL 14.4), so
+max_certified_depth = 0 under the primary predicate, and the deployment
+recommendation is opt-in for task-anchored workloads rather than a
+default flip. Policy version `still-compact-v1:t1024:depth0` with
+weights hash and diagnostics attached.
 
 ## 7. Downstream: routing under a mobile kernel
 
@@ -257,9 +277,9 @@ power, and at this generation it is the only one that does.
 **Smuggling grows; the anticipated trade never happens.** The
 registered possibility that content routing would spend the
 subsampler's needle-smuggling advantage to buy aggregation did not
-occur: silent needle loss falls 0.188 → 0.083 *while* aggregation KL
-falls 0.257 → 0.139 — both axes improve together, leaving the unfrozen
-compressor within 2.2× of the zero-compression noise floor (0.069) on
+occur: silent needle loss falls 0.171 → 0.108 *while* aggregation KL
+falls 0.282 → 0.135 — both axes improve together, leaving the unfrozen
+compressor within 2.6× of the zero-compression noise floor (0.056) on
 the pointwise axis. The gate remains formally mandatory under the
 certification rule (0.153 ≫ floor) even as its text-shadow tier hits
 zero — which is precisely why the ladder's computation tier matters.
@@ -362,5 +382,5 @@ within-regime fragility agreement.
    Learning to Route"
 2. "The Loss Curve Lies: Detecting and Curing Position-Kernel Collapse
    in Learned KV Compaction"
-3. "One Constant Away: From a Compactor That Cannot Route to the First
-   Task-Certified KV Compressor"
+3. "Certified Against What? Anchor Choice Decides Which KV Compressor
+   Wins"

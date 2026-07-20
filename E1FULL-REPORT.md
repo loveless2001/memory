@@ -6,13 +6,14 @@ falling as compressors improve. This run dissolves the law's premise:
 every question below is "does X survive kernel mobility," with both
 survival and collapse pre-registered as reportable.
 
-Status: **COMPLETE** (2026-07-20). Config: E1 fixed logit scale √d_l = 16
+Status: **COMPLETE** (2026-07-20; Q2'/Q5' re-measured at n = 60 documents
+with paired CIs the same day — see Q2'). Config: E1 fixed logit scale √d_l = 16
 (ESCAPE P0.2 selection), otherwise canonical; fixed harness; 75,998-item
 mixture (manifest sha 8e0bb280…). Spend ≈ $305.
 
 Verdict line: Q1' routing keeps learning and becomes item-adaptive ·
 Q2' predicates DISSOCIATE — primary NO-SHIP (KL), secondary (task-anchored)
-**SHIP** · Q3' branch (iii) — geometry loss-blind even content-routed ·
+**SHIP** (but so does the frozen arm — the task predicate is a weak screen) · Q3' branch (iii) — geometry loss-blind even content-routed ·
 Q4' probe ladder RECOVERS (stack 0.857); gate marginal value reaches **0%**;
 F2 null holds; F5 transfer regime-general · Q5' smuggling advantage GROWS
 (0.083) · Q6' mostly-nested shrinkage, minority reshuffle.
@@ -45,44 +46,83 @@ kernel touches essentially every source position across the probe batch
 (kept-l0 8,186/8,188). Not one mobile lattice — per-item, per-head,
 content-conditioned routing.
 
-## Q2' — GT13, third attempt: the predicates dissociate; the task-anchored one SHIPS
+## Q2' — GT13, third attempt: what the predicate you pick decides
 
-M1 harness, matched retained budget, per-axis, noise-floor row, depths
-{1, 4} (`compactor-certification/summary-e1full.json`):
+**Re-run at n = 60 documents (2026-07-20).** The original verdict was
+computed on the harness default of 3 documents/domain (n = 12), where a
+paired bootstrap over per-document rows leaves *both* aggregation
+differences unresolved (KL +0.017, CI [−0.062, +0.070]; accΔ +0.090, CI
+[−0.090, +0.264]); only the pointwise gap excluded zero. All arms were
+therefore re-certified at 15 documents/domain (n = 60,
+`compactor-certification/summary-{e1full,fullrecipe,single140}-n60.json`).
+Every number below is the n = 60 measurement; the n = 12 values it
+supersedes are kept in the artifacts for audit. The eviction arm
+reproduced across independent runs (KL 0.0848 / 0.0842), a useful
+harness check.
 
 | arm | agg KL | agg accΔ | pointwise lost | lost \| prior |
 |---|---|---|---|---|
-| eviction-matched | 0.1218 | −0.0486 | 0.597 | 0.583 |
-| **unfrozen full recipe (d1)** | **0.1385** | **+0.0417** | **0.153** | **0.083** |
-| frozen full recipe (comparator) | 0.2566 | +0.0625 | 0.229 | 0.188 |
-| depth-4 recurrence (untrained-for) | 14.21 | −0.215 | 0.903 | 0.875 |
-| control-0 (noise floor) | 0.0000 | +0.0000 | 0.069 | 0.000 |
+| eviction-matched | 0.0848 | −0.0636 | 0.644 | 0.617 |
+| frozen full recipe (d1) | 0.2820 | **+0.1019** | 0.210 | 0.171 |
+| **unfrozen full recipe (d1)** | **0.1348** | +0.0311 | **0.147** | **0.108** |
+| unfrozen depth-4 (untrained-for) | 14.41 | −0.0992 | 0.750 | 0.744 |
+| control-0 (noise floor) | 0.0000 | +0.0000 | 0.056 | 0.000 |
 
-- **Primary (distributional, comparability): NO-SHIP.** KL 0.1385 vs
-  eviction's 0.1218. Kernel mobility closed 46% of the frozen
-  aggregation gap (0.2566 → 0.1385) — the aggregation axis is
-  kernel-bound, as FULLRECIPE inferred — but distributional faithfulness
-  still trails raw eviction.
-- **Secondary (task-anchored, registered before this run): SHIP.**
-  Aggregation accuracy beats eviction (+0.042 vs −0.049) AND pointwise
-  loss is 3.9× lower (0.153 vs 0.597). Both conditions met decisively.
-- The dissociation is the finding: the unfrozen compactor produces
-  *better answers over surviving content* and *loses 4× fewer facts*
-  while matching the teacher's distribution less exactly than eviction
-  does. Paper #2's certification-anchors section carries this.
-- depth 4 without recurrence training still collapses;
+Paired per-document differences vs eviction (95% CI, 20k bootstrap):
+
+| arm | KL | accΔ | pointwise |
+|---|---|---|---|
+| unfrozen | +0.0500 [+0.022, +0.078] | +0.0947 [+0.020, +0.174] | −0.4972 [−0.625, −0.364] |
+| frozen | +0.1978 [+0.156, +0.242] | +0.1669 [+0.093, +0.246] | −0.4347 [−0.575, −0.286] |
+
+All six differences now exclude zero: the directions reported at n = 12
+hold, and the effects are bounded.
+
+- **Primary (distributional): NO-SHIP**, now statistically established
+  (+0.050, CI excludes zero). Unfreezing closed **74%** of the frozen
+  lineage's aggregation gap (0.2820 → 0.1348 against eviction's 0.0848)
+  without crossing it.
+- **Secondary (task-anchored): SHIP** — accΔ +0.031 vs −0.064 and
+  pointwise 0.147 vs 0.644.
+- **Correction to this report's earlier framing.** The task-anchored
+  predicate was registered in E1FULL.md and, in the first pass, applied
+  only to the unfrozen arm. Applied to the frozen arm from the same runs,
+  **the frozen compactor passes it too** (accΔ +0.102 ≥ −0.064; pointwise
+  0.210 ≤ 0.644) — at n = 12 as well. The unfrozen compactor is therefore
+  NOT "the first compactor to pass a task-anchored certification"; the
+  frozen subsampler already did, and we simply never evaluated it against
+  a predicate that did not exist yet. What survives is narrower and more
+  interesting:
+  - The task-anchored predicate is a **weak screen**: every trained
+    compactor we have beats eviction on both task axes, so it does not
+    discriminate a subsampler from a synthesizer.
+  - The distributional predicate discriminates strongly (frozen +0.198
+    vs unfrozen +0.050 over eviction) but neither passes it.
+  - **The two anchors disagree about which compressor is better.** On
+    aggregation *accuracy* the frozen subsampler wins (+0.102 vs +0.031)
+    — verbatim strided tokens beat blended ones for extractive MCQ; on
+    distributional fidelity and on silent fact loss the unfrozen one wins
+    (KL 0.135 vs 0.282; lost|prior 0.108 vs 0.171). Which model you
+    "certify" is decided by the anchor, not by the compressor.
+  - The defensible claim for the unfrozen compactor: **best-certified
+    compactor measured here** — it passes the task-anchored predicate and
+    holds the lowest KL and lowest pointwise loss of any compactor
+    tested — not "first certified".
+- depth 4 without recurrence training still collapses (KL 14.4;
+  accΔ and pointwise CIs straddle zero, KL does not).
   `max_certified_depth = 0` under the primary predicate. Policy version
   `still-compact-v1:t1024:depth0:sha256:8238173715edc8f1`.
 
 ### Consequences for the spec (v0.3.7 change note — no silent flip)
 
-A shipped task-anchored verdict routes the L3-default question to spec
-v0.3.7: *proposal* — keep evict-oldest-nonsink as the default L3 path
-(primary predicate not met), add the unfrozen compactor as an
-OPT-IN L3 policy for task-anchored deployments, certified at depth 1
-only, gated by `compaction_policy_version` = `…8238173715edc8f1`, with
-the full table above embedded in the change note. Spec edits themselves
-are outside this brief (do-not-build); this section is the note's draft.
+Unchanged in direction, corrected in scope: keep evict-oldest-nonsink as
+the default L3 path (no compactor meets the distributional predicate);
+add the unfrozen compactor as an OPT-IN L3 policy for task-anchored
+deployments, certified at depth 1, gated by
+`compaction_policy_version = …8238173715edc8f1`. The change note must
+state that the task-anchored predicate does not by itself distinguish
+this policy from the frozen one — the reasons to prefer it are its KL
+(74% of the gap closed) and its pointwise loss, both CI-separated.
 
 ## Q3' — F1 under per-item kernels: branch (iii), geometry stays loss-blind
 
@@ -141,8 +181,11 @@ across A/FR/E1F; 11,051 flips vs A), re-capture, probes retrained
 
 ## Q5' — Smuggling: the advantage grows; no trade
 
-Pointwise lost-given-prior-correct at matched budget:
-eviction 0.583 → A 0.271 → FR 0.188 → **E1F 0.083**. The registered
+Pointwise lost-given-prior-correct at matched budget, all on the n = 60
+protocol (n = 60 documents, every generation re-certified on the same
+documents): eviction 0.617 → 1/40 instance 0.196 → frozen full recipe 0.171 → **unfrozen 0.108**. Monotone across four compressor generations, and
+the 1/40 → frozen → unfrozen improvements are all CI-separated from
+eviction (−0.413, −0.435, −0.497 respectively). The registered
 possibility that content routing would SPEND the needle-smuggling
 advantage to buy aggregation did not occur: both axes improved
 simultaneously (KL 0.257 → 0.139 AND pointwise 0.188 → 0.083). The gate

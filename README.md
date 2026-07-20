@@ -111,18 +111,22 @@ run when routing was still learning at 1,500), the unfrozen compactor's
 kernel becomes genuinely item-adaptive, and the two pre-registered
 certification predicates **dissociate**:
 
-| | eviction baseline | frozen full-recipe | **unfrozen full-recipe** |
+| (60 docs, paired CIs) | eviction baseline | frozen full-recipe | **unfrozen full-recipe** |
 |---|---:|---:|---:|
-| aggregation KL ↓ | **0.1218** | 0.2566 | 0.1385 |
-| aggregation accuracy Δ | −0.049 | +0.063 | **+0.042** |
-| silent fact loss ↓ | 0.597 | 0.229 | **0.153** |
-| lost \| prior-correct ↓ | 0.583 | 0.188 | **0.083** |
+| aggregation KL ↓ | **0.0848** | 0.2820 | 0.1348 |
+| aggregation accuracy Δ | −0.064 | **+0.102** | +0.031 |
+| silent fact loss ↓ | 0.644 | 0.210 | **0.147** |
+| lost \| prior-correct ↓ | 0.617 | 0.171 | **0.108** |
 
 It answers **better** than deletion while imitating the teacher's
 distribution **less exactly** — distributional NO-SHIP, task-anchored SHIP.
-Mild denoising registers as infidelity, so a KL-anchored certification can
-penalize genuine improvement. Which anchor you certify against is a
-first-order design decision, and it should be disclosed.
+And the two anchors don't even agree on which compressor wins: the frozen
+subsampler passes the same task predicate and beats the unfrozen one on
+accuracy, while losing 58% more facts and tripling the KL. Mild denoising
+registers as infidelity, so a KL anchor penalizes improvement; a task
+anchor can't tell a subsampler from a synthesizer. Which artifact gets
+"certified" is decided by the anchor, not the compressor — that turned out
+to be the most portable finding of the campaign.
 
 Downstream, everything sharpened rather than reorganized: write-time
 geometry stays loss-blind even under content routing (AUC 0.5003 — the
@@ -208,8 +212,8 @@ FULLRECIPE ≈ $440, ESCAPE ≈ $95, E1FULL ≈ $390.
 
 ## Status
 
-M0–M3.5 built and certified; two papers drafted; the unfrozen compactor is
-an **opt-in** L3 policy (the default remains evict-oldest-nonsink — the
+M0–M3.5 built and certified (n=60 documents, paired CIs); two papers
+drafted; the unfrozen compactor is an **opt-in** L3 policy (the default remains evict-oldest-nonsink — the
 distributional predicate is not met). Not started: the absorption
 measurement study (spec §16.4), recurrence-depth training beyond depth 1,
 serving/vLLM integration, and any HTTP surface.
