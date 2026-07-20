@@ -49,7 +49,8 @@ def _load_compactor(tag, config, device):
 @app.function(image=image, gpu=GPU, volumes=VOLUMES, timeout=43200,
               memory=65536)
 def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
-                 out_name: str = "summary", lever: str = "none") -> dict:
+                 out_name: str = "summary", lever: str = "none",
+                 docs_per_domain: int = 3) -> dict:
     import os
     import sys
     sys.path.insert(0, "/root/repo")
@@ -110,7 +111,7 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
     per_domain_done = {d: 0 for d in DOMAINS}
     for doc_id, doc_items in by_doc.items():
         domain = doc_id.split("/")[0]
-        if per_domain_done[domain] >= 3:
+        if per_domain_done[domain] >= docs_per_domain:
             continue
         anchor = doc_items[0]
         ids = tok.encode(texts[doc_id], add_special_tokens=False)
@@ -159,6 +160,34 @@ def certify_arms(single_tag: str, iterative_tag: str, t_latents: int,
         return (summary[arm]["mean_kl"] < ref["mean_kl"]
                 and summary[arm]["acc_delta"] >= ref["acc_delta"] - 0.02)
 
+    # paired (per-document) bootstrap CIs vs the eviction arm — a mean
+    # difference whose CI straddles zero is NOT a certification difference,
+    # however the point estimates order (added after an n=12 run produced
+    # unresolved verdicts on both aggregation axes).
+    import numpy as np
+    rng = np.random.default_rng(0)
+
+    def paired_ci(arm: str, axis: str, key: str) -> dict:
+        a = np.array([r[axis][key] for r in results["eviction-matched"]])
+        b = np.array([r[axis][key] for r in results[arm]])
+        diff = b - a
+        if len(diff) < 2:
+            return {"n": int(len(diff))}
+        boots = np.array([rng.choice(diff, len(diff), replace=True).mean()
+                          for _ in range(20000)])
+        lo, hi = np.percentile(boots, [2.5, 97.5])
+        return {"n": int(len(diff)), "mean_diff": float(diff.mean()),
+                "ci95": [float(lo), float(hi)],
+                "excludes_zero": bool(lo > 0 or hi < 0),
+                "docs_favoring_arm": int((diff < 0).sum())}
+
+    summary["paired_vs_eviction"] = {
+        arm: {"mean_kl": paired_ci(arm, "aggregation_axis", "mean_kl"),
+              "acc_delta": paired_ci(arm, "aggregation_axis", "accuracy_delta"),
+              "lost_fact": paired_ci(arm, "pointwise_axis",
+                                     "lost_fact_incident_rate")}
+        for arm in ("compactor-d1", "compactor-d4")}
+    summary["n_documents"] = len(results["eviction-matched"])
     summary["gt13_ship"] = gt13_pass("compactor-d1")
     # Certified depth = longest contiguous prefix of depths passing GT13;
     # depth 4 cannot certify past a failing depth 1 (recurrence stacks).
@@ -527,6 +556,15 @@ def wp2_eval() -> dict:
         json.dump(out, f, indent=1, default=float)
     artifacts.commit()
     return out
+
+
+@app.local_entrypoint()
+def certify(single_tag: str, iterative_tag: str, t_latents: int = 1024,
+            out_name: str = "summary", lever: str = "none",
+            docs_per_domain: int = 3):
+    print(json.dumps(certify_arms.remote(single_tag, iterative_tag, t_latents,
+                                         out_name, lever, docs_per_domain),
+                     indent=1, default=float))
 
 
 @app.local_entrypoint()
