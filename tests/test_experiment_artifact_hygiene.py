@@ -43,3 +43,9 @@ def test_spec_no_longer_calls_e1full_first_task_certified():
     spec = (ROOT / "unified_memory_substrate_spec_v0.3.7.md").read_text()
     assert "First task-certified L3 configuration" not in spec
     assert "produced the first L3 configuration" not in spec
+
+
+def test_manifest_modal_image_installs_memsub_import_dependencies():
+    source = (ROOT / "modal-runners" /
+              "modal-fullrecipe-c2-mixture-manifest.py").read_text()
+    assert ".pip_install(*PINNED)" in source

@@ -16,8 +16,11 @@ import json
 import modal
 
 app = modal.App("memsub-fullrecipe-c2-manifest")
-image = modal.Image.debian_slim(python_version="3.12")
-image = image.add_local_dir("memsub", "/root/repo/memsub")
+PINNED = ["torch==2.7.1", "transformers==4.55.2", "safetensors==0.5.3",
+          "numpy>=1.26,<3"]
+image = (modal.Image.debian_slim(python_version="3.12")
+         .pip_install(*PINNED)
+         .add_local_dir("memsub", "/root/repo/memsub"))
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
 DOMAINS = ("financial", "legal", "code", "literature")
 DOMAIN_CAP = 23563   # smallest B.3 domain count (code)
