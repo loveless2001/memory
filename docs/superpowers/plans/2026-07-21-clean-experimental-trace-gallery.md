@@ -30,7 +30,7 @@
 - Consumes: clean certification JSON with top-level `provenance`, `summary`, and `reports` objects.
 - Produces: `validate_source(source: dict) -> None`, `build_gallery(source: dict) -> dict`, `render_markdown(gallery: dict) -> str`, and `generate(source_path: Path, json_path: Path, markdown_path: Path) -> None`.
 
-- [ ] **Step 1: Write failing provenance and selection tests**
+- [x] **Step 1: Write failing provenance and selection tests**
 
 ```python
 from copy import deepcopy
@@ -65,13 +65,13 @@ def test_selects_three_distinct_registered_trace_categories():
     ]
 ```
 
-- [ ] **Step 2: Run the tests and verify RED**
+- [x] **Step 2: Run the tests and verify RED**
 
 Run: `./.venv/bin/python -m pytest tests/test_clean_experimental_trace_gallery.py -q`
 
 Expected: collection fails with `ModuleNotFoundError: No module named 'examples.build_clean_experimental_traces'`.
 
-- [ ] **Step 3: Implement validation, alignment, selection, and stable rendering**
+- [x] **Step 3: Implement validation, alignment, selection, and stable rendering**
 
 Create `examples/build_clean_experimental_traces.py` with registered constants for the two source hashes, checkpoint hash, policy ID, overlap counts, and source path. Implement:
 
@@ -97,13 +97,13 @@ def validate_source(source: dict) -> None:
 
 Align reports by `eval_protocol.doc_id`; require identical document sets and pointwise item IDs across `eviction-matched`, `compactor-d1`, `compactor-d4`, and `control-0`. Compute recovery counts and document-level KL/loss gaps. Select candidates using the exact sort tuples from the design, excluding already selected documents. Build the registered JSON schema and render Markdown with one provenance header, one metrics table per trace, and question/options/prediction blocks. Serialize JSON with `indent=2`, `sort_keys=True`, and a trailing newline.
 
-- [ ] **Step 4: Run focused tests and verify GREEN**
+- [x] **Step 4: Run focused tests and verify GREEN**
 
 Run: `./.venv/bin/python -m pytest tests/test_clean_experimental_trace_gallery.py -q`
 
 Expected: all Task 1 tests pass.
 
-- [ ] **Step 5: Commit Task 1**
+- [x] **Step 5: Commit Task 1**
 
 ```bash
 git add examples/build_clean_experimental_traces.py tests/test_clean_experimental_trace_gallery.py
@@ -128,7 +128,7 @@ git commit -m "feat: generate clean experimental trace gallery"
 - Consumes: `generate(...)` and the deterministic gallery from Task 1.
 - Produces: checked-in JSON/Markdown artifacts plus publication pointers that name all three selected documents.
 
-- [ ] **Step 1: Add failing regeneration and publication tests**
+- [x] **Step 1: Add failing regeneration and publication tests**
 
 ```python
 def test_checked_in_gallery_regenerates_byte_for_byte(tmp_path):
@@ -151,13 +151,13 @@ def test_publication_surfaces_link_real_trace_gallery():
 
 Also extend the hygiene publication list to include `examples/experimental-traces/README.md` and require the clean checkpoint hash in its first 3,500 characters.
 
-- [ ] **Step 2: Run the tests and verify RED**
+- [x] **Step 2: Run the tests and verify RED**
 
 Run: `./.venv/bin/python -m pytest tests/test_clean_experimental_trace_gallery.py tests/test_experiment_artifact_hygiene.py -q`
 
 Expected: failure because the checked-in gallery files and publication links do not exist.
 
-- [ ] **Step 3: Generate the gallery artifacts**
+- [x] **Step 3: Generate the gallery artifacts**
 
 Run:
 
@@ -167,7 +167,7 @@ Run:
 
 Expected: writes exactly three traces to `examples/experimental-traces/clean-e1full-traces.json` and `examples/experimental-traces/README.md`.
 
-- [ ] **Step 4: Integrate the gallery into README and paper #2**
+- [x] **Step 4: Integrate the gallery into README and paper #2**
 
 Add a root README subsection after the clean E1FULL result containing a three-row table with category, document ID, and evidence shown. Link both generated artifacts.
 
@@ -175,7 +175,7 @@ Add a paper #2 appendix subsection with the same three document IDs, short evide
 
 Record the gallery in the 2026-07-21 clean recertification changelog entry.
 
-- [ ] **Step 5: Rebuild paper #2 and verify focused tests**
+- [x] **Step 5: Rebuild paper #2 and verify focused tests**
 
 Run: `tectonic main.tex` from `paper2/`.
 
@@ -185,7 +185,7 @@ Run: `./.venv/bin/python -m pytest tests/test_clean_experimental_trace_gallery.p
 
 Expected: all focused tests pass.
 
-- [ ] **Step 6: Commit Task 2**
+- [x] **Step 6: Commit Task 2**
 
 ```bash
 git add examples/experimental-traces README.md paper2/main.tex paper2/main.pdf docs/project-changelog.md tests/test_clean_experimental_trace_gallery.py tests/test_experiment_artifact_hygiene.py
@@ -203,7 +203,7 @@ git commit -m "docs: publish clean experimental trace examples"
 - Consumes: committed generator, gallery, publication surfaces, and tests.
 - Produces: a checked completion record and clean repository state.
 
-- [ ] **Step 1: Regenerate into temporary files and compare bytes**
+- [x] **Step 1: Regenerate into temporary files and compare bytes**
 
 Run the focused regeneration test:
 
@@ -213,7 +213,7 @@ Run the focused regeneration test:
 
 Expected: `1 passed`.
 
-- [ ] **Step 2: Run complete verification**
+- [x] **Step 2: Run complete verification**
 
 ```bash
 ./.venv/bin/python -m pytest tests -q
@@ -224,7 +224,7 @@ git diff --check
 
 Expected: all tests pass, compileall is silent, every tracked JSON file parses, and `git diff --check` is silent.
 
-- [ ] **Step 3: Mark the plan complete and commit**
+- [x] **Step 3: Mark the plan complete and commit**
 
 Change every checkbox in this plan to `[x]`, then run:
 
@@ -233,7 +233,7 @@ git add docs/superpowers/plans/2026-07-21-clean-experimental-trace-gallery.md
 git commit -m "docs: complete clean trace gallery plan"
 ```
 
-- [ ] **Step 4: Confirm final state**
+- [x] **Step 4: Confirm final state**
 
 Run: `git status --short && git log -4 --oneline`
 
