@@ -65,6 +65,7 @@ def test_clean_e1full_result_is_propagated_to_publication_surfaces():
         "README.md",
         "docs/draft.md",
         "docs/draft2.md",
+        "examples/experimental-traces/README.md",
         "paper/main.tex",
         "paper2/main.tex",
         "unified_memory_substrate_spec_v0.3.7.md",

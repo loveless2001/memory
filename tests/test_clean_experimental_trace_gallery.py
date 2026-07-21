@@ -16,6 +16,9 @@ SOURCE = ROOT / (
     "plans/260719-2328-e1full-unfrozen-full-recipe/"
     "summary-e1full-clean-v1-n60.json"
 )
+GALLERY_JSON = Path(
+    "examples/experimental-traces/clean-e1full-traces.json")
+GALLERY_MARKDOWN = Path("examples/experimental-traces/README.md")
 
 
 def load_source():
@@ -82,3 +85,25 @@ def test_generate_writes_stable_json_and_markdown(tmp_path):
     assert "Real Held-Out E1FULL Certification Traces" in markdown
     assert "not token-level generation logs" in markdown
     assert markdown.endswith("\n")
+
+
+def test_checked_in_gallery_regenerates_byte_for_byte(tmp_path):
+    json_out = tmp_path / "traces.json"
+    markdown_out = tmp_path / "README.md"
+
+    generate(SOURCE, json_out, markdown_out)
+
+    assert json_out.read_bytes() == (ROOT / GALLERY_JSON).read_bytes()
+    assert markdown_out.read_bytes() == (ROOT / GALLERY_MARKDOWN).read_bytes()
+
+
+def test_publication_surfaces_link_real_trace_gallery():
+    gallery = json.loads((ROOT / GALLERY_JSON).read_text())
+
+    for relative in ["README.md", "paper2/main.tex"]:
+        text = (ROOT / relative).read_text()
+        assert str(GALLERY_JSON) in text, relative
+        for trace in gallery["traces"]:
+            assert trace["document_id"] in text, relative
+        assert "NO-SHIP" in text, relative
+        assert "depth" in text.lower(), relative

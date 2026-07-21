@@ -2,6 +2,7 @@
 \usepackage[margin=1.1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage{xurl}
@@ -506,6 +507,30 @@ Clean artifact of record:
 (remote source \url{compactor-certification/summary-e1full-clean-v1-n60.json}).
 Historical contaminated artifacts remain available for audit but do not
 support certification or ranking claims.
+
+\section{Real held-out trace gallery}
+Three examples are selected deterministically from the signed clean artifact;
+they are certification traces, not token-level generation logs or attention
+dumps. The complete questions, options, gold labels, per-arm predictions, and
+document metrics are in
+\url{examples/experimental-traces/clean-e1full-traces.json}.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+case & held-out document & observed trace \\
+\midrule
+pointwise recovery & \texttt{financial/00009} & depth 1 recovers all three prior-correct items lost by matched eviction \\
+axis disagreement & \texttt{code/00011} & lost-fact rate improves $1.0\to0.0$ while KL worsens $0.0456\to0.2721$ \\
+depth-4 collapse & \texttt{financial/00002} & depth 1 preserves both probes; depth 4 loses both and KL rises $0.1140\to16.0918$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+These examples make the clean NO-SHIP result concrete without changing its
+scope: certified depth remains zero, and no frozen-versus-unfrozen ranking is
+inferred from the gallery.
 
 \section{Downstream re-runs}
 Frozen-regime rows: arm table

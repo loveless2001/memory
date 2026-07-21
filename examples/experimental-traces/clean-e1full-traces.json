@@ -1,0 +1,258 @@
+{
+  "evidence_scope": "Real held-out certification traces. Aggregation metrics are document-level; probe records are pointwise items. These are not token-level generation logs or attention dumps.",
+  "provenance": {
+    "checkpoint_name": "e1full-clean-v1-t1024-T8k",
+    "checkpoint_weights_sha256": "c00b2437fdd813ccdf7469eff7433ccd2b02f356766d4f7a12305441b3a46099",
+    "holdout_sha256": "64043bca6642b877af7366d4980a3bd9794184ff49e1702a4ef8a3db7398882d",
+    "overlap_audit": {
+      "certification_documents": 60,
+      "certification_items": 193,
+      "document_overlap": [],
+      "item_overlap": [],
+      "training_documents": 35353,
+      "training_items": 94056
+    },
+    "training_manifest_sha256": "16e3ef0e7b9062218dc4f43a7ca53821c2194884b1c0580c62da2c9fba066aff"
+  },
+  "schema_version": "clean-e1full-trace-gallery-v1",
+  "source_artifact": "plans/260719-2328-e1full-unfrozen-full-recipe/summary-e1full-clean-v1-n60.json",
+  "traces": [
+    {
+      "arm_metrics": {
+        "compactor-d1": {
+          "aggregation_accuracy_delta": -0.2,
+          "aggregation_mean_kl": 0.086026,
+          "lost_fact_incident_rate": 0.0,
+          "lost_fact_rate_given_prior_correct": 0.0
+        },
+        "compactor-d4": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 11.444393,
+          "lost_fact_incident_rate": 0.3333,
+          "lost_fact_rate_given_prior_correct": 0.3333
+        },
+        "control-0": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.0,
+          "lost_fact_incident_rate": 0.0,
+          "lost_fact_rate_given_prior_correct": 0.0
+        },
+        "eviction-matched": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.338879,
+          "lost_fact_incident_rate": 1.0,
+          "lost_fact_rate_given_prior_correct": 1.0
+        }
+      },
+      "category": "pointwise_recovery",
+      "document_id": "financial/00009",
+      "domain": "financial",
+      "probe_records": [
+        {
+          "gold": "D",
+          "item_id": "mcq_financial/00009_1056_4",
+          "options": [
+            "$188,700,000  ",
+            "$200,400,000  ",
+            "$196,300,000  ",
+            "$162,900,000  "
+          ],
+          "pred_compacted_by_arm": {
+            "compactor-d1": "D",
+            "compactor-d4": "A",
+            "control-0": "D",
+            "eviction-matched": "C"
+          },
+          "pred_full_context": "D",
+          "question": "What was the amount of capital expenditures made by Ameritech in 1993?"
+        },
+        {
+          "gold": "A",
+          "item_id": "mcq_financial/00009_2194_5",
+          "options": [
+            "$5,272,000  ",
+            "$15,518,000  ",
+            "$12,832,000  ",
+            "$762,000  "
+          ],
+          "pred_compacted_by_arm": {
+            "compactor-d1": "A",
+            "compactor-d4": "A",
+            "control-0": "A",
+            "eviction-matched": "C"
+          },
+          "pred_full_context": "A",
+          "question": "What was the amount of the reduction in intraLATA toll rates in 1990?"
+        },
+        {
+          "gold": "A",
+          "item_id": "mcq_financial/00009_2229_3",
+          "options": [
+            "$12,832,000  ",
+            "$5,272,000  ",
+            "$15,518,000  ",
+            "$762,000  "
+          ],
+          "pred_compacted_by_arm": {
+            "compactor-d1": "A",
+            "compactor-d4": "A",
+            "control-0": "A",
+            "eviction-matched": "B"
+          },
+          "pred_full_context": "A",
+          "question": "What was the amount of the reduction in Touch-Tone rates in 1992?"
+        }
+      ],
+      "selection_metrics": {
+        "depth1_minus_eviction_kl": -0.252853,
+        "depth1_preserved_depth4_lost_count": 1,
+        "depth4_minus_depth1_kl": 11.358367,
+        "eviction_minus_depth1_lost_fact_rate": 1.0,
+        "recovered_item_count": 3
+      },
+      "selection_reason": "Depth 1 recovers 3 prior-correct item(s) lost by matched eviction."
+    },
+    {
+      "arm_metrics": {
+        "compactor-d1": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.272132,
+          "lost_fact_incident_rate": 0.0,
+          "lost_fact_rate_given_prior_correct": 0.0
+        },
+        "compactor-d4": {
+          "aggregation_accuracy_delta": -0.5,
+          "aggregation_mean_kl": 16.879524,
+          "lost_fact_incident_rate": 1.0,
+          "lost_fact_rate_given_prior_correct": 1.0
+        },
+        "control-0": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.0,
+          "lost_fact_incident_rate": 0.0,
+          "lost_fact_rate_given_prior_correct": 0.0
+        },
+        "eviction-matched": {
+          "aggregation_accuracy_delta": -0.5,
+          "aggregation_mean_kl": 0.045604,
+          "lost_fact_incident_rate": 1.0,
+          "lost_fact_rate_given_prior_correct": 1.0
+        }
+      },
+      "category": "axis_disagreement",
+      "document_id": "code/00011",
+      "domain": "code",
+      "probe_records": [
+        {
+          "gold": "C",
+          "item_id": "mcq_code/00011_4356_0",
+          "options": [
+            "fastq  ",
+            "mapping  ",
+            "variants  ",
+            "n/a  "
+          ],
+          "pred_compacted_by_arm": {
+            "compactor-d1": "C",
+            "compactor-d4": "D",
+            "control-0": "C",
+            "eviction-matched": "D"
+          },
+          "pred_full_context": "C",
+          "question": "What is the default value of the `analysis` column in the `project` table?"
+        }
+      ],
+      "selection_metrics": {
+        "depth1_minus_eviction_kl": 0.22652799999999998,
+        "depth1_preserved_depth4_lost_count": 1,
+        "depth4_minus_depth1_kl": 16.607392,
+        "eviction_minus_depth1_lost_fact_rate": 1.0,
+        "recovered_item_count": 1
+      },
+      "selection_reason": "Depth 1 lowers the document lost-fact rate by 1.0000 while raising aggregation KL by 0.2265."
+    },
+    {
+      "arm_metrics": {
+        "compactor-d1": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.114006,
+          "lost_fact_incident_rate": 0.0,
+          "lost_fact_rate_given_prior_correct": 0.0
+        },
+        "compactor-d4": {
+          "aggregation_accuracy_delta": -1.0,
+          "aggregation_mean_kl": 16.091831,
+          "lost_fact_incident_rate": 1.0,
+          "lost_fact_rate_given_prior_correct": 1.0
+        },
+        "control-0": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.0,
+          "lost_fact_incident_rate": 0.0,
+          "lost_fact_rate_given_prior_correct": 0.0
+        },
+        "eviction-matched": {
+          "aggregation_accuracy_delta": 0.0,
+          "aggregation_mean_kl": 0.162422,
+          "lost_fact_incident_rate": 1.0,
+          "lost_fact_rate_given_prior_correct": 1.0
+        }
+      },
+      "category": "depth4_collapse",
+      "document_id": "financial/00002",
+      "domain": "financial",
+      "probe_records": [
+        {
+          "gold": "B",
+          "item_id": "mcq_financial/00002_471_1",
+          "options": [
+            "January  ",
+            "April  ",
+            "October  ",
+            "September  "
+          ],
+          "pred_compacted_by_arm": {
+            "compactor-d1": "B",
+            "compactor-d4": "C",
+            "control-0": "B",
+            "eviction-matched": "D"
+          },
+          "pred_full_context": "B",
+          "question": "In which month was the Cartoon Network Latin America launched?"
+        },
+        {
+          "gold": "D",
+          "item_id": "mcq_financial/00002_912_2",
+          "options": [
+            "96 hours  ",
+            "120 hours  ",
+            "112 hours  ",
+            "128 hours  "
+          ],
+          "pred_compacted_by_arm": {
+            "compactor-d1": "D",
+            "compactor-d4": "C",
+            "control-0": "D",
+            "eviction-matched": "C"
+          },
+          "pred_full_context": "D",
+          "question": "How many hours of programming does the Goodwill Games provide for the Company?"
+        }
+      ],
+      "selection_metrics": {
+        "depth1_minus_eviction_kl": -0.048416000000000015,
+        "depth1_preserved_depth4_lost_count": 2,
+        "depth4_minus_depth1_kl": 15.977825,
+        "eviction_minus_depth1_lost_fact_rate": 1.0,
+        "recovered_item_count": 2
+      },
+      "selection_reason": "Depth 4 loses 2 prior-correct item(s) preserved by depth 1 while adding 15.9778 aggregation KL."
+    }
+  ],
+  "verdict": {
+    "gt13": "NO-SHIP",
+    "gt13_ship": false,
+    "max_certified_depth": 0,
+    "policy": "still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc"
+  }
+}

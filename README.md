@@ -127,6 +127,23 @@ is +0.0495 [0.0272, 0.0715], so the primary distributional predicate fails;
 the accuracy advantage is uncertain (+0.0522 [-0.0395, 0.1461]). Untrained
 depth-4 recurrence collapses. Runtime depth therefore remains zero.
 
+### Real held-out trace examples
+
+Three deterministic examples are extracted directly from the signed clean
+artifact. They are certification traces, not token-level generation logs.
+
+| Case | Held-out document | What the trace shows |
+|---|---|---|
+| Pointwise recovery | `financial/00009` | depth 1 recovers all 3 prior-correct items lost by matched eviction |
+| Axis disagreement | `code/00011` | lost-fact rate improves 1.0 → 0.0 while aggregation KL worsens 0.0456 → 0.2721 |
+| Depth-4 collapse | `financial/00002` | depth 1 preserves both probes; depth 4 loses both and KL rises 0.1140 → 16.0918 |
+
+Read the [annotated trace gallery](examples/experimental-traces/README.md) or
+inspect the machine-readable
+[`clean-e1full-traces.json`](examples/experimental-traces/clean-e1full-traces.json).
+The generator is `examples/build_clean_experimental_traces.py`; provenance
+drift or cross-arm alignment errors fail generation closed.
+
 ### The transferable lesson
 
 A loss curve fell for 1,500 steps at every data scale while the one thing
