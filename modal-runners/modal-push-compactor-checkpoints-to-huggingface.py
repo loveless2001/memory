@@ -1,9 +1,10 @@
 """Push trained compactor checkpoints from the memsub-artifacts volume
 straight to a (private) HuggingFace repo — no local hop.
 
-INVALIDATED CERTIFICATION (2026-07-21): E1FULL evaluation overlapped
-training. The model card keeps all affected checkpoints at depth zero pending
-a clean holdout retrain and rerun.
+CLEAN CERTIFICATION (2026-07-21): the replacement E1FULL run has zero
+document/item overlap and returns GT13 NO-SHIP. Certified policy
+`still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`; the model card keeps
+all E1FULL checkpoints at depth zero.
 
 Uploads inference weights only: `compactor.safetensors` plus the
 step-tagged snapshots (the training trajectory the papers plot).
@@ -102,10 +103,13 @@ prefix of one 36-layer cache into `t` latent slots per KV head.
 drafts; numbers here are provided so the checkpoints are usable, not as a
 citable record.
 
-**INVALIDATED CERTIFICATION (2026-07-21).** The E1FULL n=60 evaluation
-overlapped training. Its certification, paired-CI, ranking, and deployment
-claims are withdrawn pending a clean holdout retrain and rerun. Existing
-checkpoints have `max_certified_depth = 0` and are not serving releases.
+**CLEAN E1FULL CERTIFICATION (2026-07-21): NO-SHIP.** The replacement
+checkpoint was trained after reserving 15 documents/domain and certified on
+60 documents / 193 probes with zero document or item overlap. Depth-1 worsens
+aggregation KL versus matched eviction by +0.0495 (95% CI [0.0272, 0.0715]);
+`max_certified_depth = 0`. Policy
+`still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`. These remain research
+artifacts, not serving releases.
 
 ## Loading (read this first)
 
@@ -128,6 +132,12 @@ for layer in comp.layers:                     # E1-class checkpoints only
 ```
 
 ## Checkpoints
+
+- **`e1full-clean-v1-t1024-T8k`** — leakage-free replacement, logit scale
+  16, trained for 3,000 steps on 75,834 triplets after reserving the clean
+  holdout. Final loss 0.1348; entropy 1.8122. Its n=60 certification is
+  GT13 NO-SHIP: KL 0.1281 vs eviction 0.0787, while lost-given-prior-correct
+  improves 0.631 → 0.050. `max_certified_depth = 0`.
 
 - **`e1full-t1024-T8k`** — historical unfrozen-routing checkpoint (logit
   scale 16), trained on the full mixture for 3,000 steps. Its former n=60
@@ -155,11 +165,11 @@ trajectory; `compactor.safetensors` is the final state.
 
 One base model, one architecture family; extractive-MCQ certification with
 letter-match equivalence, single-turn contexts; depth-4 recurrence collapses
-without recurrence training. Certification is reported at 60 documents with
-paired CIs — an earlier 12-document pass left both aggregation verdicts
-statistically unresolved, so treat any small-n compression certification
-(including ours, before this fix) with suspicion. These are research
-artifacts, not a serving release.
+without recurrence training. The clean result is reported at 60 documents
+with paired CIs and complete provenance. It does not compare the clean
+checkpoint directly against the historical frozen checkpoint, so no clean
+frozen-versus-unfrozen ranking is claimed. These are research artifacts, not
+a serving release.
 """
 
 

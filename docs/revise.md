@@ -35,8 +35,10 @@ nested as compressors improve, even across a kernel-class change — with
 a minority regime-relative component; the shared frozen kernel inflated
 measured stability modestly (nesting 0.94 within-kernel vs ~0.8
 across).** The probe-ladder and routing results of §§6–8, which are
-trained and evaluated within-regime, are unaffected. The mechanism
-behind the frozen kernel, its cure, and the resulting task-anchored
-certification are reported in [paper #2]. (A within-regime reseed κ for
+trained and evaluated within-regime, are unaffected. The mechanism behind the
+frozen kernel, its cure, and the clean held-out GT13 no-ship result are
+reported in [paper #2]. The replacement checkpoint improves pointwise
+preservation but remains distributionally worse than matched eviction, so no
+deployment or compressor-ranking claim follows. (A within-regime reseed κ for
 the content-routed class was not measured — it would require a second
 full-recipe run — and no such number should be quoted.)

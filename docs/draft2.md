@@ -1,9 +1,13 @@
 # The Compactor That Couldn't Learn Where to Look: Gradient Saturation, Position-Kernel Collapse, and the Anchor Problem in Compression Certification
 
-> **INVALIDATED DRAFT RESULT (2026-07-21).** The E1FULL certification set
-> overlapped the training set. All certification, paired-CI, task-anchored
-> SHIP, ranking, and deployment statements below are withdrawn pending the
-> clean holdout retrain and rerun. Runtime depth remains zero.
+> **CLEAN E1FULL RESULT (2026-07-21): NO-SHIP.** The replacement n=60
+> artifact reserves 15 documents/domain before training and reports zero
+> document/item overlap. Depth-1 worsens aggregation KL versus matched eviction
+> by +0.0495 (95% CI [0.0272, 0.0715]); runtime depth remains zero. Policy:
+> `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`.
+
+**Draft v0.4 — 2026-07-21.** Replaced the contaminated E1FULL table with
+the signed clean-holdout result and all four paired intervals.
 
 **Draft v0.3 — 2026-07-20.** Certification re-measured at n=60 documents
 with paired CIs (n=12 left both aggregation verdicts unresolved), and the
@@ -43,9 +47,11 @@ instead of the floor) and training then *raises* it, all eight KV-heads
 despecialize from the shared lattice, the kept sets become item-adaptive,
 and the unfrozen compactor overtakes the frozen one on the very objective
 that froze it. The historical full-recipe certification cannot support a
-held-out comparison because its evaluation documents overlap training. Its
-predicate and compressor-ranking interpretations are withdrawn; the clean
-rerun is the only source permitted to restore those claims.
+held-out comparison because its evaluation documents overlap training. The
+clean replacement confirms **GT13 NO-SHIP**: depth-1 greatly reduces silent
+fact loss but worsens aggregation KL by +0.0495 [0.0272, 0.0715], and its
+accuracy advantage remains uncertain. No frozen-versus-unfrozen ranking is
+restored.
 Downstream, kernel mobility *sharpens* the routing landscape of our
 companion work rather than reorganizing it: write-time geometry stays
 loss-blind even for a content-routed, item-adaptive kernel (AUC 0.5003)
@@ -54,8 +60,8 @@ expansion gate's marginal value completes a monotone decline to
 **zero** (72% → 22.5% → 9.0% → 0%) while computation-reading probes
 fully recover (stack 0.857) and retain routing power exactly where
 shadow gating has none (silent loss pushed below never-expand at 9%
-expansion); the needle-smuggling advantage *grows* rather than being
-traded away (0.171 → 0.108, both axes improving together); and fact
+expansion); the clean checkpoint sharply improves pointwise preservation
+against eviction but remains distributionally worse; and fact
 fragility proves largely content-intrinsic — 78–91% of the unfrozen
 compressor's losses nest inside the frozen lineage's — with a real but
 minority regime-relative component. Total marginal compute: ≈ $925 across the three campaigns.
@@ -84,9 +90,9 @@ init-noise and content-seeded-init controls ruling out the alternative
 explanations; **(iii)** the cure — reduce the logit scale — validated
 from gradient wake-up through kernel mobility, head despecialization,
 item-adaptivity, and training-loss crossover, at three seeds; **(iv)**
-the consequence: the historical full-recipe certification is invalidated
-by train/holdout overlap, so no predicate or compressor-ranking conclusion
-is retained pending the clean rerun; **(v)** the
+the consequence: a leakage-free full-recipe recertification that returns
+GT13 NO-SHIP — silent loss improves sharply, but aggregation KL is
+significantly worse than eviction and certified depth remains zero; **(v)** the
 downstream sharpening: write-time geometry remains loss-blind even
 under content routing (internality confirmed at its strongest test),
 the text-shadow gate's routable fraction reaches zero while
@@ -177,13 +183,12 @@ trajectories in Appendix).
 Training dynamics show the honest trade: the soft scale leaks the
 identity passthrough, so E1 *starts* worse (loss 0.737 vs 0.576) — the
 ×256 scale was protecting the passthrough — then crosses over before
-step 60 (15-step smoothed) and finishes ahead (0.219 vs 0.365 mid-scale; at full recipe the pre-registered extension
-rule fired — entropy still rising at step 1,500 — and routing kept
-learning to step 3,000: entropy 0.82 → 1.78, cross-item Jaccard of
-kept sets 1.000 → 0.550 (item-adaptive, deepening monotonically), heads
-despecializing immediately then partially re-organizing, final loss
-0.167 vs the frozen 0.357, the kernel ultimately touching essentially
-every source position across the probe batch). The frozen configuration is not a bad optimum being
+step 60 (15-step smoothed) and finishes ahead (0.219 vs 0.365 mid-scale).
+At full recipe, the historical mechanistic run established item-adaptivity
+(cross-item Jaccard 1.000 → 0.550) and head reorganization. The leakage-free
+replacement independently fired its registered extension at step 1,500
+(entropy +0.0616 over 250 steps) and completed step 3,000 at entropy 1.8122
+and loss 0.1348. The frozen configuration is not a bad optimum being
 escaped; it is a gradient-dead region the canonical constant walls in.
 A learned per-layer temperature initialized soft (E2) also escapes and
 recovers sharpness where useful; we ship the fixed √d_l for simplicity
@@ -192,13 +197,30 @@ differ from our reproduction in unexplored details; our claim is scoped
 to the canonical configuration as specified, and the diagnostic (§9)
 resolves the question for any implementation in minutes.
 
-## 6. Certification: the predicates dissociate
+## 6. Certification: clean held-out no-ship
 
-**Invalidated.** The historical table used 52/60 documents and 207/241
-probes that appeared in full-recipe training. It cannot establish either
-predicate, any frozen-versus-unfrozen ranking, or a deployment depth. The
-runtime remains at `max_certified_depth = 0`; this section will be populated
-only from the signed clean-holdout artifact.
+The signed replacement artifact reserves 15 documents per domain before
+training and certifies 60 documents / 193 probes with zero document or item
+overlap. Against matched eviction, depth-1 changes aggregation KL
+0.0787 → 0.1281 and accuracy delta +0.0014 → +0.0536; pointwise lost-fact
+incidence changes 0.683 → 0.106 and lost-given-prior-correct 0.631 → 0.050.
+Paired candidate-minus-eviction intervals are:
+
+| metric | difference | 95% CI |
+|---|---:|---:|
+| aggregation KL | +0.0495 | [0.0272, 0.0715] |
+| accuracy delta | +0.0522 | [−0.0395, 0.1461] |
+| lost-fact incidence | −0.5778 | [−0.7000, −0.4500] |
+| lost given prior correct | −0.5806 | [−0.7028, −0.4528] |
+
+The result is **GT13 NO-SHIP**: KL is significantly worse, and the accuracy
+interval does not clear the registered −0.02 CI bound despite its positive
+point estimate. Untrained depth-4 recurrence collapses (KL 13.664,
+accuracy delta −0.156). The certified prefix is empty and runtime remains
+`max_certified_depth = 0`. Policy
+`still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`. Because the clean
+artifact did not rerun the historical frozen arm, no clean
+frozen-versus-unfrozen ranking is claimed.
 
 ## 7. Downstream: routing under a mobile kernel
 
@@ -232,15 +254,14 @@ compressors improve, externally-visible routing signal is exhausted
 first; the computation-reading tier is the last to retain routing
 power, and at this generation it is the only one that does.
 
-**Smuggling grows; the anticipated trade never happens.** The
-registered possibility that content routing would spend the
-subsampler's needle-smuggling advantage to buy aggregation did not
-occur: silent needle loss falls 0.171 → 0.108 *while* aggregation KL
-falls 0.282 → 0.135 — both axes improve together, leaving the unfrozen
-compressor within 2.6× of the zero-compression noise floor (0.056) on
-the pointwise axis. The gate remains formally mandatory under the
-certification rule (0.153 ≫ floor) even as its text-shadow tier hits
-zero — which is precisely why the ladder's computation tier matters.
+**Pointwise preservation improves, but the distributional trade remains.**
+The clean depth-1 checkpoint cuts lost-given-prior-correct from 0.631 to
+0.050 versus matched eviction, with a paired interval wholly below zero.
+That gain accompanies significantly worse aggregation KL, not a clean win on
+both axes. The clean control floor is 0.072 raw lost-fact incidence (the
+conditioned control denominator is zero), versus 0.106 for depth-1, so the
+gate remains formally mandatory even as its historical text-shadow tier hits
+zero — precisely why the ladder's computation tier matters.
 
 ## 8. Fragility is largely fact-intrinsic — and a refinement to our companion paper
 
@@ -299,15 +320,14 @@ scale never learned the one thing compaction is for — where to look —
 because a single configuration constant walled its routing pathway
 behind a saturated softmax from the first gradient step. The loss curve
 could not see it; a one-pass gradient check and an entropy log see it
-immediately. One constant later, routing learns, heads specialize, the kernel reads
-content — and the certification verdict splits in the most instructive
-way possible: distributionally still short of deletion, task-anchored
-decisively past it, forcing the anchor question into the open. The
+immediately. One constant later, routing learns, heads specialize, and the
+kernel reads content. The clean certification then draws a hard boundary:
+silent fact loss improves sharply, but aggregation KL is significantly worse
+than eviction, so GT13 remains NO-SHIP and certified depth remains zero. The
 downstream measurements sharpen rather than reorganize: write-time
 geometry stays blind even to a content-routed kernel, the
 externally-visible routing signal is exhausted entirely while the
-computation-reading tier keeps routing, both memory axes improve
-together, and fragility proves to belong mostly to the facts
+computation-reading tier keeps routing, and fragility proves to belong mostly to the facts
 themselves. The generalizable lesson is the method:
 certify per axis, instrument the pathway you care about — not the loss
 — and treat every improvement in the compressor as a fresh question

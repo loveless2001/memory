@@ -1,11 +1,11 @@
 # E1FULL-REPORT.md — Full-Recipe Unfrozen Compactor: Third GT13 Attempt Under a Mobile Kernel
 
-> **INVALIDATED CERTIFICATION (2026-07-21).** The n=60 certification was
-> not held out from training: 52/60 documents and 207/241 probes overlap the
-> full-recipe training set. Certification, comparison, CI, SHIP, and deployment
-> claims below are retained only as a historical record and are not evidence.
-> The clean holdout retrain and recertification is pending; until it completes,
-> `max_certified_depth = 0` and the checkpoint is not deployable as L3.
+> **CLEAN RECERTIFICATION (2026-07-21): NO-SHIP.** The replacement n=60
+> artifact uses 15 documents/domain reserved before training: 60 documents and
+> 193 certification probes, with zero document and item overlap against the
+> 94,056-item training manifest. Depth-1 fails GT13 and
+> `max_certified_depth = 0`. Policy:
+> `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`.
 
 **Framing (per the brief):** FULLRECIPE established a law under a frozen
 kernel — aggregation kernel-bound, pointwise smear-bound, routability
@@ -13,28 +13,30 @@ falling as compressors improve. This run dissolves the law's premise:
 every question below is "does X survive kernel mobility," with both
 survival and collapse pre-registered as reportable.
 
-Status: **INVALIDATED; CLEAN RERUN PENDING** (2026-07-21). The historical
-n=60 run completed on 2026-07-20 and is retained below
-with paired CIs the same day — see Q2'). Config: E1 fixed logit scale √d_l = 16
-(ESCAPE P0.2 selection), otherwise canonical; fixed harness; 75,998-item
-mixture (manifest sha 8e0bb280…). Historical spend ≈ $435.
+Status: **CLEAN RERUN COMPLETE; GT13 NO-SHIP** (2026-07-21). Config: E1
+fixed logit scale √d_l = 16 (ESCAPE P0.2 selection), otherwise canonical;
+fixed harness; 75,834 triplets from a balanced 94,056-item manifest. The
+historical contaminated run is retained below only where it supports
+training/mechanistic observations; its certification table is superseded.
 
 Verdict line: Q1' routing keeps learning and becomes item-adaptive ·
-Q2' **INVALIDATED BY TRAIN/EVAL OVERLAP; NO CERTIFICATION VERDICT** ·
+Q2' **CLEAN HELD-OUT NO-SHIP; KL SIGNIFICANTLY WORSE THAN EVICTION** ·
 Q3' branch (iii) — geometry loss-blind even content-routed ·
 Q4' probe ladder RECOVERS (stack 0.857); gate marginal value reaches **0%**;
-F2 null holds; F5 transfer regime-general · Q5' smuggling advantage GROWS
-(0.108, n=60) · Q6' mostly-nested shrinkage, minority reshuffle.
+F2 null holds; F5 transfer regime-general · Q5' clean pointwise loss improves
+strongly despite the distributional failure · Q6' mostly-nested shrinkage,
+minority reshuffle.
 
 ---
 
 ## WP1 — Training
 
-1,500 steps (loss 0.165 vs frozen 0.357; GT27 green: init 0.737 < 1.5,
-loss@300 0.217 < 0.45, no NaN) → **extension rule fired** (entropy slope
-+0.0696 nats/250 steps > 0.01; decision logged) → continued to 3,000,
-where entropy plateaus (slope −0.0004). Final loss 0.167. Step-tagged
-checkpoints every 250; I1 every 50; I2 at all 12 checkpoints.
+The clean checkpoint reached 1,500 steps without a tripwire. Its entropy rose
+1.6064 → 1.6680 over the last 250 steps (+0.0616 > 0.01), so the registered
+extension rule fired. It resumed from step 1,500 and completed 3,000 steps at
+loss 0.1348 and entropy 1.8122. Step-tagged checkpoints and the final weights
+are bound to holdout sha `64043bca…8882d` and manifest sha
+`16e3ef0e…066aff`.
 
 ## Q1' — Routing at full scale
 
@@ -46,7 +48,10 @@ checkpoints every 250; I1 every 50; I2 at all 12 checkpoints.
 | d_min AUC (per-item kernels) | — | 0.500 | 0.503 | 0.509 | 0.500 | **0.504** |
 | y+ (I2 1k) | — | 0.234 | 0.204 | 0.160 | 0.159 | **0.159** |
 
-Routing keeps learning with 8× the data: entropy climbs to 1.78 before
+The historical routing run established the R6/R7 observations in this table;
+the clean rerun did not repeat those separate sweeps. Its directly comparable
+training telemetry confirms entropy 0.815 → 1.812. In the historical run,
+routing keeps learning with 8× the data: entropy climbs to 1.78 before
 plateauing; the kernel is **item-adaptive** (R6 0.550, far past the
 registered <0.9 threshold, deepening monotonically); heads despecialize
 immediately (R7 → 0.13) then partially re-organize (→ 0.29). The final
@@ -54,81 +59,50 @@ kernel touches essentially every source position across the probe batch
 (kept-l0 8,186/8,188). Not one mobile lattice — per-item, per-head,
 content-conditioned routing.
 
-## Q2' — GT13, third attempt: what the predicate you pick decides
+## Q2' — GT13 clean held-out replacement
 
-**This entire certification section is invalidated by train/evaluation
-overlap. Its values may describe the contaminated checkpoints on those
-documents, but cannot establish generalization or deployment eligibility.**
-
-**Re-run at n = 60 documents (2026-07-20).** The original verdict was
-computed on the harness default of 3 documents/domain (n = 12), where a
-paired bootstrap over per-document rows leaves *both* aggregation
-differences unresolved (KL +0.017, CI [−0.062, +0.070]; accΔ +0.090, CI
-[−0.090, +0.264]); only the pointwise gap excluded zero. All arms were
-therefore re-certified at 15 documents/domain (n = 60,
-`compactor-certification/summary-{e1full,fullrecipe,single140}-n60.json`).
-Every number below is the n = 60 measurement; the n = 12 values it
-supersedes are kept in the artifacts for audit. The eviction arm
-reproduced across independent runs (KL 0.0848 / 0.0842), a useful
-harness check.
+The artifact of record is
+`plans/260719-2328-e1full-unfrozen-full-recipe/summary-e1full-clean-v1-n60.json`
+(remote source `compactor-certification/summary-e1full-clean-v1-n60.json`).
+It records holdout sha `64043bca…8882d`, manifest sha
+`16e3ef0e…066aff`, checkpoint weights sha `c00b2437…a46099`, all selected
+document and probe IDs, and an explicit empty overlap audit.
 
 | arm | agg KL | agg accΔ | pointwise lost | lost \| prior |
 |---|---|---|---|---|
-| eviction-matched | 0.0848 | −0.0636 | 0.644 | 0.617 |
-| frozen full recipe (d1) | 0.2820 | **+0.1019** | 0.210 | 0.171 |
-| **unfrozen full recipe (d1)** | **0.1348** | +0.0311 | **0.147** | **0.108** |
-| unfrozen depth-4 (untrained-for) | 14.41 | −0.0992 | 0.750 | 0.744 |
-| control-0 (noise floor) | 0.0000 | +0.0000 | 0.056 | 0.000 |
+| eviction-matched | **0.0787** | +0.0014 | 0.683 | 0.631 |
+| **clean unfrozen d1** | 0.1281 | **+0.0536** | **0.106** | **0.050** |
+| clean unfrozen d4 (untrained-for) | 13.6640 | −0.1556 | 0.800 | 0.783 |
+| control-0 (noise floor) | 0.0000 | +0.0000 | 0.072 | 0.000 |
 
-Paired per-document differences vs eviction (95% CI, 20k bootstrap):
+Paired candidate-minus-eviction differences (95% bootstrap CI, n=60):
 
-| arm | KL | accΔ | pointwise |
-|---|---|---|---|
-| unfrozen | +0.0500 [+0.022, +0.078] | +0.0947 [+0.020, +0.174] | −0.4972 [−0.625, −0.364] |
-| frozen | +0.1978 [+0.156, +0.242] | +0.1669 [+0.093, +0.246] | −0.4347 [−0.575, −0.286] |
+| arm | KL | accΔ | pointwise lost | lost \| prior |
+|---|---|---|---|---|
+| d1 | +0.0495 [0.0272, 0.0715] | +0.0522 [−0.0395, 0.1461] | −0.5778 [−0.7000, −0.4500] | −0.5806 [−0.7028, −0.4528] |
+| d4 | +13.5854 [13.0532, 14.1428] | −0.1569 [−0.2958, −0.0167] | +0.1167 [−0.0278, 0.2611] | +0.1528 [0.0167, 0.2889] |
 
-All six differences now exclude zero: the directions reported at n = 12
-hold, and the effects are bounded.
-
-- **Primary (distributional): NO-SHIP**, now statistically established
-  (+0.050, CI excludes zero). Unfreezing closed **74%** of the frozen
-  lineage's aggregation gap (0.2820 → 0.1348 against eviction's 0.0848)
-  without crossing it.
-- **Secondary (task-anchored): SHIP** — accΔ +0.031 vs −0.064 and
-  pointwise 0.147 vs 0.644.
-- **Correction to this report's earlier framing.** The task-anchored
-  predicate was registered in E1FULL.md and, in the first pass, applied
-  only to the unfrozen arm. Applied to the frozen arm from the same runs,
-  **the frozen compactor passes it too** (accΔ +0.102 ≥ −0.064; pointwise
-  0.210 ≤ 0.644) — at n = 12 as well. The unfrozen compactor is therefore
-  NOT "the first compactor to pass a task-anchored certification"; the
-  frozen subsampler already did, and we simply never evaluated it against
-  a predicate that did not exist yet. What survives is narrower and more
-  interesting:
-  - The task-anchored predicate is a **weak screen**: every trained
-    compactor we have beats eviction on both task axes, so it does not
-    discriminate a subsampler from a synthesizer.
-  - The distributional predicate discriminates strongly (frozen +0.198
-    vs unfrozen +0.050 over eviction) but neither passes it.
-  - **The two anchors disagree about which compressor is better.** On
-    aggregation *accuracy* the frozen subsampler wins (+0.102 vs +0.031)
-    — verbatim strided tokens beat blended ones for extractive MCQ; on
-    distributional fidelity and on silent fact loss the unfrozen one wins
-    (KL 0.135 vs 0.282; lost|prior 0.108 vs 0.171). Which model you
-    "certify" is decided by the anchor, not by the compressor.
-  - This historical "best-certified" claim is withdrawn by the overlap
-    finding. A clean held-out rerun is required before ranking compactors.
-- depth 4 without recurrence training still collapses (KL 14.4;
-  accΔ and pointwise CIs straddle zero, KL does not).
-  `max_certified_depth = 0` under the primary predicate. Policy version
-  `still-compact-v1:t1024:depth0:sha256:8238173715edc8f1`.
+- **Primary GT13: NO-SHIP.** Depth-1's KL is worse than eviction and the
+  paired interval lies wholly above zero. Its accuracy point estimate is
+  higher, but that interval crosses both zero and the registered −0.02
+  non-inferiority bound. The full point predicate and CI predicate both fail.
+- **Pointwise result:** depth-1 sharply reduces both pointwise denominators;
+  both paired intervals exclude zero. This benefit is real on the clean
+  holdout, but it cannot override the distributional gate or enable runtime
+  depth.
+- **Depth result:** untrained depth-4 recurrence collapses on both
+  distributional metrics. The longest contiguous certified prefix is empty,
+  so `max_certified_depth = 0`.
+- **Policy:**
+  `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`. The historical
+  contaminated policy `…8238173715edc8f1` and its task-anchored SHIP/ranking
+  interpretation remain withdrawn.
 
 ### Consequences for the spec (v0.3.7 change note — no silent flip)
 
-Keep evict-oldest-nonsink as the default L3 path. Withdraw the unfrozen
-compactor's opt-in deployment recommendation and depth-1 task certification.
-The shipped checkpoint metadata is authoritative: `max_certified_depth = 0`
-until the clean holdout rerun establishes otherwise.
+Keep evict-oldest-nonsink as the default L3 path. The clean checkpoint is a
+research artifact, not an opt-in deployment policy. Its checkpoint metadata
+and the clean result agree on `max_certified_depth = 0`.
 
 ## Q3' — F1 under per-item kernels: branch (iii), geometry stays loss-blind
 
@@ -185,19 +159,17 @@ across A/FR/E1F; 11,051 flips vs A), re-capture, probes retrained
   expansion. Reading the computation retains routing power at exactly
   the point where text-shadow gating has none.
 
-## Q5' — Smuggling: the advantage grows; no trade
+## Q5' — Clean pointwise benefit does not buy certification
 
-Historical point estimates for lost-given-prior-correct at matched budget
-were eviction 0.617 → 1/40 instance 0.196 → frozen full recipe 0.171 →
-unfrozen 0.108. The report did not compute CIs for this conditioned metric;
-the previously printed differences (−0.413, −0.435, −0.497) were raw-loss
-differences mislabeled as conditioned-loss differences. No conditioned-loss
-CI or monotonic-generalization claim survives the overlap finding. The registered
-possibility that content routing would SPEND the needle-smuggling
-advantage to buy aggregation did not occur: both axes improved
-simultaneously (KL 0.282 → 0.135 AND pointwise 0.171 → 0.108). The gate
-remains formally mandatory under §13.4 (pointwise 0.147 ≫ noise floor
-0.056), but its practical marginal value is now zero (Q4').
+On the clean holdout, lost-given-prior-correct falls from 0.631 under matched
+eviction to 0.050 under depth-1 compaction (paired difference −0.5806,
+95% CI [−0.7028, −0.4528]). Raw lost-fact incidence falls from 0.683 to
+0.106 (−0.5778 [−0.7000, −0.4500]). This is strong clean evidence that the
+compactor preserves locatable facts better than eviction. It is not a trade
+that earns certification: aggregation KL simultaneously worsens by +0.0495
+[0.0272, 0.0715], so GT13 remains NO-SHIP. Historical cross-generation
+monotonicity and ranking claims remain withdrawn because those arms were not
+rerun on this reserved holdout.
 
 ## Q6' — Fragility: mostly-nested shrinkage, minority reshuffle
 
@@ -233,8 +205,8 @@ figure) and the ESCAPE overlay (all arms).
   under content routing** — geometry never becomes the loss signal;
   reading the computation stays the only read-out. This is a stronger,
   simpler claim than the anticipated flip.
-- §6 (certification): remove the contaminated two-verdict table and all
-  SHIP/ranking claims until the clean held-out artifact exists.
+- §6 (certification): replace the contaminated two-verdict table with the
+  clean held-out NO-SHIP result and its four paired intervals; retain depth 0.
 - §7/§8 (downstream): gate-trend endpoint 0% (not asymptotic-above-zero);
   ladder recovery (0.857); F5 regime-generality; fragility =
   mostly-nested shrinkage (correct the draft's reshuffle framing).
@@ -244,7 +216,11 @@ figure) and the ESCAPE overlay (all arms).
   kernel accounts for the difference between 0.94 and ~0.8 nesting, not
   for nesting itself).
 
-## Cost ledger (actuals ≈)
+## Historical campaign cost ledger (actuals ≈)
+
+These figures cover the original E1FULL campaign and contaminated certification.
+The clean retraining and recertification spend was not exported in the signed
+artifact and is therefore not estimated here.
 
 WP1 1500 + extension ≈ $200 · I2 sweeps (12) ≈ $22 · certification ≈ $8
 · F1/F2 sweep ≈ $8 · relabel fleet ≈ $95 · 2k relabel ≈ $4 · capture
@@ -260,5 +236,5 @@ $285–450; extension fired, as budgeted).
 - Depth>1 certification requires recurrence training (iterative family)
   — excluded by the do-not-build list; the depth-4 collapse is expected,
   not diagnostic.
-- Whether a compressor class exists whose pointwise loss approaches the
-  noise floor (0.056) — E1F's 0.147 is within 2.6× of it.
+- Whether a compressor class can close the remaining clean pointwise gap to
+  the control floor (0.106 vs 0.072) without worsening aggregation KL.

@@ -1,5 +1,18 @@
 # Project Changelog
 
+## 2026-07-21 — Clean E1FULL recertification: GT13 no-ship
+
+- Reserved 15 documents/domain before manifest construction, then trained
+  `e1full-clean-v1-t1024-T8k` on 75,834 triplets from a balanced 94,056-item
+  manifest. The 1,500-step entropy rule fired (+0.0616/250 steps); the resumed
+  run completed 3,000 steps at loss 0.1348 and entropy 1.8122.
+- Certified 60 documents / 193 probes with zero document and item overlap.
+  Depth-1 reduced lost-fact incidence 0.683 → 0.106 but worsened aggregation
+  KL 0.0787 → 0.1281; paired KL difference +0.0495 [0.0272, 0.0715].
+- GT13 verdict: **NO-SHIP**; `max_certified_depth = 0`. Policy
+  `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`. Canonical result:
+  `plans/260719-2328-e1full-unfrozen-full-recipe/summary-e1full-clean-v1-n60.json`.
+
 ## 2026-07-21 — E1FULL certification invalidated
 
 - Found that 52/60 certification documents and 207/241 probes overlapped

@@ -5,13 +5,13 @@
 **Status:** tightened architecture spec
 **Primary goal:** smooth a stack of context/KV/cache-compression methods into one coherent runtime interface, without requiring the base model to learn a large zoo of special tokens.
 
-> **INVALIDATED EMPIRICAL CLAIM (2026-07-21).** The E1FULL n=60
-> certification set overlapped the full-recipe training set. Its certification,
-> confidence-interval, task-anchored SHIP, and deployment claims are withdrawn
-> pending a clean holdout retrain and rerun. `max_certified_depth = 0` remains
-> authoritative for all affected checkpoints.
+> **CLEAN E1FULL CERTIFICATION (2026-07-21): NO-SHIP.** The replacement
+> n=60 run reserves 15 documents/domain before training and records zero
+> document/item overlap. Depth-1 worsens aggregation KL versus matched eviction
+> by +0.0495 (95% CI [0.0272, 0.0715]); `max_certified_depth = 0`. Policy:
+> `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`.
 
-**Changes from v0.2:** see Changelog at end. Revisions v0.3.1-v0.3.6 restore dropped protocol material, reconcile channel and EXPAND contracts, integrate Still-class amortized KV synthesis, separate aggregation from pointwise certification, and add compute and branching guidance. **v0.3.7** adds the empirical saturation diagnostics, relational sufficiency results, sink-as-sensor measurements, regime-relative fragility analysis, and dedup compiler. Its former E1FULL certification and opt-in L3 recommendation were invalidated on 2026-07-21 by train/holdout overlap; no replacement certification is claimed pending the clean rerun.
+**Changes from v0.2:** see Changelog at end. Revisions v0.3.1-v0.3.6 restore dropped protocol material, reconcile channel and EXPAND contracts, integrate Still-class amortized KV synthesis, separate aggregation from pointwise certification, and add compute and branching guidance. **v0.3.7** adds the empirical saturation diagnostics, relational sufficiency results, sink-as-sensor measurements, regime-relative fragility analysis, and dedup compiler. Its former E1FULL certification and opt-in L3 recommendation were invalidated on 2026-07-21 by train/holdout overlap; the clean replacement confirms no deployment eligibility under GT13.
 
 ---
 
@@ -516,7 +516,7 @@ Notes:
 
 v0.1 labeled L3 fidelity "high." v0.2 corrected this: L3 fidelity depends on the compaction method and on whether the model was trained for compacted continuation. v0.3 further specifies that L3 must reference an offline certification ID plus per-checkpoint online risk metadata before it becomes the default resume path.
 
-**No task-certified L3 configuration is currently registered (v0.3.7 correction).** The former E1FULL result was invalidated because its evaluation documents overlapped full-recipe training. The historical checkpoint remains a research artifact with `max_certified_depth = 0`; evict-oldest-nonsink remains the L3 default. A replacement certification must reserve documents before manifest construction, bind the holdout and training-manifest hashes into the checkpoint, record probe IDs, report paired intervals for both pointwise denominators, and abort on any document or item overlap.
+**No task-certified L3 configuration is currently registered (v0.3.7 correction).** The former E1FULL result was invalidated because its evaluation documents overlapped full-recipe training. Its clean replacement reserved 60 documents before manifest construction, bound the holdout and training-manifest hashes into checkpoint `c00b2437…a46099`, recorded all 193 probe IDs, reported paired intervals for both pointwise denominators, and verified zero document/item overlap. It still fails GT13: depth-1 aggregation KL is 0.1281 versus eviction's 0.0787 (paired +0.0495 [0.0272, 0.0715]); the accuracy difference +0.0522 [−0.0395, 0.1461] does not rescue the predicate. The checkpoint remains a research artifact with `max_certified_depth = 0`; evict-oldest-nonsink remains the L3 default.
 
 Recommended default: **L3 compacted KV checkpoint, gated by measured fidelity**, with L1 as the durable fallback that always exists.
 
@@ -2489,7 +2489,7 @@ Total bill, excluding rented compactor hours: a workstation a small lab already 
 
 ## Changelog v0.3.6 → v0.3.7
 
-- **E1FULL certification correction (§6.2):** the former n=60 result is invalidated by train/evaluation overlap. Its task-anchored SHIP and opt-in L3 recommendation are withdrawn; affected checkpoints remain at `max_certified_depth = 0` pending the clean holdout retrain and rerun.
+- **E1FULL certification correction (§6.2):** the former n=60 result is invalidated by train/evaluation overlap. The clean replacement has zero overlap and returns GT13 NO-SHIP (KL +0.0495 [0.0272, 0.0715] vs eviction); task-anchored SHIP and opt-in L3 claims remain withdrawn, and `max_certified_depth = 0`.
 - **§13.4:** mandatory trained-compactor diagnostics added as protocol step 7 — init-time gradient forensics (saturation detection) and cross-attention entropy telemetry (subsampler detection); motivated by an observed configuration that optimized its loss for 1,500 steps at every data scale while its routing pathway received ~zero gradient.
 - **§13.6:** sink-as-sensor upgraded to a measured, regime-general result (0.73–0.76 AUC refit; 0.72–0.76 zero-shot across eviction↔frozen↔unfrozen regimes).
 - **§17.5:** relational sufficiency empirically confirmed; regime-dependent gate-class ladder recorded; monotone-declining-but-nonzero gate value; fragility measured as within-regime stable / cross-regime relative, extending §4.6 invalidation to gate labels and calibration.

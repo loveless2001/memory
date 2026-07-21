@@ -102,5 +102,5 @@
 - [x] Run the remote holdout builder and manifest rebuild; inspect exact overlap counts and hashes.
 - [x] Merge filtered triplets, repack contexts, and verify training stats bind the holdout hash.
 - [x] Launch `e1full-clean-v1-t1024-T8k`; record the function call ID and stop if the tripwire fires.
-- [ ] After training completes, run `summary-e1full-clean-v1-n60`; copy and audit the artifact.
-- [ ] Update measured prose only from the clean artifact, rerun verification, and commit the final result.
+- [x] After training completes, run `summary-e1full-clean-v1-n60`; copy and audit the artifact.
+- [x] Update measured prose only from the clean artifact, rerun verification, and commit the final result.

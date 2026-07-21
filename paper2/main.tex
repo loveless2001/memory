@@ -4,16 +4,17 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{microtype}
+\usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xcolor}
 
 % Working note: all numbers verified against the committed record
-% (FULLRECIPE-REPORT, ESCAPE-REPORT, E1FULL-REPORT) as of 2026-07-20.
+% (FULLRECIPE-REPORT, ESCAPE-REPORT, E1FULL-REPORT, and the signed clean
+% certification artifact) as of 2026-07-21.
 % The anticipatory draft (docs/draft2.md) contained values that did NOT
 % materialize (geometry flip to 0.71; fragility nesting 0.44; KL 0.108
 % distributional ship) -- this master reflects measurements only.
-\newcommand{\pending}[1]{\textcolor{red!70!black}{[E1FULL pending: #1]}}
 \newcommand{\dl}{d_{\ell}}
 \emergencystretch=3em
 
@@ -22,20 +23,19 @@ Gradient Saturation, Position-Kernel Collapse,\\
 and an Unfrozen KV Compressor}
 
 \author{%
-  \textit{Draft v0.3 --- 2026-07-20 --- certification re-measured at $n{=}60$ documents}\\
-  \textit{Artifacts: \texttt{memsub-artifacts:/} \{\texttt{escape},
-  \texttt{fullrecipe-telemetry}, \texttt{compactor-checkpoints},
-  \texttt{compactor-certification}\}}}
+  \textit{Draft v0.4 --- 2026-07-21 --- clean held-out certification at $n{=}60$ documents}\\
+  \textit{Artifacts: signed repository record and remote artifact archive}}
 \date{}
 
 \begin{document}
 \maketitle
 
 \begin{center}
-\fbox{\parbox{0.92\linewidth}{\textbf{INVALIDATED RESULT (2026-07-21).}
-The E1FULL certification documents overlapped training. Certification,
-paired-CI, task-anchored SHIP, ranking, and deployment conclusions are
-withdrawn pending a clean holdout retrain and rerun.}}
+\fbox{\parbox{0.92\linewidth}{\textbf{CLEAN E1FULL RESULT (2026-07-21): NO-SHIP.}
+The replacement run reserves 15 documents/domain before training and records
+zero document/item overlap. Depth-1 worsens KL versus matched eviction by
+$+0.0495$ (95\% CI $[0.0272,0.0715]$); certified depth remains zero. Policy:
+\url{still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc}.}}
 \end{center}
 
 \begin{abstract}
@@ -67,9 +67,10 @@ losing $35\%$ fewer facts on a fixed counterfactual subsample ($0.239$ vs
 $0.370$). At full recipe (3{,}000 steps; a pre-registered extension rule fired at
 1{,}500) the unfrozen compactor's kernel becomes item-adaptive
 (cross-item Jaccard $0.550$). Its historical certification cannot support
-a held-out comparison because the evaluation documents overlap training;
-the predicate, ranking, confidence-interval, and deployment interpretations
-are withdrawn pending the clean rerun.
+a held-out comparison because the evaluation documents overlap training. The
+clean replacement returns GT13 NO-SHIP: pointwise loss improves sharply, but
+aggregation KL is significantly worse than matched eviction and the accuracy
+advantage remains uncertain. No frozen-versus-unfrozen ranking is restored.
 Downstream, the reorganization is not what a routing-becomes-legible
 story predicts: write-time geometry stays loss-blind even under
 content routing ($d_{\min}$ AUC $0.500$, all twelve checkpoints and the
@@ -108,10 +109,10 @@ content-seeded-init controls ruling out the alternative explanations;
 \textbf{(iii)} the cure --- reduce the logit scale --- validated from
 gradient wake-up through kernel mobility, head despecialization,
 item-adaptivity, and training-loss crossover, at three seeds;
-\textbf{(iv)} the consequence: a full-recipe unfrozen compactor whose
-two pre-registered certification predicates dissociate \emph{and rank
-compressors differently}, making the choice of certification anchor --- not
-the compressor --- the decisive design question; \textbf{(v)} the downstream reorganization of routing
+\textbf{(iv)} the consequence: a leakage-free full-recipe recertification
+that returns GT13 NO-SHIP --- pointwise preservation improves sharply, but
+aggregation KL is significantly worse and certified depth remains zero;
+\textbf{(v)} the downstream reorganization of routing
 signals under a mobile kernel, including the correction this work forced
 onto our companion paper's fragility claim (\S\ref{sec:fragility});
 \textbf{(vi)} two mandatory-cheap diagnostics for anyone training
@@ -267,6 +268,10 @@ content-conditioned routing at mid scale. At full recipe item-adaptivity deepens
 (cross-head $J \to 0.13$ by step 250) and then partially re-organize
 ($\to 0.29$); the final kernel touches essentially every source
 position across the probe batch (8{,}186/8{,}188).
+The leakage-free replacement independently fires the registered extension
+at step 1{,}500 (entropy $+0.0616$ over 250 steps) and completes step 3{,}000
+at entropy $1.8122$ and loss $0.1348$; the separate R6/R7 sweep is historical
+and is not reused as clean certification evidence.
 
 Training dynamics show the honest trade: the soft scale leaks the
 identity passthrough, so E1 \emph{starts} worse (initial loss $0.737$ vs
@@ -303,14 +308,39 @@ flat. Full-recipe trajectories in Figure~\ref{fig:trajectories}.}
 \section{Certification at full recipe}
 \label{sec:certification}
 
-The historical $n{=}60$ table is invalidated: 52 evaluation documents and
-207 probes appeared in full-recipe training. It therefore cannot establish
-either registered predicate, a frozen-versus-unfrozen ranking, or deployment
-eligibility. The replacement protocol reserves its 60 documents before
-manifest construction, binds holdout and training-manifest hashes into the
-checkpoint, records probe IDs, and fails on any overlap. Until that clean
-artifact exists, \texttt{max\_certified\_depth}$\,=0$ and no compactor
-deployment is recommended.
+The signed replacement artifact reserves 15 documents per domain before
+training and certifies 60 documents / 193 probes with zero document or item
+overlap. Table~\ref{tab:clean-cert} reports the clean point estimates.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+arm & agg. KL & acc.$\Delta$ & lost fact & lost $\mid$ prior \\
+\midrule
+eviction matched & \textbf{0.0787} & 0.0014 & 0.683 & 0.631 \\
+clean depth 1 & 0.1281 & \textbf{0.0536} & \textbf{0.106} & \textbf{0.050} \\
+clean depth 4 & 13.6640 & -0.1556 & 0.800 & 0.783 \\
+control 0 & 0.0000 & 0.0000 & 0.072 & 0.000 \\
+\bottomrule
+\end{tabular}
+\caption{Leakage-free E1FULL certification. The two axes disagree, but the
+distributional predicate controls deployment.}
+\label{tab:clean-cert}
+\end{table}
+
+For depth 1, paired candidate-minus-eviction differences are KL $+0.0495$
+$[0.0272,0.0715]$, accuracy $+0.0522$ $[-0.0395,0.1461]$, raw lost fact
+$-0.5778$ $[-0.7000,-0.4500]$, and lost-given-prior-correct $-0.5806$
+$[-0.7028,-0.4528]$. The result is \textbf{GT13 NO-SHIP}: KL is
+significantly worse, and the accuracy interval does not clear the registered
+$-0.02$ CI bound despite its positive point estimate. Untrained depth-4
+recurrence collapses. The certified prefix is empty,
+\texttt{max\_certified\_depth}$\,=0$, and the policy is
+\url{still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc}. Because the
+clean artifact does not rerun the historical frozen arm, no clean
+frozen-versus-unfrozen ranking is claimed.
 
 \section{Downstream: routing under a mobile kernel}
 \label{sec:downstream}
@@ -425,9 +455,9 @@ behind a saturated softmax from the first gradient step. The loss curve
 could not see it; a one-pass gradient check and an entropy log see it
 immediately. One constant later, routing learns, heads specialize, the
 kernel reads content, and the unfrozen compactor beats the frozen one
-on the objective that froze it. Its certification result is withdrawn
-because the evaluation set overlapped training; a clean holdout rerun is
-required before any distributional or task-axis conclusion. The downstream
+on the objective that froze it. The clean holdout certification finds a real
+pointwise benefit but significantly worse aggregation KL than eviction;
+GT13 is NO-SHIP and certified depth is zero. The downstream
 measurements reorganize on cue, but not as a legibility story:
 geometry stays unreadable, the text-shadow gate's value falls to zero,
 and the only signal that keeps routing is the computation itself. The generalizable lesson is the method: certify per axis,
@@ -439,9 +469,9 @@ fails, and whether you can still see it.
 \centering
 \includegraphics[width=\linewidth]{figures/e1full-trajectories.png}
 \caption{Full-recipe trajectories. Left: entropy --- frozen runs pinned
-at the measurement floor; the unfrozen run rises to $1.78$ nats and
-plateaus (the pre-registered extension to 3{,}000 steps fired at
-1{,}500). Right: the kernel becomes item-adaptive (cross-item Jaccard
+at the measurement floor; the historical unfrozen run rises to $1.78$ nats
+and plateaus (the clean replacement reaches $1.8122$ after its registered
+extension also fires). Right: the historical kernel becomes item-adaptive (cross-item Jaccard
 $\to 0.550$) and head-diverse while $d_{\min}$ stays at chance ---
 routing reads content; geometry never becomes a loss signal.}
 \label{fig:trajectories}
@@ -454,16 +484,16 @@ routing reads content; geometry never becomes a loss signal.}
 
 \section{Gradient-forensics tables}
 Full group$\times$layer norms at both scales:
-\texttt{memsub-artifacts:/escape/g1g2-gradient-table.json}. Aggregates in
+\url{memsub-artifacts:/escape/g1g2-gradient-table.json}. Aggregates in
 \S\ref{sec:mechanism}; init losses $0.705$ (canonical) / $0.862$
 ($\sqrt{\dl}$; the passthrough-leak cost).
 
 \section{Trajectories}
 Entropy, kept-set Jaccard, cross-item (R6) and cross-head (R7) Jaccard,
 and per-checkpoint $d_{\min}$ AUC for all arms:
-\texttt{compactor-checkpoints/escape-*/telemetry/} and
-\texttt{fullrecipe-telemetry/i2-*}. Full-recipe trajectories: Figure~\ref{fig:trajectories} and
-\texttt{plans/260719-2328-e1full-unfrozen-full-recipe/}.
+\url{compactor-checkpoints/escape-*/telemetry/} and
+\url{fullrecipe-telemetry/i2-*}. Full-recipe trajectories: Figure~\ref{fig:trajectories} and
+\url{plans/260719-2328-e1full-unfrozen-full-recipe/}.
 
 \section{Controls}
 E3 (anchor noise): floor-pinned, Jaccard $1.000$, loss $0.362$.
@@ -471,23 +501,26 @@ E4 (content-seeded): entropy $0.539$ flat, mean Jaccard $0.99$
 (layer-0 $0.65$), loss $5.89 \to 0.586$, subsample $y^{+}$ $0.614$.
 
 \section{Certification tables}
-Frozen lineage: \texttt{compactor-certification/summary-fullrecipe.json}
-(per-axis, noise floor $0.000$, depth-4 collapse $15.8$). Unfrozen: \texttt{compactor-certification/summary-e1full.json}.
+Clean artifact of record:
+\url{plans/260719-2328-e1full-unfrozen-full-recipe/summary-e1full-clean-v1-n60.json}
+(remote source \url{compactor-certification/summary-e1full-clean-v1-n60.json}).
+Historical contaminated artifacts remain available for audit but do not
+support certification or ranking claims.
 
 \section{Downstream re-runs}
 Frozen-regime rows: arm table
-(\texttt{plans/260717-2319-.../arm-table.json}, \texttt{fullrecipe\_*}
+(\url{plans/260717-2319-.../arm-table.json}, \url{fullrecipe_*}
 rows), gate refresh
-(\texttt{gate-eval/gate-refresh-fullrecipe.json}). Unfrozen: \texttt{gate-eval/gate-refresh-e1full.json},
-\texttt{probe/e1f-readside-*}, \texttt{e1full\_*} arm-table rows,
-\texttt{q3-f1-verdict-e1full.json}, \texttt{q4-assembly-e1full.json}.
+(\url{gate-eval/gate-refresh-fullrecipe.json}). Unfrozen: \url{gate-eval/gate-refresh-e1full.json},
+\url{probe/e1f-readside-*}, \url{e1full_*} arm-table rows,
+\url{q3-f1-verdict-e1full.json}, \url{q4-assembly-e1full.json}.
 
 \section{Fragility matrices}
 Frozen-lineage: $\kappa(A{\leftrightarrow}B)=0.745$ ($P{=}0.945$),
 $\kappa(A{\leftrightarrow}FR)=0.567$, $\kappa(B{\leftrightarrow}FR)=0.588$,
 nesting $94.1\%$. Cross-regime (E1F vs A / FR): $\kappa$ $0.283$/$0.417$, nesting
 $91.0\%$/$78.5\%$, base rates $0.499$/$0.418$/$0.321$/$0.172$
-(\texttt{preprobe/e1-relabel-E1F.state.json}).
+(\url{preprobe/e1-relabel-E1F.state.json}).
 
 \section{Harness-provenance forensics}
 The M3.5 trainer invoked the compactor via \texttt{module.compact()},

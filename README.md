@@ -1,10 +1,11 @@
 # memsub — Unified Memory Substrate for Long-Context LLM Threads
 
-> **INVALIDATED RESULT (2026-07-21):** The reported E1FULL n=60
-> certification was not held out from training. Its certification and
-> deployment claims are withdrawn pending a clean holdout retrain and rerun.
-> Existing compactor checkpoints remain research artifacts with
-> `max_certified_depth = 0`.
+> **CLEAN E1FULL RESULT (2026-07-21): NO-SHIP.** The replacement n=60
+> certification reserves 15 documents/domain before training and records zero
+> document/item overlap. Depth-1 improves silent fact loss but has worse
+> aggregation KL than matched eviction (+0.0495, 95% CI [0.0272, 0.0715]);
+> `max_certified_depth = 0`. Clean policy:
+> `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`.
 
 A runtime for long-lived LLM conversation threads that keeps recent context
 exact, compresses older context, persists it to disk, and expands it back
@@ -113,14 +114,18 @@ gradient).
 
 ### 7. The full-scale rematch (E1FULL)
 
-The 3,000-step training and routing diagnostics remain recorded, but the
-headline n=60 certification is invalid: 52 of 60 evaluation documents and
-207 of 241 probes appeared in full-recipe training. The former metric table,
-paired-CI interpretation, task-anchored SHIP claim, frozen-versus-unfrozen
-ranking, and depth-1 deployment recommendation are withdrawn. A deterministic
-60-document holdout is now reserved before manifest construction; the clean
-checkpoint and certification artifact will use new names and must report zero
-document and item overlap.
+The original n=60 certification was invalid: 52 of 60 evaluation documents
+and 207 of 241 probes appeared in full-recipe training. The replacement run
+reserved 60 documents before constructing a balanced 94,056-item manifest,
+trained a new 3,000-step checkpoint, and certified 193 held-out probes with
+zero document or item overlap.
+
+The clean result is **GT13 NO-SHIP**. Depth-1 reduces lost-fact incidence from
+0.683 to 0.106 and lost-given-prior-correct from 0.631 to 0.050 versus matched
+eviction, but worsens aggregation KL from 0.0787 to 0.1281. The paired KL gap
+is +0.0495 [0.0272, 0.0715], so the primary distributional predicate fails;
+the accuracy advantage is uncertain (+0.0522 [-0.0395, 0.1461]). Untrained
+depth-4 recurrence collapses. Runtime depth therefore remains zero.
 
 ### The transferable lesson
 
@@ -161,7 +166,7 @@ report carries verdicts in the brief's own vocabulary):
 | `FOLLOWUP.md` / `FOLLOWUP2.md` | matching `*-REPORT.md` | geometry loss-blind; context-only null; sink-heads regime-general |
 | `FULLRECIPE.md` | `FULLRECIPE-REPORT.md` | collapse is not a scale artifact |
 | `ESCAPE.md` | `ESCAPE-REPORT.md` | saturation confirmed; √d_l escapes |
-| `E1FULL.md` | `E1FULL-REPORT.md` | certification invalidated; clean rerun pending |
+| `E1FULL.md` | `E1FULL-REPORT.md` | clean held-out GT13 no-ship; depth 0 |
 
 ## Running things
 
@@ -190,14 +195,15 @@ the `memsub-artifacts` Modal volume; `memsub-hf-cache` holds model weights.
 
 ## Cost
 
-Roughly $2,100 of rented H100 time end to end: corpus construction ≈ $500,
+Before the clean remediation run, roughly $2,100 of rented H100 time had been
+recorded end to end: corpus construction ≈ $500,
 gate + labels ≈ $110, M3.5 compactor ≈ $715, probe campaigns ≈ $175,
 FULLRECIPE ≈ $440, ESCAPE ≈ $95, E1FULL ≈ $435.
 
 ## Status
 
-M0–M3.5 built and certified (n=60 documents, paired CIs); two papers
-drafted; the unfrozen compactor is an **opt-in** L3 policy (the default remains evict-oldest-nonsink — the
-distributional predicate is not met). Not started: the absorption
+M0–M3.5 built and measured (n=60 documents, paired CIs); two papers
+drafted. The clean unfrozen compactor is a research artifact, not an L3 policy:
+GT13 fails and the default remains evict-oldest-nonsink. Not started: the absorption
 measurement study (spec §16.4), recurrence-depth training beyond depth 1,
 serving/vLLM integration, and any HTTP surface.
