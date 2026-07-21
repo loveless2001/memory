@@ -12,6 +12,10 @@
 - GT13 verdict: **NO-SHIP**; `max_certified_depth = 0`. Policy
   `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`. Canonical result:
   `plans/260719-2328-e1full-unfrozen-full-recipe/summary-e1full-clean-v1-n60.json`.
+- Updated both papers and rebuilt both PDFs. Paper #1 now labels its frozen
+  1/40 table as a historical 12-context measurement, not clean held-out
+  evidence; that arm was not rerun on the reserved holdout. Paper #2 reports
+  the clean E1FULL metrics and NO-SHIP verdict directly.
 
 ## 2026-07-21 — E1FULL certification invalidated
 

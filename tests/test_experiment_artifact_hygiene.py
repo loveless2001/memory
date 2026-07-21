@@ -63,7 +63,9 @@ def test_clean_e1full_result_is_propagated_to_publication_surfaces():
     paths = [
         "E1FULL-REPORT.md",
         "README.md",
+        "docs/draft.md",
         "docs/draft2.md",
+        "paper/main.tex",
         "paper2/main.tex",
         "unified_memory_substrate_spec_v0.3.7.md",
         "modal-runners/modal-push-compactor-checkpoints-to-huggingface.py",
@@ -76,6 +78,15 @@ def test_clean_e1full_result_is_propagated_to_publication_surfaces():
         assert "CLEAN RERUN PENDING" not in text.upper(), relative
         assert "PENDING THE CLEAN" not in text.upper(), relative
         assert "C00B2437FDD813CC" in text.upper(), relative
+
+
+def test_paper1_scopes_its_original_certification_as_historical():
+    paths = ["docs/draft.md", "paper/main.tex"]
+    for relative in paths:
+        text = (ROOT / relative).read_text().upper()
+        assert "HISTORICAL 12-CONTEXT" in text, relative
+        assert "NOT CLEAN HELD-OUT EVIDENCE" in text, relative
+        assert "FROZEN" in text and "1/40" in text and "NOT RERUN" in text, relative
 
 
 def test_spec_no_longer_calls_e1full_first_task_certified():

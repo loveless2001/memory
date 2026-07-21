@@ -1,6 +1,15 @@
 # Reading the Computation: How Compression Regime Determines Whether Lost Memory Is Routable
 
-**Draft v0.4 — 2026-07-19.** Supersedes v0.3; FOLLOWUP2 folded (F4: context-only null upgraded to full probe sweep; F5: sink-head monitor regime-general, added to §4.2/§6.3/Fig. 2). Experimental content frozen — remaining work is figures, LaTeX, citation verification.
+**Draft v0.5 — 2026-07-21.** Supersedes v0.4 with the certification-scope correction below; FOLLOWUP2 remains folded (F4: context-only null upgraded to full probe sweep; F5: sink-head monitor regime-general, added to §4.2/§6.3/Fig. 2).
+
+> **Clean E1FULL follow-up (2026-07-21): NO-SHIP.** The leakage-free
+> replacement run fails GT13 and certifies depth zero under checkpoint hash
+> `c00b2437fdd813cc`. The frozen 1/40 arm in this paper was **not rerun** on
+> that reserved holdout. Its original table is therefore a **historical 12-context**
+> measurement of the trained artifact, **not clean held-out evidence** and not
+> a basis for deployment or cross-generation ranking.
+> The routing, probe, and position-kernel measurements remain within-protocol
+> behavioral evidence.
 
 ---
 
@@ -40,7 +49,7 @@ positional delta kernels — it performs strided subsampling, not content
 synthesis (**position-kernel collapse**; the learned kernel is a uniform stride-3
 lattice, identical across heads and items, and its geometry is
 loss-blind — needle-to-kept-position distance predicts survival at
-0.509), which reframes both its certification failure and its
+0.509), which reframes both its historical protocol failure and its
 unexpectedly *better* pointwise retention versus eviction at matched
 budget (0.27 vs 0.58 silent loss). Total
 marginal compute across all experiments: ≈ $1,100.
@@ -110,10 +119,12 @@ this paper.]
 
 ## 5. Regime II — a trained compactor: the axes cross, the gate goes blind
 
-### 5.1 Compactor, certification, no-ship
+### 5.1 Compactor, historical protocol result, no-ship
 Still-canonical per-layer Perceiver (50M params) trained at 1/40 the
-published data scale against the frozen base; certified on the same
-protocol at matched retained budget. Aggregation axis: *worse* than
+published data scale against the frozen base; evaluated on the original
+12-context protocol at matched retained budget. This frozen arm was not
+rerun on the later reserved holdout, so the table is historical rather than
+clean certification evidence. Aggregation axis: *worse* than
 eviction (KL 0.263 vs 0.122; recurrence depth 4 collapses to 2.29 →
 max_certified_depth = 0). Pointwise axis: *better* — silent needle loss
 0.271 vs eviction's 0.583. The regimes trade axes at this scale.
@@ -271,8 +282,9 @@ again; ours did not). Multi-hop: content-aware *entry*
 ## 9. Limitations
 Single 4B base; one tokenizer (fragility neighborhoods are partly
 tokenizer artifacts); the compactor is 1/40-recipe and mechanistically
-a subsampler — Regime II results certify this artifact class, not
-full-recipe synthesis; extractive MCQ probes, letter-match equivalence,
+a subsampler — Regime II results characterize this artifact on its original
+protocol, not clean held-out generalization or full-recipe synthesis;
+extractive MCQ probes, letter-match equivalence,
 greedy decoding, single-turn contexts; multi-hop k=2, one evicted
 candidate per query; GT22 weighted at natural prevalence on the
 captured sample; F1's needle features exclude the 22% of test items

@@ -2,6 +2,7 @@
 \usepackage[margin=1.1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
@@ -20,13 +21,24 @@
 Whether Lost Memory Is Routable}
 
 \author{%
-  \textit{Draft v0.4 --- 2026-07-19 --- eviction + subsampling regimes}\\
+  \textit{Draft v0.5 --- 2026-07-21 --- eviction + subsampling regimes}\\
   \textit{Artifacts: \texttt{memsub-artifacts:/} \{\texttt{gate-eval},
   \texttt{compactor-certification}, \texttt{probe}\}}}
 \date{}
 
 \begin{document}
 \maketitle
+
+\begin{center}
+\fbox{\parbox{0.92\linewidth}{\raggedright\textbf{CLEAN E1FULL FOLLOW-UP (2026-07-21): NO-SHIP.}
+The leakage-free replacement run fails GT13 and certifies depth zero under
+checkpoint hash \texttt{c00b2437fdd813cc}. The frozen $1/40$ arm in this
+paper was \textbf{not rerun} on that reserved holdout. Its original table is
+a \textbf{historical 12-context} measurement of the trained artifact,
+\textbf{not clean held-out evidence} and not a basis for deployment or
+cross-generation ranking. The routing, probe, and position-kernel
+measurements remain within-protocol behavioral evidence.\par}}
+\end{center}
 
 \begin{abstract}
 Lossy compression of a language model's context memory produces silent
@@ -63,7 +75,7 @@ consists of exact positional delta kernels --- it performs strided
 subsampling, not content synthesis (\textbf{position-kernel collapse}; the
 learned kernel is a uniform stride-$3$ lattice, identical across heads and
 items, and its geometry is loss-blind --- needle-to-kept-position distance
-predicts survival at $0.509$), which reframes both its certification failure
+predicts survival at $0.509$), which reframes both its historical protocol failure
 and its unexpectedly \emph{better} pointwise retention versus eviction at
 matched budget ($0.27$ vs $0.58$ silent loss). Total marginal compute across
 all experiments: ${\approx}\$1{,}100$.
@@ -237,6 +249,7 @@ but its discrimination tier is dominated by two attention hooks.
 
 \begin{table}[t]
 \centering
+\small
 \caption{Signal decomposition (3 seeds, mean $\pm$ SD). Features-only
 matches the full model on the evicted-only task; embeddings add essentially
 nothing.}
@@ -316,13 +329,16 @@ natively calibrated ($T{=}1.0$; ECE $0.023$/$0.017$).}
 blind}
 \label{sec:compactor}
 
-\subsection{Compactor, certification, no-ship}
+\subsection{Compactor, historical protocol result, no-ship}
 Still-canonical per-layer Perceiver (per-KV-head latent banks, $d_l{=}256$,
 two pre-norm QK-normed cross-attention blocks, no FFN, ${\approx}50$M
 parameters) trained at $1/40$ the published data scale against the frozen
-base, certified on the same protocol at matched retained budget (sinks
+base, evaluated on the original 12-context protocol at matched retained
+budget (sinks
 $+$ $t{=}1024$ latents $+$ 1{,}024 recent raw slots of a 4{,}096-token
-context). Aggregation axis: \emph{worse} than eviction (KL $0.263$ vs
+context). This frozen arm was not rerun on the later reserved holdout, so
+the table is historical rather than clean certification evidence.
+Aggregation axis: \emph{worse} than eviction (KL $0.263$ vs
 $0.122$; recurrence depth 4 collapses to $2.29 \rightarrow$
 \texttt{max\_certified\_depth}${}={}0$). Pointwise axis: \emph{better}---
 silent needle loss $0.271$ vs eviction's $0.583$ (Table~\ref{tab:compactor}).
@@ -332,10 +348,11 @@ measured.
 
 \begin{table}[t]
 \centering
-\caption{Trained compactor vs.\ untrained eviction at matched retained
-budget (12 contexts across 4 domains). All rows on the CERTIFICATION
+\caption{Historical trained-compactor comparison at matched retained
+budget (12 contexts across 4 domains). All rows on the original CERTIFICATION
 protocol (needle-anchored contexts); do not compare against labeling-protocol
-numbers --- see Appendix~\ref{app:reconciliation}.}
+numbers or treat this table as clean held-out evidence --- see
+Appendix~\ref{app:reconciliation}.}
 \label{tab:compactor}
 \begin{tabular}{lccc}
 \toprule
@@ -386,6 +403,7 @@ internal} (Table~\ref{tab:routability}).
 
 \begin{table}[t]
 \centering
+\small
 \caption{The routability asymmetry (labeling protocol, test split).
 ``Reduction'' is the gate's marginal effect vs.\ never-expand under the SAME
 policy; ``budget use'' is gate expansion over oracle expansion.}
@@ -504,13 +522,13 @@ what dies is binding, not content.
 \subsection{The routability ladder}
 One protocol, two regimes, three signal classes:
 \begin{quote}
-\begin{tabular}{@{}ll@{}}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
 eviction & loss follows visible mechanics $\rightarrow$ shadow gate $-72\%$; head monitor $0.78$ too \\
 subsampling & kernel geometry loss-blind $\rightarrow$ shadows blind ($0.55$), \\
 (this work's ``compactor'') & kernel mechanics blind ($0.55$); query-conditioned \\
  & computation-reading $0.85$ $\rightarrow$ same loss at $\tfrac{1}{3}$ budget \\
 true synthesis & untested at this scale \\
-\end{tabular}
+\end{tabularx}
 \end{quote}
 
 \subsection{Is subsampling loss mechanics-routable after all?}
@@ -544,8 +562,9 @@ oracle)---the binding constraint was never block scoring.
 \section{Limitations}
 Single 4B base; one tokenizer (fragility neighborhoods are partly tokenizer
 artifacts); the compactor is $1/40$-recipe and mechanistically a
-subsampler---Regime II results certify this artifact class, not full-recipe
-synthesis. A post-hoc review also found the shipped checkpoint's training
+subsampler---Regime II results characterize this artifact on its original
+protocol, not clean held-out generalization or full-recipe synthesis. A
+post-hoc review also found the shipped checkpoint's training
 loss used a support-construction variant that double-counted the gold token
 whenever it was already in the teacher top-$200$ (corrected in the released
 code); all certified numbers measure the checkpoint as trained. Extractive
