@@ -66,7 +66,7 @@ scikit-learn in analysis images, pytest 8.3.4, Modal H100/L4.
 - `MergeResult.cache.physical_length` equals `plan.target_retained` exactly;
   its physical layout is `[exact sinks][block summaries][exact recent]`.
 
-- [ ] **Step 1: Write exact-budget plan tests**
+- [x] **Step 1: Write exact-budget plan tests**
 
 ```python
 @pytest.mark.parametrize(
@@ -81,21 +81,21 @@ def test_merge_plan_exactly_matches_house_budget(fraction, retained):
     assert sum(b.size for b in plan.blocks) == 4096 - 4 - plan.recent_count
 ```
 
-- [ ] **Step 2: Run the plan tests and verify they fail**
+- [x] **Step 2: Run the plan tests and verify they fail**
 
 Run:
 `./.venv/bin/python -m pytest tests/test_attention_weighted_kv_merge.py -q`
 
 Expected: collection failure because the merge module does not exist.
 
-- [ ] **Step 3: Implement immutable plan and diagnostics dataclasses**
+- [x] **Step 3: Implement immutable plan and diagnostics dataclasses**
 
 Implement `MergeBlock`, `MergePlan`, `MergeMechanics`, and `MergeResult`.
 Use `divmod(old_count, summary_count)` to create ordered blocks whose sizes
 differ by at most one. Reject fractions outside `(0, 1)`, caches shorter than
 the sink prefix, and budgets that cannot retain every sink.
 
-- [ ] **Step 4: Add weighted-KV behavior tests**
+- [x] **Step 4: Add weighted-KV behavior tests**
 
 Build a two-layer synthetic `CompactedPrefixCache` with scalar K/V values and
 attention mass that selects opposite endpoints in one block. Assert:
@@ -113,7 +113,7 @@ assert result.cache.logical_positions[-plan.recent_count:] == list(
 Also assert zero-mass blocks use a uniform mean, input tensors remain
 unchanged, and sink/recent tensors remain bitwise equal.
 
-- [ ] **Step 5: Implement merge execution and mechanics features**
+- [x] **Step 5: Implement merge execution and mechanics features**
 
 Accumulate weighted K/V in float32, normalize per layer/KV head within each
 block, and cast back to the cache dtype. Assign each summary slot the final
@@ -123,7 +123,7 @@ tokens (or recorded fallback position): block size, needle attention-mass
 share, `1 - H(mass)/log(block_size)` heterogeneity, and normalized distance
 from the block end to the recent-window boundary.
 
-- [ ] **Step 6: Run focused and cache-regression tests**
+- [x] **Step 6: Run focused and cache-regression tests**
 
 Run:
 
@@ -134,7 +134,7 @@ Run:
 
 Expected: all pass.
 
-- [ ] **Step 7: Commit the merge engine**
+- [x] **Step 7: Commit the merge engine**
 
 ```bash
 git add memsub/compaction/attention_weighted_kv_merge.py \
