@@ -9,6 +9,10 @@ from memsub.compaction.real_attention_mass import (
     prefill_with_real_attention,
     reduce_gqa_attention,
 )
+from memsub.compaction.attention_weighted_kv_merge import (
+    build_merge_plan,
+    merge_cache,
+)
 
 
 def test_reduce_gqa_attention_accumulates_query_groups_into_shared_kv_heads():
@@ -159,6 +163,35 @@ def test_prefill_with_real_attention_runs_through_real_qwen3(runtime):
     assert all(
         not layer.self_attn._forward_hooks
         for layer in runtime.model.model.layers
+    )
+
+
+def test_real_qwen3_continuation_accepts_the_attention_merged_cache(runtime):
+    seed_ids = runtime.tokenizer.encode(
+        "Attention weighted cache merging must support continuation. ",
+        add_special_tokens=False,
+    )
+    token_ids = (seed_ids * 4)[:24]
+    continuation_ids = runtime.tokenizer.encode(
+        " Continue.",
+        add_special_tokens=False,
+    )
+    cache, _, mass = prefill_with_real_attention(runtime, token_ids)
+    plan = build_merge_plan(len(token_ids), 0.5)
+    merged = merge_cache(cache, mass, plan).cache
+
+    logits = runtime.forward_extend(merged, continuation_ids)
+
+    assert logits.shape == (
+        len(continuation_ids),
+        runtime.model.config.vocab_size,
+    )
+    assert torch.isfinite(logits).all()
+    assert merged.physical_length == plan.target_retained + len(
+        continuation_ids
+    )
+    assert merged.next_logical_position == len(token_ids) + len(
+        continuation_ids
     )
 
 
