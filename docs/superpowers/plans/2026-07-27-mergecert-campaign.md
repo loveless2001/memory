@@ -508,6 +508,7 @@ git commit -m "docs: record MergeCert fragility nesting"
 **Files:**
 - Create: `MERGECERT-REPORT.md`
 - Create: `plans/260727-mergecert/artifact-manifest.json`
+- Create: `plans/260727-mergecert/render-mergecert-report.py`
 - Create: `plans/260727-mergecert/validate-mergecert-report.py`
 - Modify: `docs/project-changelog.md` only after private delivery is confirmed.
 - Test: `tests/test_mergecert_report.py`
@@ -517,7 +518,7 @@ git commit -m "docs: record MergeCert fragility nesting"
   path and JSON key, verifies hashes/counts/CIs, and rejects placeholders,
   public URLs, unsupported source-model numbers, or deployment claims.
 
-- [ ] **Step 1: Write report-completeness tests**
+- [x] **Step 1: Write report-completeness tests**
 
 Require the report header’s method-at-its-best framing; P0 real-attention
 upgrade and sink addition; Q1 all reference/merge/control rows with CIs; Q2
@@ -525,7 +526,7 @@ all five arm families plus F5; Q3 κ/nesting/base rates; exact sections
 `For the KV-Merge README` and `For the spec`; compute actuals; limitations;
 and Tyler/Kevin private-delivery marking.
 
-- [ ] **Step 2: Implement the artifact validator**
+- [x] **Step 2: Implement the artifact validator**
 
 The validator loads all small evidence files, checks every table number against
 its source value, proves ratios/budgets/sample counts, confirms P0 passed (or
