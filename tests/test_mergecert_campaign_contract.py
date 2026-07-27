@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "modal-runners" / "modal-mergecert-p0-q1.py"
 PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
+Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
+Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
 
 
 def _literal_constants(path):
@@ -102,3 +104,81 @@ def test_mergecert_runner_exposes_a_p0_gated_q1_contract():
     assert constants["Q1_OUTPUT"] == (
         "/artifacts/mergecert/q1-certification.json"
     )
+
+
+def test_mergecert_q2_runner_pins_unified_capture_and_fixed_fleet_contract():
+    constants = _literal_constants(Q2_RUNNER)
+    tree = ast.parse(Q2_RUNNER.read_text())
+    functions = {
+        node.name
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+
+    assert constants["MODEL_ID"] == "Qwen/Qwen3-4B-Instruct-2507"
+    assert constants["RATIOS"] == (0.25, 0.40)
+    assert constants["CTX"] == 4096
+    assert constants["SINKS"] == 4
+    assert constants["Q2_ITEMS"] == 30_847
+    assert constants["Q2_SLICES"] == 8
+    assert constants["CAPTURE_ROOT"] == "/artifacts/mergecert/q2"
+    assert constants["HEADS"] == (
+        (25, 14),
+        (26, 26),
+        (28, 19),
+        (35, 15),
+    )
+    assert {"q2_pilot", "q2_capture_slice", "freeze_capture_summary"} <= functions
+
+
+def test_mergecert_q2_runner_has_no_training_or_publication_path():
+    source = Q2_RUNNER.read_text()
+
+    for forbidden in (
+        "Qwen2.5",
+        "torch.optim",
+        "Optimizer",
+        "upload_file",
+        "upload_folder",
+        "huggingface_hub",
+        "git push",
+    ):
+        assert forbidden not in source
+
+
+def test_mergecert_q2_probe_runner_pins_registered_arms_and_splits():
+    constants = _literal_constants(Q2_PROBE_RUNNER)
+    tree = ast.parse(Q2_PROBE_RUNNER.read_text())
+    functions = {
+        node.name
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+
+    assert constants["MODEL_ID"] == "Qwen/Qwen3-4B-Instruct-2507"
+    assert constants["RATIOS"] == (0.25, 0.40)
+    assert constants["SEEDS"] == (0, 1, 2)
+    assert constants["TRAIN_END"] == 0.6
+    assert constants["VALIDATION_END"] == 0.7
+    assert constants["RESIDUAL_LAYERS"] == tuple(range(37))
+    assert constants["CAPTURE_SUMMARY"] == (
+        "/artifacts/mergecert/q2/capture-summary.json"
+    )
+    assert constants["ROUTABILITY_OUTPUT"] == (
+        "/artifacts/mergecert/q2/routability.json"
+    )
+    assert constants["SCORES_OUTPUT"] == (
+        "/artifacts/mergecert/q2/scores.npz"
+    )
+    assert constants["ARM_NAMES"] == (
+        "c0_refit",
+        "mechanics_refit",
+        "shadow_zero_shot",
+        "shadow_refit",
+        "sink_compactor_zero_shot",
+        "sink_eviction_zero_shot",
+        "sink_refit",
+        "residual_linear",
+        "residual_mlp",
+    )
+    assert {"complete_fact_types", "run_probes"} <= functions

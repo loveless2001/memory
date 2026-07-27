@@ -360,13 +360,13 @@ git commit -m "docs: record MergeCert matched-budget placement"
   sink-head features `[N,8]`, last-prompt residuals `[N,37,2560]`, item/doc
   IDs, domain, raw-correct, and `in_e1`.
 
-- [ ] **Step 1: Add output-schema and resume-contract tests**
+- [x] **Step 1: Add output-schema and resume-contract tests**
 
 Assert shard state contains a completed count and row IDs; NPZ arrays must
 have equal first dimensions, unique item IDs, finite values, and explicit
 ratio/source hashes.
 
-- [ ] **Step 2: Implement one-prefill/two-ratio capture**
+- [x] **Step 2: Implement one-prefill/two-ratio capture**
 
 Rebuild each manifest context exactly as the existing probe runner. Locate
 the gold answer token span inside its 1,024-token source chunk, falling back
@@ -416,20 +416,20 @@ git commit -m "feat: add MergeCert routability capture fleet"
   sink-monitor zero-shot/refit, and best-layer residual linear/MLP refits on
   the existing SHA-256 document split.
 
-- [ ] **Step 1: Write metric and split tests**
+- [x] **Step 1: Write metric and split tests**
 
 Use synthetic grouped data to test tie-aware AUC, document-disjoint
 train/validation/test masks, document-cluster bootstrap CIs, and zero-shot
 standardization using source-regime means/scales.
 
-- [ ] **Step 2: Implement aligned feature assembly**
+- [x] **Step 2: Implement aligned feature assembly**
 
 Join Q2 shards to existing surface features/fact types and shadow embeddings
 by item ID. Never use labels or test rows for imputation, scaling, layer
 selection, or calibration. Evaluate each ratio separately and a
 pre-registered pooled ratio model with ratio as a covariate.
 
-- [ ] **Step 3: Implement the five registered arm families**
+- [x] **Step 3: Implement the five registered arm families**
 
 - c0: refit the existing ten-feature surface model.
 - mechanics: four new merge features only, three seeds.
