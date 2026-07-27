@@ -1,0 +1,85 @@
+{
+ "sample": {
+  "n_items": 200,
+  "n_documents": 197,
+  "domain_counts": {
+   "code": 50,
+   "financial": 50,
+   "legal": 50,
+   "literature": 50
+  },
+  "prior_correct": 182,
+  "pass": true
+ },
+ "p0_3": {
+  "merge_lost_given_prior_correct": 0.8736263736263736,
+  "eviction_lost_given_prior_correct": 0.8241758241758241,
+  "paired_merge_minus_eviction": {
+   "n_items": 182,
+   "n_documents": 180,
+   "mean_diff": 0.04945054945054945,
+   "ci95": [
+    0.00552410296885435,
+    0.09392265193370165
+   ],
+   "excludes_zero": true
+  },
+  "full_accuracy": 0.91,
+  "merge_accuracy_delta": -0.77,
+  "eviction_accuracy_delta": -0.72,
+  "paired_merge_minus_eviction_accuracy": {
+   "n_items": 200,
+   "n_documents": 197,
+   "mean_diff": -0.05,
+   "ci95": [
+    -0.095,
+    -0.005025125628140704
+   ],
+   "excludes_zero": true
+  },
+  "mean_merge_kl": 0.3803578787669539,
+  "mean_eviction_kl": 0.3153457677550614,
+  "paired_merge_minus_eviction_kl": {
+   "n_items": 200,
+   "n_documents": 197,
+   "mean_diff": 0.06501211101189255,
+   "ci95": [
+    0.03915845046728269,
+    0.09258382036891354
+   ],
+   "excludes_zero": true
+  },
+  "pass": false
+ },
+ "p0_4": {
+  "target_retained": 410,
+  "sink_slots": 4,
+  "summary_slots": 203,
+  "recent_exact_slots": 203,
+  "old_region_slots": 3889,
+  "non_singleton_blocks": 203,
+  "block_size_min": 19,
+  "block_size_max": 20,
+  "block_size_counts": {
+   "19": 171,
+   "20": 32
+  },
+  "merge_exact_slots": 207,
+  "streaming_exact_slots": 410,
+  "exact_slot_intersection": 207,
+  "exact_slot_jaccard": 0.5048780487804878,
+  "aligned_exact_max_abs_kv_difference": 0.0,
+  "physical_max_abs_kv_difference": 152.0,
+  "cache_tensor_identical": false,
+  "merge_streaming_prediction_equal_rate": 0.825,
+  "pass": true
+ },
+ "real_attention": {
+  "minimum": 5.952897481620312e-07,
+  "maximum": 15473.0556640625,
+  "minimum_variance": 5047.39990234375,
+  "pass": true
+ },
+ "p0_pass": false,
+ "stop_q1_q3": true
+}

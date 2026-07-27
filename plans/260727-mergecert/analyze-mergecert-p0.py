@@ -15,6 +15,78 @@ HERE = Path(__file__).resolve().parent
 DEFAULT_INPUT = HERE / "p0-direction-200.json"
 DEFAULT_OUTPUT = HERE / "p0-verdict.json"
 DOMAINS = ("financial", "legal", "code", "literature")
+REGISTERED_BUDGETS = {"0.25": 3072, "0.40": 2458, "0.90": 410}
+
+
+def analyze_smoke(
+    payload,
+    *,
+    expected_items=8,
+    max_gpu_bytes=80 * 1024**3,
+):
+    rows = payload.get("rows", [])
+    if payload.get("done") != expected_items or len(rows) != expected_items:
+        raise ValueError(
+            f"P0 smoke must contain {expected_items} completed rows"
+        )
+    item_ids = [row["item_id"] for row in rows]
+    if (
+        len(set(item_ids)) != expected_items
+        or payload.get("sample_item_ids") != item_ids
+    ):
+        raise ValueError("P0 smoke item IDs differ from the registered sample")
+    budget_audit = payload.get("budget_audit", {})
+    if set(budget_audit) != set(REGISTERED_BUDGETS):
+        raise ValueError("P0 smoke runtime budget audit is incomplete")
+    for ratio, expected in REGISTERED_BUDGETS.items():
+        row = budget_audit[ratio]
+        if (
+            row.get("target_retained") != expected
+            or row.get("physical_length") != expected
+            or row.get("kv_finite") is not True
+        ):
+            raise ValueError(f"P0 {ratio} runtime budget audit failed")
+    finite_outputs = all(
+        math.isfinite(float(row[key]))
+        for row in rows
+        for key in (
+            "merge_kl",
+            "eviction_kl",
+            "streaming_kl",
+            "attention_mass_min",
+            "attention_mass_max",
+            "attention_mass_variance",
+        )
+    )
+    if (
+        not finite_outputs
+        or any(row["attention_mass_min"] < 0 for row in rows)
+        or any(row["attention_mass_variance"] <= 0 for row in rows)
+    ):
+        raise ValueError("P0 smoke real-attention/output validity failed")
+    peak_gpu_bytes = int(payload.get("peak_gpu_bytes", -1))
+    if not 0 < peak_gpu_bytes < max_gpu_bytes:
+        raise ValueError("P0 smoke peak GPU allocation exceeds the H100 limit")
+    structure = payload.get("structure", {})
+    if (
+        structure.get("target_retained") != REGISTERED_BUDGETS["0.90"]
+        or structure.get("non_singleton_blocks", 0) <= 0
+        or structure.get("exact_slot_jaccard", 1) >= 1
+        or structure.get("cache_tensor_identical") is not False
+    ):
+        raise ValueError("P0 smoke non-degeneracy audit failed")
+    return {
+        "pass": True,
+        "items": expected_items,
+        "retained_vectors": {
+            ratio: budget_audit[ratio]["physical_length"]
+            for ratio in REGISTERED_BUDGETS
+        },
+        "minimum_attention_variance": min(
+            row["attention_mass_variance"] for row in rows
+        ),
+        "peak_gpu_bytes": peak_gpu_bytes,
+    }
 
 
 def _cluster_paired_ci(rows, difference, *, seed=20260727, n_resamples=20_000):

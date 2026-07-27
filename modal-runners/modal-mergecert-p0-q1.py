@@ -110,6 +110,38 @@ def _json_sha256(value) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _runtime_budget_audit(full_cache, attention_mass):
+    import torch
+
+    from memsub.compaction import build_merge_plan, merge_cache
+
+    audit = {}
+    extreme_cache = None
+    for ratio in RATIOS:
+        plan = build_merge_plan(
+            full_cache.physical_length,
+            ratio,
+            sink_token_count=SINKS,
+        )
+        candidate = merge_cache(full_cache, attention_mass, plan).cache
+        kv_finite = all(
+            bool(torch.isfinite(tensor).all())
+            for layer_index in range(candidate.num_layers)
+            for tensor in candidate.layer_kv(layer_index)
+        )
+        key = f"{ratio:.2f}"
+        audit[key] = {
+            "target_retained": plan.target_retained,
+            "physical_length": candidate.physical_length,
+            "kv_finite": kv_finite,
+        }
+        if ratio == 0.90:
+            extreme_cache = candidate
+    if extreme_cache is None:
+        raise RuntimeError("registered extreme merge ratio is missing")
+    return audit, extreme_cache
+
+
 def _select_p0_rows(manifest: list[dict], recent_start: int) -> list[dict]:
     per_domain = P0_ITEMS // len(DOMAINS)
     selected = []
@@ -172,13 +204,18 @@ def _run_p0(limit: int, out_name: str) -> dict:
         "done": 0,
         "rows": [],
         "structure": None,
+        "budget_audit": None,
+        "superseded_artifact_sha256": None,
     }
     if os.path.exists(output_path):
         with open(output_path) as handle:
             prior = json.load(handle)
         if prior.get("sample_item_ids") != sample_item_ids:
             raise ValueError("existing P0 artifact uses a different registered sample")
-        state = prior
+        if prior.get("budget_audit") is not None:
+            state = prior
+        else:
+            state["superseded_artifact_sha256"] = _sha256_file(output_path)
 
     runtime = build_runtime(reference=True)
     fingerprint = runtime.fingerprint()
@@ -223,7 +260,12 @@ def _run_p0(limit: int, out_name: str) -> dict:
         full_cache, _, attention_mass = prefill_with_real_attention(
             runtime, context_ids
         )
-        merged_cache = merge_cache(full_cache, attention_mass, plan).cache
+        if state["budget_audit"] is None:
+            state["budget_audit"], merged_cache = _runtime_budget_audit(
+                full_cache, attention_mass
+            )
+        else:
+            merged_cache = merge_cache(full_cache, attention_mass, plan).cache
         evicted_cache = full_cache.clone_detached()
         evicted_slots = evicted_cache.evict_logical_range(
             SINKS, SINKS + int(plan.sequence_length * 0.90)

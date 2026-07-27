@@ -1,6 +1,11 @@
 import ast
+import importlib.util
 import json
 from pathlib import Path
+
+import torch
+
+from memsub.runtime import CompactedPrefixCache
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -8,6 +13,13 @@ RUNNER = ROOT / "modal-runners" / "modal-mergecert-p0-q1.py"
 PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
 Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
 Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
+
+
+def _load_module(path, name):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _literal_constants(path):
@@ -81,6 +93,30 @@ def test_mergecert_runner_exposes_the_registered_p0_entrypoints():
     assert {"smoke", "p0_direction"} <= functions
     assert constants["CONTINUATION_TEXT"] == " The discussion continued."
     assert constants["P0_CHECKPOINT_EVERY"] == 10
+
+
+def test_mergecert_runner_audits_all_registered_budgets_on_runtime_cache_objects():
+    runner = _load_module(RUNNER, "mergecert_p0_runner_budget_audit")
+    sequence_length = 4096
+    keys = torch.arange(sequence_length, dtype=torch.float32).view(
+        1, 1, sequence_length, 1
+    )
+    cache = CompactedPrefixCache.from_tensors(
+        [keys],
+        [10 * keys],
+        logical_positions=list(range(sequence_length)),
+        next_logical_position=sequence_length,
+        sink_token_count=4,
+    )
+    attention_mass = torch.ones((1, 1, sequence_length))
+
+    audit, merged = runner._runtime_budget_audit(cache, attention_mass)
+
+    assert {
+        ratio: row["physical_length"] for ratio, row in audit.items()
+    } == {"0.25": 3072, "0.40": 2458, "0.90": 410}
+    assert all(row["kv_finite"] for row in audit.values())
+    assert merged.physical_length == 410
 
 
 def test_mergecert_runner_exposes_a_p0_gated_q1_contract():

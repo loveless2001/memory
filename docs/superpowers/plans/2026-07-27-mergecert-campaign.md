@@ -258,7 +258,7 @@ Pass only if at least one non-singleton block exists, exact-slot Jaccard is
 below 1, and the merged old region is not tensor-identical to the
 StreamingLLM cache.
 
-- [ ] **Step 5: Run an 8-item H100 smoke**
+- [x] **Step 5: Run an 8-item H100 smoke**
 
 Run:
 `UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run
@@ -268,7 +268,7 @@ Verify exact physical lengths `{0.25: 3072, 0.40: 2458, 0.90: 410}`, finite
 mass and outputs, nonzero real-attention variance, and peak memory below the
 H100 limit.
 
-- [ ] **Step 6: Run and retrieve the 200-item P0 gate**
+- [x] **Step 6: Run and retrieve the 200-item P0 gate**
 
 Run detached, wait for terminal completion, copy the JSON into
 `plans/260727-mergecert/`, and run:
@@ -279,7 +279,7 @@ Run detached, wait for terminal completion, copy the JSON into
 
 If P0.3 fails, skip Tasks 4-7 and execute Task 8’s negative-report branch.
 
-- [ ] **Step 7: Commit P0 code and evidence**
+- [x] **Step 7: Commit P0 code and evidence**
 
 ```bash
 git add modal-runners/modal-mergecert-p0-q1.py \
@@ -288,6 +288,10 @@ git commit -m "feat: add MergeCert P0 direction and degeneracy gates"
 ```
 
 ### Task 4: Q1 two-axis matched-budget certification
+
+> **Registered stop applied 2026-07-27:** P0.3 failed with paired
+> merge-minus-eviction lost-prior difference `+0.0495`
+> (95% CI `[+0.0055, +0.0939]`). Tasks 4-7 were intentionally not launched.
 
 **Files:**
 - Modify: `modal-runners/modal-mergecert-p0-q1.py`
@@ -534,7 +538,7 @@ selects the negative-report schema), and writes a SHA-256 manifest. It fails
 on question-mark result cells, unfinished-marker strings, public upload links,
 Qwen2.5 result rows, or claims that merge is deployment-certified.
 
-- [ ] **Step 3: Write the evidence-backed private report**
+- [x] **Step 3: Write the evidence-backed private report**
 
 State outcomes without changing the registered readings. The README section
 must separate supported claims (with CIs) from unsupported claims kindly and
