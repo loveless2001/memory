@@ -287,6 +287,28 @@ def test_report_validator_rejects_tampering_publication_and_unconfirmed_delivery
         )
 
 
+def test_report_validator_accepts_explicit_user_delivery_waiver_as_terminal():
+    renderer = _load(RENDERER, "mergecert_renderer_waiver")
+    validator = _load(VALIDATOR, "mergecert_validator_waiver")
+    evidence = _positive_evidence()
+    delivery = {
+        "status": "waived",
+        "audience": ["Tyler", "Kevin"],
+        "waived_at": "2026-07-27T15:10:00+07:00",
+        "basis": "User confirmed the local private report is sufficient.",
+    }
+
+    report = renderer.render_report(evidence, delivery)
+    result = validator.validate_report_text(
+        report, evidence, delivery, require_delivery=True
+    )
+
+    assert result["delivery_status"] == "waived"
+    assert "waived by the user" in report
+    assert "no Tyler/Kevin transmission is required" in report
+    assert "confirmed to Tyler" not in report
+
+
 def test_report_validator_rejects_source_or_p0_consistency_tampering():
     renderer = _load(RENDERER, "mergecert_renderer_evidence_tamper")
     validator = _load(VALIDATOR, "mergecert_validator_evidence_tamper")

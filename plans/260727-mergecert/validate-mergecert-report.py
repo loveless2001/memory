@@ -108,12 +108,19 @@ def validate_report_text(
         raise ValueError("report contains a question-mark result cell")
     if delivery.get("audience") != ["Tyler", "Kevin"]:
         raise ValueError("private delivery audience must be Tyler and Kevin")
-    if require_delivery and (
-        delivery.get("status") != "confirmed"
-        or not delivery.get("delivered_at")
-        or not delivery.get("channel")
-    ):
-        raise ValueError("private delivery is not confirmed")
+    if require_delivery:
+        confirmed = (
+            delivery.get("status") == "confirmed"
+            and bool(delivery.get("delivered_at"))
+            and bool(delivery.get("channel"))
+        )
+        waived = (
+            delivery.get("status") == "waived"
+            and bool(delivery.get("waived_at"))
+            and bool(delivery.get("basis"))
+        )
+        if not (confirmed or waived):
+            raise ValueError("private delivery is neither confirmed nor waived")
     branch = _validate_evidence(evidence)
     renderer = _renderer_module()
     expected = renderer.render_report(evidence, delivery)

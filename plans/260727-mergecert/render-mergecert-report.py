@@ -89,6 +89,12 @@ def _delivery_line(delivery: dict) -> str:
             f"Private delivery: confirmed to {audience} at "
             f"{delivery['delivered_at']} via {delivery['channel']}."
         )
+    if delivery["status"] == "waived":
+        return (
+            f"Private delivery: waived by the user at {delivery['waived_at']}; "
+            "the local report is sufficient and no Tyler/Kevin transmission "
+            "is required."
+        )
     return f"Private delivery: pending to {audience}; no other use authorized."
 
 

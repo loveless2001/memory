@@ -514,7 +514,8 @@ git commit -m "docs: record MergeCert fragility nesting"
 - Create: `plans/260727-mergecert/artifact-manifest.json`
 - Create: `plans/260727-mergecert/render-mergecert-report.py`
 - Create: `plans/260727-mergecert/validate-mergecert-report.py`
-- Modify: `docs/project-changelog.md` only after private delivery is confirmed.
+- Modify: `docs/project-changelog.md` only after private delivery is confirmed
+  and the user authorizes a public-project record.
 - Test: `tests/test_mergecert_report.py`
 
 **Interfaces:**
@@ -546,7 +547,7 @@ precisely. The spec section drafts §13.7 only if Q1/Q2 justify the fourth
 training-free point; otherwise it drafts the measured negative placement.
 Do not modify the public spec or papers in this campaign.
 
-- [ ] **Step 4: Run complete verification**
+- [x] **Step 4: Run complete verification**
 
 Run:
 
@@ -562,20 +563,22 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal app list
 Expected: validator and all tests pass, no Modal tasks remain, and no
 unexplained worktree changes exist.
 
-- [ ] **Step 5: Prepare private delivery**
+- [x] **Step 5: Prepare private delivery**
 
 Keep report and evidence local/private. Present the exact report path and
 artifact manifest to the user and request or use the user-approved private
 channel for Tyler and Kevin. Do not push, publish, edit public papers/spec, or
 update the changelog before delivery confirmation.
 
-- [ ] **Step 6: Record delivery and commit final local state**
+- [x] **Step 6: Record delivery disposition and commit final local state**
 
-After Tyler/Kevin delivery is confirmed, add the dated delivery record to the
-report header and project changelog, rerun the validator/tests, then commit:
+The user explicitly waived Tyler/Kevin transmission and confirmed that the
+local private report is sufficient. Record that dated disposition in the
+report header, leave the public project changelog unchanged, rerun the
+validator/tests, then commit:
 
 ```bash
-git add MERGECERT.md MERGECERT-REPORT.md docs/project-changelog.md \
+git add MERGECERT-REPORT.md \
   plans/260727-mergecert docs/superpowers/plans/2026-07-27-mergecert-campaign.md
 git commit -m "docs: complete private MergeCert placement campaign"
 ```
