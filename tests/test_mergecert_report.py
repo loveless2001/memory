@@ -20,8 +20,22 @@ def _load(path, name):
 def _positive_evidence():
     return {
         "source": {
+            "repository": "https://github.com/jkdkr2439/KV-Merge",
             "commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
-            "files": {"README.md": "source-sha"},
+            "files": {
+                "README.md": (
+                    "edfd5236d99dab5d6e4bf80b74dd79a54ffd94cec4b7066511dc6fd7ae7cae17"
+                ),
+                "benchmarks/modal_kv_real_bench.py": (
+                    "518b2d2cd4b652f4cc83ef9c82593fe624301986e0e3e22780ee9f0bfe423bb8"
+                ),
+                "lego_server.py": (
+                    "f1df91c8af05cf4ea5000f4027450bf91e5e269f4e922da8979fc0885d6ff228"
+                ),
+            },
+            "port": {
+                "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+            },
         },
         "p0": {
             "p0_pass": True,
@@ -74,6 +88,20 @@ def _positive_evidence():
                 "merge-0.25": {"lost_prior": 0.20},
                 "merge-0.40": {"lost_prior": 0.30},
             },
+            "paired_merge_minus_eviction": {
+                "0.25": {
+                    "lost_prior": {
+                        "mean_diff": -0.35,
+                        "ci95": [-0.45, -0.25],
+                    }
+                },
+                "0.40": {
+                    "lost_prior": {
+                        "mean_diff": -0.35,
+                        "ci95": [-0.47, -0.23],
+                    }
+                },
+            },
             "markdown_table": (
                 "| arm | agg KL | agg accDelta | pointwise lost|prior |\n"
                 "|---|---:|---:|---:|\n"
@@ -117,6 +145,28 @@ def _positive_evidence():
         "q3": {
             "pass": True,
             "merge": {"failures": 500, "failure_rate": 0.25},
+            "comparisons": {
+                "A": {
+                    "kappa": 0.40,
+                    "nesting_fraction": 0.80,
+                    "reference_failure_rate": 0.30,
+                },
+                "B": {
+                    "kappa": 0.42,
+                    "nesting_fraction": 0.82,
+                    "reference_failure_rate": 0.32,
+                },
+                "FR": {
+                    "kappa": 0.50,
+                    "nesting_fraction": 0.78,
+                    "reference_failure_rate": 0.28,
+                },
+                "E1F": {
+                    "kappa": 0.45,
+                    "nesting_fraction": 0.70,
+                    "reference_failure_rate": 0.26,
+                },
+            },
             "interpretation": "Marginal-aware nesting interpretation.",
             "markdown_table": (
                 "| reference regime | Cohen kappa | nesting |\n"
@@ -183,6 +233,33 @@ def test_positive_report_contains_every_registered_surface_and_validates():
     assert "Private to Tyler and Kevin" in report
 
 
+def test_positive_readme_claims_are_evidence_backed_and_spec_promotion_requires_q1_ci():
+    renderer = _load(RENDERER, "mergecert_renderer_claims")
+    evidence = _positive_evidence()
+    delivery = {"status": "pending", "audience": ["Tyler", "Kevin"]}
+
+    report = renderer.render_report(evidence, delivery)
+
+    readme = report.split("## For the KV-Merge README\n", 1)[1].split(
+        "## For the spec", 1
+    )[0]
+    assert "Q1 supported claim" in readme
+    assert "-0.3500 [-0.4500, -0.2500]" in readme
+    assert "Q2 supported claim" in readme
+    assert "0.7500 [0.7200, 0.7800]" in readme
+    assert "Q3 measured placement" in readme
+    assert "A: kappa 0.4000, nesting 0.8000" in readme
+    assert "add merge as the fourth training-free regime point" in report
+
+    evidence["q1"]["paired_merge_minus_eviction"]["0.40"]["lost_prior"][
+        "ci95"
+    ] = [-0.47, 0.03]
+    report = renderer.render_report(evidence, delivery)
+
+    assert "add merge as the fourth training-free regime point" not in report
+    assert "measured fourth candidate" in report
+
+
 def test_report_validator_rejects_tampering_publication_and_unconfirmed_delivery():
     renderer = _load(RENDERER, "mergecert_renderer_tamper")
     validator = _load(VALIDATOR, "mergecert_validator_tamper")
@@ -210,6 +287,28 @@ def test_report_validator_rejects_tampering_publication_and_unconfirmed_delivery
         )
 
 
+def test_report_validator_rejects_source_or_p0_consistency_tampering():
+    renderer = _load(RENDERER, "mergecert_renderer_evidence_tamper")
+    validator = _load(VALIDATOR, "mergecert_validator_evidence_tamper")
+    delivery = {"status": "pending", "audience": ["Tyler", "Kevin"]}
+
+    evidence = _positive_evidence()
+    evidence["source"]["commit"] = "wrong-upstream-commit"
+    report = renderer.render_report(evidence, delivery)
+    with pytest.raises(ValueError, match="source provenance"):
+        validator.validate_report_text(
+            report, evidence, delivery, require_delivery=False
+        )
+
+    evidence = _positive_evidence()
+    evidence["p0"]["p0_4"]["pass"] = False
+    report = renderer.render_report(evidence, delivery)
+    with pytest.raises(ValueError, match="P0 component"):
+        validator.validate_report_text(
+            report, evidence, delivery, require_delivery=False
+        )
+
+
 def test_negative_report_stops_after_p0_and_excludes_q1_q3_tables():
     renderer = _load(RENDERER, "mergecert_renderer_negative")
     validator = _load(VALIDATOR, "mergecert_validator_negative")
@@ -231,3 +330,26 @@ def test_negative_report_stops_after_p0_and_excludes_q1_q3_tables():
     assert "## Q1" not in report
     assert "## Q2" not in report
     assert "## Q3" not in report
+
+
+def test_negative_report_does_not_misstate_a_non_degeneracy_failure_as_direction_failure():
+    renderer = _load(RENDERER, "mergecert_renderer_degeneracy_failure")
+    validator = _load(VALIDATOR, "mergecert_validator_degeneracy_failure")
+    evidence = _positive_evidence()
+    evidence["p0"]["p0_pass"] = False
+    evidence["p0"]["stop_q1_q3"] = True
+    evidence["p0"]["p0_4"]["pass"] = False
+    for key in ("q1", "q2", "q3"):
+        evidence.pop(key)
+    delivery = {"status": "pending", "audience": ["Tyler", "Kevin"]}
+
+    report = renderer.render_report(evidence, delivery)
+    result = validator.validate_report_text(
+        report, evidence, delivery, require_delivery=False
+    )
+
+    assert result["branch"] == "negative"
+    assert "Failed registered check: P0.4 non-degeneracy." in report
+    assert "P0.3 did not reproduce" not in report
+    assert "direction gate failed" not in report
+    assert "no scientific placement conclusion is drawn" in report

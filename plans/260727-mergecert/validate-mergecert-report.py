@@ -13,6 +13,21 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 DEFAULT_REPORT = HERE.parents[1] / "MERGECERT-REPORT.md"
 DEFAULT_MANIFEST = HERE / "artifact-manifest.json"
+EXPECTED_SOURCE = {
+    "repository": "https://github.com/jkdkr2439/KV-Merge",
+    "commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
+    "files": {
+        "README.md": (
+            "edfd5236d99dab5d6e4bf80b74dd79a54ffd94cec4b7066511dc6fd7ae7cae17"
+        ),
+        "benchmarks/modal_kv_real_bench.py": (
+            "518b2d2cd4b652f4cc83ef9c82593fe624301986e0e3e22780ee9f0bfe423bb8"
+        ),
+        "lego_server.py": (
+            "f1df91c8af05cf4ea5000f4027450bf91e5e269f4e922da8979fc0885d6ff228"
+        ),
+    },
+}
 
 
 def _renderer_module():
@@ -32,11 +47,27 @@ def _sha256_file(path: Path) -> str:
 
 
 def _validate_evidence(evidence: dict) -> str:
+    source = evidence.get("source", {})
+    if (
+        source.get("repository") != EXPECTED_SOURCE["repository"]
+        or source.get("commit") != EXPECTED_SOURCE["commit"]
+        or source.get("files") != EXPECTED_SOURCE["files"]
+        or source.get("port", {}).get("model_id")
+        != "Qwen/Qwen3-4B-Instruct-2507"
+    ):
+        raise ValueError("source provenance differs from the registered port")
+
     p0 = evidence.get("p0", {})
     required_p0 = {"sample", "p0_3", "p0_4", "real_attention"}
     if not required_p0 <= set(p0):
         raise ValueError("P0 evidence is incomplete")
-    if p0.get("stop_q1_q3") == p0.get("p0_pass"):
+    component_pass = all(
+        p0[key].get("pass") is True
+        for key in ("sample", "p0_3", "p0_4", "real_attention")
+    )
+    if p0.get("p0_pass") is not component_pass:
+        raise ValueError("P0 component verdicts are inconsistent with p0_pass")
+    if p0.get("stop_q1_q3") is not (not component_pass):
         raise ValueError("P0 stop/pass fields are inconsistent")
     if p0["sample"].get("n_items") != 200:
         raise ValueError("P0 evidence does not contain the registered 200 items")

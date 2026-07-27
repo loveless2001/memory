@@ -92,6 +92,22 @@ def _delivery_line(delivery: dict) -> str:
     return f"Private delivery: pending to {audience}; no other use authorized."
 
 
+def _failed_p0_sentence(p0: dict) -> str:
+    checks = [
+        label
+        for label, passed in (
+            ("sample integrity", p0["sample"]["pass"]),
+            ("P0.3 direction", p0["p0_3"]["pass"]),
+            ("P0.4 non-degeneracy", p0["p0_4"]["pass"]),
+            ("real-attention validity", p0["real_attention"]["pass"]),
+        )
+        if not passed
+    ]
+    if len(checks) == 1:
+        return f"Failed registered check: {checks[0]}."
+    return f"Failed registered checks: {', '.join(checks)}."
+
+
 def render_report(evidence: dict, delivery: dict) -> str:
     p0 = evidence["p0"]
     negative = bool(p0["stop_q1_q3"])
@@ -136,15 +152,27 @@ def render_report(evidence: dict, delivery: dict) -> str:
         "",
     ]
     if negative:
+        direction_failed = not p0["p0_3"]["pass"]
+        failure_lead = (
+            "P0.3 did not reproduce the registered qualitative direction. "
+            if direction_failed
+            else "P0 verification did not pass. "
+        )
         lines.extend(
             [
                 "## Registered stop",
                 "",
                 (
-                    "P0.3 did not reproduce the registered qualitative "
-                    "direction. Q1-Q3 were not launched, as required. This is "
-                    "a negative placement result for this port and fingerprint; "
-                    "no tuning or alternate model was attempted."
+                    f"{failure_lead}{_failed_p0_sentence(p0)} "
+                    "Q1-Q3 were not launched, as required. "
+                    + (
+                        "This is a negative placement result for this port and "
+                        "fingerprint; "
+                        if direction_failed
+                        else "The port was not valid for scientific placement, "
+                        "so no scientific placement conclusion is drawn; "
+                    )
+                    + "no tuning or alternate model was attempted."
                 ),
                 "",
             ]
@@ -217,26 +245,68 @@ def render_report(evidence: dict, delivery: dict) -> str:
         ]
     )
     if negative:
-        lines.extend(
-            [
-                (
-                    "Supported claim: on the pinned house fingerprint and "
-                    "registered 90% point, the real-attention port did not "
-                    "establish graceful degradation over matched eviction under "
-                    "the pre-registered pointwise gate."
-                ),
-                "",
-                (
-                    "Not supported: graceful-degradation, deployment, "
-                    "cross-model, or source-evaluation reproduction claims. "
-                    "The result localizes the finding to this exact port and "
-                    "protocol and does not imply that other implementations "
-                    "cannot work."
-                ),
-            ]
-        )
+        if not p0["p0_3"]["pass"]:
+            lines.extend(
+                [
+                    (
+                        "Supported claim: on the pinned house fingerprint and "
+                        "registered 90% point, the real-attention port did not "
+                        "establish graceful degradation over matched eviction "
+                        "under the pre-registered pointwise gate."
+                    ),
+                    "",
+                    (
+                        "Not supported: graceful-degradation, deployment, "
+                        "cross-model, or source-evaluation reproduction claims. "
+                        "The result localizes the finding to this exact port and "
+                        "protocol and does not imply that other implementations "
+                        "cannot work."
+                    ),
+                ]
+            )
+        else:
+            lines.extend(
+                [
+                    (
+                        "Supported finding: the P0.3 direction row passed, but "
+                        "the complete port verification did not. "
+                        f"{_failed_p0_sentence(p0)}"
+                    ),
+                    "",
+                    (
+                        "No method-level preservation or graceful-degradation "
+                        "claim is supported because the port was not valid for "
+                        "scientific placement; no scientific placement "
+                        "conclusion is drawn."
+                    ),
+                ]
+            )
     else:
         direction = p0["p0_3"]
+        q1, q2, q3 = evidence["q1"], evidence["q2"], evidence["q3"]
+        q1_cells = []
+        q2_cells = []
+        for ratio in ("0.25", "0.40"):
+            lost = q1["paired_merge_minus_eviction"][ratio]["lost_prior"]
+            low, high = lost["ci95"]
+            q1_cells.append(
+                f"{ratio}: {lost['mean_diff']:+.4f} "
+                f"[{low:+.4f}, {high:+.4f}]"
+            )
+            mechanics = q2["ratios"][ratio]["mechanics_refit"]
+            low, high = mechanics["ci95"]
+            q2_cells.append(
+                f"{ratio}: {mechanics['auc']:.4f} "
+                f"[{low:.4f}, {high:.4f}]"
+            )
+        q3_cells = [
+            (
+                f"{name}: kappa {q3['comparisons'][name]['kappa']:.4f}, "
+                f"nesting "
+                f"{q3['comparisons'][name]['nesting_fraction']:.4f}"
+            )
+            for name in ("A", "FR", "E1F")
+        ]
         lines.extend(
             [
                 (
@@ -256,6 +326,25 @@ def render_report(evidence: dict, delivery: dict) -> str:
                 ),
                 "",
                 (
+                    "Q1 supported claim: paired merge-minus-eviction "
+                    "lost-prior differences were "
+                    f"{'; '.join(q1_cells)} (document-cluster bootstrap 95% CIs)."
+                ),
+                "",
+                (
+                    "Q2 supported claim: merge-mechanics test AUCs were "
+                    f"{'; '.join(q2_cells)} (document-cluster bootstrap 95% CIs). "
+                    f"{q2['registered_reading']}"
+                ),
+                "",
+                (
+                    "Q3 measured placement: merge failure rate "
+                    f"{q3['merge']['failure_rate']:.4f}; "
+                    f"{'; '.join(q3_cells)}. Nesting is conditioned on merge "
+                    "failures and is interpreted with both regimes' base rates."
+                ),
+                "",
+                (
                     "Not supported: claims beyond the pinned house model, "
                     "registered budgets, and measured workloads; deployment "
                     "certification and source-repository number reproduction "
@@ -265,27 +354,42 @@ def render_report(evidence: dict, delivery: dict) -> str:
         )
     lines.extend(["", "## For the spec", ""])
     if negative:
-        lines.append(
-            (
-                "Draft §13.7 note: attention-weighted merge was evaluated as a "
-                "candidate fourth training-free regime point, but the "
-                "registered direction gate failed. Record it as a measured "
-                "negative placement and do not add a positive regime claim."
+        if not p0["p0_3"]["pass"]:
+            lines.append(
+                (
+                    "Draft §13.7 note: attention-weighted merge was evaluated as "
+                    "a candidate fourth training-free regime point, but the "
+                    "registered direction gate failed. Record it as a measured "
+                    "negative placement and do not add a positive regime claim."
+                )
             )
-        )
+        else:
+            lines.append(
+                (
+                    "Draft §13.7 note: the direction row passed, but the port "
+                    "failed another registered verification check. Record no "
+                    "placement conclusion; repair and re-verify the port under "
+                    "the unchanged registration before considering a fourth "
+                    "training-free regime point."
+                )
+            )
     else:
         q1 = evidence["q1"]
         q2 = evidence["q2"]
-        q1_better = all(
+        q1_better_with_ci = all(
             q1["summaries"][f"merge-{ratio}"]["lost_prior"]
             < q1["summaries"][f"eviction-{ratio}"]["lost_prior"]
+            and q1["paired_merge_minus_eviction"][ratio]["lost_prior"][
+                "ci95"
+            ][1]
+            < 0
             for ratio in ("0.25", "0.40")
         )
-        mechanics = sum(
-            q2["ratios"][ratio]["mechanics_refit"]["auc"]
+        mechanics_supported = all(
+            q2["ratios"][ratio]["mechanics_refit"]["auc"] >= 0.70
             for ratio in ("0.25", "0.40")
-        ) / 2
-        if q1_better and mechanics >= 0.70:
+        )
+        if q1_better_with_ci and mechanics_supported:
             lines.append(
                 (
                     "Draft §13.7 note: add merge as the fourth training-free "
