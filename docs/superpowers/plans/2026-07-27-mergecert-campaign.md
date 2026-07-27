@@ -220,14 +220,14 @@ git commit -m "feat: collect real GQA attention mass for KV merging"
   `/artifacts/mergecert/p0-smoke.json`,
   `/artifacts/mergecert/p0-direction-200.json`.
 
-- [ ] **Step 1: Write static campaign-contract tests**
+- [x] **Step 1: Write static campaign-contract tests**
 
 Assert the runner pins the upstream commit and hashes, ratios
 `(0.25, 0.40, 0.90)`, sink count 4, model ID, fixed RNG seed, P0 sample size
 200, and private output root. Assert no training function, optimizer, public
 upload, or alternate model ID appears.
 
-- [ ] **Step 2: Implement a resumable P0 runner**
+- [x] **Step 2: Implement a resumable P0 runner**
 
 Select 50 deterministic raw-correct items per domain from the standard probe
 manifest whose located needle lies in the merge-old region at 0.90. For each
@@ -236,7 +236,7 @@ oldest-nonsink eviction, exact-budget merge, and exact-budget
 StreamingLLM-style sink+recent arms. Record greedy predictions and paired KL
 over the fixed continuation text `" The discussion continued."`.
 
-- [ ] **Step 3: Register the P0.3 pass predicate**
+- [x] **Step 3: Register the P0.3 pass predicate**
 
 The direction reproduces only if, among full-context-prior-correct items,
 merge has lower lost-fact rate than eviction and the paired
@@ -244,7 +244,7 @@ merge has lower lost-fact rate than eviction and the paired
 Report accuracy delta and KL as secondary house metrics; they cannot reverse
 the registered pointwise gate.
 
-- [ ] **Step 4: Register the P0.4 non-degeneracy predicate**
+- [x] **Step 4: Register the P0.4 non-degeneracy predicate**
 
 Report:
 
@@ -304,13 +304,13 @@ git commit -m "feat: add MergeCert P0 direction and degeneracy gates"
   reports, paired CIs, source/reference-report hashes, exact budgets, and all arm
   summaries.
 
-- [ ] **Step 1: Add Q1 provenance and arm tests**
+- [x] **Step 1: Add Q1 provenance and arm tests**
 
 Assert the Q1 artifact schema requires merge 0.25/0.40/0.90,
 eviction 0.25/0.40/0.90, and control-0 rows; all reports carry selected
 document and item IDs, corpus hashes, and the archived M1 report hashes.
 
-- [ ] **Step 2: Implement the Q1 certification loop**
+- [x] **Step 2: Implement the Q1 certification loop**
 
 Reconstruct the exact four-domain × five-context partition from the archived
 M1 reports and current hashed corpus. Before measuring merge, replay

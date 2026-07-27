@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/jkdkr2439/KV-Merge",
+  "commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
+  "files": {
+    "README.md": "edfd5236d99dab5d6e4bf80b74dd79a54ffd94cec4b7066511dc6fd7ae7cae17",
+    "benchmarks/modal_kv_real_bench.py": "518b2d2cd4b652f4cc83ef9c82593fe624301986e0e3e22780ee9f0bfe423bb8",
+    "lego_server.py": "f1df91c8af05cf4ea5000f4027450bf91e5e269f4e922da8979fc0885d6ff228"
+  },
+  "port": {
+    "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+    "attention_weights": "real accumulated causal attention, reduced by GQA KV-head group",
+    "sink_addition": "logical positions 0-3 pinned exact in every arm",
+    "budget_adaptation": "upstream half-summary half-recent split with balanced blocks for exact house budgets"
+  }
+}
