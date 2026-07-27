@@ -475,7 +475,7 @@ git commit -m "docs: record MergeCert routability placement"
   A/B/FR/E1F relabel artifacts.
 - Writes `plans/260727-mergecert/q3-fragility.json`.
 
-- [ ] **Step 1: Add κ and nesting tests**
+- [x] **Step 1: Add κ and nesting tests**
 
 Test Cohen’s κ against hand-computed confusion matrices and define directional
 nesting as `|failure_merge ∩ failure_ref| / |failure_merge|`. Require every
@@ -548,7 +548,8 @@ Run:
 
 ```bash
 ./.venv/bin/python plans/260727-mergecert/validate-mergecert-report.py
-./.venv/bin/python -m pytest tests -q
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+  ./.venv/bin/python -m pytest tests -q
 git diff --check
 git status --short
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal app list

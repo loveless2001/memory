@@ -136,6 +136,32 @@ def test_prefill_with_real_attention_restores_hooks_and_mode_after_failure():
     )
 
 
+def test_prefill_with_real_attention_runs_through_real_qwen3(runtime):
+    token_ids = runtime.tokenizer.encode(
+        "A short attention audit.",
+        add_special_tokens=False,
+    )
+    prior_mode = runtime.model.config._attn_implementation
+
+    cache, logits, mass = prefill_with_real_attention(runtime, token_ids)
+
+    assert cache.physical_length == len(token_ids)
+    assert logits.shape == (runtime.model.config.vocab_size,)
+    assert torch.isfinite(logits).all()
+    assert mass.shape == (
+        runtime.model.config.num_hidden_layers,
+        runtime.model.config.num_key_value_heads,
+        len(token_ids),
+    )
+    assert torch.isfinite(mass).all()
+    assert (mass >= 0).all()
+    assert runtime.model.config._attn_implementation == prior_mode
+    assert all(
+        not layer.self_attn._forward_hooks
+        for layer in runtime.model.model.layers
+    )
+
+
 def test_real_attention_api_is_available_from_compaction_package():
     from memsub.compaction import (
         prefill_with_real_attention as public_prefill,
