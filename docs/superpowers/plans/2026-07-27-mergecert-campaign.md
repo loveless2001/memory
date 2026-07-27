@@ -159,17 +159,17 @@ git commit -m "feat: add exact-budget attention-weighted KV merge"
   token_ids: list[int]) -> tuple[CompactedPrefixCache, torch.Tensor,
   torch.Tensor]`.
 
-- [ ] **Step 1: Write GQA reduction tests**
+- [x] **Step 1: Write GQA reduction tests**
 
 Use eight query heads and two KV heads with distinct constant masses. Verify
 that heads 0-3 reduce to KV head 0, heads 4-7 to KV head 1, causal query rows
 sum into received mass, and the returned shape is `[1, 2, key]`.
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `./.venv/bin/python -m pytest tests/test_real_attention_mass.py -q`
 
-- [ ] **Step 3: Implement online layer hooks**
+- [x] **Step 3: Implement online layer hooks**
 
 Temporarily switch Qwen attention to `eager`; register one forward hook on
 each `self_attn`. Each hook reduces `output[1]` immediately into
@@ -179,13 +179,13 @@ the model output. Restore every hook and the prior attention implementation in
 a `finally` block. Return the normal house `CompactedPrefixCache` plus stacked
 mass `[layers, kv_heads, sequence]`.
 
-- [ ] **Step 4: Add failure-restoration and shape tests**
+- [x] **Step 4: Add failure-restoration and shape tests**
 
 Use fake attention modules to assert hook removal and mode restoration after
 both success and a raised exception. Assert a mismatched query/KV-head count
 fails closed.
 
-- [ ] **Step 5: Run focused and full local tests**
+- [x] **Step 5: Run focused and full local tests**
 
 Run:
 
@@ -195,7 +195,7 @@ Run:
 ./.venv/bin/python -m pytest tests -q
 ```
 
-- [ ] **Step 6: Commit real-attention collection**
+- [x] **Step 6: Commit real-attention collection**
 
 ```bash
 git add memsub/compaction/real_attention_mass.py memsub/compaction/__init__.py \
