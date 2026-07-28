@@ -485,6 +485,8 @@ def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):
         ("[public](//example.com/result)", "public URL"),
         ('<a href="https://example.com">text</a>', "public URL"),
         ('<img src="//example.com/x.png">', "public URL"),
+        ("https:<span>//</span>example.com", "public URL"),
+        ("https:**//**example.com", "public URL"),
         ("| **?** |", "question-mark result cell"),
         (r"| \*\*\?\*\* |", "question-mark result cell"),
         ("| [?](/result) |", "question-mark result cell"),

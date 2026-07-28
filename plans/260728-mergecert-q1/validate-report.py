@@ -522,9 +522,12 @@ def validate_report_text(report: str, evidence: dict) -> dict:
     _validate_loaded_evidence(evidence)
 
     unescaped_report = html.unescape(report)
-    if PUBLIC_URL_PATTERN.search(unescaped_report):
-        raise ValueError("report contains a public URL")
     inspection_text = _inspection_text(unescaped_report)
+    if (
+        PUBLIC_URL_PATTERN.search(unescaped_report)
+        or PUBLIC_URL_PATTERN.search(inspection_text)
+    ):
+        raise ValueError("report contains a public URL")
     if QUESTION_CELL_PATTERN.search(inspection_text):
         raise ValueError("report contains a question-mark result cell")
     if match := QWEN25_PATTERN.search(inspection_text):
