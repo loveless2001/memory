@@ -296,8 +296,10 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
     if set(arms) != EXPECTED_ARMS:
         raise ValueError("Q1 artifact does not contain exactly the registered arms")
     for arm_name, arm in arms.items():
-        ratio = float(arm["ratio"])
-        expected_budget = _expected_budget(ratio)
+        registered_ratio = float(arm_name.rsplit("-", 1)[1])
+        if arm.get("ratio") != registered_ratio:
+            raise ValueError(f"{arm_name} arm ratio mismatch")
+        expected_budget = _expected_budget(registered_ratio)
         if arm.get("target_retained") != expected_budget:
             raise ValueError(f"{arm_name} arm budget mismatch")
         reports = arm.get("reports", [])

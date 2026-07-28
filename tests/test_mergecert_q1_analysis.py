@@ -286,6 +286,19 @@ def test_q1_analysis_rejects_nonregistered_ninety_percent_arms(arm):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
 
 
+def test_q1_analysis_rejects_ninety_percent_data_disguised_as_moderate_arm():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    arm = payload["arms"]["merge-0.25"]
+    arm["ratio"] = 0.90
+    arm["target_retained"] = 410
+    for report in arm["reports"]:
+        report["target_retained"] = 410
+
+    with pytest.raises(ValueError, match="ratio"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
 def test_q1_analysis_rejects_missing_source_hashes_or_replay_checks():
     analyzer = _load_analyzer()
     payload = _payload()

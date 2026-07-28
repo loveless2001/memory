@@ -202,6 +202,30 @@ def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():
     assert "RATIOS" not in arm_spec_source.replace("Q1_RATIOS", "")
 
 
+def test_mergecert_q1_artifact_uses_analyzer_authorization_schema():
+    source = RUNNER.read_text()
+    tree = ast.parse(source)
+    run_q1 = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_run_q1"
+    )
+    state_assign = next(
+        node
+        for node in run_q1.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "state"
+            for target in node.targets
+        )
+    )
+    state_source = ast.unparse(state_assign.value)
+
+    assert "'q1_authorization': gate" in state_source
+    assert "q1_gate" not in state_source
+    assert 'prior.get("q1_authorization") != gate' in source
+
+
 def test_mergecert_q2_runner_pins_unified_capture_and_fixed_fleet_contract():
     constants = _literal_constants(Q2_RUNNER)
     tree = ast.parse(Q2_RUNNER.read_text())

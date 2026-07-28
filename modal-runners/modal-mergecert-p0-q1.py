@@ -851,7 +851,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         "provenance": _q1_provenance(),
         "compatibility_fingerprint": fingerprint.to_dict(),
         "compatibility_fingerprint_sha256": fingerprint.digest(),
-        "q1_gate": gate,
+        "q1_authorization": gate,
         "archived_m1": {
             "files": archive_files,
             "replay_checks": [],
@@ -878,7 +878,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             prior = json.load(handle)
         if prior.get("sample_doc_ids") != selected_doc_ids:
             raise ValueError("existing Q1 artifact uses a different sample")
-        if prior.get("q1_gate") != gate:
+        if prior.get("q1_authorization") != gate:
             raise ValueError("existing Q1 artifact uses a different authorization")
         if prior.get("provenance") != _q1_provenance():
             raise ValueError("existing Q1 artifact uses a different Q1 provenance")
