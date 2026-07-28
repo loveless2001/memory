@@ -422,7 +422,13 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
         assert interval in report
     assert SKIP_REASON in report
     assert "Private to Tyler and Kevin." in report
-    assert "Transmission is not recorded." in report
+    assert (
+        "Local/private report only. Transmission is not recorded. "
+        "No public artifact is authorized."
+    ) in report
+    assert (
+        "Scientific placement only; this is not a deployment certification."
+    ) in report
     assert Q1_APP_IDS[0] in report
     assert Q1_APP_IDS[1] in report
     assert report.count("merge-plus-anchor") == 1
@@ -477,15 +483,25 @@ def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):
     (
         ("[public](HTTPS://example.com/result)", "public URL"),
         ("[public](//example.com/result)", "public URL"),
+        ('<a href="https://example.com">text</a>', "public URL"),
+        ('<img src="//example.com/x.png">', "public URL"),
         ("| **?** |", "question-mark result cell"),
         (r"| \*\*\?\*\* |", "question-mark result cell"),
+        ("| [?](/result) |", "question-mark result cell"),
         ("The method was deployed successfully.", "forbidden claim"),
         ("Deployment succeeded.", "forbidden claim"),
         ("The method was deployed.", "forbidden claim"),
+        ("The method did deploy.", "forbidden claim"),
+        (
+            "Deployment did not succeed, and Tyler received the report.",
+            "forbidden claim",
+        ),
+        ("The method was deployed without errors.", "forbidden claim"),
         ("Sent to Tyler after validation.", "forbidden claim"),
         ("Tyler received the report.", "forbidden claim"),
         ("Kevin has the report.", "forbidden claim"),
         ("Transmission successfully completed.", "forbidden claim"),
+        ("Transmission completed without delay.", "forbidden claim"),
         ("Delivery occurred.", "forbidden claim"),
     ),
 )

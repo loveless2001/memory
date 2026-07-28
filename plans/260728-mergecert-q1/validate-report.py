@@ -70,6 +70,7 @@ EXPECTED_PARENT_SOURCE_SHA256 = (
 MARKDOWN_ESCAPE_PATTERN = re.compile(
     r"\\([\\`*_[\]{}()#+\-.!|>?~])"
 )
+MARKDOWN_LINK_PATTERN = re.compile(r"!?\[([^\]\n]*)\]\([^)\n]*\)")
 MARKDOWN_WRAPPER_PATTERN = re.compile(r"[*_~`]+")
 HTML_TAG_PATTERN = re.compile(r"<[^>\n]+>")
 PUBLIC_URL_PATTERN = re.compile(
@@ -78,13 +79,16 @@ PUBLIC_URL_PATTERN = re.compile(
 )
 QUESTION_CELL_PATTERN = re.compile(r"\|\s*\?\s*\|")
 QWEN25_PATTERN = re.compile(r"\bqwen2\.5\b", re.IGNORECASE)
-CLAIM_SEGMENT_PATTERN = re.compile(r"(?:[.;\n]+|\bbut\b)", re.IGNORECASE)
+CLAIM_SEGMENT_PATTERN = re.compile(
+    r"(?:[.;,\n]+|\b(?:and|but)\b)",
+    re.IGNORECASE,
+)
 NEGATION_PATTERN = re.compile(
-    r"\b(?:not|no|never|without|unconfirmed|unrecorded|neither)\b",
+    r"\b(?:not|no|never|unconfirmed|unrecorded|neither)\b",
     re.IGNORECASE,
 )
 DEPLOYMENT_PATTERN = re.compile(
-    r"\b(?:deployed|deploying|deploys|deployment(?!-relevant\b))\b",
+    r"\b(?:deploy|deployed|deploying|deploys|deployment(?!-relevant\b))\b",
     re.IGNORECASE,
 )
 TRANSMISSION_PATTERN = re.compile(
@@ -124,9 +128,9 @@ def _renderer_module():
     return module
 
 
-def _inspection_text(report: str) -> str:
-    normalized = html.unescape(report)
-    normalized = MARKDOWN_ESCAPE_PATTERN.sub(r"\1", normalized)
+def _inspection_text(unescaped_report: str) -> str:
+    normalized = MARKDOWN_ESCAPE_PATTERN.sub(r"\1", unescaped_report)
+    normalized = MARKDOWN_LINK_PATTERN.sub(r"\1", normalized)
     normalized = HTML_TAG_PATTERN.sub("", normalized)
     return MARKDOWN_WRAPPER_PATTERN.sub("", normalized)
 
@@ -517,9 +521,10 @@ def validate_report_text(report: str, evidence: dict) -> dict:
     privacy_status = _validate_privacy(evidence)
     _validate_loaded_evidence(evidence)
 
-    inspection_text = _inspection_text(report)
-    if PUBLIC_URL_PATTERN.search(inspection_text):
+    unescaped_report = html.unescape(report)
+    if PUBLIC_URL_PATTERN.search(unescaped_report):
         raise ValueError("report contains a public URL")
+    inspection_text = _inspection_text(unescaped_report)
     if QUESTION_CELL_PATTERN.search(inspection_text):
         raise ValueError("report contains a question-mark result cell")
     if match := QWEN25_PATTERN.search(inspection_text):
