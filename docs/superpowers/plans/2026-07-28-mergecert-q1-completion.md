@@ -577,7 +577,7 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache \
 
 Expected: no live app and no conflicting Q1 output.
 
-- [ ] **Step 4: Request one bounded Q1 approval**
+- [x] **Step 4: Request one bounded Q1 approval**
 
 Ask for explicit authorization to run the two-document smoke and, only if it
 passes, the 20-document certification with a maximum Q1 spend of `$15`. Do not
@@ -599,7 +599,7 @@ launch either command until the user approves.
 - Consumes: approved Modal runner and private source artifacts.
 - Produces: immutable Q1 evidence and the conditional trigger decision.
 
-- [ ] **Step 1: Upload only the authorization inputs**
+- [x] **Step 1: Upload only the authorization inputs**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \

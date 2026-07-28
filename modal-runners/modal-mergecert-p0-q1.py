@@ -529,6 +529,16 @@ def _q1_archive_files() -> tuple[dict, dict]:
     return files, reports
 
 
+def _require_registered_q1_context_length(
+    doc_id: str, context_ids: list[int]
+) -> None:
+    if len(context_ids) != 4096:
+        raise ValueError(
+            f"{doc_id}: archived M1 source context has {len(context_ids)} "
+            "tokens; registered Q1 requires exactly 4096"
+        )
+
+
 def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
     from memsub.certification import McqItem
 
@@ -574,6 +584,7 @@ def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
             )
             ctx_start = max(0, anchor.chunk_token_start - 1024)
             source_context_ids = document_ids[ctx_start : ctx_start + 4096]
+            _require_registered_q1_context_length(doc_id, source_context_ids)
             context_text = tokenizer.decode(source_context_ids)
             context_ids = tokenizer.encode(
                 context_text, add_special_tokens=False

@@ -216,6 +216,21 @@ def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():
     assert "RATIOS" not in arm_spec_source.replace("Q1_RATIOS", "")
 
 
+def test_mergecert_q1_rejects_an_archived_source_window_below_registered_length():
+    runner = _load_module(RUNNER, "mergecert_q1_context_length_gate")
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"legal/00000: archived M1 source context has 3921 tokens; "
+            r"registered Q1 requires exactly 4096"
+        ),
+    ):
+        runner._require_registered_q1_context_length(
+            "legal/00000", list(range(3921))
+        )
+
+
 def test_mergecert_q1_artifact_uses_analyzer_authorization_schema():
     source = RUNNER.read_text()
     tree = ast.parse(source)
