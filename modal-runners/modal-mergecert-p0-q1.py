@@ -6,6 +6,7 @@ launched; every artifact stays on the private ``memsub-artifacts`` volume.
 
 import hashlib
 import json
+import math
 import os
 
 import modal
@@ -14,6 +15,7 @@ MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
 UPSTREAM_COMMIT = "cd4ed948d62231449dbab9669608bbb4fd220713"
 RATIOS = (0.25, 0.40, 0.90)
 Q1_RATIOS = (0.25, 0.40)
+Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 SINKS = 4
 P0_ITEMS = 200
 SEED = 20260727
@@ -102,6 +104,7 @@ def _q1_provenance() -> dict:
         "upstream_files": SOURCE_FILES,
         "ratios": list(Q1_RATIOS),
         "sink_token_count": SINKS,
+        "budget_mode": Q1_BUDGET_MODE,
         "seed": SEED,
     }
 
@@ -501,6 +504,7 @@ def _load_q1_authorization(
         raise ValueError("Q1 addendum requires the settled negative P0 verdict")
     return {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": Q1_BUDGET_MODE,
         "addendum_sha256": _sha256_file(addendum_path),
         "p0_verdict_sha256": _sha256_file(p0_verdict_path),
         "settled_p0": settled,
@@ -529,14 +533,77 @@ def _q1_archive_files() -> tuple[dict, dict]:
     return files, reports
 
 
-def _require_registered_q1_context_length(
-    doc_id: str, context_ids: list[int]
-) -> None:
-    if len(context_ids) != 4096:
-        raise ValueError(
-            f"{doc_id}: archived M1 source context has {len(context_ids)} "
-            "tokens; registered Q1 requires exactly 4096"
-        )
+def _reconstruct_q1_context_ids(
+    tokenizer, text: str, *, chunk_token_start: int
+) -> dict:
+    document_ids = tokenizer.encode(text, add_special_tokens=False)
+    context_start = max(0, chunk_token_start - 1024)
+    source_context_ids = document_ids[context_start : context_start + 4096]
+    if not source_context_ids:
+        raise ValueError("archived M1 source context is empty")
+    context_text = tokenizer.decode(source_context_ids)
+    context_ids = tokenizer.encode(context_text, add_special_tokens=False)
+    if len(context_ids) <= SINKS:
+        raise ValueError("archived M1 model input is too short")
+    return {
+        "context_start": context_start,
+        "source_context_ids": source_context_ids,
+        "source_context_token_count": len(source_context_ids),
+        "context_ids": context_ids,
+        "model_input_token_count": len(context_ids),
+    }
+
+
+def _q1_document_budget(
+    source_context_token_count: int,
+    model_input_token_count: int,
+    ratio: float,
+    *,
+    evicted_token_count: int | None = None,
+) -> dict:
+    if ratio not in Q1_RATIOS:
+        raise ValueError(f"unregistered Q1 ratio: {ratio}")
+    requested_evicted = int(source_context_token_count * ratio)
+    evicted = (
+        requested_evicted
+        if evicted_token_count is None
+        else evicted_token_count
+    )
+    retained = model_input_token_count - evicted
+    if (
+        not isinstance(evicted, int)
+        or evicted <= 0
+        or evicted > requested_evicted
+        or retained <= SINKS
+    ):
+        raise ValueError("Q1 per-document budget is invalid")
+    return {
+        "source_context_token_count": source_context_token_count,
+        "model_input_token_count": model_input_token_count,
+        "requested_evicted_token_count": requested_evicted,
+        "evicted_token_count": evicted,
+        "retained_token_count": retained,
+        "merge_target_retained": retained,
+    }
+
+
+def _q1_merge_plan(model_input_token_count: int, target_retained: int):
+    from memsub.compaction import build_merge_plan
+
+    evicted = model_input_token_count - target_retained
+    if evicted <= 0:
+        raise ValueError("Q1 merge budget must evict at least one token")
+    effective_fraction = math.nextafter(
+        evicted / model_input_token_count, 1.0
+    )
+    plan = build_merge_plan(
+        model_input_token_count,
+        effective_fraction,
+        sink_token_count=SINKS,
+    )
+    if plan.target_retained != target_retained:
+        raise ValueError("Q1 merge plan did not reproduce the matched budget")
+    return plan
 
 
 def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
@@ -579,27 +646,25 @@ def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
             if not doc_items:
                 raise ValueError(f"Q1 items missing for {doc_id}")
             anchor = doc_items[0]
-            document_ids = tokenizer.encode(
-                texts[doc_id], add_special_tokens=False
+            reconstructed = _reconstruct_q1_context_ids(
+                tokenizer,
+                texts[doc_id],
+                chunk_token_start=anchor.chunk_token_start,
             )
-            ctx_start = max(0, anchor.chunk_token_start - 1024)
-            source_context_ids = document_ids[ctx_start : ctx_start + 4096]
-            _require_registered_q1_context_length(doc_id, source_context_ids)
-            context_text = tokenizer.decode(source_context_ids)
-            context_ids = tokenizer.encode(
-                context_text, add_special_tokens=False
-            )
-            if len(context_ids) != 4096:
-                raise ValueError(
-                    f"{doc_id}: archived M1 context re-encodes to "
-                    f"{len(context_ids)}, expected 4096"
-                )
-            reference_span = int(len(context_ids) * 0.25)
+            ctx_start = reconstructed["context_start"]
+            source_context_token_count = reconstructed[
+                "source_context_token_count"
+            ]
+            context_ids = reconstructed["context_ids"]
+            model_input_token_count = reconstructed[
+                "model_input_token_count"
+            ]
+            reference_span = int(source_context_token_count * 0.25)
             lo = max(
                 SINKS,
                 min(
                     anchor.chunk_token_start - ctx_start,
-                    len(context_ids) - reference_span,
+                    source_context_token_count - reference_span,
                 ),
             )
             needles = [
@@ -629,6 +694,10 @@ def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
                     "archive_index": archive_index,
                     "context_start": ctx_start,
                     "context_ids": context_ids,
+                    "source_context_token_count": (
+                        source_context_token_count
+                    ),
+                    "model_input_token_count": model_input_token_count,
                     "context_sha256": _json_sha256(context_ids),
                     "source_hashes": {
                         **source_hashes,
@@ -649,8 +718,10 @@ def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
     return contexts, source_hashes
 
 
-def _q1_eviction_range(ratio: float, anchor: int) -> tuple[int, int]:
-    span = int(4096 * ratio)
+def _q1_eviction_range(
+    ratio: float, anchor: int, source_context_token_count: int
+) -> tuple[int, int]:
+    span = int(source_context_token_count * ratio)
     if ratio == 0.90:
         return SINKS, SINKS + span
     return anchor, anchor + span
@@ -664,6 +735,7 @@ def _q1_report(
     candidate_cache,
     ratio: float,
     policy: str,
+    budget: dict,
     full_predictions: dict,
 ) -> dict:
     import torch
@@ -673,7 +745,7 @@ def _q1_report(
     continuation_ids = runtime.tokenizer.encode(
         CONTINUATION_TEXT, add_special_tokens=False
     )
-    if candidate_cache.physical_length != 4096 - int(4096 * ratio):
+    if candidate_cache.physical_length != budget["retained_token_count"]:
         raise ValueError(f"{policy}: candidate retained-vector budget mismatch")
     full_logits = runtime.forward_extend(
         full_cache.clone_detached(), continuation_ids
@@ -732,7 +804,15 @@ def _q1_report(
         "domain": context["domain"],
         "context_start": context["context_start"],
         "context_sha256": context["context_sha256"],
-        "context_token_count": 4096,
+        "source_context_token_count": context[
+            "source_context_token_count"
+        ],
+        "model_input_token_count": context["model_input_token_count"],
+        "context_token_count": context["model_input_token_count"],
+        "requested_evicted_token_count": budget[
+            "requested_evicted_token_count"
+        ],
+        "evicted_token_count": budget["evicted_token_count"],
         "target_retained": candidate_cache.physical_length,
         "source_hashes": context["source_hashes"],
         "needle_item_ids": [item.item_id for item in context["needles"]],
@@ -828,7 +908,6 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
     import torch
 
     from memsub.compaction import (
-        build_merge_plan,
         merge_cache,
         prefill_with_real_attention,
     )
@@ -877,7 +956,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             name: {
                 "policy": policy,
                 "ratio": ratio,
-                "target_retained": 4096 - int(4096 * ratio),
+                "budget_mode": Q1_BUDGET_MODE,
                 "reports": [],
             }
             for name, policy, ratio in arm_specs
@@ -927,29 +1006,67 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             for item in all_items
         }
         candidate_caches = {"control-0.00": full_cache.clone_detached()}
+        candidate_budgets = {
+            "control-0.00": {
+                "source_context_token_count": context[
+                    "source_context_token_count"
+                ],
+                "model_input_token_count": context[
+                    "model_input_token_count"
+                ],
+                "requested_evicted_token_count": 0,
+                "evicted_token_count": 0,
+                "retained_token_count": context[
+                    "model_input_token_count"
+                ],
+                "merge_target_retained": context[
+                    "model_input_token_count"
+                ],
+            }
+        }
         for ratio in Q1_RATIOS:
             eviction = full_cache.clone_detached()
             start, end = _q1_eviction_range(
-                ratio, context["eviction_anchor"]
+                ratio,
+                context["eviction_anchor"],
+                context["source_context_token_count"],
             )
             evicted = eviction.evict_logical_range(start, end)
-            if evicted != int(4096 * ratio):
-                raise ValueError(
-                    f"{context['doc_id']}: eviction {ratio:.2f} removed "
-                    f"{evicted}, expected {int(4096 * ratio)}"
-                )
+            budget = _q1_document_budget(
+                context["source_context_token_count"],
+                context["model_input_token_count"],
+                ratio,
+                evicted_token_count=evicted,
+            )
+            if eviction.physical_length != budget["retained_token_count"]:
+                raise ValueError("Q1 measured eviction budget is inconsistent")
             candidate_caches[f"eviction-{ratio:.2f}"] = eviction
-            plan = build_merge_plan(4096, ratio, sink_token_count=SINKS)
+            plan = _q1_merge_plan(
+                context["model_input_token_count"],
+                budget["merge_target_retained"],
+            )
             candidate_caches[f"merge-{ratio:.2f}"] = merge_cache(
                 full_cache, attention_mass, plan
             ).cache
+            candidate_budgets[f"eviction-{ratio:.2f}"] = budget
+            candidate_budgets[f"merge-{ratio:.2f}"] = budget
 
         document_record = {
             "doc_id": context["doc_id"],
             "domain": context["domain"],
             "context_start": context["context_start"],
             "context_sha256": context["context_sha256"],
-            "context_token_count": 4096,
+            "source_context_token_count": context[
+                "source_context_token_count"
+            ],
+            "model_input_token_count": context["model_input_token_count"],
+            "context_token_count": context["model_input_token_count"],
+            "budgets": {
+                f"{ratio:.2f}": candidate_budgets[
+                    f"eviction-{ratio:.2f}"
+                ]
+                for ratio in Q1_RATIOS
+            },
             "source_hashes": context["source_hashes"],
             "needle_item_ids": [
                 item.item_id for item in context["needles"]
@@ -970,6 +1087,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                 candidate_cache=candidate_caches[arm_name],
                 ratio=ratio,
                 policy=policy,
+                budget=candidate_budgets[arm_name],
                 full_predictions=full_predictions,
             )
             state["arms"][arm_name]["reports"].append(report)

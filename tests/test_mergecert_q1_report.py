@@ -182,8 +182,31 @@ def _q1_verdict(*, positive, aggregation_only=False):
     )
     aggregation_favorable = ["0.40:acc_delta"] if positive else []
     favorable = pointwise_favorable + aggregation_favorable
+    per_document_budgets = {}
+    for domain in ("financial", "legal", "code", "literature"):
+        for index in range(5):
+            doc_id = f"{domain}/{index}"
+            source_tokens = 3921 if doc_id == "legal/0" else 4096
+            per_document_budgets[doc_id] = {
+                f"{ratio:.2f}": {
+                    "source_context_token_count": source_tokens,
+                    "model_input_token_count": source_tokens,
+                    "requested_evicted_token_count": int(
+                        source_tokens * ratio
+                    ),
+                    "evicted_token_count": int(source_tokens * ratio),
+                    "retained_token_count": (
+                        source_tokens - int(source_tokens * ratio)
+                    ),
+                    "merge_target_retained": (
+                        source_tokens - int(source_tokens * ratio)
+                    ),
+                }
+                for ratio in (0.25, 0.40)
+            }
     return {
         "pass": True,
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "documents": 20,
         "domain_counts": {
             "financial": 5,
@@ -215,6 +238,7 @@ def _q1_verdict(*, positive, aggregation_only=False):
             "run_q2_q3": positive,
         },
         "per_domain": per_domain,
+        "per_document_budgets": per_document_budgets,
         "run_q2_q3": positive,
         "favorable_intervals": favorable,
     }
@@ -257,6 +281,8 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
         },
         "ratios": [0.25, 0.4],
         "sink_token_count": 4,
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
+        "settled_amendment_date": "2026-07-29",
         "addendum": {
             "path": "MERGECERT-Q1.md",
             "sha256": _sha256(addendum),
@@ -276,6 +302,7 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
     _write_json(plan / "q1-verdict.json", q1)
     trigger = {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "run_q2_q3": positive,
         "favorable_intervals": q1["favorable_intervals"],
         "q1_verdict_sha256": _sha256(plan / "q1-verdict.json"),
@@ -429,6 +456,12 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
     assert (
         "Scientific placement only; this is not a deployment certification."
     ) in report
+    assert (
+        "Per-document matched physical budgets preserve the exact archived "
+        "M1 population."
+    ) in report
+    assert "4096-token documents retain 3072 tokens at 0.25" in report
+    assert "Shorter archived contexts use their measured matched budgets." in report
     assert Q1_APP_IDS[0] in report
     assert Q1_APP_IDS[1] in report
     assert report.count("merge-plus-anchor") == 1

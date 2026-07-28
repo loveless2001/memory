@@ -36,6 +36,7 @@ EXPECTED_ARMS = {
     "merge-0.40",
 }
 EXPECTED_DOMAINS = {"financial", "legal", "code", "literature"}
+BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 EXPECTED_UPSTREAM = {
     "commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
     "files": {
@@ -52,7 +53,7 @@ EXPECTED_UPSTREAM = {
 }
 EXPECTED_ADDENDUM = {
     "path": "MERGECERT-Q1.md",
-    "sha256": "faf1239bf21ed3ec4e33421645694cc7a70ecc04765961af04c3f4ff2f106df7",
+    "sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
 }
 EXPECTED_SETTLED_P0 = {
     "verdict_path": "plans/260727-mergecert/p0-verdict.json",
@@ -220,6 +221,8 @@ def _validate_source(evidence: dict) -> None:
         or source.get("model_id") != "Qwen/Qwen3-4B-Instruct-2507"
         or source.get("ratios") != [0.25, 0.4]
         or source.get("sink_token_count") != 4
+        or source.get("budget_mode") != BUDGET_MODE
+        or source.get("settled_amendment_date") != "2026-07-29"
         or source.get("upstream_commit") != EXPECTED_UPSTREAM["commit"]
     ):
         raise ValueError("source provenance differs from registration")
@@ -299,8 +302,36 @@ def _validate_q1(evidence: dict) -> None:
         or set(q1.get("references", {}))
         != {"frozen_subsample", "unfrozen_compactor"}
         or set(q1.get("per_domain", {})) != EXPECTED_DOMAINS
+        or q1.get("budget_mode") != BUDGET_MODE
     ):
         raise ValueError("Q1 verdict is incomplete")
+    per_document_budgets = q1.get("per_document_budgets", {})
+    if len(per_document_budgets) != 20:
+        raise ValueError("Q1 per-document budgets are incomplete")
+    for doc_id, ratios in per_document_budgets.items():
+        if set(ratios) != {"0.25", "0.40"}:
+            raise ValueError(f"Q1 per-document budgets are incomplete for {doc_id}")
+        for ratio_text, budget in ratios.items():
+            source_tokens = budget.get("source_context_token_count")
+            model_tokens = budget.get("model_input_token_count")
+            actual_evicted = budget.get("evicted_token_count")
+            ratio = float(ratio_text)
+            if (
+                not isinstance(source_tokens, int)
+                or not isinstance(model_tokens, int)
+                or not isinstance(actual_evicted, int)
+                or actual_evicted <= 0
+                or actual_evicted > int(source_tokens * ratio)
+                or budget.get("requested_evicted_token_count")
+                != int(source_tokens * ratio)
+                or budget.get("retained_token_count")
+                != model_tokens - actual_evicted
+                or budget.get("merge_target_retained")
+                != budget.get("retained_token_count")
+            ):
+                raise ValueError(
+                    f"Q1 per-document budget is malformed for {doc_id}/{ratio_text}"
+                )
     for domain, rows in q1["per_domain"].items():
         if set(rows) != EXPECTED_ARMS:
             raise ValueError(f"Q1 per-domain arms are incomplete for {domain}")
@@ -364,6 +395,7 @@ def _validate_trigger(evidence: dict) -> None:
     source = evidence["source"]
     expected = {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": BUDGET_MODE,
         "run_q2_q3": q1["run_q2_q3"],
         "favorable_intervals": q1["favorable_intervals"],
         "q1_verdict_sha256": evidence["_files"]["q1"]["sha256"],

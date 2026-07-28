@@ -11,7 +11,10 @@
 ## Global Constraints
 
 - `MERGECERT-Q1.md` overrides only the parent brief's scope and stop rule; spec v0.3.7 retains semantic precedence.
-- Q1 ratios are exactly `(0.25, 0.40)` with retained KV lengths `3072` and `2458`.
+- Q1 ratios are exactly `(0.25, 0.40)`. Preserve the archived M1 population and
+  match merge to each eviction arm's physical retained count under budget mode
+  `archived-m1-per-document-matched-physical-v1`; lengths `3072` and `2458`
+  apply to 4096-token documents.
 - Never execute a Q1 `0.90` arm; import the settled P0 result instead.
 - Use `Qwen/Qwen3-4B-Instruct-2507`, real accumulated attention, logical sinks `0..3`, exact recent KV, greedy scoring, and unchanged M1 probe semantics.
 - Use all 20 archived M1 contexts: five per domain across financial, legal, code, and literature.
@@ -619,7 +622,8 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
 Copy `/mergecert-q1/q1-smoke.json` locally, then run the analyzer with
 `--expected-documents 2 --n-resamples 2000`. Verify five arms, two documents,
 identical partitions, exact zero control, archive replay, finite attention,
-and budgets `{0.25: 3072, 0.40: 2458}`.
+and per-document merge/eviction physical-budget equality. For 4096-token
+documents, verify budgets `{0.25: 3072, 0.40: 2458}`.
 
 - [ ] **Step 3: Stop on any smoke defect**
 

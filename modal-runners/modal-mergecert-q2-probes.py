@@ -30,6 +30,7 @@ SHADOW_CHECKPOINT = "/artifacts/gate-eval/gate-checkpoint.pt"
 COMPACTOR_SINK_PATH = "/artifacts/probe/followup-f3-headfeats.npz"
 EVICTION_SINK_GLOB = "/artifacts/probe/followup2-f5-eviction-slice-*.npz"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
+Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 ARM_NAMES = (
     "c0_refit",
     "mechanics_refit",
@@ -87,6 +88,7 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
     valid = (
         isinstance(trigger, dict)
         and trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("budget_mode") == Q1_BUDGET_MODE
         and trigger.get("run_q2_q3") is True
         and isinstance(favorable_intervals, list)
         and bool(favorable_intervals)

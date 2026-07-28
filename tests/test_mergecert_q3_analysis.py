@@ -25,6 +25,7 @@ def _load_analyzer():
 def _q1_trigger(**overrides):
     trigger = {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "run_q2_q3": True,
         "favorable_intervals": ["0.40:mean_kl"],
         "q1_verdict_sha256": "c" * 64,

@@ -21,13 +21,23 @@ def _load_analyzer():
     return module
 
 
+def _token_counts(doc_id):
+    return (3921, 3921) if doc_id == "legal/0" else (4096, 4096)
+
+
 def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
-    retained = 4096 - int(4096 * ratio)
+    source_tokens, model_tokens = _token_counts(doc_id)
+    evicted = int(source_tokens * ratio)
+    retained = model_tokens - evicted
     return {
         "doc_id": doc_id,
         "domain": doc_id.split("/", 1)[0],
         "context_sha256": f"sha-{doc_id}",
-        "context_token_count": 4096,
+        "source_context_token_count": source_tokens,
+        "model_input_token_count": model_tokens,
+        "context_token_count": model_tokens,
+        "requested_evicted_token_count": evicted,
+        "evicted_token_count": evicted,
         "target_retained": retained,
         "source_hashes": {
             "corpus_manifest_sha256": "manifest-sha",
@@ -60,7 +70,7 @@ def _payload(*, documents_per_domain=1):
         arms[f"eviction-{ratio:.2f}"] = {
             "policy": "contiguous-eviction",
             "ratio": ratio,
-            "target_retained": 4096 - int(4096 * ratio),
+            "budget_mode": "archived-m1-per-document-matched-physical-v1",
             "reports": [
                 _report(
                     doc,
@@ -76,7 +86,7 @@ def _payload(*, documents_per_domain=1):
         arms[f"merge-{ratio:.2f}"] = {
             "policy": "attention-weighted-merge",
             "ratio": ratio,
-            "target_retained": 4096 - int(4096 * ratio),
+            "budget_mode": "archived-m1-per-document-matched-physical-v1",
             "reports": [
                 _report(
                     doc,
@@ -92,7 +102,7 @@ def _payload(*, documents_per_domain=1):
     arms["control-0.00"] = {
         "policy": "zero-compression-control",
         "ratio": 0.0,
-        "target_retained": 4096,
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "reports": [
             _report(
                 doc,
@@ -110,9 +120,11 @@ def _payload(*, documents_per_domain=1):
             "model_id": "Qwen/Qwen3-4B-Instruct-2507",
             "ratios": [0.25, 0.40],
             "sink_token_count": 4,
+            "budget_mode": "archived-m1-per-document-matched-physical-v1",
         },
         "q1_authorization": {
             "protocol": "MERGECERT-Q1",
+            "budget_mode": "archived-m1-per-document-matched-physical-v1",
             "addendum_sha256": "a" * 64,
             "p0_verdict_sha256": "b" * 64,
             "settled_p0": {
@@ -185,7 +197,30 @@ def _payload(*, documents_per_domain=1):
                 "doc_id": doc,
                 "domain": doc.split("/", 1)[0],
                 "context_sha256": f"sha-{doc}",
-                "context_token_count": 4096,
+                "source_context_token_count": _token_counts(doc)[0],
+                "model_input_token_count": _token_counts(doc)[1],
+                "context_token_count": _token_counts(doc)[1],
+                "budgets": {
+                    f"{ratio:.2f}": {
+                        "source_context_token_count": _token_counts(doc)[0],
+                        "model_input_token_count": _token_counts(doc)[1],
+                        "requested_evicted_token_count": int(
+                            _token_counts(doc)[0] * ratio
+                        ),
+                        "evicted_token_count": int(
+                            _token_counts(doc)[0] * ratio
+                        ),
+                        "retained_token_count": (
+                            _token_counts(doc)[1]
+                            - int(_token_counts(doc)[0] * ratio)
+                        ),
+                        "merge_target_retained": (
+                            _token_counts(doc)[1]
+                            - int(_token_counts(doc)[0] * ratio)
+                        ),
+                    }
+                    for ratio in (0.25, 0.40)
+                },
                 "source_hashes": {
                     "corpus_manifest_sha256": "manifest-sha",
                     "all_items_sha256": "items-sha",
@@ -240,6 +275,12 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
         "lost_prior": 0.125,
     }
     assert "frozen subsample (reference)" in verdict["markdown_table"]
+    assert verdict["budget_mode"] == (
+        "archived-m1-per-document-matched-physical-v1"
+    )
+    assert verdict["per_document_budgets"]["legal/0"]["0.25"][
+        "retained_token_count"
+    ] == 2941
 
 
 def test_q1_analysis_requires_the_exact_settled_negative_authorization():
@@ -271,6 +312,15 @@ def test_q1_analysis_rejects_nonzero_control_and_wrong_budget():
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
 
 
+def test_q1_analysis_rejects_merge_eviction_per_document_budget_drift():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    payload["arms"]["merge-0.25"]["reports"][1]["target_retained"] += 1
+
+    with pytest.raises(ValueError, match="per-document budget"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
 @pytest.mark.parametrize("arm", ("merge-0.90", "eviction-0.90"))
 def test_q1_analysis_rejects_nonregistered_ninety_percent_arms(arm):
     analyzer = _load_analyzer()
@@ -291,7 +341,6 @@ def test_q1_analysis_rejects_ninety_percent_data_disguised_as_moderate_arm():
     payload = _payload()
     arm = payload["arms"]["merge-0.25"]
     arm["ratio"] = 0.90
-    arm["target_retained"] = 410
     for report in arm["reports"]:
         report["target_retained"] = 410
 
@@ -404,6 +453,7 @@ def test_q1_cli_writes_trigger_with_the_verdict_evidence_hash(tmp_path, monkeypa
     trigger = json.loads(trigger_path.read_text())
     assert trigger == {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "run_q2_q3": True,
         "favorable_intervals": [
             "0.25:lost_prior",

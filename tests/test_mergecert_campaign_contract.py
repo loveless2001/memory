@@ -1,4 +1,5 @@
 import ast
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -12,6 +13,9 @@ from memsub.runtime import CompactedPrefixCache
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "modal-runners" / "modal-mergecert-p0-q1.py"
 PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
+Q1_PROVENANCE = (
+    ROOT / "plans" / "260728-mergecert-q1" / "source-provenance.json"
+)
 Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
 Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
 
@@ -19,6 +23,7 @@ Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
 def _q1_trigger(**overrides):
     trigger = {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "run_q2_q3": True,
         "favorable_intervals": ["0.40:mean_kl"],
         "q1_verdict_sha256": "c" * 64,
@@ -186,9 +191,24 @@ def test_mergecert_q1_addendum_accepts_only_the_settled_negative_p0(tmp_path):
     )
 
     assert gate["protocol"] == "MERGECERT-Q1"
+    assert gate["budget_mode"] == (
+        "archived-m1-per-document-matched-physical-v1"
+    )
     assert gate["settled_p0"]["p0_3_pass"] is False
     assert len(gate["addendum_sha256"]) == 64
     assert len(gate["p0_verdict_sha256"]) == 64
+
+
+def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
+    provenance = json.loads(Q1_PROVENANCE.read_text())
+
+    assert provenance["budget_mode"] == (
+        "archived-m1-per-document-matched-physical-v1"
+    )
+    assert provenance["settled_amendment_date"] == "2026-07-29"
+    assert provenance["addendum"]["sha256"] == hashlib.sha256(
+        (ROOT / "MERGECERT-Q1.md").read_bytes()
+    ).hexdigest()
 
 
 def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():
@@ -216,19 +236,71 @@ def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():
     assert "RATIOS" not in arm_spec_source.replace("Q1_RATIOS", "")
 
 
-def test_mergecert_q1_rejects_an_archived_source_window_below_registered_length():
-    runner = _load_module(RUNNER, "mergecert_q1_context_length_gate")
+def test_mergecert_q1_reconstructs_the_original_short_archived_m1_context():
+    runner = _load_module(RUNNER, "mergecert_q1_short_context_replay")
 
-    with pytest.raises(
-        ValueError,
-        match=(
-            r"legal/00000: archived M1 source context has 3921 tokens; "
-            r"registered Q1 requires exactly 4096"
-        ),
-    ):
-        runner._require_registered_q1_context_length(
-            "legal/00000", list(range(3921))
-        )
+    class IdentityTokenizer:
+        def encode(self, value, add_special_tokens=False):
+            assert add_special_tokens is False
+            return list(range(3921)) if value == "source" else list(value)
+
+        def decode(self, token_ids):
+            return list(token_ids)
+
+    reconstructed = runner._reconstruct_q1_context_ids(
+        IdentityTokenizer(), "source", chunk_token_start=0
+    )
+
+    assert reconstructed["context_start"] == 0
+    assert reconstructed["source_context_token_count"] == 3921
+    assert reconstructed["model_input_token_count"] == 3921
+    assert reconstructed["context_ids"] == list(range(3921))
+
+
+@pytest.mark.parametrize(
+    ("source_tokens", "model_tokens", "ratio", "evicted", "retained"),
+    (
+        (3921, 3921, 0.25, 980, 2941),
+        (3921, 3921, 0.40, 1568, 2353),
+        (4096, 4096, 0.25, 1024, 3072),
+        (4096, 4096, 0.40, 1638, 2458),
+    ),
+)
+def test_mergecert_q1_matches_merge_to_each_document_eviction_budget(
+    source_tokens, model_tokens, ratio, evicted, retained
+):
+    runner = _load_module(RUNNER, "mergecert_q1_per_document_budget")
+
+    budget = runner._q1_document_budget(source_tokens, model_tokens, ratio)
+    plan = runner._q1_merge_plan(model_tokens, retained)
+
+    assert budget == {
+        "source_context_token_count": source_tokens,
+        "model_input_token_count": model_tokens,
+        "requested_evicted_token_count": evicted,
+        "evicted_token_count": evicted,
+        "retained_token_count": retained,
+        "merge_target_retained": retained,
+    }
+    assert plan.sequence_length == model_tokens
+    assert plan.target_retained == retained
+
+
+def test_mergecert_q1_uses_the_eviction_cache_measured_physical_budget():
+    runner = _load_module(RUNNER, "mergecert_q1_measured_budget")
+
+    budget = runner._q1_document_budget(
+        4096, 4000, 0.40, evicted_token_count=1600
+    )
+
+    assert budget == {
+        "source_context_token_count": 4096,
+        "model_input_token_count": 4000,
+        "requested_evicted_token_count": 1638,
+        "evicted_token_count": 1600,
+        "retained_token_count": 2400,
+        "merge_target_retained": 2400,
+    }
 
 
 def test_mergecert_q1_artifact_uses_analyzer_authorization_schema():
@@ -305,6 +377,7 @@ def test_mergecert_q2_runner_has_no_training_or_publication_path():
         _q1_trigger(favorable_intervals=[None]),
         _q1_trigger(favorable_intervals={"0.40:mean_kl": True}),
         _q1_trigger(q1_verdict_sha256=["c"] * 64),
+        _q1_trigger(budget_mode="fixed-4096"),
     ),
 )
 def test_q2_runners_reject_a_missing_or_non_authorizing_q1_trigger(

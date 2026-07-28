@@ -30,6 +30,7 @@ REFERENCE_FILES = {
 }
 HEADLINE_REFERENCES = ("A", "FR", "E1F")
 DOMAINS = ("financial", "legal", "code", "literature")
+Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 
 
 def _sha256_file(path: Path) -> str:
@@ -54,6 +55,7 @@ def _require_q1_trigger(path: str) -> dict:
     valid = (
         isinstance(trigger, dict)
         and trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("budget_mode") == Q1_BUDGET_MODE
         and trigger.get("run_q2_q3") is True
         and isinstance(favorable_intervals, list)
         and bool(favorable_intervals)

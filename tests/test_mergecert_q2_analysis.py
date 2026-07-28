@@ -49,6 +49,7 @@ def _test_documents(n=8):
 def _q1_trigger(**overrides):
     trigger = {
         "protocol": "MERGECERT-Q1",
+        "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "run_q2_q3": True,
         "favorable_intervals": ["0.40:mean_kl"],
         "q1_verdict_sha256": "c" * 64,
@@ -199,6 +200,7 @@ def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):
         _q1_trigger(favorable_intervals=[None]),
         _q1_trigger(favorable_intervals={"0.40:mean_kl": True}),
         _q1_trigger(q1_verdict_sha256=["c"] * 64),
+        _q1_trigger(budget_mode="fixed-4096"),
     ),
 )
 def test_q2_analysis_rejects_an_invalid_registered_q1_trigger(tmp_path, trigger):

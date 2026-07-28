@@ -36,7 +36,11 @@ Rejected alternatives:
 
 - Model: `Qwen/Qwen3-4B-Instruct-2507`.
 - Ratios: exactly 0.25 and 0.40.
-- Retained physical KV lengths: 3,072 and 2,458.
+- Budget mode: `archived-m1-per-document-matched-physical-v1`. Each archived
+  source window drives `int(source_window_tokens * ratio)` evicted entries;
+  merge exactly matches the comparator's resulting physical retained count.
+  Retained lengths 3,072 and 2,458 apply to 4,096-token documents; shorter
+  archived contexts retain their measured per-document counts.
 - Exact sinks: logical positions 0 through 3.
 - Recent KV remains exact.
 - Merge uses the existing real accumulated attention implementation.
@@ -184,7 +188,7 @@ Tests must cover:
 
 - ratios contain only 0.25 and 0.40;
 - no Q1 code path evaluates 0.90;
-- exact retained budgets and pinned sinks;
+- exact per-document matched retained budgets and pinned sinks;
 - settled-negative P0 plus addendum authorization;
 - rejection of missing or altered hashes;
 - all five Q1 arms and identical partitions;

@@ -48,6 +48,7 @@ ARM_LABELS = {
     "merge-0.25": "MERGE 0.25",
     "merge-0.40": "MERGE 0.40",
 }
+BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 
 
 def _sha256(path: Path) -> str:
@@ -309,6 +310,13 @@ def render_report(evidence: dict) -> str:
         "## Q1 — Moderate-ratio placement",
         "",
         _placement_table(q1),
+        "",
+        (
+            "Per-document matched physical budgets preserve the exact "
+            "archived M1 population. 4096-token documents retain 3072 tokens "
+            "at 0.25 and 2458 tokens at 0.40. Shorter archived contexts use "
+            "their measured matched budgets."
+        ),
         "",
         _interval_table(q1),
         "",

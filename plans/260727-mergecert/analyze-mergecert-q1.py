@@ -20,6 +20,7 @@ DEFAULT_OUTPUT = Q1_ARTIFACT_DIR / "q1-verdict.json"
 DEFAULT_TABLE = Q1_ARTIFACT_DIR / "q1-table.md"
 DOMAINS = ("financial", "legal", "code", "literature")
 RATIOS = (0.25, 0.40)
+BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 EXPECTED_ARMS = {
     "control-0.00",
     *(f"eviction-{ratio:.2f}" for ratio in RATIOS),
@@ -59,8 +60,28 @@ EXPECTED_REFERENCE_SOURCES = {
 }
 
 
-def _expected_budget(ratio: float) -> int:
-    return 4096 - int(4096 * ratio)
+def _expected_document_budget(
+    source_context_token_count: int,
+    model_input_token_count: int,
+    ratio: float,
+    *,
+    evicted_token_count: int | None = None,
+) -> dict:
+    requested_evicted = int(source_context_token_count * ratio)
+    evicted = (
+        requested_evicted
+        if evicted_token_count is None
+        else evicted_token_count
+    )
+    retained = model_input_token_count - evicted
+    return {
+        "source_context_token_count": source_context_token_count,
+        "model_input_token_count": model_input_token_count,
+        "requested_evicted_token_count": requested_evicted,
+        "evicted_token_count": evicted,
+        "retained_token_count": retained,
+        "merge_target_retained": retained,
+    }
 
 
 def _partition(report: dict) -> tuple:
@@ -69,6 +90,8 @@ def _partition(report: dict) -> tuple:
         report["doc_id"],
         report["domain"],
         report["context_sha256"],
+        report["source_context_token_count"],
+        report["model_input_token_count"],
         report["context_token_count"],
         tuple(report["needle_item_ids"]),
         tuple(report["aggregation_item_ids"]),
@@ -219,10 +242,13 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         raise ValueError("Q1 ratio provenance mismatch")
     if provenance.get("sink_token_count") != 4:
         raise ValueError("Q1 sink provenance mismatch")
+    if provenance.get("budget_mode") != BUDGET_MODE:
+        raise ValueError("Q1 budget provenance mismatch")
 
     authorization = payload.get("q1_authorization", {})
     if (
         authorization.get("protocol") != "MERGECERT-Q1"
+        or authorization.get("budget_mode") != BUDGET_MODE
         or not isinstance(authorization.get("addendum_sha256"), str)
         or len(authorization["addendum_sha256"]) != 64
         or not isinstance(authorization.get("p0_verdict_sha256"), str)
@@ -290,6 +316,39 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             or not hashes.get("source_document_sha256")
         ):
             raise ValueError("Q1 document source hashes are incomplete")
+        source_tokens = document.get("source_context_token_count")
+        model_tokens = document.get("model_input_token_count")
+        if (
+            not isinstance(source_tokens, int)
+            or source_tokens <= 4
+            or not isinstance(model_tokens, int)
+            or model_tokens <= 4
+            or document.get("context_token_count") != model_tokens
+        ):
+            raise ValueError("Q1 document token-length audit is invalid")
+        budgets = document.get("budgets", {})
+        if set(budgets) != {"0.25", "0.40"}:
+            raise ValueError("Q1 document per-document budget audit mismatch")
+        for ratio in RATIOS:
+            ratio_text = f"{ratio:.2f}"
+            actual_evicted = budgets[ratio_text].get(
+                "evicted_token_count"
+            )
+            if (
+                not isinstance(actual_evicted, int)
+                or actual_evicted <= 0
+                or actual_evicted > int(source_tokens * ratio)
+                or budgets[ratio_text]
+                != _expected_document_budget(
+                    source_tokens,
+                    model_tokens,
+                    ratio,
+                    evicted_token_count=actual_evicted,
+                )
+            ):
+                raise ValueError(
+                    "Q1 document per-document budget audit mismatch"
+                )
     registered_partitions = [_partition(row) for row in documents]
 
     arms = payload.get("arms", {})
@@ -299,9 +358,8 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         registered_ratio = float(arm_name.rsplit("-", 1)[1])
         if arm.get("ratio") != registered_ratio:
             raise ValueError(f"{arm_name} arm ratio mismatch")
-        expected_budget = _expected_budget(registered_ratio)
-        if arm.get("target_retained") != expected_budget:
-            raise ValueError(f"{arm_name} arm budget mismatch")
+        if arm.get("budget_mode") != BUDGET_MODE:
+            raise ValueError(f"{arm_name} arm budget mode mismatch")
         reports = arm.get("reports", [])
         if len(reports) != expected_documents:
             raise ValueError(f"{arm_name} report count mismatch")
@@ -312,8 +370,31 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             raise ValueError(f"{arm_name} source hash provenance is incomplete")
         if [_partition(row) for row in reports] != registered_partitions:
             raise ValueError(f"{arm_name} item/context partition drift")
-        if any(row.get("target_retained") != expected_budget for row in reports):
-            raise ValueError(f"{arm_name} per-report budget mismatch")
+        for report, document in zip(reports, documents):
+            ratio = registered_ratio
+            if ratio == 0.0:
+                expected_evicted = 0
+                expected_retained = document["model_input_token_count"]
+            else:
+                budget = document["budgets"][f"{ratio:.2f}"]
+                expected_evicted = budget["evicted_token_count"]
+                expected_retained = budget["retained_token_count"]
+            if (
+                report.get("requested_evicted_token_count")
+                != (
+                    0
+                    if ratio == 0.0
+                    else document["budgets"][f"{ratio:.2f}"][
+                        "requested_evicted_token_count"
+                    ]
+                )
+                or report.get("evicted_token_count") != expected_evicted
+                or report.get("target_retained") != expected_retained
+            ):
+                raise ValueError(
+                    f"{arm_name} per-document budget mismatch for "
+                    f"{document['doc_id']}"
+                )
 
     control = arms["control-0.00"]["reports"]
     if any(
@@ -348,6 +429,7 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
 
     return {
         "pass": True,
+        "budget_mode": BUDGET_MODE,
         "documents": expected_documents,
         "domain_counts": dict(sorted(domains.items())),
         "archived_m1_replay_pass": True,
@@ -356,6 +438,10 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         "paired_merge_minus_eviction": intervals,
         "registered_readings": readings,
         "per_domain": domains_by_arm,
+        "per_document_budgets": {
+            document["doc_id"]: document["budgets"]
+            for document in documents
+        },
         "run_q2_q3": readings["run_q2_q3"],
         "favorable_intervals": readings["favorable_intervals"],
         "markdown_table": _markdown(summaries, intervals, references),
@@ -390,6 +476,7 @@ def main():
         readings = verdict["registered_readings"]
         trigger = {
             "protocol": "MERGECERT-Q1",
+            "budget_mode": BUDGET_MODE,
             "run_q2_q3": readings["run_q2_q3"],
             "favorable_intervals": readings["favorable_intervals"],
             "q1_verdict_sha256": _sha256_file(args.output),

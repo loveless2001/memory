@@ -23,6 +23,7 @@ CHUNK_ITEMS = 100
 CAPTURE_ROOT = "/artifacts/mergecert/q2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
+Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 HEADS = ((25, 14), (26, 26), (28, 19), (35, 15))
 DOMAINS = ("financial", "legal", "code", "literature")
 PINNED = (
@@ -75,6 +76,7 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
     valid = (
         isinstance(trigger, dict)
         and trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("budget_mode") == Q1_BUDGET_MODE
         and trigger.get("run_q2_q3") is True
         and isinstance(favorable_intervals, list)
         and bool(favorable_intervals)
