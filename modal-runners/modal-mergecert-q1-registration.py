@@ -8,9 +8,31 @@ from pathlib import Path
 
 import modal
 
+from memsub.mergecert_q1_registration import tokenizer_artifact_digests
+
 
 MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
 TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
+Q1_TOKENIZER_FILES_SHA256 = {
+    "config.json": (
+        "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba"
+    ),
+    "merges.txt": (
+        "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+    ),
+    "tokenizer.json": (
+        "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    ),
+    "tokenizer_config.json": (
+        "a62ff0a2472a0fa1b8eaabcb57c59b58afa42a22831dc141400b6e0cf2b65ce3"
+    ),
+    "vocab.json": (
+        "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    ),
+}
+Q1_TOKENIZER_ARTIFACT_SHA256 = (
+    "709a32d47b81b8466749dac3f8c4718b901bad95c534a486a8ac0b388094f6c9"
+)
 RATIOS = (0.25, 0.40)
 SINKS = 4
 ARCHIVE_ROOT = "/artifacts/corpus-certification-full"
@@ -18,15 +40,7 @@ ITEMS_PATH = "/artifacts/corpus-mcq-full/all-items.json"
 CORPUS_ROOT = "/artifacts/corpus"
 CORPUS_MANIFEST_PATH = f"{CORPUS_ROOT}/manifest.json"
 SOURCE_REGISTRY_PATH = "/root/q1-registration-source.json"
-TOKENIZER_ARTIFACT_PATTERNS = (
-    "config.json",
-    "tokenizer*",
-    "special_tokens_map.json",
-    "added_tokens.json",
-    "vocab.*",
-    "merges.txt",
-    "chat_template*",
-)
+TOKENIZER_ARTIFACT_PATTERNS = tuple(Q1_TOKENIZER_FILES_SHA256)
 LOCAL_SOURCE_REGISTRY = (
     Path(__file__).resolve().parents[1]
     / "plans"
@@ -40,7 +54,18 @@ hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=False)
 image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("transformers==4.55.2", "tokenizers==0.21.4")
-    .env({"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"})
+    .env(
+        {
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+            "PYTHONPATH": "/root/repo",
+        }
+    )
+    .add_local_dir(
+        str(Path(__file__).resolve().parents[1] / "memsub"),
+        remote_path="/root/repo/memsub",
+        copy=True,
+    )
     .add_local_file(
         str(LOCAL_SOURCE_REGISTRY),
         remote_path=SOURCE_REGISTRY_PATH,
@@ -68,21 +93,6 @@ def _json_sha256(value) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _is_tokenizer_artifact(path: Path) -> bool:
-    name = path.name
-    return (
-        name.startswith("tokenizer")
-        or name in {
-            "config.json",
-            "special_tokens_map.json",
-            "added_tokens.json",
-            "merges.txt",
-        }
-        or name.startswith("vocab.")
-        or name.startswith("chat_template")
-    )
-
-
 def _load_tokenizer_with_provenance():
     from huggingface_hub import snapshot_download
     from transformers import AutoTokenizer
@@ -95,13 +105,13 @@ def _load_tokenizer_with_provenance():
             allow_patterns=TOKENIZER_ARTIFACT_PATTERNS,
         )
     )
-    files_sha256 = {
-        path.relative_to(snapshot).as_posix(): _sha256_file(path)
-        for path in sorted(snapshot.rglob("*"))
-        if path.is_file() and _is_tokenizer_artifact(path)
-    }
-    if not files_sha256:
-        raise ValueError("tokenizer artifact digest set is incomplete")
+    files_sha256 = tokenizer_artifact_digests(
+        snapshot,
+        expected_files_sha256=Q1_TOKENIZER_FILES_SHA256,
+    )
+    artifact_sha256 = _json_sha256(files_sha256)
+    if artifact_sha256 != Q1_TOKENIZER_ARTIFACT_SHA256:
+        raise ValueError("tokenizer artifact aggregate digest differs")
     tokenizer = AutoTokenizer.from_pretrained(
         MODEL_ID,
         revision=TOKENIZER_REVISION,
@@ -111,7 +121,7 @@ def _load_tokenizer_with_provenance():
         "model_id": MODEL_ID,
         "revision": TOKENIZER_REVISION,
         "files_sha256": files_sha256,
-        "artifact_sha256": _json_sha256(files_sha256),
+        "artifact_sha256": artifact_sha256,
     }
 
 

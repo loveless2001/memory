@@ -18,13 +18,20 @@ def is_reference() -> bool:
     return os.environ.get("MEMSUB_REFERENCE") == "1"
 
 
-def build_runtime(reference: bool | None = None):
+def build_runtime(
+    reference: bool | None = None,
+    *,
+    revision: str | None = None,
+    local_files_only: bool = False,
+):
     from .runtime import HFModelRuntime
     if reference is None:
         reference = is_reference()
     if reference:
         return HFModelRuntime.load(REFERENCE_MODEL_ID, device="cuda",
-                                   dtype="bfloat16", attention_impl="sdpa")
+                                   dtype="bfloat16", attention_impl="sdpa",
+                                   revision=revision,
+                                   local_files_only=local_files_only)
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer, Qwen3Config
     tokenizer = AutoTokenizer.from_pretrained(REFERENCE_MODEL_ID)

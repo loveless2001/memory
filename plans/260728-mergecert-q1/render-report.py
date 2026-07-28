@@ -10,6 +10,7 @@ from pathlib import Path
 from memsub.mergecert_q1_registration import (
     Q1_REGISTRATION_PENDING,
     Q1_REGISTRATION_SHA256,
+    validate_q1_registration_schema,
 )
 
 
@@ -122,6 +123,10 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
     }
     for name, path in referenced.items():
         _record(files, name, path, root)
+    validate_q1_registration_schema(
+        evidence["registration"],
+        source_registration=_read_json(referenced["registration_source"]),
+    )
     evidence["p0"] = _read_json(referenced["p0"])
 
     conditional = evidence["conditional"]

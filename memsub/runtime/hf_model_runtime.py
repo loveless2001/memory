@@ -37,12 +37,18 @@ class HFModelRuntime:
 
     @classmethod
     def load(cls, model_id: str, *, device: str = "cpu",
-             dtype: str = "bfloat16", attention_impl: str = "sdpa") -> "HFModelRuntime":
+             dtype: str = "bfloat16", attention_impl: str = "sdpa",
+             revision: str | None = None,
+             local_files_only: bool = False) -> "HFModelRuntime":
         from transformers import AutoModelForCausalLM, AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        artifact_kwargs = {
+            "revision": revision,
+            "local_files_only": local_files_only,
+        }
+        tokenizer = AutoTokenizer.from_pretrained(model_id, **artifact_kwargs)
         model = AutoModelForCausalLM.from_pretrained(
             model_id, torch_dtype=getattr(torch, dtype),
-            attn_implementation=attention_impl).to(device)
+            attn_implementation=attention_impl, **artifact_kwargs).to(device)
         return cls(model, tokenizer, model_id=model_id, device=device,
                    quantization=dtype, attention_impl=attention_impl)
 

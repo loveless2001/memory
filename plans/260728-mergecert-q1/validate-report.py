@@ -16,6 +16,7 @@ from memsub.mergecert_q1_registration import (
     Q1_REGISTRATION_PENDING,
     Q1_REGISTRATION_SHA256,
     canonical_q1_registration_sha256,
+    validate_q1_registration_schema,
 )
 
 
@@ -859,6 +860,10 @@ def _validate_privacy(evidence: dict) -> str:
 
 
 def validate_report_text(report: str, evidence: dict) -> dict:
+    validate_q1_registration_schema(
+        evidence["registration"],
+        source_registration=Q1_REGISTRATION_SOURCE,
+    )
     """Validate evidence and require byte-for-byte canonical report text."""
 
     _require_q1_registration_binding()

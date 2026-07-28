@@ -15,6 +15,7 @@ from memsub.mergecert_q1_registration import (
     Q1_REGISTRATION_PENDING,
     Q1_REGISTRATION_SHA256,
     canonical_q1_registration_sha256,
+    validate_q1_registration_schema,
 )
 
 
@@ -411,6 +412,9 @@ def analyze(
     registration_sha256: str,
 ):
     expected_registration_sha256 = _require_q1_registration_binding()
+    validate_q1_registration_schema(
+        registration, source_registration=Q1_REGISTRATION_SOURCE
+    )
     if (
         canonical_q1_registration_sha256(registration)
         != expected_registration_sha256

@@ -667,25 +667,27 @@ Retrieve all three remote files to a fresh temporary directory, hash the
 retrieved bytes, and compare them byte-for-byte with the reviewed local files.
 
 ```bash
-mkdir -p /tmp/mergecert-q1-reviewed-remote
+set -euo pipefail
+q1_review_dir="$(mktemp -d /tmp/mergecert-q1-reviewed-remote.XXXXXX)"
+trap 'rm -rf -- "$q1_review_dir"' EXIT
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
   memsub-artifacts /mergecert-q1/q1-registration.json \
-  /tmp/mergecert-q1-reviewed-remote/q1-registration.json --force
+  "$q1_review_dir/q1-registration.json" --force
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
   memsub-artifacts /mergecert-q1/MERGECERT-Q1.md \
-  /tmp/mergecert-q1-reviewed-remote/MERGECERT-Q1.md --force
+  "$q1_review_dir/MERGECERT-Q1.md" --force
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
   memsub-artifacts /mergecert-q1/p0-verdict.json \
-  /tmp/mergecert-q1-reviewed-remote/p0-verdict.json --force
+  "$q1_review_dir/p0-verdict.json" --force
 cmp plans/260728-mergecert-q1/q1-registration.json \
-  /tmp/mergecert-q1-reviewed-remote/q1-registration.json
+  "$q1_review_dir/q1-registration.json"
 cmp MERGECERT-Q1.md \
-  /tmp/mergecert-q1-reviewed-remote/MERGECERT-Q1.md
+  "$q1_review_dir/MERGECERT-Q1.md"
 cmp plans/260727-mergecert/p0-verdict.json \
-  /tmp/mergecert-q1-reviewed-remote/p0-verdict.json
-sha256sum /tmp/mergecert-q1-reviewed-remote/q1-registration.json \
-  /tmp/mergecert-q1-reviewed-remote/MERGECERT-Q1.md \
-  /tmp/mergecert-q1-reviewed-remote/p0-verdict.json
+  "$q1_review_dir/p0-verdict.json"
+sha256sum "$q1_review_dir/q1-registration.json" \
+  "$q1_review_dir/MERGECERT-Q1.md" \
+  "$q1_review_dir/p0-verdict.json"
 ```
 
 The remote registration SHA-256 must equal the exact literal

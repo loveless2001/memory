@@ -14,7 +14,12 @@ import modal
 from memsub.mergecert_q1_registration import (
     Q1_REGISTRATION_PENDING,
     Q1_REGISTRATION_SHA256,
+    Q1_TOKENIZER_ARTIFACT_SHA256,
+    Q1_TOKENIZER_FILES_SHA256,
     canonical_q1_registration_sha256,
+    resolve_q1_tokenizer_snapshot,
+    tokenizer_artifact_digests,
+    validate_q1_registration_schema,
 )
 
 MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
@@ -573,6 +578,9 @@ def _load_q1_registration(
         raise ValueError("Q1 finalized registration is missing or unbound")
     with open(registration_path) as handle:
         registration = json.load(handle)
+    validate_q1_registration_schema(
+        registration, source_registration=source
+    )
     if (
         canonical_q1_registration_sha256(registration)
         != Q1_REGISTRATION_SHA256
@@ -908,6 +916,23 @@ def _verify_q1_source_integrity(
     }
 
 
+def _verify_q1_tokenizer_integrity(registration: dict) -> dict[str, str]:
+    """Verify the live offline snapshot before model construction."""
+
+    snapshot = resolve_q1_tokenizer_snapshot()
+    files_sha256 = tokenizer_artifact_digests(
+        snapshot,
+        expected_files_sha256=Q1_TOKENIZER_FILES_SHA256,
+    )
+    if (
+        registration["tokenizer"]["files_sha256"] != files_sha256
+        or registration["tokenizer"]["artifact_sha256"]
+        != Q1_TOKENIZER_ARTIFACT_SHA256
+    ):
+        raise ValueError("Q1 live tokenizer differs from registration")
+    return files_sha256
+
+
 def _load_q1_contexts(
     tokenizer,
     archived_reports: dict,
@@ -1234,7 +1259,12 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         registration,
         registration["population_doc_ids"],
     )
-    runtime = build_runtime(reference=True)
+    _verify_q1_tokenizer_integrity(registration)
+    runtime = build_runtime(
+        reference=True,
+        revision="cdbee75f17c01a7cc42f958dc650907174af0554",
+        local_files_only=True,
+    )
     fingerprint = runtime.fingerprint()
     contexts, source_hashes = _load_q1_contexts(
         runtime.tokenizer,

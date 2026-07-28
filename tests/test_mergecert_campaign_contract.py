@@ -29,6 +29,26 @@ Q1_REGISTRATION_BINDER = (
 )
 Q1_REGISTRATION_PENDING = "PENDING_CPU_EXTRACTION"
 Q1_TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
+Q1_TOKENIZER_FILES_SHA256 = {
+    "config.json": (
+        "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba"
+    ),
+    "merges.txt": (
+        "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+    ),
+    "tokenizer.json": (
+        "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    ),
+    "tokenizer_config.json": (
+        "a62ff0a2472a0fa1b8eaabcb57c59b58afa42a22831dc141400b6e0cf2b65ce3"
+    ),
+    "vocab.json": (
+        "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    ),
+}
+Q1_TOKENIZER_ARTIFACT_SHA256 = (
+    "709a32d47b81b8466749dac3f8c4718b901bad95c534a486a8ac0b388094f6c9"
+)
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -74,6 +94,122 @@ def _literal_constants(path):
             except (ValueError, TypeError):
                 pass
     return constants
+
+
+def _fake_final_registration():
+    source = json.loads(Q1_REGISTRATION_SOURCE.read_text())
+    documents = []
+    for doc_id in source["population_doc_ids"]:
+        source_tokens = 3921 if doc_id == "legal/00000" else 4096
+        source_start = source["eviction_source_start"][doc_id]
+        documents.append(
+            {
+                "doc_id": doc_id,
+                "context_start": max(
+                    0,
+                    source["anchor_chunk_token_start"][doc_id] - 1024,
+                ),
+                "source_context_token_count": source_tokens,
+                "model_input_token_count": source_tokens,
+                "budgets": {
+                    f"{ratio:.2f}": {
+                        "requested_evicted_token_count": int(
+                            source_tokens * ratio
+                        ),
+                        "eviction_source_start": source_start,
+                        "eviction_source_end": (
+                            source_start + int(source_tokens * ratio)
+                        ),
+                        "physical_before_count": source_tokens,
+                        "physical_after_count": (
+                            source_tokens - int(source_tokens * ratio)
+                        ),
+                        "evicted_token_count": int(source_tokens * ratio),
+                        "retained_token_count": (
+                            source_tokens - int(source_tokens * ratio)
+                        ),
+                        "merge_target_retained": (
+                            source_tokens - int(source_tokens * ratio)
+                        ),
+                    }
+                    for ratio in (0.25, 0.40)
+                },
+            }
+        )
+    return {
+        "schema": "mergecert-q1-registration-v1",
+        "status": "finalized",
+        "source_registration_sha256": hashlib.sha256(
+            Q1_REGISTRATION_SOURCE.read_bytes()
+        ).hexdigest(),
+        "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+        "tokenizer": {
+            "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+            "revision": Q1_TOKENIZER_REVISION,
+            "files_sha256": Q1_TOKENIZER_FILES_SHA256,
+            "artifact_sha256": Q1_TOKENIZER_ARTIFACT_SHA256,
+        },
+        "source_hashes": {
+            "corpus_manifest_sha256": "1" * 64,
+            "all_items_sha256": source["all_items_sha256"],
+            "source_document_sha256": {
+                doc_id: hashlib.sha256(
+                    f"source:{doc_id}".encode()
+                ).hexdigest()
+                for doc_id in source["population_doc_ids"]
+            },
+        },
+        "population_doc_ids": source["population_doc_ids"],
+        "smoke_doc_ids": source["smoke_doc_ids"],
+        "all_items_sha256": source["all_items_sha256"],
+        "archive_sha256": source["archive_sha256"],
+        "documents": documents,
+    }
+
+
+def _prepare_binder_root(tmp_path):
+    root = tmp_path / "repo"
+    binding_path = root / "memsub" / "mergecert_q1_registration.py"
+    plan = root / "plans" / "260728-mergecert-q1"
+    provenance_path = plan / "source-provenance.json"
+    source_path = plan / "q1-registration-source.json"
+    binding_path.parent.mkdir(parents=True)
+    plan.mkdir(parents=True)
+    binding_path.write_text(
+        (
+            ROOT / "memsub" / "mergecert_q1_registration.py"
+        ).read_text()
+    )
+    source_path.write_bytes(Q1_REGISTRATION_SOURCE.read_bytes())
+    provenance_path.write_text(
+        json.dumps(
+            {
+                "q1_registration": {
+                    "path": (
+                        "plans/260728-mergecert-q1/q1-registration.json"
+                    ),
+                    "remote_path": (
+                        "/artifacts/mergecert-q1/q1-registration.json"
+                    ),
+                    "sha256": Q1_REGISTRATION_PENDING,
+                    "status": (
+                        "pending CPU extraction and independent review"
+                    ),
+                }
+            },
+            indent=1,
+        )
+        + "\n"
+    )
+    extracted = tmp_path / "extracted.json"
+    raw = (
+        json.dumps(
+            _fake_final_registration(), indent=1, allow_nan=False
+        )
+        + "\n"
+    ).encode()
+    extracted.write_bytes(raw)
+    return root, binding_path, provenance_path, extracted, raw
 
 
 def test_mergecert_runner_pins_the_registered_private_campaign_contract():
@@ -333,9 +469,34 @@ def test_mergecert_q1_registration_extractor_hashes_exact_tokenizer_revision(
     )
     snapshot = tmp_path / "snapshot"
     snapshot.mkdir()
-    (snapshot / "tokenizer.json").write_bytes(b"tokenizer-bytes")
-    (snapshot / "tokenizer_config.json").write_bytes(b"config-bytes")
+    contents = {
+        "config.json": b"config",
+        "merges.txt": b"merges",
+        "tokenizer.json": b"tokenizer",
+        "tokenizer_config.json": b"tokenizer-config",
+        "vocab.json": b"vocab",
+    }
+    for name, value in contents.items():
+        (snapshot / name).write_bytes(value)
     (snapshot / "model.safetensors").write_bytes(b"must-not-be-emitted")
+    files = {
+        name: hashlib.sha256(value).hexdigest()
+        for name, value in contents.items()
+    }
+    artifact_sha256 = hashlib.sha256(
+        json.dumps(
+            files, sort_keys=True, separators=(",", ":")
+        ).encode()
+    ).hexdigest()
+    monkeypatch.setattr(
+        extractor, "Q1_TOKENIZER_FILES_SHA256", files, raising=False
+    )
+    monkeypatch.setattr(
+        extractor,
+        "Q1_TOKENIZER_ARTIFACT_SHA256",
+        artifact_sha256,
+        raising=False,
+    )
 
     class ExactRevisionTokenizer:
         @classmethod
@@ -380,22 +541,62 @@ def test_mergecert_q1_registration_extractor_hashes_exact_tokenizer_revision(
     assert hasattr(extractor, "_load_tokenizer_with_provenance")
     _, provenance = extractor._load_tokenizer_with_provenance()
 
-    files = {
-        "tokenizer.json": hashlib.sha256(b"tokenizer-bytes").hexdigest(),
-        "tokenizer_config.json": hashlib.sha256(b"config-bytes").hexdigest(),
-    }
     assert provenance == {
         "model_id": "Qwen/Qwen3-4B-Instruct-2507",
         "revision": Q1_TOKENIZER_REVISION,
         "files_sha256": files,
-        "artifact_sha256": hashlib.sha256(
-            json.dumps(
-                files,
-                sort_keys=True,
-                separators=(",", ":"),
-            ).encode()
-        ).hexdigest(),
+        "artifact_sha256": artifact_sha256,
     }
+
+
+@pytest.mark.parametrize("mutation", ("missing", "extra", "wrong"))
+def test_mergecert_q1_tokenizer_manifest_rejects_any_file_drift(
+    tmp_path, mutation
+):
+    binding = _load_module(
+        ROOT / "memsub" / "mergecert_q1_registration.py",
+        f"mergecert_q1_tokenizer_manifest_{mutation}",
+    )
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    contents = {
+        "config.json": b"config",
+        "merges.txt": b"merges",
+        "tokenizer.json": b"tokenizer",
+        "tokenizer_config.json": b"tokenizer-config",
+        "vocab.json": b"vocab",
+    }
+    expected = {
+        name: hashlib.sha256(value).hexdigest()
+        for name, value in contents.items()
+    }
+    for name, value in contents.items():
+        (snapshot / name).write_bytes(value)
+    if mutation == "missing":
+        (snapshot / "merges.txt").unlink()
+    elif mutation == "extra":
+        (snapshot / "special_tokens_map.json").write_bytes(b"extra")
+    else:
+        (snapshot / "vocab.json").write_bytes(b"wrong")
+
+    assert hasattr(binding, "tokenizer_artifact_digests")
+    with pytest.raises(ValueError, match="tokenizer artifact"):
+        binding.tokenizer_artifact_digests(
+            snapshot, expected_files_sha256=expected
+        )
+
+
+def test_mergecert_q1_pins_the_exact_five_tokenizer_artifacts():
+    binding = _load_module(
+        ROOT / "memsub" / "mergecert_q1_registration.py",
+        "mergecert_q1_exact_tokenizer_manifest",
+    )
+
+    assert binding.Q1_TOKENIZER_FILES_SHA256 == Q1_TOKENIZER_FILES_SHA256
+    assert (
+        binding.Q1_TOKENIZER_ARTIFACT_SHA256
+        == Q1_TOKENIZER_ARTIFACT_SHA256
+    )
 
 
 @pytest.mark.parametrize("mode", ("duplicate", "incomplete"))
@@ -503,9 +704,126 @@ def test_mergecert_q1_runner_checks_live_sources_before_model_runtime():
     ]
 
     assert hasattr(runner, "_verify_q1_source_integrity")
+    assert hasattr(runner, "_verify_q1_tokenizer_integrity")
     assert names.index("_verify_q1_source_integrity") < names.index(
         "build_runtime"
     )
+    assert names.index("_verify_q1_tokenizer_integrity") < names.index(
+        "build_runtime"
+    )
+
+
+def test_mergecert_q1_runtime_build_is_revision_pinned_and_offline():
+    tree = ast.parse(RUNNER.read_text())
+    run_q1 = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_run_q1"
+    )
+    call = next(
+        node
+        for node in ast.walk(run_q1)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "build_runtime"
+    )
+    keywords = {item.arg: ast.literal_eval(item.value) for item in call.keywords}
+
+    assert keywords == {
+        "reference": True,
+        "revision": Q1_TOKENIZER_REVISION,
+        "local_files_only": True,
+    }
+
+
+def test_reference_runtime_forwards_revision_to_model_and_tokenizer(
+    monkeypatch,
+):
+    import memsub.runtime as runtime_module
+    from memsub import reference_config
+
+    sentinel = object()
+
+    class ExactPinnedRuntime:
+        @classmethod
+        def load(
+            cls,
+            model_id,
+            *,
+            device,
+            dtype,
+            attention_impl,
+            revision,
+            local_files_only,
+        ):
+            if (
+                model_id != "Qwen/Qwen3-4B-Instruct-2507"
+                or revision != Q1_TOKENIZER_REVISION
+                or local_files_only is not True
+            ):
+                raise ValueError("reference runtime is unpinned")
+            return sentinel
+
+    monkeypatch.setattr(
+        runtime_module, "HFModelRuntime", ExactPinnedRuntime
+    )
+
+    assert (
+        reference_config.build_runtime(
+            reference=True,
+            revision=Q1_TOKENIZER_REVISION,
+            local_files_only=True,
+        )
+        is sentinel
+    )
+
+
+def test_hf_runtime_load_pins_model_and_tokenizer_to_same_snapshot(
+    monkeypatch,
+):
+    from memsub.runtime import HFModelRuntime
+
+    calls = {}
+
+    class FakeTokenizer:
+        @classmethod
+        def from_pretrained(cls, model_id, **kwargs):
+            calls["tokenizer"] = (model_id, kwargs)
+            return object()
+
+    class FakeModel:
+        @classmethod
+        def from_pretrained(cls, model_id, **kwargs):
+            calls["model"] = (model_id, kwargs)
+            return cls()
+
+        def to(self, device):
+            calls["device"] = device
+            return self
+
+        def eval(self):
+            return self
+
+    monkeypatch.setitem(
+        sys.modules,
+        "transformers",
+        types.SimpleNamespace(
+            AutoTokenizer=FakeTokenizer,
+            AutoModelForCausalLM=FakeModel,
+        ),
+    )
+    HFModelRuntime.load(
+        "Qwen/Qwen3-4B-Instruct-2507",
+        device="cpu",
+        revision=Q1_TOKENIZER_REVISION,
+        local_files_only=True,
+    )
+
+    for component in ("tokenizer", "model"):
+        model_id, kwargs = calls[component]
+        assert model_id == "Qwen/Qwen3-4B-Instruct-2507"
+        assert kwargs["revision"] == Q1_TOKENIZER_REVISION
+        assert kwargs["local_files_only"] is True
 
 
 def test_mergecert_q1_binder_updates_one_literal_and_provenance(
@@ -515,51 +833,10 @@ def test_mergecert_q1_binder_updates_one_literal_and_provenance(
     binder = _load_module(
         Q1_REGISTRATION_BINDER, "mergecert_q1_registration_binder"
     )
-    root = tmp_path / "repo"
-    binding_path = root / "memsub" / "mergecert_q1_registration.py"
-    provenance_path = (
-        root / "plans" / "260728-mergecert-q1" / "source-provenance.json"
+    root, binding_path, provenance_path, extracted, reviewed_bytes = (
+        _prepare_binder_root(tmp_path)
     )
-    binding_path.parent.mkdir(parents=True)
-    provenance_path.parent.mkdir(parents=True)
-    binding_path.write_text(
-        (
-            ROOT / "memsub" / "mergecert_q1_registration.py"
-        ).read_text()
-    )
-    provenance_path.write_text(
-        json.dumps(
-            {
-                "q1_registration": {
-                    "path": (
-                        "plans/260728-mergecert-q1/q1-registration.json"
-                    ),
-                    "remote_path": (
-                        "/artifacts/mergecert-q1/q1-registration.json"
-                    ),
-                    "sha256": Q1_REGISTRATION_PENDING,
-                    "status": (
-                        "pending CPU extraction and independent review"
-                    ),
-                }
-            },
-            indent=1,
-        )
-    )
-    extracted = tmp_path / "extracted.json"
-    extracted_payload = {
-        "schema": "mergecert-q1-registration-v1",
-        "status": "finalized",
-        "source_registration_sha256": "a" * 64,
-        "documents": [],
-    }
-    extracted.write_text(
-        json.dumps(extracted_payload, indent=1, allow_nan=False)
-    )
-    expected_bytes = (
-        json.dumps(extracted_payload, indent=1, allow_nan=False) + "\n"
-    ).encode()
-    expected_sha256 = hashlib.sha256(expected_bytes).hexdigest()
+    expected_sha256 = hashlib.sha256(reviewed_bytes).hexdigest()
 
     result = binder.bind_registration(extracted, root=root)
 
@@ -574,7 +851,7 @@ def test_mergecert_q1_binder_updates_one_literal_and_provenance(
         "path": target,
         "sha256": expected_sha256,
     }
-    assert target.read_bytes() == expected_bytes
+    assert target.read_bytes() == reviewed_bytes
     assert (
         f'Q1_REGISTRATION_SHA256 = "{expected_sha256}"'
         in binding_path.read_text()
@@ -585,6 +862,137 @@ def test_mergecert_q1_binder_updates_one_literal_and_provenance(
         "sha256": expected_sha256,
         "status": "finalized and hash-bound",
     }
+
+
+def test_mergecert_q1_binder_rejects_noncanonical_or_repeated_binding(
+    tmp_path,
+):
+    binder = _load_module(
+        Q1_REGISTRATION_BINDER, "mergecert_q1_registration_one_shot"
+    )
+    root, binding_path, _, extracted, reviewed_bytes = _prepare_binder_root(
+        tmp_path
+    )
+    extracted.write_bytes(reviewed_bytes.rstrip())
+
+    with pytest.raises(ValueError, match="canonical"):
+        binder.bind_registration(extracted, root=root)
+    assert "Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING" in (
+        binding_path.read_text()
+    )
+    assert not (
+        root
+        / "plans"
+        / "260728-mergecert-q1"
+        / "q1-registration.json"
+    ).exists()
+
+    extracted.write_bytes(reviewed_bytes)
+    binder.bind_registration(extracted, root=root)
+    with pytest.raises(ValueError, match="already finalized|inconsistent"):
+        binder.bind_registration(extracted, root=root)
+
+
+def test_mergecert_q1_binder_rejects_inconsistent_pending_state(tmp_path):
+    binder = _load_module(
+        Q1_REGISTRATION_BINDER, "mergecert_q1_registration_inconsistent"
+    )
+    root, binding_path, provenance_path, extracted, _ = (
+        _prepare_binder_root(tmp_path)
+    )
+    provenance = json.loads(provenance_path.read_text())
+    provenance["q1_registration"]["sha256"] = "f" * 64
+    provenance_path.write_text(
+        json.dumps(provenance, indent=1, allow_nan=False) + "\n"
+    )
+
+    with pytest.raises(ValueError, match="inconsistent"):
+        binder.bind_registration(extracted, root=root)
+    assert "Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING" in (
+        binding_path.read_text()
+    )
+
+
+@pytest.mark.parametrize(
+    ("location", "field"),
+    (
+        ("top", "raw_corpus"),
+        ("tokenizer", "document_content"),
+        ("source_hashes", "raw_corpus"),
+        ("document", "document_content"),
+        ("budget", "raw_corpus"),
+    ),
+)
+def test_mergecert_q1_registration_schema_rejects_unknown_leakage_fields(
+    tmp_path, location, field
+):
+    binder = _load_module(
+        Q1_REGISTRATION_BINDER,
+        f"mergecert_q1_registration_leak_{location}",
+    )
+    root, binding_path, _, extracted, _ = _prepare_binder_root(tmp_path)
+    registration = _fake_final_registration()
+    if location == "top":
+        target = registration
+    elif location == "tokenizer":
+        target = registration["tokenizer"]
+    elif location == "source_hashes":
+        target = registration["source_hashes"]
+    elif location == "document":
+        target = registration["documents"][0]
+    else:
+        target = registration["documents"][0]["budgets"]["0.25"]
+    target[field] = "private source body"
+    extracted.write_text(
+        json.dumps(registration, indent=1, allow_nan=False) + "\n"
+    )
+
+    with pytest.raises(ValueError, match="schema|unknown"):
+        binder.bind_registration(extracted, root=root)
+    assert "Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING" in (
+        binding_path.read_text()
+    )
+
+
+@pytest.mark.parametrize(
+    ("operation", "failure_index"),
+    (
+        ("stage", 1),
+        ("stage", 2),
+        ("stage", 3),
+        ("replace", 1),
+        ("replace", 2),
+        ("replace", 3),
+    ),
+)
+def test_mergecert_q1_binder_faults_never_enable_partial_state(
+    tmp_path, monkeypatch, operation, failure_index
+):
+    binder = _load_module(
+        Q1_REGISTRATION_BINDER,
+        f"mergecert_q1_registration_fault_{operation}_{failure_index}",
+    )
+    root, binding_path, _, extracted, _ = _prepare_binder_root(tmp_path)
+    function_name = (
+        "_stage_bytes" if operation == "stage" else "_replace_staged"
+    )
+    original = getattr(binder, function_name)
+    calls = 0
+
+    def fail_at_index(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == failure_index:
+            raise OSError(f"injected {operation} failure {failure_index}")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(binder, function_name, fail_at_index)
+
+    with pytest.raises(OSError, match="injected"):
+        binder.bind_registration(extracted, root=root)
+    assert "Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING" in (
+        binding_path.read_text()
+    )
 
 
 def test_mergecert_q1_registration_extractor_builds_runner_shaped_exact_budget():
