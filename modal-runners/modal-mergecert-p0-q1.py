@@ -108,7 +108,7 @@ image = (
         "plans/260728-mergecert-q1/q1-registration-source.json",
         Q1_REGISTRATION_SOURCE_PATH,
     )
-    .add_local_dir("memsub", "/root/repo/memsub")
+    .add_local_python_source("memsub")
 )
 hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)

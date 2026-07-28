@@ -468,6 +468,17 @@ def test_mergecert_q1_records_remote_verification_and_smoke_stop():
     )
 
 
+def test_mergecert_q1_image_packages_memsub_as_importable_python_source():
+    runner = _load_module(RUNNER, "mergecert_q1_image_contract")
+    image_impl = next(
+        value
+        for name, value in vars(runner.image).items()
+        if name.startswith("_sync_original_")
+    )
+
+    assert image_impl._added_python_source_set == {"memsub"}
+
+
 def test_mergecert_q1_registration_source_pins_exact_population_and_archives():
     registration = json.loads(Q1_REGISTRATION_SOURCE.read_text())
 
