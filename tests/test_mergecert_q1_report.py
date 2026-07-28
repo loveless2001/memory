@@ -816,6 +816,8 @@ def test_report_tools_fail_closed_while_registration_binding_is_pending(
     validator = _load(
         VALIDATOR, "mergecert_q1_validator_pending", bind=False
     )
+    renderer.Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING
+    validator.Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING
     root, plan = _build_bundle(tmp_path, positive=False)
 
     assert renderer.Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING

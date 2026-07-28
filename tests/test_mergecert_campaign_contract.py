@@ -18,6 +18,12 @@ PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
 Q1_PROVENANCE = (
     ROOT / "plans" / "260728-mergecert-q1" / "source-provenance.json"
 )
+Q1_REGISTRATION_EXTRACTION = (
+    ROOT
+    / "plans"
+    / "260728-mergecert-q1"
+    / "q1-registration-extraction.json"
+)
 Q1_REGISTRATION_SOURCE = (
     ROOT / "plans" / "260728-mergecert-q1" / "q1-registration-source.json"
 )
@@ -28,6 +34,9 @@ Q1_REGISTRATION_BINDER = (
     ROOT / "scripts" / "bind-mergecert-q1-registration.py"
 )
 Q1_REGISTRATION_PENDING = "PENDING_CPU_EXTRACTION"
+Q1_REGISTRATION_SHA256 = (
+    "6d90677469c5548d0fde863db886e7a6665e25f15c23d351ba07a0ad4db6e2d5"
+)
 Q1_TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
 Q1_TOKENIZER_FILES_SHA256 = {
     "config.json": (
@@ -175,10 +184,14 @@ def _prepare_binder_root(tmp_path):
     source_path = plan / "q1-registration-source.json"
     binding_path.parent.mkdir(parents=True)
     plan.mkdir(parents=True)
+    binding_text = (
+        ROOT / "memsub" / "mergecert_q1_registration.py"
+    ).read_text()
     binding_path.write_text(
-        (
-            ROOT / "memsub" / "mergecert_q1_registration.py"
-        ).read_text()
+        binding_text.replace(
+            f'Q1_REGISTRATION_SHA256 = "{Q1_REGISTRATION_SHA256}"',
+            "Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING",
+        )
     )
     source_path.write_bytes(Q1_REGISTRATION_SOURCE.read_bytes())
     provenance_path.write_text(
@@ -387,9 +400,39 @@ def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
     assert provenance["q1_registration"] == {
         "path": "plans/260728-mergecert-q1/q1-registration.json",
         "remote_path": "/artifacts/mergecert-q1/q1-registration.json",
-        "sha256": Q1_REGISTRATION_PENDING,
-        "status": "pending CPU extraction and independent review",
+        "sha256": Q1_REGISTRATION_SHA256,
+        "status": "finalized and hash-bound",
     }
+
+
+def test_mergecert_q1_records_the_bounded_cpu_extraction():
+    evidence = json.loads(Q1_REGISTRATION_EXTRACTION.read_text())
+    registration_path = ROOT / evidence["registration"]["path"]
+
+    assert evidence["status"] == "completed-reviewed-and-bound"
+    assert evidence["modal"] == {
+        "app_id": "ap-Bx0LRrGGZ0yUchiepNVrtV",
+        "app_name": "mergecert-q1-registration",
+        "state": "stopped",
+        "tasks_after_stop": 0,
+        "created_at": "2026-07-29 02:41:10+07:00",
+        "stopped_at": "2026-07-29 02:42:10+07:00",
+        "app_lifetime_seconds": 60,
+        "function_call_id": "fc-01KYN3YPCSNQ0KBJJYNS5BZMNA",
+        "gpu_requested": False,
+        "model_weights_loaded": False,
+        "remote_volume_written": False,
+    }
+    assert evidence["cost_estimate"]["usd"] < (
+        evidence["cost_estimate"]["campaign_bound_usd"]
+    )
+    assert evidence["registration"]["sha256"] == hashlib.sha256(
+        registration_path.read_bytes()
+    ).hexdigest()
+    assert evidence["registration"]["bytes"] == (
+        registration_path.stat().st_size
+    )
+    assert evidence["registration"]["sha256"] == Q1_REGISTRATION_SHA256
 
 
 def test_mergecert_q1_registration_source_pins_exact_population_and_archives():
@@ -626,10 +669,16 @@ def test_mergecert_q1_registration_extractor_rejects_bad_source_rows(
         extractor._load_source_texts(expected)
 
 
-def test_mergecert_q1_registration_binding_is_explicitly_pending():
-    runner = _load_module(RUNNER, "mergecert_q1_pending_binding")
+def test_mergecert_q1_registration_binding_is_finalized_and_exact():
+    runner = _load_module(RUNNER, "mergecert_q1_final_binding")
+    registration = (
+        ROOT / "plans" / "260728-mergecert-q1" / "q1-registration.json"
+    )
 
-    assert runner.Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING
+    assert runner.Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_SHA256
+    assert hashlib.sha256(registration.read_bytes()).hexdigest() == (
+        Q1_REGISTRATION_SHA256
+    )
 
 
 @pytest.mark.parametrize("mutation", ("wrong_hash", "duplicate"))

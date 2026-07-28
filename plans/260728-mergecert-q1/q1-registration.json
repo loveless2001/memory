@@ -1,0 +1,647 @@
+{
+ "schema": "mergecert-q1-registration-v1",
+ "status": "finalized",
+ "source_registration_sha256": "6ab5b8cd8b63ff086795796220f458d5d3caf7127cc51c253102d473da45c9c4",
+ "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+ "tokenizer": {
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "files_sha256": {
+   "config.json": "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba",
+   "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+   "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+   "tokenizer_config.json": "a62ff0a2472a0fa1b8eaabcb57c59b58afa42a22831dc141400b6e0cf2b65ce3",
+   "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "artifact_sha256": "709a32d47b81b8466749dac3f8c4718b901bad95c534a486a8ac0b388094f6c9"
+ },
+ "source_hashes": {
+  "corpus_manifest_sha256": "5a4f1d68290ba3bfe6831dd26510cde899191650e57e2e2e5ac3abe5f43423e5",
+  "all_items_sha256": "0373b9b24656a7463715c2ca094da69582e4d77f1801998e2b622aa19f8ab1e0",
+  "source_document_sha256": {
+   "financial/00000": "7e0b1e1e3a2fb1c0dbe19ae0819ebcf7f1e52187c63c2c896832970c351e7d37",
+   "financial/00008": "39b3e61eaf90cd9bbb7afcba56233d4a1b6718b814bf122b88d0034689e44258",
+   "financial/00016": "a888c46a177a10683edcd4c1f9e602e18194b5fe7c7ca8822dd6919b6dc99da8",
+   "financial/00024": "5d2f529fd8ac6561efe295125243032dbbabd9ef2b2777fd51f9ef52276aa2c9",
+   "financial/00032": "f0c0bc0175f7c889745f53532fbc73a499c5aea14ce1ea74b2439616e593981f",
+   "legal/00000": "3a4c836b03cf83e156dc0e2039f60131b81830475a4bf59d5272848f30afb21b",
+   "legal/00008": "4b9b25063f1adf873df705b6e2db7f4ab057a6f8a916850a860c476d2ad03a55",
+   "legal/00016": "ff6378aa90274c5f7a04ec9c91a3780d82e1b72c63e7543ef3d4e68f7ef58e4b",
+   "legal/00024": "ab4adf103fa7743083f6e5ecc970d5cea37f6c52a7df2d0860f24432523aef22",
+   "legal/00032": "c4b446ae3b63844bd4734ab1253a889dcb3be835f9f5f5fbdf52b46a5be82022",
+   "code/00008": "e5be0588bfaa57b700610599ec6b16bf88c260365e67b90c730f01d5d8b8f54f",
+   "code/00016": "3a9e56d57c9aa07cd1ddf3e718782ae8ea6540c1403a5553ba2f19474782c916",
+   "code/00024": "45352c06f1fb0c4e7dc83c64a5e5b230fc087cf9d5dd74c70b26a76179c85f62",
+   "code/00032": "344e46eca5fb31f07962037d9c3540db0d96f560007b469dc60091fa7bc7c214",
+   "code/00040": "535f1701e7b750413b0c4202476f0e030d2ffb754ab4c889d3807dfd959e31d6",
+   "literature/00000": "ffbf26a1673617d583e0bbb734c7cb2ca310bedc10ca7a0c706564f783d7ca55",
+   "literature/00008": "8aac269227bca06b603994f88492f310e1056c178c130ba5f663ec67d45c20c0",
+   "literature/00016": "815e1e3c46d55312746d516cb08f85781577175b5ce71d44fb97787acc461125",
+   "literature/00024": "29cf2468c7e0ddba9fd02ee0272cb219637648ba8adfa637b8c1caf949d7e5b4",
+   "literature/00032": "0f9fe10f788ee45b50bae531b147165120c408558a98a344b0601592c3caafac"
+  }
+ },
+ "population_doc_ids": [
+  "financial/00000",
+  "financial/00008",
+  "financial/00016",
+  "financial/00024",
+  "financial/00032",
+  "legal/00000",
+  "legal/00008",
+  "legal/00016",
+  "legal/00024",
+  "legal/00032",
+  "code/00008",
+  "code/00016",
+  "code/00024",
+  "code/00032",
+  "code/00040",
+  "literature/00000",
+  "literature/00008",
+  "literature/00016",
+  "literature/00024",
+  "literature/00032"
+ ],
+ "smoke_doc_ids": [
+  "financial/00000",
+  "financial/00008"
+ ],
+ "all_items_sha256": "0373b9b24656a7463715c2ca094da69582e4d77f1801998e2b622aa19f8ab1e0",
+ "archive_sha256": {
+  "financial-evict0.00.json": "443646a08c59ae57daf676d07c0277ef149940f31870d7be63d2dfb0dd27131d",
+  "financial-evict0.25.json": "356570c30fa860bea2de43e4627d7d7d2303e9680cd6f0384d5eb1ebaedc3e18",
+  "financial-evict0.40.json": "6202133a815d1fd91ff38e10c6f2b7dfdf1193bf957037c06fc44cb1a873466f",
+  "legal-evict0.00.json": "8887f27ef010f6c26794838cc1be1ce9ee6f440a70a4923b86acc1ba3289caf2",
+  "legal-evict0.25.json": "66fad5dbf100eba2a9d2e145e1dab8373fc877881d54bd8ae17fc510285a0639",
+  "legal-evict0.40.json": "cf6c7b3687dd09579302f9e1e9c6ddf326284a5fb25283423a3eb91dc2c1b63e",
+  "code-evict0.00.json": "80e99ef86de02853e58478617fd29ad4c357837cd9312af9dfc5b2b35b428008",
+  "code-evict0.25.json": "c642addc2868645fc3c66e950da024b798026fa0d802b83e0247f49a78130c3d",
+  "code-evict0.40.json": "66c1fd97c9aadc0efed742af95fbd329b01af4b7b37d68fbf399bb332f401586",
+  "literature-evict0.00.json": "8c1ecc02e1f9e2e6b3347428941483781db9a26458b5993ffa82bec1085fa67c",
+  "literature-evict0.25.json": "47276be330edda5b98b81c7f554c1bbf5c241a59785974faa6a19ee419a52a0a",
+  "literature-evict0.40.json": "a4ffe87a3de6dda7a24f1cf455d90bd5dd1f8150b0ae079d3355cd260e0d0e36"
+ },
+ "documents": [
+  {
+   "doc_id": "financial/00000",
+   "context_start": 7,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "financial/00008",
+   "context_start": 9693,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "financial/00016",
+   "context_start": 616,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "financial/00024",
+   "context_start": 7219,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "financial/00032",
+   "context_start": 7885,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "legal/00000",
+   "context_start": 14914,
+   "source_context_token_count": 3921,
+   "model_input_token_count": 3921,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 980,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2004,
+     "physical_before_count": 3921,
+     "physical_after_count": 2941,
+     "evicted_token_count": 980,
+     "retained_token_count": 2941,
+     "merge_target_retained": 2941
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1568,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2592,
+     "physical_before_count": 3921,
+     "physical_after_count": 2353,
+     "evicted_token_count": 1568,
+     "retained_token_count": 2353,
+     "merge_target_retained": 2353
+    }
+   }
+  },
+  {
+   "doc_id": "legal/00008",
+   "context_start": 5082,
+   "source_context_token_count": 3309,
+   "model_input_token_count": 3309,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 827,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 1851,
+     "physical_before_count": 3309,
+     "physical_after_count": 2482,
+     "evicted_token_count": 827,
+     "retained_token_count": 2482,
+     "merge_target_retained": 2482
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1323,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2347,
+     "physical_before_count": 3309,
+     "physical_after_count": 1986,
+     "evicted_token_count": 1323,
+     "retained_token_count": 1986,
+     "merge_target_retained": 1986
+    }
+   }
+  },
+  {
+   "doc_id": "legal/00016",
+   "context_start": 17750,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "legal/00024",
+   "context_start": 5463,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "legal/00032",
+   "context_start": 6574,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "code/00008",
+   "context_start": 1001,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "code/00016",
+   "context_start": 1990,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "code/00024",
+   "context_start": 0,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 845,
+     "eviction_source_end": 1869,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 845,
+     "eviction_source_end": 2483,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "code/00032",
+   "context_start": 8473,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "code/00040",
+   "context_start": 8030,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "literature/00000",
+   "context_start": 1871,
+   "source_context_token_count": 4047,
+   "model_input_token_count": 4047,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1011,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2035,
+     "physical_before_count": 4047,
+     "physical_after_count": 3036,
+     "evicted_token_count": 1011,
+     "retained_token_count": 3036,
+     "merge_target_retained": 3036
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1618,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2642,
+     "physical_before_count": 4047,
+     "physical_after_count": 2429,
+     "evicted_token_count": 1618,
+     "retained_token_count": 2429,
+     "merge_target_retained": 2429
+    }
+   }
+  },
+  {
+   "doc_id": "literature/00008",
+   "context_start": 13715,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "literature/00016",
+   "context_start": 11163,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  },
+  {
+   "doc_id": "literature/00024",
+   "context_start": 13382,
+   "source_context_token_count": 3466,
+   "model_input_token_count": 3466,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 866,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 1890,
+     "physical_before_count": 3466,
+     "physical_after_count": 2600,
+     "evicted_token_count": 866,
+     "retained_token_count": 2600,
+     "merge_target_retained": 2600
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1386,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2410,
+     "physical_before_count": 3466,
+     "physical_after_count": 2080,
+     "evicted_token_count": 1386,
+     "retained_token_count": 2080,
+     "merge_target_retained": 2080
+    }
+   }
+  },
+  {
+   "doc_id": "literature/00032",
+   "context_start": 39347,
+   "source_context_token_count": 4096,
+   "model_input_token_count": 4096,
+   "budgets": {
+    "0.25": {
+     "requested_evicted_token_count": 1024,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2048,
+     "physical_before_count": 4096,
+     "physical_after_count": 3072,
+     "evicted_token_count": 1024,
+     "retained_token_count": 3072,
+     "merge_target_retained": 3072
+    },
+    "0.40": {
+     "requested_evicted_token_count": 1638,
+     "eviction_source_start": 1024,
+     "eviction_source_end": 2662,
+     "physical_before_count": 4096,
+     "physical_after_count": 2458,
+     "evicted_token_count": 1638,
+     "retained_token_count": 2458,
+     "merge_target_retained": 2458
+    }
+   }
+  }
+ ]
+}

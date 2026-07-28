@@ -1,36 +1,39 @@
 {
-  "protocol": "MERGECERT-Q1",
-  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
-  "upstream_commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
-  "upstream_files": {
-    "README.md": "edfd5236d99dab5d6e4bf80b74dd79a54ffd94cec4b7066511dc6fd7ae7cae17",
-    "benchmarks/modal_kv_real_bench.py": "518b2d2cd4b652f4cc83ef9c82593fe624301986e0e3e22780ee9f0bfe423bb8",
-    "lego_server.py": "f1df91c8af05cf4ea5000f4027450bf91e5e269f4e922da8979fc0885d6ff228"
-  },
-  "ratios": [0.25, 0.4],
-  "sink_token_count": 4,
-  "budget_mode": "archived-m1-per-document-matched-physical-v1",
-  "settled_amendment_date": "2026-07-29",
-  "q1_registration_source": {
-    "path": "plans/260728-mergecert-q1/q1-registration-source.json",
-    "sha256": "6ab5b8cd8b63ff086795796220f458d5d3caf7127cc51c253102d473da45c9c4",
-    "status": "source-evidence-only; finalized CPU extraction pending"
-  },
-  "q1_registration": {
-    "path": "plans/260728-mergecert-q1/q1-registration.json",
-    "remote_path": "/artifacts/mergecert-q1/q1-registration.json",
-    "sha256": "PENDING_CPU_EXTRACTION",
-    "status": "pending CPU extraction and independent review"
-  },
-  "addendum": {
-    "path": "MERGECERT-Q1.md",
-    "sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
-  },
-  "settled_p0": {
-    "verdict_path": "plans/260727-mergecert/p0-verdict.json",
-    "verdict_sha256": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a",
-    "raw_path": "plans/260727-mergecert/p0-direction-200.json",
-    "raw_sha256": "2d12ae1de090f3d93ba3cad97f68a49f543cd4a0398078c625e2641981f10f6c"
-  },
-  "parent_source_provenance_sha256": "cbaaec6a20cb4e53ab36a56f377c91c6bd97b8028f1fd60e2c63bdb759576930"
+ "protocol": "MERGECERT-Q1",
+ "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+ "upstream_commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
+ "upstream_files": {
+  "README.md": "edfd5236d99dab5d6e4bf80b74dd79a54ffd94cec4b7066511dc6fd7ae7cae17",
+  "benchmarks/modal_kv_real_bench.py": "518b2d2cd4b652f4cc83ef9c82593fe624301986e0e3e22780ee9f0bfe423bb8",
+  "lego_server.py": "f1df91c8af05cf4ea5000f4027450bf91e5e269f4e922da8979fc0885d6ff228"
+ },
+ "ratios": [
+  0.25,
+  0.4
+ ],
+ "sink_token_count": 4,
+ "budget_mode": "archived-m1-per-document-matched-physical-v1",
+ "settled_amendment_date": "2026-07-29",
+ "q1_registration_source": {
+  "path": "plans/260728-mergecert-q1/q1-registration-source.json",
+  "sha256": "6ab5b8cd8b63ff086795796220f458d5d3caf7127cc51c253102d473da45c9c4",
+  "status": "source-evidence-only; finalized CPU extraction pending"
+ },
+ "q1_registration": {
+  "path": "plans/260728-mergecert-q1/q1-registration.json",
+  "remote_path": "/artifacts/mergecert-q1/q1-registration.json",
+  "sha256": "6d90677469c5548d0fde863db886e7a6665e25f15c23d351ba07a0ad4db6e2d5",
+  "status": "finalized and hash-bound"
+ },
+ "addendum": {
+  "path": "MERGECERT-Q1.md",
+  "sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+ },
+ "settled_p0": {
+  "verdict_path": "plans/260727-mergecert/p0-verdict.json",
+  "verdict_sha256": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a",
+  "raw_path": "plans/260727-mergecert/p0-direction-200.json",
+  "raw_sha256": "2d12ae1de090f3d93ba3cad97f68a49f543cd4a0398078c625e2641981f10f6c"
+ },
+ "parent_source_provenance_sha256": "cbaaec6a20cb4e53ab36a56f377c91c6bd97b8028f1fd60e2c63bdb759576930"
 }

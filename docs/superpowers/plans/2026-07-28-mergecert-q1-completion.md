@@ -616,7 +616,7 @@ These files authorized the initial failed smoke. The addendum changed after
 the settled 2026-07-29 budget amendment, so this completed upload does not make
 the retry ready.
 
-- [ ] **Step 1a: Extract, review, and bind the finalized Q1 registration**
+- [x] **Step 1a: Extract, review, and bind the finalized Q1 registration**
 
 Run the CPU-only, read-only
 `modal-runners/modal-mergecert-q1-registration.py` entrypoint. It may read the
@@ -640,11 +640,17 @@ This single local binding action copies the reviewed bytes to
 `Q1_REGISTRATION_SHA256`, and records the same literal and finalized output
 path in `plans/260728-mergecert-q1/source-provenance.json`. Run all local
 validators, commit, and independently review that separate post-extraction
-binding commit before any upload or smoke retry. This step is pending:
-`q1-registration.json` is deliberately absent, the shared hash literal and
-source provenance still say pending, and production lengths, source ends,
-tokenizer digests, corpus-manifest digest, and source-document digests have
-not been invented.
+binding commit before any upload or smoke retry.
+
+Completed on 2026-07-29 by the reviewed CPU-only, read-only Modal app
+`ap-Bx0LRrGGZ0yUchiepNVrtV`. The canonical 20,240-byte output is bound at
+SHA-256
+`6d90677469c5548d0fde863db886e7a6665e25f15c23d351ba07a0ad4db6e2d5`;
+the app stopped with zero tasks after a 60-second lifetime. The extraction
+and cost-estimate record is
+`plans/260728-mergecert-q1/q1-registration-extraction.json`. Step 1b remains
+blocked on independent review of the separate binding commit; no upload or
+smoke was performed as part of Step 1a.
 
 - [ ] **Step 1b: Upload and remotely verify all reviewed Q1 inputs**
 

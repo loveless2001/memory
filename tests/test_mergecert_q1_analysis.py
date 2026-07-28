@@ -528,6 +528,7 @@ def test_q1_analysis_requires_the_hash_bound_finalized_registration():
 
 def test_q1_analysis_fails_closed_while_registration_binding_is_pending():
     analyzer = _load_analyzer(bind=False)
+    analyzer.Q1_REGISTRATION_SHA256 = Q1_REGISTRATION_PENDING
 
     assert analyzer.Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING
     with pytest.raises(ValueError, match="pending"):
