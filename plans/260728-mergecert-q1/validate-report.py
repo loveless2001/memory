@@ -65,6 +65,40 @@ EXPECTED_SETTLED_P0 = {
 EXPECTED_PARENT_SOURCE_SHA256 = (
     "cbaaec6a20cb4e53ab36a56f377c91c6bd97b8028f1fd60e2c63bdb759576930"
 )
+PUBLIC_URL_PATTERN = re.compile(r"https?://", re.IGNORECASE)
+QUESTION_CELL_PATTERN = re.compile(
+    r"\|\s*(?:[*_~`]+\s*)?\?\s*(?:[*_~`]+\s*)?\|"
+)
+FORBIDDEN_CLAIM_PATTERNS = (
+    re.compile(r"\bqwen2\.5\b", re.IGNORECASE),
+    re.compile(
+        r"\b(?:deployment[- ](?:ready|certified|approved)|"
+        r"ready\s+for\s+deployment)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(?:deployed\s+(?:successfully|to|in|on|for|at|as)|"
+        r"successfully\s+deployed)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(?:transmission|delivery)\s+confirmed\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(?:sent|delivered|transmitted|shared)\s+to\s+"
+        r"(?:tyler|kevin)\b",
+        re.IGNORECASE,
+    ),
+)
+EXPECTED_PHASE_LABELS = {
+    "q1": "Q1",
+    "q2_q3": "Q2/Q3",
+}
+APP_ID_PATTERN = re.compile(r"ap-[A-Za-z0-9]{6,}")
+BILLING_SOURCE_PATTERN = re.compile(
+    r"Modal billing report \d{4}-\d{2}-\d{2} for apps? .+"
+)
 
 
 def _renderer_module():
@@ -308,12 +342,17 @@ def _validate_conditional(evidence: dict) -> str:
         if conditional.get("status") != "completed":
             raise ValueError("conditional work was not completed after trigger")
         for name in ("q2", "q3"):
+            if name not in evidence:
+                raise ValueError(f"conditional {name.upper()} evidence drift")
             declaration = conditional.get(name, {})
             embedded_trigger = evidence[name].get("q1_trigger")
             embedded_hash = evidence[name].get("q1_trigger_sha256")
+            if name == "q2":
+                f5_table = evidence[name].get("f5_markdown_table")
+                if not isinstance(f5_table, str) or not f5_table.strip():
+                    raise ValueError("conditional Q2 F5 evidence is missing")
             if (
-                name not in evidence
-                or declaration.get("path")
+                declaration.get("path")
                 != evidence["_files"][name]["relative_path"]
                 or declaration.get("sha256")
                 != evidence["_files"][name]["sha256"]
@@ -357,22 +396,19 @@ def _validate_compute(evidence: dict) -> float:
     if not isinstance(phases, dict) or set(phases) != expected_phases:
         raise ValueError("compute billing records are missing")
     calculated = 0.0
-    labels = set()
-    for row in phases.values():
+    seen_app_ids = set()
+    for phase_key, row in phases.items():
         phase = row.get("phase")
-        if not isinstance(phase, str) or not phase or phase in labels:
-            raise ValueError("compute phase records are invalid")
-        labels.add(phase)
+        if phase != EXPECTED_PHASE_LABELS[phase_key]:
+            raise ValueError(f"compute phase binding is invalid for {phase_key}")
         cost = row.get("cost_usd")
         if (
             not _is_number(row.get("gpu_seconds"))
             or float(row["gpu_seconds"]) < 0
             or not _is_number(cost)
             or float(cost) < 0
-            or not isinstance(row.get("source"), str)
-            or "Modal billing report" not in row["source"]
         ):
-            raise ValueError(f"billing source is incomplete for {phase}")
+            raise ValueError(f"billing numeric actuals are incomplete for {phase}")
         runs = row.get("runs")
         if (
             not isinstance(runs, list)
@@ -380,11 +416,30 @@ def _validate_compute(evidence: dict) -> float:
             or any(
                 not isinstance(run, dict)
                 or not isinstance(run.get("app_id"), str)
-                or not run["app_id"].startswith("ap-")
+                or APP_ID_PATTERN.fullmatch(run["app_id"]) is None
                 for run in runs
             )
         ):
             raise ValueError(f"billing app ID is incomplete for {phase}")
+        app_ids = [run["app_id"] for run in runs]
+        if (
+            len(app_ids) != len(set(app_ids))
+            or seen_app_ids.intersection(app_ids)
+        ):
+            raise ValueError(f"billing app ID is duplicated for {phase}")
+        seen_app_ids.update(app_ids)
+        source = row.get("source")
+        source_app_ids = (
+            set(APP_ID_PATTERN.findall(source))
+            if isinstance(source, str)
+            else set()
+        )
+        if (
+            not isinstance(source, str)
+            or BILLING_SOURCE_PATTERN.fullmatch(source) is None
+            or source_app_ids != set(app_ids)
+        ):
+            raise ValueError(f"billing source is incomplete for {phase}")
         calculated += float(cost)
     if not math.isclose(calculated, float(total), rel_tol=0, abs_tol=1e-9):
         raise ValueError("compute total differs from billing records")
@@ -414,19 +469,15 @@ def validate_report_text(report: str, evidence: dict) -> dict:
     privacy_status = _validate_privacy(evidence)
     _validate_loaded_evidence(evidence)
 
-    if re.search(r"https?://", report):
+    if PUBLIC_URL_PATTERN.search(report):
         raise ValueError("report contains a public URL")
-    if re.search(r"\|\s*\?\s*\|", report):
+    if QUESTION_CELL_PATTERN.search(report):
         raise ValueError("report contains a question-mark result cell")
-    for forbidden in (
-        "Qwen2.5",
-        "deployment-ready",
-        "deployment-certified",
-        "ready for deployment",
-        "transmission confirmed",
-    ):
-        if forbidden in report:
-            raise ValueError(f"report contains forbidden claim {forbidden}")
+    for pattern in FORBIDDEN_CLAIM_PATTERNS:
+        if match := pattern.search(report):
+            raise ValueError(
+                f"report contains forbidden claim {match.group(0)}"
+            )
     if REQUIRED_HEADINGS - set(report.splitlines()):
         raise ValueError("report is missing a required heading")
     if "Private to Tyler and Kevin." not in report:

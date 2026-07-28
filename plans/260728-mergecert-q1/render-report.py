@@ -236,6 +236,8 @@ def _conditional_section(evidence: dict) -> str:
             "### Q2 — Routability",
             evidence["q2"]["markdown_table"].rstrip(),
             evidence["q2"]["registered_reading"],
+            "### F5 fifth-regime row",
+            evidence["q2"]["f5_markdown_table"].rstrip(),
             "### Q3 — Fragility",
             evidence["q3"]["markdown_table"].rstrip(),
             evidence["q3"]["interpretation"],
@@ -349,8 +351,7 @@ def render_report(evidence: dict) -> str:
                 ),
             ]
         )
-    else:
-        lines.extend(_favorable_lines(q1))
+    lines.extend(_favorable_lines(q1))
     lines.extend(
         [
             "",

@@ -63,12 +63,18 @@ def _write_json(path, payload):
     path.write_text(json.dumps(payload, indent=1, allow_nan=False))
 
 
-def _q1_verdict(*, positive):
+def _q1_verdict(*, positive, aggregation_only=False):
     intervals = {
         "0.25": {
             "lost_prior": {
-                "mean_diff": -0.12 if positive else 0.02,
-                "ci95": [-0.18, -0.06] if positive else [-0.03, 0.07],
+                "mean_diff": (
+                    -0.12 if positive and not aggregation_only else 0.02
+                ),
+                "ci95": (
+                    [-0.18, -0.06]
+                    if positive and not aggregation_only
+                    else [-0.03, 0.07]
+                ),
             },
             "mean_kl": {
                 "mean_diff": 0.03,
@@ -155,9 +161,11 @@ def _q1_verdict(*, positive):
             }
             for arm, row in summaries.items()
         }
-    favorable = (
-        ["0.25:lost_prior", "0.40:acc_delta"] if positive else []
+    pointwise_favorable = (
+        ["0.25:lost_prior"] if positive and not aggregation_only else []
     )
+    aggregation_favorable = ["0.40:acc_delta"] if positive else []
+    favorable = pointwise_favorable + aggregation_favorable
     return {
         "pass": True,
         "documents": 20,
@@ -183,14 +191,10 @@ def _q1_verdict(*, positive):
         },
         "paired_merge_minus_eviction": intervals,
         "registered_readings": {
-            "r1": "R1" if positive else "R2",
+            "r1": "R1" if pointwise_favorable else "R2",
             "r3": "aggregation-positive" if positive else "aggregation-negative",
-            "pointwise_favorable": (
-                ["0.25:lost_prior"] if positive else []
-            ),
-            "aggregation_favorable": (
-                ["0.40:acc_delta"] if positive else []
-            ),
+            "pointwise_favorable": pointwise_favorable,
+            "aggregation_favorable": aggregation_favorable,
             "favorable_intervals": favorable,
             "run_q2_q3": positive,
         },
@@ -200,7 +204,7 @@ def _q1_verdict(*, positive):
     }
 
 
-def _build_bundle(tmp_path, *, positive):
+def _build_bundle(tmp_path, *, positive, aggregation_only=False):
     root = tmp_path / "repo"
     plan = root / "plans" / "260728-mergecert-q1"
     parent = root / "plans" / "260727-mergecert"
@@ -250,7 +254,9 @@ def _build_bundle(tmp_path, *, positive):
         "parent_source_provenance_sha256": _sha256(parent_source),
     }
     _write_json(plan / "source-provenance.json", source)
-    q1 = _q1_verdict(positive=positive)
+    q1 = _q1_verdict(
+        positive=positive, aggregation_only=aggregation_only
+    )
     _write_json(plan / "q1-verdict.json", q1)
     trigger = {
         "protocol": "MERGECERT-Q1",
@@ -271,6 +277,11 @@ def _build_bundle(tmp_path, *, positive):
                 "| Q2 arm | 0.25 | 0.40 |\n"
                 "|---|---:|---:|\n"
                 "| mechanics refit | 0.7500 | 0.7300 |\n"
+            ),
+            "f5_markdown_table": (
+                "| F5 fifth-regime row | 0.25 | 0.40 |\n"
+                "|---|---:|---:|\n"
+                "| sink-head monitor | 0.7100 | 0.7000 |\n"
             ),
         }
         q3 = {
@@ -316,7 +327,10 @@ def _build_bundle(tmp_path, *, positive):
                 "gpu": "H100",
                 "gpu_seconds": 900.0,
                 "cost_usd": 10.25,
-                "source": "Modal billing report 2026-07-28",
+                "source": (
+                    "Modal billing report 2026-07-28 for apps "
+                    "ap-Q1Smoke and ap-Q1Full"
+                ),
                 "runs": [
                     {"app_id": "ap-Q1Smoke", "purpose": "Q1 smoke"},
                     {"app_id": "ap-Q1Full", "purpose": "Q1 certification"},
@@ -329,7 +343,10 @@ def _build_bundle(tmp_path, *, positive):
                         "gpu": "L4",
                         "gpu_seconds": 300.0,
                         "cost_usd": 2.25,
-                        "source": "Modal billing report 2026-07-28",
+                        "source": (
+                            "Modal billing report 2026-07-28 for app "
+                            "ap-Q2Conditional"
+                        ),
                         "runs": [
                             {
                                 "app_id": "ap-Q2Conditional",
@@ -414,12 +431,111 @@ def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
 
     assert result["conditional_status"] == "completed"
     assert "| mechanics refit | 0.7500 | 0.7300 |" in report
+    assert "### F5 fifth-regime row" in report
+    assert "| sink-head monitor | 0.7100 | 0.7000 |" in report
     assert "| A | 0.4000 | 0.8000 |" in report
     assert "Measured favorable axis: 0.25 lost-prior." in report
     assert "Measured favorable axis: 0.40 accuracy-delta." in report
     assert "all moderate ratios" not in report
     assert "merge-plus-anchor" not in report
     assert "ap-Q2Conditional" in report
+
+
+def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_missing_f5")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_missing_f5")
+    root, plan = _build_bundle(tmp_path, positive=True)
+    evidence = renderer.load_evidence(plan, root=root)
+    report = renderer.render_report(evidence)
+    evidence["q2"].pop("f5_markdown_table")
+
+    with pytest.raises(ValueError, match="F5"):
+        validator.validate_report_text(report, evidence)
+
+
+@pytest.mark.parametrize(
+    ("injected_text", "message"),
+    (
+        ("[public](HTTPS://example.com/result)", "public URL"),
+        ("| **?** |", "question-mark result cell"),
+        ("The method was deployed successfully.", "forbidden claim"),
+        ("Sent to Tyler after validation.", "forbidden claim"),
+    ),
+)
+def test_validator_rejects_formatted_or_case_variant_forbidden_claims(
+    tmp_path, injected_text, message
+):
+    renderer = _load(RENDERER, f"mergecert_q1_renderer_{message}")
+    validator = _load(VALIDATOR, f"mergecert_q1_validator_{message}")
+    root, plan = _build_bundle(tmp_path, positive=True)
+    q2_path = plan / "q2-routability.json"
+    q2 = json.loads(q2_path.read_text())
+    q2["registered_reading"] = injected_text
+    _write_json(q2_path, q2)
+    conditional_path = plan / "conditional-work.json"
+    conditional = json.loads(conditional_path.read_text())
+    conditional["q2"]["sha256"] = _sha256(q2_path)
+    _write_json(conditional_path, conditional)
+    evidence = renderer.load_evidence(plan, root=root)
+    report = renderer.render_report(evidence)
+
+    with pytest.raises(ValueError, match=message):
+        validator.validate_report_text(report, evidence)
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    (
+        (
+            lambda evidence: evidence["compute"]["phases"]["q1"]["runs"][
+                0
+            ].update({"app_id": "ap-"}),
+            "app ID",
+        ),
+        (
+            lambda evidence: evidence["compute"]["phases"]["q1"].update(
+                {"phase": "Q2/Q3"}
+            ),
+            "phase",
+        ),
+        (
+            lambda evidence: evidence["compute"]["phases"]["q1"].update(
+                {"source": "Modal billing report"}
+            ),
+            "billing source",
+        ),
+    ),
+)
+def test_validator_strictly_binds_billing_id_phase_and_source(
+    tmp_path, mutate, message
+):
+    renderer = _load(RENDERER, f"mergecert_q1_renderer_billing_{message}")
+    validator = _load(VALIDATOR, f"mergecert_q1_validator_billing_{message}")
+    root, plan = _build_bundle(tmp_path, positive=True)
+    evidence = renderer.load_evidence(plan, root=root)
+    report = renderer.render_report(evidence)
+    mutate(evidence)
+
+    with pytest.raises(ValueError, match=message):
+        validator.validate_report_text(report, evidence)
+
+
+def test_aggregation_only_positive_report_names_the_measured_axis(tmp_path):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_aggregation_only")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_aggregation_only")
+    root, plan = _build_bundle(
+        tmp_path, positive=True, aggregation_only=True
+    )
+    evidence = renderer.load_evidence(plan, root=root)
+
+    report = renderer.render_report(evidence)
+    result = validator.validate_report_text(report, evidence)
+
+    assert result["conditional_status"] == "completed"
+    assert "Measured verdicts: R2 and aggregation-positive." in report
+    assert "Measured favorable axis: 0.40 accuracy-delta." in report
+    assert "Measured favorable axis: 0.25 lost-prior." not in report
+    assert report.count("merge-plus-anchor") == 1
 
 
 @pytest.mark.parametrize(
