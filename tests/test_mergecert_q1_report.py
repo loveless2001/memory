@@ -11,6 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "plans" / "260728-mergecert-q1"
 RENDERER = PLAN / "render-report.py"
 VALIDATOR = PLAN / "validate-report.py"
+Q1_REGISTRATION_SOURCE = json.loads(
+    (PLAN / "q1-registration-source.json").read_text()
+)
 REQUIRED_HEADINGS = {
     "## Settled 0.90 result",
     "## Q1 — Moderate-ratio placement",
@@ -184,36 +187,37 @@ def _q1_verdict(*, positive, aggregation_only=False):
     favorable = pointwise_favorable + aggregation_favorable
     per_document_budgets = {}
     sample_doc_ids = []
-    for domain in ("financial", "legal", "code", "literature"):
-        for index in range(5):
-            doc_id = f"{domain}/{index}"
-            sample_doc_ids.append(doc_id)
-            source_tokens = 3921 if doc_id == "legal/0" else 4096
-            per_document_budgets[doc_id] = {
-                f"{ratio:.2f}": {
-                    "source_context_token_count": source_tokens,
-                    "model_input_token_count": source_tokens,
-                    "requested_evicted_token_count": int(
-                        source_tokens * ratio
-                    ),
-                    "eviction_source_start": 4,
-                    "eviction_source_end": (
-                        4 + int(source_tokens * ratio)
-                    ),
-                    "physical_before_count": source_tokens,
-                    "physical_after_count": (
-                        source_tokens - int(source_tokens * ratio)
-                    ),
-                    "evicted_token_count": int(source_tokens * ratio),
-                    "retained_token_count": (
-                        source_tokens - int(source_tokens * ratio)
-                    ),
-                    "merge_target_retained": (
-                        source_tokens - int(source_tokens * ratio)
-                    ),
-                }
-                for ratio in (0.25, 0.40)
+    for doc_id in Q1_REGISTRATION_SOURCE["population_doc_ids"]:
+        sample_doc_ids.append(doc_id)
+        source_tokens = 3921 if doc_id == "legal/00000" else 4096
+        source_start = Q1_REGISTRATION_SOURCE[
+            "eviction_source_start"
+        ][doc_id]
+        per_document_budgets[doc_id] = {
+            f"{ratio:.2f}": {
+                "source_context_token_count": source_tokens,
+                "model_input_token_count": source_tokens,
+                "requested_evicted_token_count": int(
+                    source_tokens * ratio
+                ),
+                "eviction_source_start": source_start,
+                "eviction_source_end": (
+                    source_start + int(source_tokens * ratio)
+                ),
+                "physical_before_count": source_tokens,
+                "physical_after_count": (
+                    source_tokens - int(source_tokens * ratio)
+                ),
+                "evicted_token_count": int(source_tokens * ratio),
+                "retained_token_count": (
+                    source_tokens - int(source_tokens * ratio)
+                ),
+                "merge_target_retained": (
+                    source_tokens - int(source_tokens * ratio)
+                ),
             }
+            for ratio in (0.25, 0.40)
+        }
     return {
         "pass": True,
         "budget_mode": "archived-m1-per-document-matched-physical-v1",
@@ -235,6 +239,14 @@ def _q1_verdict(*, positive, aggregation_only=False):
                 "archive": (
                     f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json"
                 ),
+                "arm": (
+                    "control-0.00"
+                    if ratio == 0.0
+                    else f"eviction-{ratio:.2f}"
+                ),
+                "archive_sha256": Q1_REGISTRATION_SOURCE[
+                    "archive_sha256"
+                ][f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json"],
             }
             for doc_id in sample_doc_ids
             for ratio in (0.0, 0.25, 0.40)
@@ -275,6 +287,67 @@ def _q1_verdict(*, positive, aggregation_only=False):
     }
 
 
+def _q1_registration():
+    documents = []
+    for doc_id in Q1_REGISTRATION_SOURCE["population_doc_ids"]:
+        source_tokens = 3921 if doc_id == "legal/00000" else 4096
+        source_start = Q1_REGISTRATION_SOURCE[
+            "eviction_source_start"
+        ][doc_id]
+        documents.append(
+            {
+                "doc_id": doc_id,
+                "context_start": max(
+                    0,
+                    Q1_REGISTRATION_SOURCE["anchor_chunk_token_start"][
+                        doc_id
+                    ]
+                    - 1024,
+                ),
+                "source_context_token_count": source_tokens,
+                "model_input_token_count": source_tokens,
+                "budgets": {
+                    f"{ratio:.2f}": {
+                        "requested_evicted_token_count": int(
+                            source_tokens * ratio
+                        ),
+                        "eviction_source_start": source_start,
+                        "eviction_source_end": (
+                            source_start + int(source_tokens * ratio)
+                        ),
+                        "physical_before_count": source_tokens,
+                        "physical_after_count": (
+                            source_tokens - int(source_tokens * ratio)
+                        ),
+                        "evicted_token_count": int(source_tokens * ratio),
+                        "retained_token_count": (
+                            source_tokens - int(source_tokens * ratio)
+                        ),
+                        "merge_target_retained": (
+                            source_tokens - int(source_tokens * ratio)
+                        ),
+                    }
+                    for ratio in (0.25, 0.40)
+                },
+            }
+        )
+    return {
+        "schema": "mergecert-q1-registration-v1",
+        "status": "finalized",
+        "source_registration_sha256": _sha256(
+            PLAN / "q1-registration-source.json"
+        ),
+        "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+        "population_doc_ids": Q1_REGISTRATION_SOURCE[
+            "population_doc_ids"
+        ],
+        "smoke_doc_ids": Q1_REGISTRATION_SOURCE["smoke_doc_ids"],
+        "all_items_sha256": Q1_REGISTRATION_SOURCE["all_items_sha256"],
+        "archive_sha256": Q1_REGISTRATION_SOURCE["archive_sha256"],
+        "documents": documents,
+    }
+
+
 def _build_bundle(tmp_path, *, positive, aggregation_only=False):
     root = tmp_path / "repo"
     plan = root / "plans" / "260728-mergecert-q1"
@@ -282,6 +355,11 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
     addendum = root / "MERGECERT-Q1.md"
     addendum.parent.mkdir(parents=True)
     addendum.write_bytes((ROOT / "MERGECERT-Q1.md").read_bytes())
+    registration_source = plan / "q1-registration-source.json"
+    registration_source.parent.mkdir(parents=True, exist_ok=True)
+    registration_source.write_bytes(
+        (PLAN / "q1-registration-source.json").read_bytes()
+    )
     parent_source = parent / "source-provenance.json"
     parent_raw = parent / "p0-direction-200.json"
     parent_verdict = parent / "p0-verdict.json"
@@ -314,6 +392,15 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
         "sink_token_count": 4,
         "budget_mode": "archived-m1-per-document-matched-physical-v1",
         "settled_amendment_date": "2026-07-29",
+        "q1_registration_source": {
+            "path": (
+                "plans/260728-mergecert-q1/q1-registration-source.json"
+            ),
+            "sha256": _sha256(registration_source),
+            "status": (
+                "source-evidence-only; finalized CPU extraction pending"
+            ),
+        },
         "addendum": {
             "path": "MERGECERT-Q1.md",
             "sha256": _sha256(addendum),
@@ -327,8 +414,12 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
         "parent_source_provenance_sha256": _sha256(parent_source),
     }
     _write_json(plan / "source-provenance.json", source)
+    _write_json(plan / "q1-registration.json", _q1_registration())
     q1 = _q1_verdict(
         positive=positive, aggregation_only=aggregation_only
+    )
+    q1["q1_registration_sha256"] = _sha256(
+        plan / "q1-registration.json"
     )
     _write_json(plan / "q1-verdict.json", q1)
     trigger = {
@@ -360,6 +451,8 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
         }
         q3 = {
             "pass": True,
+            "q1_trigger": trigger,
+            "q1_trigger_sha256": _sha256(plan / "q1-trigger.json"),
             "interpretation": "Marginal-aware nesting interpretation.",
             "markdown_table": (
                 "| Q3 reference | kappa | nesting |\n"
@@ -538,7 +631,7 @@ def test_report_validation_rejects_a_fake_4096_one_token_budget(tmp_path):
     validator = _load(VALIDATOR, "mergecert_q1_validator_fake_budget")
     root, plan = _build_bundle(tmp_path, positive=False)
     evidence = renderer.load_evidence(plan, root=root)
-    budget = evidence["q1"]["per_document_budgets"]["financial/0"]["0.25"]
+    budget = evidence["q1"]["per_document_budgets"]["financial/00000"]["0.25"]
     budget.update(
         {
             "evicted_token_count": 1,
@@ -574,6 +667,71 @@ def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):
 
     with pytest.raises(ValueError, match="F5"):
         validator.validate_report_text(report, evidence)
+
+
+@pytest.mark.parametrize("name", ("q2", "q3"))
+@pytest.mark.parametrize("field", ("q1_trigger", "q1_trigger_sha256"))
+def test_validator_requires_exact_trigger_binding_on_conditional_evidence(
+    tmp_path, name, field
+):
+    renderer = _load(RENDERER, f"mergecert_q1_renderer_{name}_{field}")
+    validator = _load(VALIDATOR, f"mergecert_q1_validator_{name}_{field}")
+    root, plan = _build_bundle(tmp_path, positive=True)
+    evidence = renderer.load_evidence(plan, root=root)
+    evidence[name].pop(field)
+
+    with pytest.raises(ValueError, match=f"conditional {name.upper()}"):
+        validator._validate_conditional(evidence)
+
+
+@pytest.mark.parametrize("name", ("q2", "q3"))
+def test_validator_rejects_wrong_trigger_binding_on_conditional_evidence(
+    tmp_path, name
+):
+    renderer = _load(RENDERER, f"mergecert_q1_renderer_wrong_{name}")
+    validator = _load(VALIDATOR, f"mergecert_q1_validator_wrong_{name}")
+    root, plan = _build_bundle(tmp_path, positive=True)
+    evidence = renderer.load_evidence(plan, root=root)
+    evidence[name]["q1_trigger_sha256"] = "f" * 64
+
+    with pytest.raises(ValueError, match=f"conditional {name.upper()}"):
+        validator._validate_conditional(evidence)
+
+
+@pytest.mark.parametrize(
+    ("path", "field"),
+    (
+        (("per_document_budgets", "financial/00000", "0.25"), "requested_evicted_token_count"),
+        (("per_document_budgets", "financial/00000", "0.25"), "retained_token_count"),
+    ),
+)
+def test_report_validation_rejects_non_strict_accounting_counts(
+    tmp_path, path, field
+):
+    renderer = _load(RENDERER, f"mergecert_q1_renderer_count_{field}")
+    validator = _load(VALIDATOR, f"mergecert_q1_validator_count_{field}")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    evidence = renderer.load_evidence(plan, root=root)
+    target = evidence["q1"]
+    for component in path:
+        target = target[component]
+    target[field] = True
+
+    with pytest.raises(ValueError, match="budget"):
+        validator._validate_q1(evidence)
+
+
+def test_report_validation_requires_strict_finalized_registration(tmp_path):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_registration_count")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_registration_count")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    evidence = renderer.load_evidence(plan, root=root)
+    evidence["registration"]["documents"][0]["budgets"]["0.25"][
+        "requested_evicted_token_count"
+    ] = True
+
+    with pytest.raises(ValueError, match="registration counts"):
+        validator._validate_q1(evidence)
 
 
 @pytest.mark.parametrize(
@@ -858,6 +1016,8 @@ def test_manifest_records_report_and_every_loaded_evidence_file(tmp_path):
         "plans/260727-mergecert/p0-direction-200.json",
         "plans/260727-mergecert/p0-verdict.json",
         "plans/260728-mergecert-q1/source-provenance.json",
+        "plans/260728-mergecert-q1/q1-registration-source.json",
+        "plans/260728-mergecert-q1/q1-registration.json",
         "plans/260728-mergecert-q1/q1-verdict.json",
         "plans/260728-mergecert-q1/q1-trigger.json",
         "plans/260728-mergecert-q1/conditional-work.json",

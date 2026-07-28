@@ -161,6 +161,10 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     assert verdict["pooled"]["residual_mlp"]["auc"] == 1.0
     assert "compactor to merge" in verdict["f5_markdown_table"]
     assert "mechanics-routable" in verdict["registered_reading"]
+    assert verdict["q1_trigger"] == json.loads(trigger_path.read_text())
+    assert verdict["q1_trigger_sha256"] == hashlib.sha256(
+        trigger_path.read_bytes()
+    ).hexdigest()
 
 
 def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):

@@ -35,6 +35,13 @@ Q1_ITEMS_PATH = "/artifacts/corpus-mcq-full/all-items.json"
 Q1_ARTIFACT_ROOT = "/artifacts/mergecert-q1"
 Q1_ADDENDUM_PATH = f"{Q1_ARTIFACT_ROOT}/MERGECERT-Q1.md"
 Q1_P0_VERDICT_PATH = f"{Q1_ARTIFACT_ROOT}/p0-verdict.json"
+Q1_REGISTRATION_PATH = f"{Q1_ARTIFACT_ROOT}/q1-registration.json"
+Q1_REGISTRATION_SOURCE_PATH = (
+    "/root/repo/plans/260728-mergecert-q1/q1-registration-source.json"
+)
+Q1_REGISTRATION_SOURCE_SHA256 = (
+    "509a69717e07f2b46b893612a5fa8668beb4c7dd711ec11e906c35cdb05e2906"
+)
 Q1_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-certification.json"
 Q1_SMOKE_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-smoke.json"
 P0_VERDICT_PATH = "/artifacts/mergecert/p0-verdict.json"
@@ -85,6 +92,10 @@ image = (
     .pip_install(*PINNED)
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "MEMSUB_REFERENCE": "1"})
     .add_local_file("pyproject.toml", "/root/repo/pyproject.toml")
+    .add_local_file(
+        "plans/260728-mergecert-q1/q1-registration-source.json",
+        Q1_REGISTRATION_SOURCE_PATH,
+    )
     .add_local_dir("memsub", "/root/repo/memsub")
 )
 hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
@@ -524,6 +535,112 @@ def _load_q1_authorization(
     }
 
 
+def _load_q1_registration(
+    *,
+    registration_path: str = Q1_REGISTRATION_PATH,
+    source_path: str = Q1_REGISTRATION_SOURCE_PATH,
+) -> dict:
+    if (
+        not os.path.exists(registration_path)
+        or not os.path.exists(source_path)
+        or _sha256_file(source_path) != Q1_REGISTRATION_SOURCE_SHA256
+    ):
+        raise ValueError("Q1 finalized registration is missing or unbound")
+    with open(source_path) as handle:
+        source = json.load(handle)
+    with open(registration_path) as handle:
+        registration = json.load(handle)
+    if (
+        registration.get("schema") != "mergecert-q1-registration-v1"
+        or registration.get("status") != "finalized"
+        or registration.get("model_id") != MODEL_ID
+        or registration.get("source_registration_sha256")
+        != Q1_REGISTRATION_SOURCE_SHA256
+        or registration.get("population_doc_ids")
+        != source["population_doc_ids"]
+        or registration.get("smoke_doc_ids") != source["smoke_doc_ids"]
+        or registration.get("all_items_sha256")
+        != source["all_items_sha256"]
+        or registration.get("archive_sha256")
+        != source["archive_sha256"]
+    ):
+        raise ValueError("Q1 finalized registration differs from source evidence")
+    documents = registration.get("documents", [])
+    if (
+        len(documents) != Q1_EXPECTED_DOCUMENTS
+        or [row.get("doc_id") for row in documents]
+        != source["population_doc_ids"]
+    ):
+        raise ValueError("Q1 finalized registration population is incomplete")
+    for document in documents:
+        doc_id = document["doc_id"]
+        source_tokens = document.get("source_context_token_count")
+        model_tokens = document.get("model_input_token_count")
+        if (
+            not isinstance(document.get("context_start"), int)
+            or isinstance(document["context_start"], bool)
+            or document["context_start"] < 0
+            or not isinstance(source_tokens, int)
+            or isinstance(source_tokens, bool)
+            or source_tokens <= SINKS
+            or not isinstance(model_tokens, int)
+            or isinstance(model_tokens, bool)
+            or model_tokens <= SINKS
+            or set(document.get("budgets", {})) != {"0.25", "0.40"}
+        ):
+            raise ValueError("Q1 finalized registration counts are invalid")
+        for ratio in Q1_RATIOS:
+            ratio_text = f"{ratio:.2f}"
+            budget = document["budgets"][ratio_text]
+            fields = (
+                "requested_evicted_token_count",
+                "eviction_source_start",
+                "eviction_source_end",
+                "physical_before_count",
+                "physical_after_count",
+                "evicted_token_count",
+                "retained_token_count",
+                "merge_target_retained",
+            )
+            if set(budget) != set(fields) or any(
+                not isinstance(budget.get(field), int)
+                or isinstance(budget[field], bool)
+                for field in fields
+            ):
+                raise ValueError("Q1 finalized registration counts are invalid")
+            expected = _q1_document_budget(
+                source_tokens,
+                model_tokens,
+                ratio,
+                evicted_token_count=budget["evicted_token_count"],
+                eviction_source_start=budget["eviction_source_start"],
+                eviction_source_end=budget["eviction_source_end"],
+                physical_before_count=budget["physical_before_count"],
+                physical_after_count=budget["physical_after_count"],
+            )
+            if (
+                budget["eviction_source_start"]
+                != source["eviction_source_start"][doc_id]
+                or budget["requested_evicted_token_count"]
+                != int(source_tokens * ratio)
+                or budget
+                != {
+                    key: value
+                    for key, value in expected.items()
+                    if key
+                    not in (
+                        "source_context_token_count",
+                        "model_input_token_count",
+                    )
+                }
+            ):
+                raise ValueError("Q1 finalized registration budget is invalid")
+    return {
+        "sha256": _sha256_file(registration_path),
+        "payload": registration,
+    }
+
+
 def _q1_archive_files() -> tuple[dict, dict]:
     files = {}
     reports = {}
@@ -921,7 +1038,12 @@ def _q1_report(
 
 
 def _verify_archived_replay(
-    report: dict, archive: dict, *, archive_name: str
+    report: dict,
+    archive: dict,
+    *,
+    archive_name: str,
+    archive_sha256: str,
+    arm_name: str,
 ) -> dict:
     mismatches = []
     for axis in ("aggregation_axis", "pointwise_axis"):
@@ -960,6 +1082,8 @@ def _verify_archived_replay(
             )
     return {
         "archive": archive_name,
+        "archive_sha256": archive_sha256,
+        "arm": arm_name,
         "doc_id": report["doc_id"],
         "pass": not mismatches,
         "mismatches": mismatches,
@@ -979,7 +1103,16 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
     from memsub.reference_config import build_runtime
 
     gate = _load_q1_authorization()
+    registration_record = _load_q1_registration()
+    registration = registration_record["payload"]
     archive_files, archived_reports = _q1_archive_files()
+    if (
+        {
+            name: row["sha256"] for name, row in archive_files.items()
+        }
+        != registration["archive_sha256"]
+    ):
+        raise ValueError("Q1 archive files differ from finalized registration")
     runtime = build_runtime(reference=True)
     fingerprint = runtime.fingerprint()
     contexts, source_hashes = _load_q1_contexts(
@@ -991,6 +1124,27 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         )
     contexts = contexts[:documents]
     selected_doc_ids = [context["doc_id"] for context in contexts]
+    expected_doc_ids = (
+        registration["population_doc_ids"]
+        if require_full
+        else registration["smoke_doc_ids"]
+    )
+    if selected_doc_ids != expected_doc_ids:
+        raise ValueError("Q1 selected documents differ from finalized registration")
+    registered_documents = {
+        row["doc_id"]: row for row in registration["documents"]
+    }
+    for context in contexts:
+        registered = registered_documents[context["doc_id"]]
+        for field in (
+            "context_start",
+            "source_context_token_count",
+            "model_input_token_count",
+        ):
+            if context[field] != registered[field]:
+                raise ValueError(
+                    f"{context['doc_id']}: finalized registration {field} drift"
+                )
     arm_specs = [
         ("control-0.00", "zero-compression-control", 0.0),
         *[
@@ -1007,6 +1161,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         "compatibility_fingerprint": fingerprint.to_dict(),
         "compatibility_fingerprint_sha256": fingerprint.digest(),
         "q1_authorization": gate,
+        "q1_registration_sha256": registration_record["sha256"],
         "archived_m1": {
             "files": archive_files,
             "replay_checks": [],
@@ -1035,6 +1190,11 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             raise ValueError("existing Q1 artifact uses a different sample")
         if prior.get("q1_authorization") != gate:
             raise ValueError("existing Q1 artifact uses a different authorization")
+        if (
+            prior.get("q1_registration_sha256")
+            != registration_record["sha256"]
+        ):
+            raise ValueError("existing Q1 artifact uses a different registration")
         if prior.get("provenance") != _q1_provenance():
             raise ValueError("existing Q1 artifact uses a different Q1 provenance")
         state = prior
@@ -1117,6 +1277,21 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                 physical_before_count=physical_before,
                 physical_after_count=physical_after,
             )
+            registered_budget = registered_documents[context["doc_id"]][
+                "budgets"
+            ][f"{ratio:.2f}"]
+            if budget != {
+                "source_context_token_count": context[
+                    "source_context_token_count"
+                ],
+                "model_input_token_count": context[
+                    "model_input_token_count"
+                ],
+                **registered_budget,
+            }:
+                raise ValueError(
+                    f"{context['doc_id']}: finalized registration budget drift"
+                )
             if eviction.physical_length != budget["retained_token_count"]:
                 raise ValueError("Q1 measured eviction budget is inconsistent")
             candidate_caches[f"eviction-{ratio:.2f}"] = eviction
@@ -1180,7 +1355,11 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                     f"{context['domain']}-evict{ratio:.2f}.json"
                 )
                 check = _verify_archived_replay(
-                    report, archive, archive_name=archive_name
+                    report,
+                    archive,
+                    archive_name=archive_name,
+                    archive_sha256=archive_files[archive_name]["sha256"],
+                    arm_name=arm_name,
                 )
                 state["archived_m1"]["replay_checks"].append(check)
                 if not check["pass"]:

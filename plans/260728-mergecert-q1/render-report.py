@@ -81,6 +81,7 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
     files = {}
     fixed = {
         "source": plan_dir / "source-provenance.json",
+        "registration": plan_dir / "q1-registration.json",
         "q1": plan_dir / "q1-verdict.json",
         "trigger": plan_dir / "q1-trigger.json",
         "conditional": plan_dir / "conditional-work.json",
@@ -94,6 +95,9 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
     source = evidence["source"]
     referenced = {
         "addendum": root / source["addendum"]["path"],
+        "registration_source": (
+            root / source["q1_registration_source"]["path"]
+        ),
         "parent_source": (
             root / "plans/260727-mergecert/source-provenance.json"
         ),

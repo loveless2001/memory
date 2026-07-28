@@ -345,6 +345,8 @@ def analyze(
     f5_table = _f5_table(ratio_metrics)
     return {
         "pass": True,
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
         "items_per_ratio": expected_items_per_ratio,
         "e1_items_per_ratio": expected_e1_items,
         "ratios": ratio_metrics,

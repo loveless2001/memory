@@ -616,7 +616,21 @@ These files authorized the initial failed smoke. The addendum changed after
 the settled 2026-07-29 budget amendment, so this completed upload does not make
 the retry ready.
 
-- [ ] **Step 1a: Re-upload and verify the amended authorization inputs**
+- [ ] **Step 1a: Extract, review, and bind the finalized Q1 registration**
+
+Run the CPU-only, read-only
+`modal-runners/modal-mergecert-q1-registration.py` entrypoint. It may read the
+existing private archives, all-items registry, source corpus, and pinned
+tokenizer, but it must not load model weights, request a GPU, write the remote
+volume, or launch Q1. Save its small JSON result as
+`plans/260728-mergecert-q1/q1-registration.json`, verify the exact 20-document
+population, the two financial smoke documents, all 12 archive hashes, and
+every per-document source/model length and 0.25/0.40 start/end/requested/
+physical count. Commit and independently review the finalized registry and
+its SHA-256 binding before any smoke retry. This step is pending; production
+lengths and source ends were not invented during local fix round 3.
+
+- [ ] **Step 1b: Re-upload and verify the amended authorization inputs**
 
 Before retrying the smoke, upload only the amended `MERGECERT-Q1.md` and the
 unchanged registered P0 verdict to the same private paths. Verify their remote

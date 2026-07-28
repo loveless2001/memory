@@ -16,6 +16,12 @@ PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
 Q1_PROVENANCE = (
     ROOT / "plans" / "260728-mergecert-q1" / "source-provenance.json"
 )
+Q1_REGISTRATION_SOURCE = (
+    ROOT / "plans" / "260728-mergecert-q1" / "q1-registration-source.json"
+)
+Q1_REGISTRATION_RUNNER = (
+    ROOT / "modal-runners" / "modal-mergecert-q1-registration.py"
+)
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -228,6 +234,130 @@ def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
     assert provenance["addendum"]["sha256"] == hashlib.sha256(
         (ROOT / "MERGECERT-Q1.md").read_bytes()
     ).hexdigest()
+    assert provenance["q1_registration_source"] == {
+        "path": "plans/260728-mergecert-q1/q1-registration-source.json",
+        "sha256": hashlib.sha256(
+            Q1_REGISTRATION_SOURCE.read_bytes()
+        ).hexdigest(),
+        "status": "source-evidence-only; finalized CPU extraction pending",
+    }
+
+
+def test_mergecert_q1_registration_source_pins_exact_population_and_archives():
+    registration = json.loads(Q1_REGISTRATION_SOURCE.read_text())
+
+    assert registration["schema"] == "mergecert-q1-registration-source-v1"
+    assert registration["population_doc_ids"] == [
+        "financial/00000",
+        "financial/00008",
+        "financial/00016",
+        "financial/00024",
+        "financial/00032",
+        "legal/00000",
+        "legal/00008",
+        "legal/00016",
+        "legal/00024",
+        "legal/00032",
+        "code/00008",
+        "code/00016",
+        "code/00024",
+        "code/00032",
+        "code/00040",
+        "literature/00000",
+        "literature/00008",
+        "literature/00016",
+        "literature/00024",
+        "literature/00032",
+    ]
+    assert registration["smoke_doc_ids"] == [
+        "financial/00000",
+        "financial/00008",
+    ]
+    assert set(registration["archive_sha256"]) == {
+        f"{domain}-evict{ratio:.2f}.json"
+        for domain in ("financial", "legal", "code", "literature")
+        for ratio in (0.0, 0.25, 0.40)
+    }
+    assert all(
+        len(value) == 64
+        for value in registration["archive_sha256"].values()
+    )
+    assert registration["eviction_source_start"]["code/00024"] == 845
+    assert all(
+        isinstance(value, int) and not isinstance(value, bool)
+        for value in registration["eviction_source_start"].values()
+    )
+
+
+def test_mergecert_q1_registration_extractor_is_cpu_read_only_and_no_model():
+    source = Q1_REGISTRATION_RUNNER.read_text()
+    constants = _literal_constants(Q1_REGISTRATION_RUNNER)
+
+    assert constants["MODEL_ID"] == "Qwen/Qwen3-4B-Instruct-2507"
+    assert "gpu=" not in source
+    assert "artifacts.commit" not in source
+    assert 'local_files_only=True' in source
+    assert '"HF_HUB_OFFLINE": "1"' in source
+    assert "open(" in source
+    for forbidden in (
+        "AutoModel",
+        "build_runtime",
+        "torch",
+        "volume put",
+        "upload_file",
+    ):
+        assert forbidden not in source
+
+
+def test_mergecert_q1_registration_extractor_builds_runner_shaped_exact_budget():
+    extractor = _load_module(
+        Q1_REGISTRATION_RUNNER, "mergecert_q1_registration_extractor"
+    )
+
+    class IdentityTokenizer:
+        def encode(self, value, add_special_tokens=False):
+            assert add_special_tokens is False
+            return list(range(4096)) if value == "source" else list(value)
+
+        def decode(self, token_ids):
+            return list(token_ids)
+
+    document = extractor.build_document_registration(
+        IdentityTokenizer(),
+        doc_id="code/00024",
+        text="source",
+        anchor_chunk_token_start=845,
+        registered_source_start=845,
+    )
+
+    assert document == {
+        "doc_id": "code/00024",
+        "context_start": 0,
+        "source_context_token_count": 4096,
+        "model_input_token_count": 4096,
+        "budgets": {
+            "0.25": {
+                "requested_evicted_token_count": 1024,
+                "eviction_source_start": 845,
+                "eviction_source_end": 1869,
+                "physical_before_count": 4096,
+                "physical_after_count": 3072,
+                "evicted_token_count": 1024,
+                "retained_token_count": 3072,
+                "merge_target_retained": 3072,
+            },
+            "0.40": {
+                "requested_evicted_token_count": 1638,
+                "eviction_source_start": 845,
+                "eviction_source_end": 2483,
+                "physical_before_count": 4096,
+                "physical_after_count": 2458,
+                "evicted_token_count": 1638,
+                "retained_token_count": 2458,
+                "merge_target_retained": 2458,
+            },
+        },
+    }
 
 
 def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():

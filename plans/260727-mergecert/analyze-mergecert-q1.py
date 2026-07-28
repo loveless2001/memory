@@ -15,6 +15,10 @@ from memsub.certification.experiment_protocol import paired_metric_cis
 
 HERE = Path(__file__).resolve().parent
 Q1_ARTIFACT_DIR = HERE.parent / "260728-mergecert-q1"
+Q1_REGISTRATION_SOURCE_PATH = (
+    Q1_ARTIFACT_DIR / "q1-registration-source.json"
+)
+DEFAULT_REGISTRATION = Q1_ARTIFACT_DIR / "q1-registration.json"
 DEFAULT_INPUT = Q1_ARTIFACT_DIR / "q1-certification.json"
 DEFAULT_OUTPUT = Q1_ARTIFACT_DIR / "q1-verdict.json"
 DEFAULT_TABLE = Q1_ARTIFACT_DIR / "q1-table.md"
@@ -64,6 +68,17 @@ EXPECTED_REFERENCE_SOURCES = {
         "sha256": "a7636b54148e7133237af68bf63fbc23811d5ce80417f8447711a89a559dc2a8",
     },
 }
+with Q1_REGISTRATION_SOURCE_PATH.open() as _registration_handle:
+    Q1_REGISTRATION_SOURCE = json.load(_registration_handle)
+REGISTERED_FULL_DOC_IDS = Q1_REGISTRATION_SOURCE["population_doc_ids"]
+REGISTERED_SMOKE_DOC_IDS = Q1_REGISTRATION_SOURCE["smoke_doc_ids"]
+REGISTERED_ARCHIVE_SHA256 = Q1_REGISTRATION_SOURCE["archive_sha256"]
+REGISTERED_EVICTION_START = Q1_REGISTRATION_SOURCE[
+    "eviction_source_start"
+]
+Q1_REGISTRATION_SOURCE_SHA256 = hashlib.sha256(
+    Q1_REGISTRATION_SOURCE_PATH.read_bytes()
+).hexdigest()
 
 
 def _expected_document_budget(
@@ -115,6 +130,86 @@ def _expected_document_budget(
 
 def _is_strict_int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
+    if (
+        len(documents) != 20
+        or [row.get("doc_id") for row in documents]
+        != REGISTERED_FULL_DOC_IDS
+    ):
+        raise ValueError("Q1 finalized registration population is incomplete")
+    by_doc = {row["doc_id"]: row for row in documents}
+    for doc_id, document in by_doc.items():
+        source_tokens = document.get("source_context_token_count")
+        model_tokens = document.get("model_input_token_count")
+        if (
+            not _is_strict_int(document.get("context_start"))
+            or document["context_start"] < 0
+            or not _is_strict_int(source_tokens)
+            or source_tokens <= 4
+            or not _is_strict_int(model_tokens)
+            or model_tokens <= 4
+            or set(document.get("budgets", {})) != {"0.25", "0.40"}
+        ):
+            raise ValueError("Q1 finalized registration counts are invalid")
+        for ratio in RATIOS:
+            ratio_text = f"{ratio:.2f}"
+            budget = document["budgets"][ratio_text]
+            fields = (
+                "requested_evicted_token_count",
+                "eviction_source_start",
+                "eviction_source_end",
+                "physical_before_count",
+                "physical_after_count",
+                "evicted_token_count",
+                "retained_token_count",
+                "merge_target_retained",
+            )
+            if set(budget) != set(fields) or not all(
+                _is_strict_int(budget.get(field)) for field in fields
+            ):
+                raise ValueError("Q1 finalized registration counts are invalid")
+            expected = _expected_document_budget(
+                source_tokens,
+                model_tokens,
+                ratio,
+                evicted_token_count=budget["evicted_token_count"],
+                eviction_source_start=budget["eviction_source_start"],
+                eviction_source_end=budget["eviction_source_end"],
+                physical_before_count=budget["physical_before_count"],
+                physical_after_count=budget["physical_after_count"],
+            )
+            expected_removed = max(
+                0,
+                min(
+                    budget["eviction_source_end"],
+                    budget["physical_before_count"],
+                )
+                - min(
+                    max(budget["eviction_source_start"], 0),
+                    budget["physical_before_count"],
+                ),
+            )
+            if (
+                budget["eviction_source_start"]
+                != REGISTERED_EVICTION_START[doc_id]
+                or budget["requested_evicted_token_count"]
+                != int(source_tokens * ratio)
+                or budget["evicted_token_count"] != expected_removed
+                or budget
+                != {
+                    key: value
+                    for key, value in expected.items()
+                    if key
+                    not in (
+                        "source_context_token_count",
+                        "model_input_token_count",
+                    )
+                }
+            ):
+                raise ValueError("Q1 finalized registration budget is invalid")
+    return by_doc
 
 
 def _partition(report: dict) -> tuple:
@@ -173,6 +268,11 @@ def _summary(reports: list[dict]) -> dict:
 
 
 def per_domain_summaries(reports_by_arm: dict) -> dict:
+    present_domains = {
+        report["domain"]
+        for reports in reports_by_arm.values()
+        for report in reports
+    }
     return {
         domain: {
             arm_name: _summary(
@@ -181,6 +281,7 @@ def per_domain_summaries(reports_by_arm: dict) -> dict:
             for arm_name, reports in sorted(reports_by_arm.items())
         }
         for domain in DOMAINS
+        if domain in present_domains
     }
 
 
@@ -267,7 +368,42 @@ def _markdown(
     return "\n".join(lines) + "\n"
 
 
-def analyze(payload, *, expected_documents=20, n_resamples=20_000):
+def analyze(
+    payload,
+    *,
+    expected_documents=20,
+    n_resamples=20_000,
+    registration: dict,
+    registration_sha256: str,
+):
+    if (
+        registration.get("schema") != "mergecert-q1-registration-v1"
+        or registration.get("status") != "finalized"
+        or registration.get("source_registration_sha256")
+        != Q1_REGISTRATION_SOURCE_SHA256
+        or registration.get("model_id")
+        != "Qwen/Qwen3-4B-Instruct-2507"
+        or registration.get("population_doc_ids") != REGISTERED_FULL_DOC_IDS
+        or registration.get("smoke_doc_ids") != REGISTERED_SMOKE_DOC_IDS
+        or registration.get("archive_sha256")
+        != REGISTERED_ARCHIVE_SHA256
+        or registration.get("all_items_sha256")
+        != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+        or not isinstance(registration_sha256, str)
+        or len(registration_sha256) != 64
+        or payload.get("q1_registration_sha256") != registration_sha256
+    ):
+        raise ValueError("Q1 finalized registration is missing or differs")
+    registered_documents = registration.get("documents", [])
+    registered_by_doc = _validate_registered_documents(
+        registered_documents
+    )
+    if expected_documents == 20:
+        registered_doc_ids = REGISTERED_FULL_DOC_IDS
+    elif expected_documents == 2:
+        registered_doc_ids = REGISTERED_SMOKE_DOC_IDS
+    else:
+        raise ValueError("Q1 supports only the registered 2- or 20-document sample")
     provenance = payload.get("provenance", {})
     if provenance.get("model_id") != "Qwen/Qwen3-4B-Instruct-2507":
         raise ValueError("Q1 model provenance mismatch")
@@ -297,8 +433,13 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         for ratio in (0.0, 0.25, 0.40)
     }
     archive_files = archived.get("files", {})
-    if set(archive_files) != expected_archive_files or any(
-        not row.get("sha256") for row in archive_files.values()
+    if (
+        set(archive_files) != expected_archive_files
+        or {
+            name: row.get("sha256")
+            for name, row in archive_files.items()
+        }
+        != REGISTERED_ARCHIVE_SHA256
     ):
         raise ValueError("archived M1 file hashes are incomplete")
     replay_checks = archived.get("replay_checks", [])
@@ -319,6 +460,11 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         "all_items_sha256"
     ):
         raise ValueError("Q1 top-level source hashes are incomplete")
+    if (
+        source_hashes["all_items_sha256"]
+        != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+    ):
+        raise ValueError("Q1 all-items registry hash differs from registration")
 
     documents = payload.get("documents", [])
     if (
@@ -330,33 +476,49 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             f"Q1 requires {expected_documents} completed documents"
         )
     doc_ids = [row["doc_id"] for row in documents]
-    if len(set(doc_ids)) != expected_documents:
-        raise ValueError("Q1 document IDs must be unique")
+    if doc_ids != registered_doc_ids:
+        raise ValueError("Q1 documents differ from the exact registered sample")
     if payload.get("sample_doc_ids") != doc_ids:
         raise ValueError("Q1 sample document IDs differ from analyzed documents")
     expected_replay = {
         (
             doc_id,
             f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json",
+            (
+                "control-0.00"
+                if ratio == 0.0
+                else f"eviction-{ratio:.2f}"
+            ),
+            REGISTERED_ARCHIVE_SHA256[
+                f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json"
+            ],
         )
         for doc_id in doc_ids
         for ratio in (0.0, 0.25, 0.40)
     }
     actual_replay = [
-        (check.get("doc_id"), check.get("archive"))
+        (
+            check.get("doc_id"),
+            check.get("archive"),
+            check.get("arm"),
+            check.get("archive_sha256"),
+        )
         for check in replay_checks
     ]
     if len(set(actual_replay)) != len(actual_replay) or set(
         actual_replay
     ) != expected_replay:
         raise ValueError("archived M1 replay matrix is not exact")
-    expected_per_domain = expected_documents // len(DOMAINS)
     domains = Counter(row["domain"] for row in documents)
-    if domains != Counter(
-        {domain: expected_per_domain for domain in DOMAINS}
-    ):
+    expected_domains = (
+        Counter({"financial": 2})
+        if expected_documents == 2
+        else Counter({domain: 5 for domain in DOMAINS})
+    )
+    if domains != expected_domains:
         raise ValueError(f"Q1 domain balance mismatch: {dict(domains)}")
     for document in documents:
+        registered_document = registered_by_doc[document["doc_id"]]
         hashes = document.get("source_hashes", {})
         if (
             hashes.get("corpus_manifest_sha256")
@@ -376,6 +538,15 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             or document.get("context_token_count") != model_tokens
         ):
             raise ValueError("Q1 document token-length audit is invalid")
+        if any(
+            document.get(field) != registered_document.get(field)
+            for field in (
+                "context_start",
+                "source_context_token_count",
+                "model_input_token_count",
+            )
+        ):
+            raise ValueError("Q1 document differs from finalized registration")
         budgets = document.get("budgets", {})
         if set(budgets) != {"0.25", "0.40"}:
             raise ValueError("Q1 document per-document budget audit mismatch")
@@ -383,6 +554,9 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             ratio_text = f"{ratio:.2f}"
             actual_evicted = budgets[ratio_text].get(
                 "evicted_token_count"
+            )
+            requested_evicted = budgets[ratio_text].get(
+                "requested_evicted_token_count"
             )
             source_start = budgets[ratio_text].get(
                 "eviction_source_start"
@@ -393,6 +567,10 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             )
             physical_after = budgets[ratio_text].get(
                 "physical_after_count"
+            )
+            retained = budgets[ratio_text].get("retained_token_count")
+            merge_target = budgets[ratio_text].get(
+                "merge_target_retained"
             )
             expected_removed = (
                 max(
@@ -415,15 +593,19 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
                     _is_strict_int(value)
                     for value in (
                         actual_evicted,
+                        requested_evicted,
                         source_start,
                         source_end,
                         physical_before,
                         physical_after,
+                        retained,
+                        merge_target,
                     )
                 )
                 or actual_evicted <= 0
-                or source_start < 4
-                or source_end - source_start != int(source_tokens * ratio)
+                or source_start != REGISTERED_EVICTION_START[document["doc_id"]]
+                or requested_evicted != int(source_tokens * ratio)
+                or source_end - source_start != requested_evicted
                 or physical_before != model_tokens
                 or physical_before - physical_after != actual_evicted
                 or actual_evicted != expected_removed
@@ -442,6 +624,15 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             ):
                 raise ValueError(
                     "Q1 document per-document budget audit mismatch"
+                )
+            registered_budget = {
+                "source_context_token_count": source_tokens,
+                "model_input_token_count": model_tokens,
+                **registered_document["budgets"][ratio_text],
+            }
+            if budgets[ratio_text] != registered_budget:
+                raise ValueError(
+                    "Q1 document differs from finalized registration"
                 )
     registered_partitions = [_partition(row) for row in documents]
 
@@ -485,6 +676,29 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             else:
                 expected_budget = document["budgets"][f"{ratio:.2f}"]
             if (
+                not all(
+                    _is_strict_int(report.get(field))
+                    for field in (
+                        "source_context_token_count",
+                        "model_input_token_count",
+                        "context_token_count",
+                        "requested_evicted_token_count",
+                        "eviction_source_start",
+                        "eviction_source_end",
+                        "physical_before_count",
+                        "physical_after_count",
+                        "evicted_token_count",
+                        "target_retained",
+                    )
+                )
+                or not all(
+                    _is_strict_int(report.get(axis, {}).get(field))
+                    for axis, field in (
+                        ("aggregation_axis", "probe_count"),
+                        ("pointwise_axis", "needle_probe_count"),
+                    )
+                )
+                or
                 report.get("requested_evicted_token_count")
                 != expected_budget["requested_evicted_token_count"]
                 or report.get("eviction_source_start")
@@ -539,6 +753,7 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
     return {
         "pass": True,
         "budget_mode": BUDGET_MODE,
+        "q1_registration_sha256": registration_sha256,
         "authorization": {
             "protocol": "MERGECERT-Q1",
             "budget_mode": BUDGET_MODE,
@@ -548,8 +763,13 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         "documents": expected_documents,
         "sample_doc_ids": doc_ids,
         "archive_replay_matrix": [
-            {"doc_id": doc_id, "archive": archive}
-            for doc_id, archive in actual_replay
+            {
+                "doc_id": doc_id,
+                "archive": archive,
+                "arm": arm,
+                "archive_sha256": archive_sha256,
+            }
+            for doc_id, archive, arm, archive_sha256 in actual_replay
         ],
         "domain_counts": dict(sorted(domains.items())),
         "archived_m1_replay_pass": True,
@@ -580,13 +800,20 @@ def main():
     parser.add_argument("--expected-documents", type=int, default=20)
     parser.add_argument("--n-resamples", type=int, default=20_000)
     parser.add_argument("--trigger", type=Path)
+    parser.add_argument(
+        "--registration", type=Path, default=DEFAULT_REGISTRATION
+    )
     args = parser.parse_args()
     with args.input.open() as handle:
         payload = json.load(handle)
+    with args.registration.open() as handle:
+        registration = json.load(handle)
     verdict = analyze(
         payload,
         expected_documents=args.expected_documents,
         n_resamples=args.n_resamples,
+        registration=registration,
+        registration_sha256=_sha256_file(args.registration),
     )
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)

@@ -255,6 +255,8 @@ def analyze(
     )
     return {
         "pass": True,
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
         "protocol": {
             "ratio": 0.40,
             "items": expected_items,

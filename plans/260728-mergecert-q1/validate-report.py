@@ -37,6 +37,14 @@ EXPECTED_ARMS = {
 }
 EXPECTED_DOMAINS = {"financial", "legal", "code", "literature"}
 BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
+Q1_REGISTRATION_SOURCE_PATH = HERE / "q1-registration-source.json"
+with Q1_REGISTRATION_SOURCE_PATH.open() as _registration_handle:
+    Q1_REGISTRATION_SOURCE = json.load(_registration_handle)
+REGISTERED_FULL_DOC_IDS = Q1_REGISTRATION_SOURCE["population_doc_ids"]
+REGISTERED_ARCHIVE_SHA256 = Q1_REGISTRATION_SOURCE["archive_sha256"]
+REGISTERED_EVICTION_START = Q1_REGISTRATION_SOURCE[
+    "eviction_source_start"
+]
 EXPECTED_UPSTREAM = {
     "commit": "cd4ed948d62231449dbab9669608bbb4fd220713",
     "files": {
@@ -54,6 +62,11 @@ EXPECTED_UPSTREAM = {
 EXPECTED_ADDENDUM = {
     "path": "MERGECERT-Q1.md",
     "sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
+}
+EXPECTED_REGISTRATION_SOURCE = {
+    "path": "plans/260728-mergecert-q1/q1-registration-source.json",
+    "sha256": "509a69717e07f2b46b893612a5fa8668beb4c7dd711ec11e906c35cdb05e2906",
+    "status": "source-evidence-only; finalized CPU extraction pending",
 }
 EXPECTED_SETTLED_P0 = {
     "verdict_path": "plans/260727-mergecert/p0-verdict.json",
@@ -173,6 +186,76 @@ def _is_strict_int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
+    if (
+        len(documents) != 20
+        or [row.get("doc_id") for row in documents]
+        != REGISTERED_FULL_DOC_IDS
+    ):
+        raise ValueError("Q1 finalized registration population is incomplete")
+    by_doc = {row["doc_id"]: row for row in documents}
+    for doc_id, document in by_doc.items():
+        source_tokens = document.get("source_context_token_count")
+        model_tokens = document.get("model_input_token_count")
+        if (
+            not _is_strict_int(document.get("context_start"))
+            or document["context_start"] < 0
+            or not _is_strict_int(source_tokens)
+            or source_tokens <= 4
+            or not _is_strict_int(model_tokens)
+            or model_tokens <= 4
+            or set(document.get("budgets", {})) != {"0.25", "0.40"}
+        ):
+            raise ValueError("Q1 finalized registration counts are invalid")
+        for ratio_text, budget in document["budgets"].items():
+            fields = (
+                "requested_evicted_token_count",
+                "eviction_source_start",
+                "eviction_source_end",
+                "physical_before_count",
+                "physical_after_count",
+                "evicted_token_count",
+                "retained_token_count",
+                "merge_target_retained",
+            )
+            if set(budget) != set(fields) or not all(
+                _is_strict_int(budget.get(field)) for field in fields
+            ):
+                raise ValueError("Q1 finalized registration counts are invalid")
+            ratio = float(ratio_text)
+            expected_removed = max(
+                0,
+                min(
+                    budget["eviction_source_end"],
+                    budget["physical_before_count"],
+                )
+                - min(
+                    max(budget["eviction_source_start"], 0),
+                    budget["physical_before_count"],
+                ),
+            )
+            if (
+                budget["eviction_source_start"]
+                != REGISTERED_EVICTION_START[doc_id]
+                or budget["requested_evicted_token_count"]
+                != int(source_tokens * ratio)
+                or budget["eviction_source_end"]
+                - budget["eviction_source_start"]
+                != budget["requested_evicted_token_count"]
+                or budget["physical_before_count"] != model_tokens
+                or budget["physical_before_count"]
+                - budget["physical_after_count"]
+                != budget["evicted_token_count"]
+                or budget["evicted_token_count"] != expected_removed
+                or budget["retained_token_count"]
+                != budget["physical_after_count"]
+                or budget["merge_target_retained"]
+                != budget["physical_after_count"]
+            ):
+                raise ValueError("Q1 finalized registration budget is invalid")
+    return by_doc
+
+
 def _validate_file_hashes(evidence: dict) -> None:
     files = evidence.get("_files")
     if not isinstance(files, dict) or not files:
@@ -198,7 +281,15 @@ def _validate_file_hashes(evidence: dict) -> None:
 
 
 def _validate_loaded_evidence(evidence: dict) -> None:
-    for name in ("source", "p0", "q1", "trigger", "conditional", "compute"):
+    for name in (
+        "source",
+        "p0",
+        "registration",
+        "q1",
+        "trigger",
+        "conditional",
+        "compute",
+    ):
         path = evidence["_files"][name]["path"]
         with path.open() as handle:
             loaded = json.load(handle)
@@ -234,9 +325,11 @@ def _validate_source(evidence: dict) -> None:
     if upstream_files != EXPECTED_UPSTREAM["files"]:
         raise ValueError("source provenance file hashes are incomplete")
     addendum = source.get("addendum", {})
+    registration_source = source.get("q1_registration_source", {})
     settled = source.get("settled_p0", {})
     if (
         addendum != EXPECTED_ADDENDUM
+        or registration_source != EXPECTED_REGISTRATION_SOURCE
         or settled != EXPECTED_SETTLED_P0
         or source.get("parent_source_provenance_sha256")
         != EXPECTED_PARENT_SOURCE_SHA256
@@ -244,6 +337,8 @@ def _validate_source(evidence: dict) -> None:
         raise ValueError("source provenance differs from registration")
     if (
         addendum.get("sha256") != files["addendum"]["sha256"]
+        or registration_source.get("sha256")
+        != files["registration_source"]["sha256"]
         or settled.get("verdict_sha256") != files["p0"]["sha256"]
         or settled.get("raw_sha256") != files["p0_raw"]["sha256"]
         or source.get("parent_source_provenance_sha256")
@@ -252,6 +347,7 @@ def _validate_source(evidence: dict) -> None:
         raise ValueError("source provenance artifact hash mismatch")
     expected_paths = {
         "addendum": addendum.get("path"),
+        "registration_source": registration_source.get("path"),
         "p0": settled.get("verdict_path"),
         "p0_raw": settled.get("raw_path"),
     }
@@ -298,9 +394,33 @@ def _validate_interval(interval: dict, label: str) -> None:
 
 def _validate_q1(evidence: dict) -> None:
     q1 = evidence.get("q1", {})
+    registration = evidence.get("registration", {})
+    if (
+        registration.get("schema") != "mergecert-q1-registration-v1"
+        or registration.get("status") != "finalized"
+        or registration.get("source_registration_sha256")
+        != _sha256(Q1_REGISTRATION_SOURCE_PATH)
+        or registration.get("model_id")
+        != "Qwen/Qwen3-4B-Instruct-2507"
+        or registration.get("population_doc_ids") != REGISTERED_FULL_DOC_IDS
+        or registration.get("smoke_doc_ids")
+        != Q1_REGISTRATION_SOURCE["smoke_doc_ids"]
+        or registration.get("archive_sha256")
+        != REGISTERED_ARCHIVE_SHA256
+        or registration.get("all_items_sha256")
+        != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+        or q1.get("q1_registration_sha256")
+        != evidence["_files"]["registration"]["sha256"]
+    ):
+        raise ValueError("Q1 finalized registration is missing or differs")
+    registered_documents = registration.get("documents", [])
+    registered_by_doc = _validate_registered_documents(
+        registered_documents
+    )
     if (
         q1.get("pass") is not True
-        or q1.get("documents") != 20
+        or not _is_strict_int(q1.get("documents"))
+        or q1["documents"] != 20
         or q1.get("archived_m1_replay_pass") is not True
         or set(q1.get("summaries", {})) != EXPECTED_ARMS
         or set(q1.get("references", {}))
@@ -318,24 +438,41 @@ def _validate_q1(evidence: dict) -> None:
         raise ValueError("Q1 verdict is incomplete")
     per_document_budgets = q1.get("per_document_budgets", {})
     sample_doc_ids = q1.get("sample_doc_ids", [])
+    domain_counts = q1.get("domain_counts", {})
     if (
         not isinstance(sample_doc_ids, list)
-        or len(sample_doc_ids) != 20
-        or len(set(sample_doc_ids)) != 20
+        or sample_doc_ids != REGISTERED_FULL_DOC_IDS
         or set(per_document_budgets) != set(sample_doc_ids)
     ):
         raise ValueError("Q1 per-document budgets are incomplete")
+    if domain_counts != {domain: 5 for domain in EXPECTED_DOMAINS} or any(
+        not _is_strict_int(value) for value in domain_counts.values()
+    ):
+        raise ValueError("Q1 domain counts are incomplete")
     expected_replay = {
         (
             doc_id,
             f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json",
+            (
+                "control-0.00"
+                if ratio == 0.0
+                else f"eviction-{ratio:.2f}"
+            ),
+            REGISTERED_ARCHIVE_SHA256[
+                f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json"
+            ],
         )
         for doc_id in sample_doc_ids
         for ratio in (0.0, 0.25, 0.40)
     }
     replay_matrix = q1.get("archive_replay_matrix", [])
     actual_replay = [
-        (row.get("doc_id"), row.get("archive"))
+        (
+            row.get("doc_id"),
+            row.get("archive"),
+            row.get("arm"),
+            row.get("archive_sha256"),
+        )
         for row in replay_matrix
         if isinstance(row, dict)
     ]
@@ -346,25 +483,34 @@ def _validate_q1(evidence: dict) -> None:
     ):
         raise ValueError("Q1 archive replay matrix is incomplete")
     for doc_id, ratios in per_document_budgets.items():
+        registered_document = registered_by_doc[doc_id]
         if set(ratios) != {"0.25", "0.40"}:
             raise ValueError(f"Q1 per-document budgets are incomplete for {doc_id}")
         for ratio_text, budget in ratios.items():
             source_tokens = budget.get("source_context_token_count")
             model_tokens = budget.get("model_input_token_count")
             actual_evicted = budget.get("evicted_token_count")
+            requested_evicted = budget.get(
+                "requested_evicted_token_count"
+            )
             source_start = budget.get("eviction_source_start")
             source_end = budget.get("eviction_source_end")
             physical_before = budget.get("physical_before_count")
             physical_after = budget.get("physical_after_count")
+            retained = budget.get("retained_token_count")
+            merge_target = budget.get("merge_target_retained")
             ratio = float(ratio_text)
             counts = (
                 source_tokens,
                 model_tokens,
                 actual_evicted,
+                requested_evicted,
                 source_start,
                 source_end,
                 physical_before,
                 physical_after,
+                retained,
+                merge_target,
             )
             expected_removed = (
                 max(
@@ -380,10 +526,9 @@ def _validate_q1(evidence: dict) -> None:
                 or source_tokens <= 4
                 or model_tokens <= 4
                 or actual_evicted <= 0
-                or source_start < 4
-                or source_end - source_start != int(source_tokens * ratio)
-                or budget.get("requested_evicted_token_count")
-                != int(source_tokens * ratio)
+                or source_start != REGISTERED_EVICTION_START[doc_id]
+                or requested_evicted != int(source_tokens * ratio)
+                or source_end - source_start != requested_evicted
                 or physical_before != model_tokens
                 or physical_before - physical_after != actual_evicted
                 or actual_evicted != expected_removed
@@ -396,6 +541,15 @@ def _validate_q1(evidence: dict) -> None:
                 raise ValueError(
                     f"Q1 per-document budget is malformed for {doc_id}/{ratio_text}"
                 )
+            if budget != {
+                "source_context_token_count": source_tokens,
+                "model_input_token_count": model_tokens,
+                **registered_document["budgets"][ratio_text],
+            }:
+                raise ValueError(
+                    f"Q1 finalized registration budget differs for "
+                    f"{doc_id}/{ratio_text}"
+                )
     for domain, rows in q1["per_domain"].items():
         if set(rows) != EXPECTED_ARMS:
             raise ValueError(f"Q1 per-domain arms are incomplete for {domain}")
@@ -405,6 +559,17 @@ def _validate_q1(evidence: dict) -> None:
             if any(not _is_number(row.get(field)) for field in numeric_fields):
                 raise ValueError(
                     f"Q1 numeric evidence is malformed for {row_name}"
+                )
+            if group_name == "summaries" and any(
+                not _is_strict_int(row.get(field)) or row[field] < 0
+                for field in (
+                    "documents",
+                    "aggregation_probes",
+                    "needle_probes",
+                )
+            ):
+                raise ValueError(
+                    f"Q1 count evidence is malformed for {row_name}"
                 )
     for domain, rows in q1["per_domain"].items():
         for arm, row in rows.items():
@@ -498,15 +663,9 @@ def _validate_conditional(evidence: dict) -> str:
                 or declaration.get("sha256")
                 != evidence["_files"][name]["sha256"]
                 or evidence[name].get("pass") is not True
-                or (
-                    embedded_trigger is not None
-                    and embedded_trigger != trigger
-                )
-                or (
-                    embedded_hash is not None
-                    and embedded_hash
-                    != evidence["_files"]["trigger"]["sha256"]
-                )
+                or embedded_trigger != trigger
+                or embedded_hash
+                != evidence["_files"]["trigger"]["sha256"]
             ):
                 raise ValueError(f"conditional {name.upper()} evidence drift")
         return "completed"

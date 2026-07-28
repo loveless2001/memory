@@ -105,6 +105,10 @@ def test_q3_analysis_reports_kappa_directional_nesting_and_base_rates(tmp_path):
     assert verdict["comparisons"]["FR"]["nesting_fraction"] == 1.0
     assert verdict["headline_references"] == ["A", "FR", "E1F"]
     assert verdict["context_reference"] == "B"
+    assert verdict["q1_trigger"] == json.loads(trigger_path.read_text())
+    assert verdict["q1_trigger_sha256"] == hashlib.sha256(
+        trigger_path.read_bytes()
+    ).hexdigest()
 
 
 def test_q3_analysis_rejects_reference_coverage_or_domain_drift(tmp_path):

@@ -16,6 +16,14 @@ Q1_ADDENDUM_SHA256 = (
 Q1_P0_VERDICT_SHA256 = (
     "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
 )
+Q1_REGISTRATION_SOURCE = json.loads(
+    (
+        ROOT
+        / "plans"
+        / "260728-mergecert-q1"
+        / "q1-registration-source.json"
+    ).read_text()
+)
 
 
 def _load_analyzer():
@@ -24,18 +32,106 @@ def _load_analyzer():
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    raw_analyze = module.analyze
+
+    def analyze_with_registration(payload, **kwargs):
+        if "registration" not in kwargs:
+            kwargs["registration"] = _registration()
+            kwargs["registration_sha256"] = _registration_sha256()
+        return raw_analyze(payload, **kwargs)
+
+    module.analyze = analyze_with_registration
     return module
 
 
 def _token_counts(doc_id):
-    return (3921, 3921) if doc_id == "legal/0" else (4096, 4096)
+    return (3921, 3921) if doc_id == "legal/00000" else (4096, 4096)
+
+
+def _registration():
+    documents = []
+    for doc_id in Q1_REGISTRATION_SOURCE["population_doc_ids"]:
+        source_tokens, model_tokens = _token_counts(doc_id)
+        source_start = Q1_REGISTRATION_SOURCE["eviction_source_start"][
+            doc_id
+        ]
+        documents.append(
+            {
+                "doc_id": doc_id,
+                "context_start": max(
+                    0,
+                    Q1_REGISTRATION_SOURCE["anchor_chunk_token_start"][
+                        doc_id
+                    ]
+                    - 1024,
+                ),
+                "source_context_token_count": source_tokens,
+                "model_input_token_count": model_tokens,
+                "budgets": {
+                    f"{ratio:.2f}": {
+                        "requested_evicted_token_count": int(
+                            source_tokens * ratio
+                        ),
+                        "eviction_source_start": source_start,
+                        "eviction_source_end": (
+                            source_start + int(source_tokens * ratio)
+                        ),
+                        "physical_before_count": model_tokens,
+                        "physical_after_count": (
+                            model_tokens - int(source_tokens * ratio)
+                        ),
+                        "evicted_token_count": int(source_tokens * ratio),
+                        "retained_token_count": (
+                            model_tokens - int(source_tokens * ratio)
+                        ),
+                        "merge_target_retained": (
+                            model_tokens - int(source_tokens * ratio)
+                        ),
+                    }
+                    for ratio in (0.25, 0.40)
+                },
+            }
+        )
+    source_path = (
+        ROOT
+        / "plans"
+        / "260728-mergecert-q1"
+        / "q1-registration-source.json"
+    )
+    return {
+        "schema": "mergecert-q1-registration-v1",
+        "status": "finalized",
+        "source_registration_sha256": hashlib.sha256(
+            source_path.read_bytes()
+        ).hexdigest(),
+        "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+        "population_doc_ids": Q1_REGISTRATION_SOURCE[
+            "population_doc_ids"
+        ],
+        "smoke_doc_ids": Q1_REGISTRATION_SOURCE["smoke_doc_ids"],
+        "all_items_sha256": Q1_REGISTRATION_SOURCE["all_items_sha256"],
+        "archive_sha256": Q1_REGISTRATION_SOURCE["archive_sha256"],
+        "documents": documents,
+    }
+
+
+def _registration_text():
+    return json.dumps(_registration(), sort_keys=True)
+
+
+def _registration_sha256():
+    return hashlib.sha256(_registration_text().encode()).hexdigest()
 
 
 def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
     source_tokens, model_tokens = _token_counts(doc_id)
     evicted = int(source_tokens * ratio)
     retained = model_tokens - evicted
-    source_start = 0 if ratio == 0 else 4
+    source_start = (
+        0
+        if ratio == 0
+        else Q1_REGISTRATION_SOURCE["eviction_source_start"][doc_id]
+    )
     source_end = source_start + evicted
     return {
         "doc_id": doc_id,
@@ -53,7 +149,9 @@ def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
         "target_retained": retained,
         "source_hashes": {
             "corpus_manifest_sha256": "manifest-sha",
-            "all_items_sha256": "items-sha",
+            "all_items_sha256": Q1_REGISTRATION_SOURCE[
+                "all_items_sha256"
+            ],
             "source_document_sha256": f"document-sha-{doc_id}",
         },
         "needle_item_ids": [f"{doc_id}:needle"],
@@ -71,12 +169,14 @@ def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
     }
 
 
-def _payload(*, documents_per_domain=1):
-    docs = [
-        f"{domain}/{index}"
-        for domain in ("financial", "legal", "code", "literature")
-        for index in range(documents_per_domain)
-    ]
+def _payload(*, documents_per_domain=5, smoke=False):
+    if documents_per_domain != 5:
+        raise ValueError("fixture supports only the registered full population")
+    docs = list(
+        Q1_REGISTRATION_SOURCE[
+            "smoke_doc_ids" if smoke else "population_doc_ids"
+        ]
+    )
     arms = {}
     for ratio in (0.25, 0.40):
         arms[f"eviction-{ratio:.2f}"] = {
@@ -147,12 +247,21 @@ def _payload(*, documents_per_domain=1):
                 "stop_q1_q3": True,
             },
         },
+        "q1_registration_sha256": _registration_sha256(),
         "archived_m1": {
             "replay_pass": True,
             "replay_checks": [
                 {
                     "archive": (
                         f"{doc.split('/', 1)[0]}-evict{ratio:.2f}.json"
+                    ),
+                    "archive_sha256": Q1_REGISTRATION_SOURCE[
+                        "archive_sha256"
+                    ][f"{doc.split('/', 1)[0]}-evict{ratio:.2f}.json"],
+                    "arm": (
+                        "control-0.00"
+                        if ratio == 0.0
+                        else f"eviction-{ratio:.2f}"
                     ),
                     "doc_id": doc,
                     "pass": True,
@@ -162,11 +271,10 @@ def _payload(*, documents_per_domain=1):
                 for ratio in (0.0, 0.25, 0.40)
             ],
             "files": {
-                f"{domain}-evict{ratio:.2f}.json": {
-                    "sha256": f"{domain}-{ratio}"
-                }
-                for domain in ("financial", "legal", "code", "literature")
-                for ratio in (0.0, 0.25, 0.40)
+                name: {"sha256": digest}
+                for name, digest in Q1_REGISTRATION_SOURCE[
+                    "archive_sha256"
+                ].items()
             },
         },
         "references": {
@@ -202,13 +310,22 @@ def _payload(*, documents_per_domain=1):
         },
         "source_hashes": {
             "corpus_manifest_sha256": "manifest-sha",
-            "all_items_sha256": "items-sha",
+            "all_items_sha256": Q1_REGISTRATION_SOURCE[
+                "all_items_sha256"
+            ],
         },
         "documents": [
             {
                 "doc_id": doc,
                 "domain": doc.split("/", 1)[0],
                 "context_sha256": f"sha-{doc}",
+                "context_start": max(
+                    0,
+                    Q1_REGISTRATION_SOURCE["anchor_chunk_token_start"][
+                        doc
+                    ]
+                    - 1024,
+                ),
                 "source_context_token_count": _token_counts(doc)[0],
                 "model_input_token_count": _token_counts(doc)[1],
                 "context_token_count": _token_counts(doc)[1],
@@ -219,9 +336,14 @@ def _payload(*, documents_per_domain=1):
                         "requested_evicted_token_count": int(
                             _token_counts(doc)[0] * ratio
                         ),
-                        "eviction_source_start": 4,
+                        "eviction_source_start": Q1_REGISTRATION_SOURCE[
+                            "eviction_source_start"
+                        ][doc],
                         "eviction_source_end": (
-                            4 + int(_token_counts(doc)[0] * ratio)
+                            Q1_REGISTRATION_SOURCE[
+                                "eviction_source_start"
+                            ][doc]
+                            + int(_token_counts(doc)[0] * ratio)
                         ),
                         "physical_before_count": _token_counts(doc)[1],
                         "physical_after_count": (
@@ -244,7 +366,9 @@ def _payload(*, documents_per_domain=1):
                 },
                 "source_hashes": {
                     "corpus_manifest_sha256": "manifest-sha",
-                    "all_items_sha256": "items-sha",
+                    "all_items_sha256": Q1_REGISTRATION_SOURCE[
+                        "all_items_sha256"
+                    ],
                     "source_document_sha256": f"document-sha-{doc}",
                 },
                 "needle_item_ids": [f"{doc}:needle"],
@@ -262,7 +386,7 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
     analyzer = _load_analyzer()
 
     verdict = analyzer.analyze(
-        _payload(), expected_documents=4, n_resamples=200
+        _payload(), expected_documents=20, n_resamples=200
     )
 
     assert verdict["pass"] is True
@@ -276,7 +400,7 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
     assert verdict["summaries"]["control-0.00"]["mean_kl"] == 0.0
     assert verdict["paired_merge_minus_eviction"]["0.40"]["mean_kl"][
         "ci95"
-    ] == [-0.2, -0.2]
+    ] == pytest.approx([-0.2, -0.2])
     assert verdict["registered_readings"]["r1"] == "R1"
     assert verdict["run_q2_q3"] is True
     assert verdict["favorable_intervals"] == [
@@ -288,9 +412,9 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
         "0.40:acc_delta",
     ]
     assert verdict["per_domain"]["financial"]["merge-0.25"] == {
-        "documents": 1,
-        "aggregation_probes": 1,
-        "needle_probes": 1,
+        "documents": 5,
+        "aggregation_probes": 5,
+        "needle_probes": 5,
         "mean_kl": 0.125,
         "accuracy_delta": -0.125,
         "lost_fact": 0.125,
@@ -300,16 +424,51 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
     assert verdict["budget_mode"] == (
         "archived-m1-per-document-matched-physical-v1"
     )
-    assert verdict["sample_doc_ids"] == [
-        "financial/0",
-        "legal/0",
-        "code/0",
-        "literature/0",
+    assert verdict["sample_doc_ids"] == Q1_REGISTRATION_SOURCE[
+        "population_doc_ids"
     ]
-    assert len(verdict["archive_replay_matrix"]) == 12
-    assert verdict["per_document_budgets"]["legal/0"]["0.25"][
+    assert len(verdict["archive_replay_matrix"]) == 60
+    assert verdict["per_document_budgets"]["legal/00000"]["0.25"][
         "retained_token_count"
     ] == 2941
+
+
+def test_q1_analysis_accepts_exact_financial_smoke_and_rejects_other_counts():
+    analyzer = _load_analyzer()
+
+    verdict = analyzer.analyze(
+        _payload(smoke=True), expected_documents=2, n_resamples=20
+    )
+
+    assert verdict["sample_doc_ids"] == Q1_REGISTRATION_SOURCE[
+        "smoke_doc_ids"
+    ]
+    assert verdict["domain_counts"] == {"financial": 2}
+    with pytest.raises(ValueError, match="2- or 20-document"):
+        analyzer.analyze(_payload(), expected_documents=4, n_resamples=20)
+
+
+def test_q1_analysis_requires_the_hash_bound_finalized_registration():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    payload["q1_registration_sha256"] = "f" * 64
+
+    with pytest.raises(ValueError, match="finalized registration"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+    payload = _payload()
+    registration = _registration()
+    registration["documents"][0]["budgets"]["0.25"][
+        "requested_evicted_token_count"
+    ] = True
+    with pytest.raises(ValueError, match="registration counts"):
+        analyzer.analyze(
+            payload,
+            expected_documents=20,
+            n_resamples=20,
+            registration=registration,
+            registration_sha256=_registration_sha256(),
+        )
 
 
 def test_q1_analysis_requires_the_exact_settled_negative_authorization():
@@ -318,7 +477,7 @@ def test_q1_analysis_requires_the_exact_settled_negative_authorization():
     payload["q1_authorization"]["settled_p0"]["p0_3_pass"] = True
 
     with pytest.raises(ValueError, match="authorization"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 @pytest.mark.parametrize(
@@ -334,7 +493,7 @@ def test_q1_analysis_rejects_arbitrary_authorization_hashes(field, value):
     payload["q1_authorization"][field] = value
 
     with pytest.raises(ValueError, match="authorization"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_partition_drift_between_arms():
@@ -343,7 +502,7 @@ def test_q1_analysis_rejects_partition_drift_between_arms():
     payload["arms"]["merge-0.40"]["reports"][0]["needle_item_ids"] = ["drift"]
 
     with pytest.raises(ValueError, match="partition"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_nonzero_control_and_wrong_budget():
@@ -354,7 +513,7 @@ def test_q1_analysis_rejects_nonzero_control_and_wrong_budget():
     ] = 1e-4
 
     with pytest.raises(ValueError, match="control"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_merge_eviction_per_document_budget_drift():
@@ -363,7 +522,7 @@ def test_q1_analysis_rejects_merge_eviction_per_document_budget_drift():
     payload["arms"]["merge-0.25"]["reports"][1]["target_retained"] += 1
 
     with pytest.raises(ValueError, match="per-document budget"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_duplicate_replay_or_sample_identity_drift():
@@ -373,12 +532,27 @@ def test_q1_analysis_rejects_duplicate_replay_or_sample_identity_drift():
         payload["archived_m1"]["replay_checks"][0]
     )
     with pytest.raises(ValueError, match="replay"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
     payload = _payload()
     payload["sample_doc_ids"][-1] = "foreign/document"
     with pytest.raises(ValueError, match="sample"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+
+def test_q1_analysis_rejects_foreign_document_or_archive_hash():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    payload["documents"][-1]["doc_id"] = "foreign/document"
+    with pytest.raises(ValueError, match="registered sample"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+    payload = _payload()
+    payload["archived_m1"]["files"]["legal-evict0.25.json"][
+        "sha256"
+    ] = "f" * 64
+    with pytest.raises(ValueError, match="file hashes"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_a_4096_context_with_fake_one_token_removal():
@@ -405,7 +579,7 @@ def test_q1_analysis_rejects_a_4096_context_with_fake_one_token_removal():
         )
 
     with pytest.raises(ValueError, match="budget"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_boolean_token_counts():
@@ -414,7 +588,43 @@ def test_q1_analysis_rejects_boolean_token_counts():
     payload["documents"][0]["source_context_token_count"] = True
 
     with pytest.raises(ValueError, match="token-length"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+
+@pytest.mark.parametrize(
+    ("scope", "field"),
+    (
+        ("budget", "requested_evicted_token_count"),
+        ("budget", "retained_token_count"),
+        ("budget", "merge_target_retained"),
+        ("report", "requested_evicted_token_count"),
+        ("report", "physical_before_count"),
+        ("report", "target_retained"),
+    ),
+)
+def test_q1_analysis_rejects_non_strict_accounting_counts(scope, field):
+    analyzer = _load_analyzer()
+    payload = _payload()
+    if scope == "budget":
+        payload["documents"][0]["budgets"]["0.25"][field] = True
+    else:
+        payload["arms"]["merge-0.25"]["reports"][0][field] = True
+
+    with pytest.raises(ValueError, match="budget"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+
+def test_q1_analysis_rejects_shifted_eviction_range_at_registered_count():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    budget = payload["documents"][0]["budgets"]["0.25"]
+    budget["eviction_source_start"] = 4095
+    budget["eviction_source_end"] = 4095 + budget[
+        "requested_evicted_token_count"
+    ]
+
+    with pytest.raises(ValueError, match="budget"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 @pytest.mark.parametrize("arm", ("merge-0.90", "eviction-0.90"))
@@ -429,7 +639,7 @@ def test_q1_analysis_rejects_nonregistered_ninety_percent_arms(arm):
     }
 
     with pytest.raises(ValueError, match="registered arm"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_ninety_percent_data_disguised_as_moderate_arm():
@@ -441,7 +651,7 @@ def test_q1_analysis_rejects_ninety_percent_data_disguised_as_moderate_arm():
         report["target_retained"] = 410
 
     with pytest.raises(ValueError, match="ratio"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def test_q1_analysis_rejects_missing_source_hashes_or_replay_checks():
@@ -449,12 +659,12 @@ def test_q1_analysis_rejects_missing_source_hashes_or_replay_checks():
     payload = _payload()
     payload["arms"]["merge-0.25"]["reports"][0]["source_hashes"] = {}
     with pytest.raises(ValueError, match="source hash"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
     payload = _payload()
     payload["archived_m1"]["replay_checks"][0]["pass"] = False
     with pytest.raises(ValueError, match="replay check"):
-        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 
 def _overlapping_intervals():
@@ -526,6 +736,8 @@ def test_q1_cli_writes_trigger_with_the_verdict_evidence_hash(tmp_path, monkeypa
     output_path = tmp_path / "q1-verdict.json"
     table_path = tmp_path / "q1-table.md"
     trigger_path = tmp_path / "q1-trigger.json"
+    registration_path = tmp_path / "q1-registration.json"
+    registration_path.write_text(_registration_text())
     input_path.write_text(json.dumps(_payload(documents_per_domain=5)))
     monkeypatch.setattr(
         "sys.argv",
@@ -539,6 +751,8 @@ def test_q1_cli_writes_trigger_with_the_verdict_evidence_hash(tmp_path, monkeypa
             str(table_path),
             "--trigger",
             str(trigger_path),
+            "--registration",
+            str(registration_path),
             "--n-resamples",
             "20",
         ],
