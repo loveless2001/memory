@@ -45,6 +45,11 @@ R3_TEXT = (
     "is STILL a coherent scoped result (gist tier behind a gate), and the "
     "two-axis protocol exists precisely to say so without blending."
 )
+Q1_APP_IDS = (
+    "ap-LhQ8XuapnFgxvOgxih3tr3",
+    "ap-n8C84UMNCvqC8Mc5bIM3c5",
+)
+Q2_APP_ID = "ap-Vm2RcWMIGSeIN2ykNdSyxB"
 
 
 def _load(path, name):
@@ -61,6 +66,17 @@ def _sha256(path):
 def _write_json(path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=1, allow_nan=False))
+
+
+def _replace_q2_reading(plan, text):
+    q2_path = plan / "q2-routability.json"
+    q2 = json.loads(q2_path.read_text())
+    q2["registered_reading"] = text
+    _write_json(q2_path, q2)
+    conditional_path = plan / "conditional-work.json"
+    conditional = json.loads(conditional_path.read_text())
+    conditional["q2"]["sha256"] = _sha256(q2_path)
+    _write_json(conditional_path, conditional)
 
 
 def _q1_verdict(*, positive, aggregation_only=False):
@@ -329,11 +345,14 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
                 "cost_usd": 10.25,
                 "source": (
                     "Modal billing report 2026-07-28 for apps "
-                    "ap-Q1Smoke and ap-Q1Full"
+                    f"{Q1_APP_IDS[0]} and {Q1_APP_IDS[1]}"
                 ),
                 "runs": [
-                    {"app_id": "ap-Q1Smoke", "purpose": "Q1 smoke"},
-                    {"app_id": "ap-Q1Full", "purpose": "Q1 certification"},
+                    {"app_id": Q1_APP_IDS[0], "purpose": "Q1 smoke"},
+                    {
+                        "app_id": Q1_APP_IDS[1],
+                        "purpose": "Q1 certification",
+                    },
                 ],
             },
             **(
@@ -345,11 +364,11 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
                         "cost_usd": 2.25,
                         "source": (
                             "Modal billing report 2026-07-28 for app "
-                            "ap-Q2Conditional"
+                            f"{Q2_APP_ID}"
                         ),
                         "runs": [
                             {
-                                "app_id": "ap-Q2Conditional",
+                                "app_id": Q2_APP_ID,
                                 "purpose": "conditional Q2 capture",
                             }
                         ],
@@ -404,8 +423,8 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
     assert SKIP_REASON in report
     assert "Private to Tyler and Kevin." in report
     assert "Transmission is not recorded." in report
-    assert "ap-Q1Smoke" in report
-    assert "ap-Q1Full" in report
+    assert Q1_APP_IDS[0] in report
+    assert Q1_APP_IDS[1] in report
     assert report.count("merge-plus-anchor") == 1
     assert "theoretically motivated future direction" in report
     assert "was not tested" in report
@@ -438,7 +457,7 @@ def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
     assert "Measured favorable axis: 0.40 accuracy-delta." in report
     assert "all moderate ratios" not in report
     assert "merge-plus-anchor" not in report
-    assert "ap-Q2Conditional" in report
+    assert Q2_APP_ID in report
 
 
 def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):
@@ -457,9 +476,17 @@ def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):
     ("injected_text", "message"),
     (
         ("[public](HTTPS://example.com/result)", "public URL"),
+        ("[public](//example.com/result)", "public URL"),
         ("| **?** |", "question-mark result cell"),
+        (r"| \*\*\?\*\* |", "question-mark result cell"),
         ("The method was deployed successfully.", "forbidden claim"),
+        ("Deployment succeeded.", "forbidden claim"),
+        ("The method was deployed.", "forbidden claim"),
         ("Sent to Tyler after validation.", "forbidden claim"),
+        ("Tyler received the report.", "forbidden claim"),
+        ("Kevin has the report.", "forbidden claim"),
+        ("Transmission successfully completed.", "forbidden claim"),
+        ("Delivery occurred.", "forbidden claim"),
     ),
 )
 def test_validator_rejects_formatted_or_case_variant_forbidden_claims(
@@ -468,19 +495,30 @@ def test_validator_rejects_formatted_or_case_variant_forbidden_claims(
     renderer = _load(RENDERER, f"mergecert_q1_renderer_{message}")
     validator = _load(VALIDATOR, f"mergecert_q1_validator_{message}")
     root, plan = _build_bundle(tmp_path, positive=True)
-    q2_path = plan / "q2-routability.json"
-    q2 = json.loads(q2_path.read_text())
-    q2["registered_reading"] = injected_text
-    _write_json(q2_path, q2)
-    conditional_path = plan / "conditional-work.json"
-    conditional = json.loads(conditional_path.read_text())
-    conditional["q2"]["sha256"] = _sha256(q2_path)
-    _write_json(conditional_path, conditional)
+    _replace_q2_reading(plan, injected_text)
     evidence = renderer.load_evidence(plan, root=root)
     report = renderer.render_report(evidence)
 
     with pytest.raises(ValueError, match=message):
         validator.validate_report_text(report, evidence)
+
+
+def test_validator_permits_explicit_negative_limitations(tmp_path):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_negative_claims")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_negative_claims")
+    root, plan = _build_bundle(tmp_path, positive=True)
+    negative = (
+        "Deployment did not succeed. Tyler did not receive the report. "
+        "Transmission was not completed."
+    )
+    _replace_q2_reading(plan, negative)
+    evidence = renderer.load_evidence(plan, root=root)
+    report = renderer.render_report(evidence)
+
+    result = validator.validate_report_text(report, evidence)
+
+    assert result["pass"] is True
+    assert negative in report
 
 
 @pytest.mark.parametrize(
@@ -493,6 +531,12 @@ def test_validator_rejects_formatted_or_case_variant_forbidden_claims(
             "app ID",
         ),
         (
+            lambda evidence: evidence["compute"]["phases"]["q1"]["runs"][
+                0
+            ].update({"app_id": "ap-000000"}),
+            "app ID",
+        ),
+        (
             lambda evidence: evidence["compute"]["phases"]["q1"].update(
                 {"phase": "Q2/Q3"}
             ),
@@ -501,6 +545,28 @@ def test_validator_rejects_formatted_or_case_variant_forbidden_claims(
         (
             lambda evidence: evidence["compute"]["phases"]["q1"].update(
                 {"source": "Modal billing report"}
+            ),
+            "billing source",
+        ),
+        (
+            lambda evidence: evidence["compute"]["phases"]["q1"].update(
+                {
+                    "source": (
+                        "Modal billing report 9999-99-99 for apps "
+                        f"{Q1_APP_IDS[0]} and {Q1_APP_IDS[1]}"
+                    )
+                }
+            ),
+            "billing date",
+        ),
+        (
+            lambda evidence: evidence["compute"]["phases"]["q1"].update(
+                {
+                    "source": (
+                        "Modal billing report 2026-07-28 for apps "
+                        f"{Q1_APP_IDS[0]} and {Q1_APP_IDS[1]} verified manually"
+                    )
+                }
             ),
             "billing source",
         ),

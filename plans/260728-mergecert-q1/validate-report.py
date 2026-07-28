@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import importlib.util
 import json
 import math
 import re
+from datetime import date
 from pathlib import Path
 
 
@@ -65,39 +67,50 @@ EXPECTED_SETTLED_P0 = {
 EXPECTED_PARENT_SOURCE_SHA256 = (
     "cbaaec6a20cb4e53ab36a56f377c91c6bd97b8028f1fd60e2c63bdb759576930"
 )
-PUBLIC_URL_PATTERN = re.compile(r"https?://", re.IGNORECASE)
-QUESTION_CELL_PATTERN = re.compile(
-    r"\|\s*(?:[*_~`]+\s*)?\?\s*(?:[*_~`]+\s*)?\|"
+MARKDOWN_ESCAPE_PATTERN = re.compile(
+    r"\\([\\`*_[\]{}()#+\-.!|>?~])"
 )
-FORBIDDEN_CLAIM_PATTERNS = (
-    re.compile(r"\bqwen2\.5\b", re.IGNORECASE),
-    re.compile(
-        r"\b(?:deployment[- ](?:ready|certified|approved)|"
-        r"ready\s+for\s+deployment)\b",
-        re.IGNORECASE,
-    ),
-    re.compile(
-        r"\b(?:deployed\s+(?:successfully|to|in|on|for|at|as)|"
-        r"successfully\s+deployed)\b",
-        re.IGNORECASE,
-    ),
-    re.compile(
-        r"\b(?:transmission|delivery)\s+confirmed\b",
-        re.IGNORECASE,
-    ),
-    re.compile(
-        r"\b(?:sent|delivered|transmitted|shared)\s+to\s+"
-        r"(?:tyler|kevin)\b",
-        re.IGNORECASE,
-    ),
+MARKDOWN_WRAPPER_PATTERN = re.compile(r"[*_~`]+")
+HTML_TAG_PATTERN = re.compile(r"<[^>\n]+>")
+PUBLIC_URL_PATTERN = re.compile(
+    r"(?:(?:https?:)?//)[A-Za-z0-9]",
+    re.IGNORECASE,
+)
+QUESTION_CELL_PATTERN = re.compile(r"\|\s*\?\s*\|")
+QWEN25_PATTERN = re.compile(r"\bqwen2\.5\b", re.IGNORECASE)
+CLAIM_SEGMENT_PATTERN = re.compile(r"(?:[.;\n]+|\bbut\b)", re.IGNORECASE)
+NEGATION_PATTERN = re.compile(
+    r"\b(?:not|no|never|without|unconfirmed|unrecorded|neither)\b",
+    re.IGNORECASE,
+)
+DEPLOYMENT_PATTERN = re.compile(
+    r"\b(?:deployed|deploying|deploys|deployment(?!-relevant\b))\b",
+    re.IGNORECASE,
+)
+TRANSMISSION_PATTERN = re.compile(
+    r"\b(?:transmission|delivery)\b",
+    re.IGNORECASE,
+)
+REPORT_PATTERN = re.compile(r"\breport\b", re.IGNORECASE)
+RECIPIENT_PATTERN = re.compile(r"\b(?:tyler|kevin)\b", re.IGNORECASE)
+AFFIRMATIVE_PATTERN = re.compile(
+    r"\b(?:succeed(?:ed|s|ing)?|success(?:ful(?:ly)?)?|"
+    r"complet(?:e|ed|ion)|ready|certif(?:ied|ication)|"
+    r"approv(?:ed|al)|production|live|operational|"
+    r"sent|deliver(?:ed|y)|transmitt(?:ed|al)|shared|"
+    r"receiv(?:e|ed|es|ing))\b",
+    re.IGNORECASE,
 )
 EXPECTED_PHASE_LABELS = {
     "q1": "Q1",
     "q2_q3": "Q2/Q3",
 }
-APP_ID_PATTERN = re.compile(r"ap-[A-Za-z0-9]{6,}")
+MODAL_APP_ID = r"ap-[A-Za-z0-9]{22}"
+APP_ID_PATTERN = re.compile(MODAL_APP_ID)
 BILLING_SOURCE_PATTERN = re.compile(
-    r"Modal billing report \d{4}-\d{2}-\d{2} for apps? .+"
+    rf"Modal billing report (?P<date>\d{{4}}-\d{{2}}-\d{{2}}) "
+    rf"for (?P<noun>app|apps) "
+    rf"(?P<ids>{MODAL_APP_ID}(?:(?:, | and ){MODAL_APP_ID})*)"
 )
 
 
@@ -109,6 +122,34 @@ def _renderer_module():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _inspection_text(report: str) -> str:
+    normalized = html.unescape(report)
+    normalized = MARKDOWN_ESCAPE_PATTERN.sub(r"\1", normalized)
+    normalized = HTML_TAG_PATTERN.sub("", normalized)
+    return MARKDOWN_WRAPPER_PATTERN.sub("", normalized)
+
+
+def _positive_claim(report: str) -> str | None:
+    for segment in CLAIM_SEGMENT_PATTERN.split(report):
+        if not segment.strip() or NEGATION_PATTERN.search(segment):
+            continue
+        if DEPLOYMENT_PATTERN.search(segment):
+            return segment.strip()
+        if TRANSMISSION_PATTERN.search(segment):
+            return segment.strip()
+        if (
+            RECIPIENT_PATTERN.search(segment)
+            and REPORT_PATTERN.search(segment)
+        ):
+            return segment.strip()
+        if (
+            RECIPIENT_PATTERN.search(segment)
+            and AFFIRMATIVE_PATTERN.search(segment)
+        ):
+            return segment.strip()
+    return None
 
 
 def _sha256(path: Path) -> str:
@@ -429,15 +470,22 @@ def _validate_compute(evidence: dict) -> float:
             raise ValueError(f"billing app ID is duplicated for {phase}")
         seen_app_ids.update(app_ids)
         source = row.get("source")
-        source_app_ids = (
-            set(APP_ID_PATTERN.findall(source))
+        source_match = (
+            BILLING_SOURCE_PATTERN.fullmatch(source)
             if isinstance(source, str)
-            else set()
+            else None
         )
+        if source_match is None:
+            raise ValueError(f"billing source is incomplete for {phase}")
+        try:
+            date.fromisoformat(source_match.group("date"))
+        except ValueError as error:
+            raise ValueError(f"billing date is invalid for {phase}") from error
+        source_app_ids = APP_ID_PATTERN.findall(source_match.group("ids"))
+        expected_noun = "app" if len(app_ids) == 1 else "apps"
         if (
-            not isinstance(source, str)
-            or BILLING_SOURCE_PATTERN.fullmatch(source) is None
-            or source_app_ids != set(app_ids)
+            source_match.group("noun") != expected_noun
+            or source_app_ids != app_ids
         ):
             raise ValueError(f"billing source is incomplete for {phase}")
         calculated += float(cost)
@@ -469,15 +517,15 @@ def validate_report_text(report: str, evidence: dict) -> dict:
     privacy_status = _validate_privacy(evidence)
     _validate_loaded_evidence(evidence)
 
-    if PUBLIC_URL_PATTERN.search(report):
+    inspection_text = _inspection_text(report)
+    if PUBLIC_URL_PATTERN.search(inspection_text):
         raise ValueError("report contains a public URL")
-    if QUESTION_CELL_PATTERN.search(report):
+    if QUESTION_CELL_PATTERN.search(inspection_text):
         raise ValueError("report contains a question-mark result cell")
-    for pattern in FORBIDDEN_CLAIM_PATTERNS:
-        if match := pattern.search(report):
-            raise ValueError(
-                f"report contains forbidden claim {match.group(0)}"
-            )
+    if match := QWEN25_PATTERN.search(inspection_text):
+        raise ValueError(f"report contains forbidden claim {match.group(0)}")
+    if claim := _positive_claim(inspection_text):
+        raise ValueError(f"report contains forbidden claim {claim}")
     if REQUIRED_HEADINGS - set(report.splitlines()):
         raise ValueError("report is missing a required heading")
     if "Private to Tyler and Kevin." not in report:
