@@ -23,6 +23,7 @@ DEFAULT_SCORES = HERE / "q2-scores.npz"
 DEFAULT_OUTPUT = HERE / "q2-verdict.json"
 DEFAULT_TABLE = HERE / "q2-table.md"
 DEFAULT_F5_TABLE = HERE / "q2-f5-table.md"
+DEFAULT_TRIGGER = HERE / "q1-trigger.json"
 RATIOS = (0.25, 0.40)
 ARMS = (
     "c0_refit",
@@ -52,30 +53,27 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
         raise ValueError("Q2 is blocked until q1-trigger.json exists")
     with open(path) as handle:
         trigger = json.load(handle)
+    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
+    hashes = (
+        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
+        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
+        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
+    )
     valid = (
-        trigger.get("protocol") == "MERGECERT-Q1"
+        isinstance(trigger, dict)
+        and trigger.get("protocol") == "MERGECERT-Q1"
         and trigger.get("run_q2_q3") is True
-        and bool(trigger.get("favorable_intervals"))
-        and len(trigger.get("q1_verdict_sha256", "")) == 64
-        and len(trigger.get("addendum_sha256", "")) == 64
-        and len(trigger.get("p0_verdict_sha256", "")) == 64
+        and isinstance(favorable_intervals, list)
+        and bool(favorable_intervals)
+        and all(
+            isinstance(interval, str) and bool(interval.strip())
+            for interval in favorable_intervals
+        )
+        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
     )
     if not valid:
         raise ValueError("Q2 is blocked by the registered Q1 trigger")
     return trigger
-
-
-def _validate_q1_trigger(trigger: dict) -> None:
-    valid = (
-        trigger.get("protocol") == "MERGECERT-Q1"
-        and trigger.get("run_q2_q3") is True
-        and bool(trigger.get("favorable_intervals"))
-        and len(trigger.get("q1_verdict_sha256", "")) == 64
-        and len(trigger.get("addendum_sha256", "")) == 64
-        and len(trigger.get("p0_verdict_sha256", "")) == 64
-    )
-    if not valid:
-        raise ValueError("Q2 is blocked by the registered Q1 trigger")
 
 
 def _recompute_metric(y, scores, split, documents, domains, *, seed, n_resamples):
@@ -185,14 +183,15 @@ def analyze(
     expected_items_per_ratio=30_847,
     expected_e1_items=2_000,
     n_resamples=2_000,
+    trigger_path: Path = DEFAULT_TRIGGER,
 ):
-    q1_trigger = payload.get("q1_trigger")
-    if not isinstance(q1_trigger, dict):
-        raise ValueError("Q2 is blocked by the registered Q1 trigger")
-    _validate_q1_trigger(q1_trigger)
-    q1_trigger_sha256 = payload.get("q1_trigger_sha256", "")
-    if len(q1_trigger_sha256) != 64:
-        raise ValueError("Q2 trigger file hash is missing or invalid")
+    q1_trigger = _require_q1_trigger(str(trigger_path))
+    q1_trigger_sha256 = _sha256_file(Path(trigger_path))
+    if (
+        payload.get("q1_trigger") != q1_trigger
+        or payload.get("q1_trigger_sha256") != q1_trigger_sha256
+    ):
+        raise ValueError("Q2 trigger differs from result manifest")
     if payload.get("model_id") != "Qwen/Qwen3-4B-Instruct-2507":
         raise ValueError("Q2 model provenance mismatch")
     if payload.get("ratios") != list(RATIOS) or payload.get("seeds") != [0, 1, 2]:
@@ -218,7 +217,6 @@ def analyze(
         or str(score_trigger_sha256[0]) != q1_trigger_sha256
     ):
         raise ValueError("Q2 score manifest Q1 trigger differs from result")
-    _validate_q1_trigger(score_trigger)
 
     required = {
         "item_ids",
@@ -354,6 +352,7 @@ def main():
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     parser.add_argument("--f5-table", type=Path, default=DEFAULT_F5_TABLE)
+    parser.add_argument("--trigger", type=Path, default=DEFAULT_TRIGGER)
     args = parser.parse_args()
     with args.results.open() as handle:
         payload = json.load(handle)
@@ -363,7 +362,7 @@ def main():
         raise ValueError("Q2 scores hash differs from remote result manifest")
     with np.load(args.scores, allow_pickle=False) as archive:
         arrays = {name: archive[name] for name in archive.files}
-    verdict = analyze(payload, arrays)
+    verdict = analyze(payload, arrays, trigger_path=args.trigger)
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)
     args.table.write_text(verdict["markdown_table"])

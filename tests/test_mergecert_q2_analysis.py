@@ -1,4 +1,5 @@
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 
@@ -45,7 +46,28 @@ def _test_documents(n=8):
     return np.array(documents)
 
 
-def _fixture():
+def _q1_trigger(**overrides):
+    trigger = {
+        "protocol": "MERGECERT-Q1",
+        "run_q2_q3": True,
+        "favorable_intervals": ["0.40:mean_kl"],
+        "q1_verdict_sha256": "c" * 64,
+        "addendum_sha256": "a" * 64,
+        "p0_verdict_sha256": "b" * 64,
+    }
+    trigger.update(overrides)
+    return trigger
+
+
+def _write_q1_trigger(tmp_path, trigger=None):
+    path = tmp_path / "q1-trigger.json"
+    path.write_text(json.dumps(trigger or _q1_trigger()))
+    return path
+
+
+def _fixture(trigger_path):
+    trigger = json.loads(trigger_path.read_text())
+    trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
     docs = _test_documents()
     n = len(docs)
     y = np.array([0, 1] * (n // 2), dtype=np.int8)
@@ -54,20 +76,13 @@ def _fixture():
         "q1_trigger_json": np.array(
             [
                 json.dumps(
-                    {
-                        "protocol": "MERGECERT-Q1",
-                        "run_q2_q3": True,
-                        "favorable_intervals": ["0.40:mean_kl"],
-                        "q1_verdict_sha256": "c" * 64,
-                        "addendum_sha256": "a" * 64,
-                        "p0_verdict_sha256": "b" * 64,
-                    },
+                    trigger,
                     sort_keys=True,
                     separators=(",", ":"),
                 )
             ]
         ),
-        "q1_trigger_sha256": np.array(["d" * 64]),
+        "q1_trigger_sha256": np.array([trigger_sha256]),
         "item_ids": np.tile(item_ids, 2),
         "doc_ids": np.tile(docs, 2),
         "domain": np.tile(
@@ -96,19 +111,15 @@ def _fixture():
         "per_domain_auc": {},
     }
     payload = {
-        "q1_trigger": {
-            "protocol": "MERGECERT-Q1",
-            "run_q2_q3": True,
-            "favorable_intervals": ["0.40:mean_kl"],
-            "q1_verdict_sha256": "c" * 64,
-            "addendum_sha256": "a" * 64,
-            "p0_verdict_sha256": "b" * 64,
-        },
-        "q1_trigger_sha256": "d" * 64,
+        "q1_trigger": trigger,
+        "q1_trigger_sha256": trigger_sha256,
         "model_id": "Qwen/Qwen3-4B-Instruct-2507",
         "ratios": [0.25, 0.40],
         "seeds": [0, 1, 2],
-        "source_hashes": {"scores": "source", "q1_trigger": "d" * 64},
+        "source_hashes": {
+            "scores": "source",
+            "q1_trigger": trigger_sha256,
+        },
         "ratios_results": {
             key: {
                 "items": n,
@@ -128,13 +139,14 @@ def _fixture():
     return payload, arrays
 
 
-def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table():
+def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     analyzer = _load_analyzer()
-    payload, arrays = _fixture()
+    trigger_path = _write_q1_trigger(tmp_path)
+    payload, arrays = _fixture(trigger_path)
 
     verdict = analyzer.analyze(
         payload, arrays, expected_items_per_ratio=8,
-        expected_e1_items=4, n_resamples=100,
+        expected_e1_items=4, n_resamples=100, trigger_path=trigger_path,
     )
 
     assert verdict["pass"] is True
@@ -144,22 +156,23 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table():
     assert "mechanics-routable" in verdict["registered_reading"]
 
 
-def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering():
+def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):
     analyzer = _load_analyzer()
-    payload, arrays = _fixture()
+    trigger_path = _write_q1_trigger(tmp_path)
+    payload, arrays = _fixture(trigger_path)
     payload["ratios_results"]["0.25"]["arms"]["mechanics_refit"]["auc"] = 0.9
     with pytest.raises(ValueError, match="remote/local AUC"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
-            expected_e1_items=4, n_resamples=20,
+            expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
         )
 
-    payload, arrays = _fixture()
+    payload, arrays = _fixture(trigger_path)
     arrays["split"][0] = 0
     with pytest.raises(ValueError, match="split"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
-            expected_e1_items=4, n_resamples=20,
+            expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
         )
 
 
@@ -183,36 +196,52 @@ def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering():
             "addendum_sha256": "a" * 64,
             "p0_verdict_sha256": "b" * 64,
         },
+        _q1_trigger(favorable_intervals=[None]),
+        _q1_trigger(favorable_intervals={"0.40:mean_kl": True}),
+        _q1_trigger(q1_verdict_sha256=["c"] * 64),
     ),
 )
-def test_q2_analysis_rejects_an_invalid_registered_q1_trigger(trigger):
+def test_q2_analysis_rejects_an_invalid_registered_q1_trigger(tmp_path, trigger):
     analyzer = _load_analyzer()
-    payload, arrays = _fixture()
-    payload["q1_trigger"] = trigger
+    trigger_path = _write_q1_trigger(tmp_path, trigger)
+    payload, arrays = _fixture(trigger_path)
 
     with pytest.raises(ValueError, match="Q2 is blocked"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
-            expected_e1_items=4, n_resamples=20,
+            expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
         )
 
 
 def test_q2_analysis_accepts_the_registered_q1_trigger_file(tmp_path):
     analyzer = _load_analyzer()
-    trigger = _fixture()[0]["q1_trigger"]
-    trigger_path = tmp_path / "q1-trigger.json"
-    trigger_path.write_text(json.dumps(trigger))
+    trigger_path = _write_q1_trigger(tmp_path)
+    trigger = _fixture(trigger_path)[0]["q1_trigger"]
 
     assert analyzer._require_q1_trigger(str(trigger_path)) == trigger
 
 
-def test_q2_analysis_rejects_score_manifest_q1_trigger_drift():
+def test_q2_analysis_rejects_score_manifest_q1_trigger_drift(tmp_path):
     analyzer = _load_analyzer()
-    payload, arrays = _fixture()
+    trigger_path = _write_q1_trigger(tmp_path)
+    payload, arrays = _fixture(trigger_path)
     arrays["q1_trigger_sha256"] = np.array(["e" * 64])
 
     with pytest.raises(ValueError, match="score manifest Q1 trigger"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
-            expected_e1_items=4, n_resamples=20,
+            expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
+        )
+
+
+def test_q2_analysis_rejects_a_stale_trigger_file_with_matching_copies(tmp_path):
+    analyzer = _load_analyzer()
+    trigger_path = _write_q1_trigger(tmp_path)
+    payload, arrays = _fixture(trigger_path)
+    trigger_path.write_text(json.dumps(_q1_trigger(favorable_intervals=["other"])))
+
+    with pytest.raises(ValueError, match="trigger.*result"):
+        analyzer.analyze(
+            payload, arrays, expected_items_per_ratio=8,
+            expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
         )

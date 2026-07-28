@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -20,6 +21,7 @@ DEFAULT_SCORES = HERE / "q2-scores.npz"
 DEFAULT_Q2_RESULTS = HERE / "q2-routability.json"
 DEFAULT_REFERENCE_DIR = Path("/tmp/mergecert-q3-references")
 DEFAULT_OUTPUT = HERE / "q3-fragility.json"
+DEFAULT_TRIGGER = HERE / "q1-trigger.json"
 REFERENCE_FILES = {
     "A": "e1-relabel-A2.state.json",
     "B": "e1-relabel-B.state.json",
@@ -36,6 +38,34 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _require_q1_trigger(path: str) -> dict:
+    if not os.path.exists(path):
+        raise ValueError("Q2 is blocked until q1-trigger.json exists")
+    with open(path) as handle:
+        trigger = json.load(handle)
+    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
+    hashes = (
+        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
+        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
+        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
+    )
+    valid = (
+        isinstance(trigger, dict)
+        and trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("run_q2_q3") is True
+        and isinstance(favorable_intervals, list)
+        and bool(favorable_intervals)
+        and all(
+            isinstance(interval, str) and bool(interval.strip())
+            for interval in favorable_intervals
+        )
+        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
+    )
+    if not valid:
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
+    return trigger
 
 
 def _comparison(merge, reference) -> dict:
@@ -96,7 +126,39 @@ def _markdown_table(comparisons: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def analyze(scores, references, reference_hashes, *, expected_items=2_000):
+def analyze(
+    scores,
+    references,
+    reference_hashes,
+    q2_results,
+    *,
+    expected_items=2_000,
+    trigger_path: Path = DEFAULT_TRIGGER,
+):
+    q1_trigger = _require_q1_trigger(str(trigger_path))
+    q1_trigger_sha256 = _sha256_file(Path(trigger_path))
+    if (
+        q2_results.get("q1_trigger") != q1_trigger
+        or q2_results.get("q1_trigger_sha256") != q1_trigger_sha256
+        or q2_results.get("source_hashes", {}).get("q1_trigger")
+        != q1_trigger_sha256
+    ):
+        raise ValueError("Q3 trigger differs from Q2 result manifest")
+    score_trigger_json = np.asarray(scores.get("q1_trigger_json", [])).reshape(-1)
+    score_trigger_sha256 = np.asarray(
+        scores.get("q1_trigger_sha256", [])
+    ).reshape(-1)
+    if len(score_trigger_json) != 1 or len(score_trigger_sha256) != 1:
+        raise ValueError("Q3 score manifest Q1 trigger is missing")
+    try:
+        score_trigger = json.loads(str(score_trigger_json[0]))
+    except json.JSONDecodeError as error:
+        raise ValueError("Q3 score manifest Q1 trigger is invalid") from error
+    if (
+        score_trigger != q1_trigger
+        or str(score_trigger_sha256[0]) != q1_trigger_sha256
+    ):
+        raise ValueError("Q3 score manifest Q1 trigger differs from Q2 result")
     item_ids_all = np.asarray(scores["item_ids"]).astype(str)
     domains_all = np.asarray(scores["domain"]).astype(str)
     ratios = np.asarray(scores["ratio"], dtype=float)
@@ -219,6 +281,7 @@ def main():
         "--reference-dir", type=Path, default=DEFAULT_REFERENCE_DIR
     )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--trigger", type=Path, default=DEFAULT_TRIGGER)
     args = parser.parse_args()
     with args.q2_results.open() as handle:
         q2_results = json.load(handle)
@@ -233,7 +296,9 @@ def main():
         with path.open() as handle:
             references[name] = json.load(handle)
         hashes[name] = _sha256_file(path)
-    verdict = analyze(scores, references, hashes)
+    verdict = analyze(
+        scores, references, hashes, q2_results, trigger_path=args.trigger
+    )
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)
     print(json.dumps(verdict, indent=1))

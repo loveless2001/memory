@@ -287,6 +287,9 @@ def test_mergecert_q2_runner_has_no_training_or_publication_path():
         _q1_trigger(run_q2_q3=False),
         _q1_trigger(favorable_intervals=[]),
         _q1_trigger(q1_verdict_sha256=""),
+        _q1_trigger(favorable_intervals=[None]),
+        _q1_trigger(favorable_intervals={"0.40:mean_kl": True}),
+        _q1_trigger(q1_verdict_sha256=["c"] * 64),
     ),
 )
 def test_q2_runners_reject_a_missing_or_non_authorizing_q1_trigger(

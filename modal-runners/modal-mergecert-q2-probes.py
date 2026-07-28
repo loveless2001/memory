@@ -78,13 +78,23 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
         raise ValueError("Q2 is blocked until q1-trigger.json exists")
     with open(path) as handle:
         trigger = json.load(handle)
+    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
+    hashes = (
+        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
+        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
+        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
+    )
     valid = (
-        trigger.get("protocol") == "MERGECERT-Q1"
+        isinstance(trigger, dict)
+        and trigger.get("protocol") == "MERGECERT-Q1"
         and trigger.get("run_q2_q3") is True
-        and bool(trigger.get("favorable_intervals"))
-        and len(trigger.get("q1_verdict_sha256", "")) == 64
-        and len(trigger.get("addendum_sha256", "")) == 64
-        and len(trigger.get("p0_verdict_sha256", "")) == 64
+        and isinstance(favorable_intervals, list)
+        and bool(favorable_intervals)
+        and all(
+            isinstance(interval, str) and bool(interval.strip())
+            for interval in favorable_intervals
+        )
+        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
     )
     if not valid:
         raise ValueError("Q2 is blocked by the registered Q1 trigger")
