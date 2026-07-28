@@ -128,7 +128,7 @@ def test_mergecert_runner_exposes_a_p0_gated_q1_contract():
     }
     constants = _literal_constants(RUNNER)
 
-    assert "q1_certify" in functions
+    assert {"q1_addendum_smoke", "q1_addendum_certify"} <= functions
     assert constants["Q1_CONTEXTS_PER_DOMAIN"] == 5
     assert constants["Q1_EXPECTED_DOCUMENTS"] == 20
     assert constants["Q1_ARCHIVE_ROOT"] == (
@@ -137,9 +137,69 @@ def test_mergecert_runner_exposes_a_p0_gated_q1_contract():
     assert constants["Q1_ITEMS_PATH"] == (
         "/artifacts/corpus-mcq-full/all-items.json"
     )
-    assert constants["Q1_OUTPUT"] == (
-        "/artifacts/mergecert/q1-certification.json"
+    source = RUNNER.read_text()
+    assert 'Q1_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-certification.json"' in source
+
+
+def test_mergecert_q1_addendum_uses_only_moderate_ratios():
+    constants = _literal_constants(RUNNER)
+
+    assert constants["RATIOS"] == (0.25, 0.40, 0.90)
+    assert constants["Q1_RATIOS"] == (0.25, 0.40)
+    assert constants["Q1_ARTIFACT_ROOT"] == "/artifacts/mergecert-q1"
+
+
+def test_mergecert_q1_addendum_accepts_only_the_settled_negative_p0(tmp_path):
+    runner = _load_module(RUNNER, "mergecert_q1_addendum_gate")
+    addendum = tmp_path / "MERGECERT-Q1.md"
+    verdict = tmp_path / "p0-verdict.json"
+    addendum.write_text("# MERGECERT-Q1.md\n")
+    verdict.write_text(
+        json.dumps(
+            {
+                "p0_3": {"pass": False},
+                "p0_4": {"pass": True},
+                "real_attention": {"pass": True},
+                "p0_pass": False,
+                "stop_q1_q3": True,
+            }
+        )
     )
+
+    gate = runner._load_q1_authorization(
+        addendum_path=str(addendum),
+        p0_verdict_path=str(verdict),
+    )
+
+    assert gate["protocol"] == "MERGECERT-Q1"
+    assert gate["settled_p0"]["p0_3_pass"] is False
+    assert len(gate["addendum_sha256"]) == 64
+    assert len(gate["p0_verdict_sha256"]) == 64
+
+
+def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():
+    tree = ast.parse(RUNNER.read_text())
+    run_q1 = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_run_q1"
+    )
+    arm_spec_assign = next(
+        node
+        for node in ast.walk(run_q1)
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "arm_specs"
+            for target in node.targets
+        )
+    )
+    arm_spec_source = ast.unparse(arm_spec_assign.value)
+
+    assert "control-0.00" in arm_spec_source
+    assert "eviction-{ratio:.2f}" in arm_spec_source
+    assert "merge-{ratio:.2f}" in arm_spec_source
+    assert "Q1_RATIOS" in arm_spec_source
+    assert "RATIOS" not in arm_spec_source.replace("Q1_RATIOS", "")
 
 
 def test_mergecert_q2_runner_pins_unified_capture_and_fixed_fleet_contract():

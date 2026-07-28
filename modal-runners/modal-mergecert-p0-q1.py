@@ -13,6 +13,7 @@ import modal
 MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
 UPSTREAM_COMMIT = "cd4ed948d62231449dbab9669608bbb4fd220713"
 RATIOS = (0.25, 0.40, 0.90)
+Q1_RATIOS = (0.25, 0.40)
 SINKS = 4
 P0_ITEMS = 200
 SEED = 20260727
@@ -23,8 +24,11 @@ Q1_CONTEXTS_PER_DOMAIN = 5
 Q1_EXPECTED_DOCUMENTS = 20
 Q1_ARCHIVE_ROOT = "/artifacts/corpus-certification-full"
 Q1_ITEMS_PATH = "/artifacts/corpus-mcq-full/all-items.json"
-Q1_OUTPUT = "/artifacts/mergecert/q1-certification.json"
-Q1_SMOKE_OUTPUT = "/artifacts/mergecert/q1-smoke.json"
+Q1_ARTIFACT_ROOT = "/artifacts/mergecert-q1"
+Q1_ADDENDUM_PATH = f"{Q1_ARTIFACT_ROOT}/MERGECERT-Q1.md"
+Q1_P0_VERDICT_PATH = f"{Q1_ARTIFACT_ROOT}/p0-verdict.json"
+Q1_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-certification.json"
+Q1_SMOKE_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-smoke.json"
 P0_VERDICT_PATH = "/artifacts/mergecert/p0-verdict.json"
 DOMAINS = ("financial", "legal", "code", "literature")
 PINNED = (
@@ -86,6 +90,17 @@ def _provenance() -> dict:
         "upstream_commit": UPSTREAM_COMMIT,
         "upstream_files": SOURCE_FILES,
         "ratios": list(RATIOS),
+        "sink_token_count": SINKS,
+        "seed": SEED,
+    }
+
+
+def _q1_provenance() -> dict:
+    return {
+        "model_id": MODEL_ID,
+        "upstream_commit": UPSTREAM_COMMIT,
+        "upstream_files": SOURCE_FILES,
+        "ratios": list(Q1_RATIOS),
         "sink_token_count": SINKS,
         "seed": SEED,
     }
@@ -459,19 +474,36 @@ def _run_p0(limit: int, out_name: str) -> dict:
     }
 
 
-def _load_p0_gate() -> dict:
-    if not os.path.exists(P0_VERDICT_PATH):
-        raise ValueError(
-            "Q1 is blocked until the independent p0-verdict.json is copied "
-            "to the private artifact volume"
-        )
-    with open(P0_VERDICT_PATH) as handle:
+def _load_q1_authorization(
+    *,
+    addendum_path: str = Q1_ADDENDUM_PATH,
+    p0_verdict_path: str = Q1_P0_VERDICT_PATH,
+) -> dict:
+    if not os.path.exists(addendum_path) or not os.path.exists(p0_verdict_path):
+        raise ValueError("Q1 addendum authorization files are missing")
+    with open(p0_verdict_path) as handle:
         verdict = json.load(handle)
-    if verdict.get("p0_pass") is not True or verdict.get("stop_q1_q3") is not False:
-        raise ValueError("Q1 is blocked because the registered P0 gate did not pass")
+    settled = {
+        "p0_3_pass": verdict.get("p0_3", {}).get("pass"),
+        "p0_4_pass": verdict.get("p0_4", {}).get("pass"),
+        "real_attention_pass": verdict.get("real_attention", {}).get("pass"),
+        "p0_pass": verdict.get("p0_pass"),
+        "stop_q1_q3": verdict.get("stop_q1_q3"),
+    }
+    expected = {
+        "p0_3_pass": False,
+        "p0_4_pass": True,
+        "real_attention_pass": True,
+        "p0_pass": False,
+        "stop_q1_q3": True,
+    }
+    if settled != expected:
+        raise ValueError("Q1 addendum requires the settled negative P0 verdict")
     return {
-        "p0_pass": True,
-        "p0_verdict_sha256": _sha256_file(P0_VERDICT_PATH),
+        "protocol": "MERGECERT-Q1",
+        "addendum_sha256": _sha256_file(addendum_path),
+        "p0_verdict_sha256": _sha256_file(p0_verdict_path),
+        "settled_p0": settled,
     }
 
 
@@ -791,7 +823,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
     )
     from memsub.reference_config import build_runtime
 
-    gate = _load_p0_gate()
+    gate = _load_q1_authorization()
     archive_files, archived_reports = _q1_archive_files()
     runtime = build_runtime(reference=True)
     fingerprint = runtime.fingerprint()
@@ -808,15 +840,15 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         ("control-0.00", "zero-compression-control", 0.0),
         *[
             (f"eviction-{ratio:.2f}", "contiguous-eviction", ratio)
-            for ratio in RATIOS
+            for ratio in Q1_RATIOS
         ],
         *[
             (f"merge-{ratio:.2f}", "attention-weighted-merge", ratio)
-            for ratio in RATIOS
+            for ratio in Q1_RATIOS
         ],
     ]
     state = {
-        "provenance": _provenance(),
+        "provenance": _q1_provenance(),
         "compatibility_fingerprint": fingerprint.to_dict(),
         "compatibility_fingerprint_sha256": fingerprint.digest(),
         "q1_gate": gate,
@@ -847,7 +879,9 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         if prior.get("sample_doc_ids") != selected_doc_ids:
             raise ValueError("existing Q1 artifact uses a different sample")
         if prior.get("q1_gate") != gate:
-            raise ValueError("existing Q1 artifact uses a different P0 verdict")
+            raise ValueError("existing Q1 artifact uses a different authorization")
+        if prior.get("provenance") != _q1_provenance():
+            raise ValueError("existing Q1 artifact uses a different Q1 provenance")
         state = prior
 
     def save() -> None:
@@ -882,7 +916,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             for item in all_items
         }
         candidate_caches = {"control-0.00": full_cache.clone_detached()}
-        for ratio in RATIOS:
+        for ratio in Q1_RATIOS:
             eviction = full_cache.clone_detached()
             start, end = _q1_eviction_range(
                 ratio, context["eviction_anchor"]
@@ -997,7 +1031,7 @@ def p0_direction(n_items: int = P0_ITEMS) -> dict:
     timeout=43_200,
     memory=65_536,
 )
-def q1_smoke(documents: int = 2) -> dict:
+def q1_addendum_smoke(documents: int = 2) -> dict:
     if documents != 2:
         raise ValueError("Q1 smoke is registered at exactly two documents")
     return _run_q1(
@@ -1014,7 +1048,7 @@ def q1_smoke(documents: int = 2) -> dict:
     timeout=43_200,
     memory=65_536,
 )
-def q1_certify(contexts_per_domain: int = Q1_CONTEXTS_PER_DOMAIN) -> dict:
+def q1_addendum_certify(contexts_per_domain: int = Q1_CONTEXTS_PER_DOMAIN) -> dict:
     if contexts_per_domain != Q1_CONTEXTS_PER_DOMAIN:
         raise ValueError(
             "Q1 is registered at exactly five contexts per domain"
