@@ -1,4 +1,6 @@
 import importlib.util
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -47,10 +49,14 @@ def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
     }
 
 
-def _payload():
-    docs = ["financial/0", "legal/0", "code/0", "literature/0"]
+def _payload(*, documents_per_domain=1):
+    docs = [
+        f"{domain}/{index}"
+        for domain in ("financial", "legal", "code", "literature")
+        for index in range(documents_per_domain)
+    ]
     arms = {}
-    for ratio in (0.25, 0.40, 0.90):
+    for ratio in (0.25, 0.40):
         arms[f"eviction-{ratio:.2f}"] = {
             "policy": "contiguous-eviction",
             "ratio": ratio,
@@ -102,20 +108,33 @@ def _payload():
     return {
         "provenance": {
             "model_id": "Qwen/Qwen3-4B-Instruct-2507",
-            "ratios": [0.25, 0.40, 0.90],
+            "ratios": [0.25, 0.40],
             "sink_token_count": 4,
         },
-        "q1_gate": {"p0_pass": True, "p0_verdict_sha256": "gate-sha"},
+        "q1_authorization": {
+            "protocol": "MERGECERT-Q1",
+            "addendum_sha256": "a" * 64,
+            "p0_verdict_sha256": "b" * 64,
+            "settled_p0": {
+                "p0_3_pass": False,
+                "p0_4_pass": True,
+                "real_attention_pass": True,
+                "p0_pass": False,
+                "stop_q1_q3": True,
+            },
+        },
         "archived_m1": {
             "replay_pass": True,
             "replay_checks": [
                 {
-                    "archive": f"{domain}-evict{ratio:.2f}.json",
-                    "doc_id": f"{domain}/0",
+                    "archive": (
+                        f"{doc.split('/', 1)[0]}-evict{ratio:.2f}.json"
+                    ),
+                    "doc_id": doc,
                     "pass": True,
                     "mismatches": [],
                 }
-                for domain in ("financial", "legal", "code", "literature")
+                for doc in docs
                 for ratio in (0.0, 0.25, 0.40)
             ],
             "files": {
@@ -194,24 +213,41 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
         "control-0.00",
         "eviction-0.25",
         "eviction-0.40",
-        "eviction-0.90",
         "merge-0.25",
         "merge-0.40",
-        "merge-0.90",
     }
     assert verdict["summaries"]["control-0.00"]["mean_kl"] == 0.0
     assert verdict["paired_merge_minus_eviction"]["0.40"]["mean_kl"][
         "ci95"
     ] == [-0.2, -0.2]
+    assert verdict["registered_readings"]["r1"] == "R1"
+    assert verdict["run_q2_q3"] is True
+    assert verdict["favorable_intervals"] == [
+        "0.25:lost_prior",
+        "0.40:lost_prior",
+        "0.25:mean_kl",
+        "0.25:acc_delta",
+        "0.40:mean_kl",
+        "0.40:acc_delta",
+    ]
+    assert verdict["per_domain"]["financial"]["merge-0.25"] == {
+        "documents": 1,
+        "aggregation_probes": 1,
+        "needle_probes": 1,
+        "mean_kl": 0.125,
+        "accuracy_delta": -0.125,
+        "lost_fact": 0.125,
+        "lost_prior": 0.125,
+    }
     assert "frozen subsample (reference)" in verdict["markdown_table"]
 
 
-def test_q1_analysis_fails_closed_when_p0_did_not_pass():
+def test_q1_analysis_requires_the_exact_settled_negative_authorization():
     analyzer = _load_analyzer()
     payload = _payload()
-    payload["q1_gate"]["p0_pass"] = False
+    payload["q1_authorization"]["settled_p0"]["p0_3_pass"] = True
 
-    with pytest.raises(ValueError, match="P0 gate"):
+    with pytest.raises(ValueError, match="authorization"):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
 
 
@@ -234,9 +270,19 @@ def test_q1_analysis_rejects_nonzero_control_and_wrong_budget():
     with pytest.raises(ValueError, match="control"):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
 
+
+@pytest.mark.parametrize("arm", ("merge-0.90", "eviction-0.90"))
+def test_q1_analysis_rejects_nonregistered_ninety_percent_arms(arm):
+    analyzer = _load_analyzer()
     payload = _payload()
-    payload["arms"]["merge-0.90"]["target_retained"] = 411
-    with pytest.raises(ValueError, match="budget"):
+    payload["arms"][arm] = {
+        "policy": "unexpected",
+        "ratio": 0.90,
+        "target_retained": 410,
+        "reports": [],
+    }
+
+    with pytest.raises(ValueError, match="registered arm"):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
 
 
@@ -251,3 +297,114 @@ def test_q1_analysis_rejects_missing_source_hashes_or_replay_checks():
     payload["archived_m1"]["replay_checks"][0]["pass"] = False
     with pytest.raises(ValueError, match="replay check"):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
+def _overlapping_intervals():
+    return {
+        ratio: {
+            "lost_prior": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+            "mean_kl": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+            "acc_delta": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+        }
+        for ratio in ("0.25", "0.40")
+    }
+
+
+def test_q1_trigger_runs_for_any_favorable_registered_interval():
+    analyzer = _load_analyzer()
+    intervals = {
+        "0.25": {
+            "lost_prior": {"mean_diff": -0.1, "ci95": [-0.2, -0.01]},
+            "mean_kl": {"mean_diff": 0.1, "ci95": [0.01, 0.2]},
+            "acc_delta": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+        },
+        "0.40": {
+            "lost_prior": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+            "mean_kl": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+            "acc_delta": {"mean_diff": 0.0, "ci95": [-0.1, 0.1]},
+        },
+    }
+    reading = analyzer.classify_registered_readings(intervals)
+
+    assert reading["r1"] == "R1"
+    assert reading["run_q2_q3"] is True
+    assert reading["favorable_intervals"] == ["0.25:lost_prior"]
+
+
+def test_q1_trigger_skips_when_all_intervals_overlap_or_are_worse():
+    analyzer = _load_analyzer()
+    reading = analyzer.classify_registered_readings(_overlapping_intervals())
+
+    assert reading["r1"] == "R2"
+    assert reading["run_q2_q3"] is False
+    assert reading["favorable_intervals"] == []
+
+
+@pytest.mark.parametrize(
+    ("metric", "ci95", "favorable"),
+    (
+        ("mean_kl", [-0.2, -0.01], ["0.40:mean_kl"]),
+        ("acc_delta", [0.01, 0.2], ["0.40:acc_delta"]),
+    ),
+)
+def test_q1_trigger_treats_aggregation_intervals_as_favorable(
+    metric, ci95, favorable
+):
+    analyzer = _load_analyzer()
+    intervals = _overlapping_intervals()
+    intervals["0.40"][metric] = {"mean_diff": 0.1, "ci95": ci95}
+
+    reading = analyzer.classify_registered_readings(intervals)
+
+    assert reading["r1"] == "R2"
+    assert reading["r3"] == "aggregation-positive"
+    assert reading["favorable_intervals"] == favorable
+    assert reading["run_q2_q3"] is True
+
+
+def test_q1_cli_writes_trigger_with_the_verdict_evidence_hash(tmp_path, monkeypatch):
+    analyzer = _load_analyzer()
+    input_path = tmp_path / "q1-certification.json"
+    output_path = tmp_path / "q1-verdict.json"
+    table_path = tmp_path / "q1-table.md"
+    trigger_path = tmp_path / "q1-trigger.json"
+    input_path.write_text(json.dumps(_payload(documents_per_domain=5)))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "analyze-mergecert-q1.py",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+            "--table",
+            str(table_path),
+            "--trigger",
+            str(trigger_path),
+            "--n-resamples",
+            "20",
+        ],
+    )
+
+    analyzer.main()
+
+    trigger = json.loads(trigger_path.read_text())
+    assert trigger == {
+        "protocol": "MERGECERT-Q1",
+        "run_q2_q3": True,
+        "favorable_intervals": [
+            "0.25:lost_prior",
+            "0.40:lost_prior",
+            "0.25:mean_kl",
+            "0.25:acc_delta",
+            "0.40:mean_kl",
+            "0.40:acc_delta",
+        ],
+        "q1_verdict_sha256": hashlib.sha256(output_path.read_bytes()).hexdigest(),
+        "addendum_sha256": "a" * 64,
+        "p0_verdict_sha256": "b" * 64,
+    }
+    assert (
+        table_path.read_text()
+        == json.loads(output_path.read_text())["markdown_table"]
+    )

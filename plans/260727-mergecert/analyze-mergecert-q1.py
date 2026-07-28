@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -13,15 +14,23 @@ from memsub.certification.experiment_protocol import paired_metric_cis
 
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_INPUT = HERE / "q1-certification.json"
-DEFAULT_OUTPUT = HERE / "q1-verdict.json"
-DEFAULT_TABLE = HERE / "q1-table.md"
+Q1_ARTIFACT_DIR = HERE.parent / "260728-mergecert-q1"
+DEFAULT_INPUT = Q1_ARTIFACT_DIR / "q1-certification.json"
+DEFAULT_OUTPUT = Q1_ARTIFACT_DIR / "q1-verdict.json"
+DEFAULT_TABLE = Q1_ARTIFACT_DIR / "q1-table.md"
 DOMAINS = ("financial", "legal", "code", "literature")
-RATIOS = (0.25, 0.40, 0.90)
+RATIOS = (0.25, 0.40)
 EXPECTED_ARMS = {
     "control-0.00",
     *(f"eviction-{ratio:.2f}" for ratio in RATIOS),
     *(f"merge-{ratio:.2f}" for ratio in RATIOS),
+}
+SETTLED_P0 = {
+    "p0_3_pass": False,
+    "p0_4_pass": True,
+    "real_attention_pass": True,
+    "p0_pass": False,
+    "stop_q1_q3": True,
 }
 EXPECTED_REFERENCES = {
     "frozen_subsample": {
@@ -107,6 +116,44 @@ def _summary(reports: list[dict]) -> dict:
     }
 
 
+def per_domain_summaries(reports_by_arm: dict) -> dict:
+    return {
+        domain: {
+            arm_name: _summary(
+                [report for report in reports if report["domain"] == domain]
+            )
+            for arm_name, reports in sorted(reports_by_arm.items())
+        }
+        for domain in DOMAINS
+    }
+
+
+def classify_registered_readings(intervals: dict) -> dict:
+    favorable = []
+    pointwise = []
+    aggregation = []
+    for ratio in ("0.25", "0.40"):
+        row = intervals[ratio]
+        if row["lost_prior"]["ci95"][1] < 0:
+            pointwise.append(f"{ratio}:lost_prior")
+        if row["mean_kl"]["ci95"][1] < 0:
+            aggregation.append(f"{ratio}:mean_kl")
+        if row["acc_delta"]["ci95"][0] > 0:
+            aggregation.append(f"{ratio}:acc_delta")
+    favorable.extend(pointwise)
+    favorable.extend(aggregation)
+    return {
+        "r1": "R1" if pointwise else "R2",
+        "r3": "aggregation-positive"
+        if aggregation
+        else "aggregation-negative",
+        "pointwise_favorable": pointwise,
+        "aggregation_favorable": aggregation,
+        "favorable_intervals": favorable,
+        "run_q2_q3": bool(favorable),
+    }
+
+
 def _format_ci(interval: dict) -> str:
     low, high = interval["ci95"]
     return f"{interval['mean_diff']:+.4f} [{low:+.4f}, {high:+.4f}]"
@@ -125,7 +172,6 @@ def _markdown(
     for label, key in (
         ("eviction 0.25 (existing row)", "eviction-0.25"),
         ("eviction 0.40 (existing row)", "eviction-0.40"),
-        ("eviction 0.90 (new comparator)", "eviction-0.90"),
     ):
         row = summaries[key]
         lines.append(
@@ -174,9 +220,16 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
     if provenance.get("sink_token_count") != 4:
         raise ValueError("Q1 sink provenance mismatch")
 
-    gate = payload.get("q1_gate", {})
-    if gate.get("p0_pass") is not True or not gate.get("p0_verdict_sha256"):
-        raise ValueError("Q1 cannot be analyzed without a passing P0 gate")
+    authorization = payload.get("q1_authorization", {})
+    if (
+        authorization.get("protocol") != "MERGECERT-Q1"
+        or not isinstance(authorization.get("addendum_sha256"), str)
+        or len(authorization["addendum_sha256"]) != 64
+        or not isinstance(authorization.get("p0_verdict_sha256"), str)
+        or len(authorization["p0_verdict_sha256"]) != 64
+        or authorization.get("settled_p0") != SETTLED_P0
+    ):
+        raise ValueError("Q1 authorization does not match settled negative P0")
 
     archived = payload.get("archived_m1", {})
     if archived.get("replay_pass") is not True:
@@ -241,7 +294,7 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
 
     arms = payload.get("arms", {})
     if set(arms) != EXPECTED_ARMS:
-        raise ValueError("Q1 artifact does not contain every registered arm")
+        raise ValueError("Q1 artifact does not contain exactly the registered arms")
     for arm_name, arm in arms.items():
         ratio = float(arm["ratio"])
         expected_budget = _expected_budget(ratio)
@@ -276,6 +329,7 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         arm_name: _summary(reports)
         for arm_name, reports in reports_by_arm.items()
     }
+    domains_by_arm = per_domain_summaries(reports_by_arm)
     intervals = {}
     for ratio_index, ratio in enumerate(RATIOS):
         eviction = f"eviction-{ratio:.2f}"
@@ -288,6 +342,8 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
             n_resamples=n_resamples,
         )[merge]
 
+    readings = classify_registered_readings(intervals)
+
     return {
         "pass": True,
         "documents": expected_documents,
@@ -296,8 +352,16 @@ def analyze(payload, *, expected_documents=20, n_resamples=20_000):
         "summaries": summaries,
         "references": references,
         "paired_merge_minus_eviction": intervals,
+        "registered_readings": readings,
+        "per_domain": domains_by_arm,
+        "run_q2_q3": readings["run_q2_q3"],
+        "favorable_intervals": readings["favorable_intervals"],
         "markdown_table": _markdown(summaries, intervals, references),
     }
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def main():
@@ -305,13 +369,33 @@ def main():
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--table", type=Path, default=DEFAULT_TABLE)
+    parser.add_argument("--expected-documents", type=int, default=20)
+    parser.add_argument("--n-resamples", type=int, default=20_000)
+    parser.add_argument("--trigger", type=Path)
     args = parser.parse_args()
     with args.input.open() as handle:
         payload = json.load(handle)
-    verdict = analyze(payload)
+    verdict = analyze(
+        payload,
+        expected_documents=args.expected_documents,
+        n_resamples=args.n_resamples,
+    )
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)
     args.table.write_text(verdict["markdown_table"])
+    if args.expected_documents == 20 and args.trigger:
+        authorization = payload["q1_authorization"]
+        readings = verdict["registered_readings"]
+        trigger = {
+            "protocol": "MERGECERT-Q1",
+            "run_q2_q3": readings["run_q2_q3"],
+            "favorable_intervals": readings["favorable_intervals"],
+            "q1_verdict_sha256": _sha256_file(args.output),
+            "addendum_sha256": authorization["addendum_sha256"],
+            "p0_verdict_sha256": authorization["p0_verdict_sha256"],
+        }
+        with args.trigger.open("w") as handle:
+            json.dump(trigger, handle, indent=1, allow_nan=False)
     print(json.dumps(verdict, indent=1))
 
 
