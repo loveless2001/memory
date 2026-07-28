@@ -540,7 +540,7 @@ git commit -m "feat: validate MergeCert Q1 report"
 - Consumes: Tasks 1-4 committed code.
 - Produces: a green local gate and explicit approval request for Q1 compute.
 
-- [ ] **Step 1: Run the complete local suite offline**
+- [x] **Step 1: Run the complete local suite offline**
 
 ```bash
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
@@ -549,7 +549,7 @@ HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
 
 Expected: zero failures; existing environment-dependent skips remain explicit.
 
-- [ ] **Step 2: Run source and contract audits**
+- [x] **Step 2: Run source and contract audits**
 
 ```bash
 ./.venv/bin/python -m py_compile \
@@ -567,7 +567,7 @@ git status --short
 Expected: only the user's pre-existing `MERGECERT-REPORT.md` modification plus
 plan progress changes; no untracked implementation files.
 
-- [ ] **Step 3: Audit the Modal state without launching compute**
+- [x] **Step 3: Audit the Modal state without launching compute**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal app list --json
