@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 import torch
 
+from memsub.fingerprint import CompatibilityFingerprint
 from memsub.runtime import CompactedPrefixCache
 
 
@@ -70,6 +71,8 @@ Q1_ADDENDUM_SHA256 = (
 Q1_P0_VERDICT_SHA256 = (
     "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
 )
+Q1_EXECUTION_SEMANTICS_VERSION = "mergecert-q1-execution-semantics-v1"
+Q1_FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
 Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
 Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
 
@@ -93,6 +96,72 @@ def _load_module(path, name):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _q1_fingerprint(*, runtime_version="test-runtime"):
+    return CompatibilityFingerprint(
+        model_id="test-model",
+        tokenizer_hash="sha256:" + "1" * 64,
+        chat_template_hash="sha256:" + "2" * 64,
+        rope_config_hash="sha256:" + "3" * 64,
+        sliding_window_config="none",
+        attention_impl="sdpa",
+        kv_layout="gqa",
+        quantization="bfloat16",
+        adapter_hash=None,
+        runtime_version=runtime_version,
+        compaction_policy_version="evict-oldest-nonsink-v1",
+        position_policy_version="pos-v1-preserve-logical-rope",
+        channel_registry_version="memchan-v1",
+        kernel_numeric_profile_hash="sha256:" + "4" * 64,
+    )
+
+
+def _q1_resume_state(runner, *, done=0, fingerprint=None):
+    fingerprint = fingerprint or _q1_fingerprint()
+    doc_ids = ["financial/00000", "financial/00008"]
+    arm_names = (
+        "control-0.00",
+        "eviction-0.25",
+        "eviction-0.40",
+        "merge-0.25",
+        "merge-0.40",
+    )
+    replay_arms = (
+        "control-0.00",
+        "eviction-0.25",
+        "eviction-0.40",
+    )
+    return {
+        "provenance": runner._q1_provenance(),
+        "execution_semantics": runner._q1_execution_semantics(),
+        "compatibility_fingerprint_schema": Q1_FINGERPRINT_SCHEMA,
+        "compatibility_fingerprint": fingerprint.to_dict(),
+        "compatibility_fingerprint_sha256": fingerprint.digest(),
+        "q1_authorization": {"authorization": "test"},
+        "q1_registration_sha256": "a" * 64,
+        "sample_doc_ids": doc_ids,
+        "documents": [
+            {"doc_id": doc_id} for doc_id in doc_ids[:done]
+        ],
+        "arms": {
+            arm: {
+                "reports": [
+                    {"doc_id": doc_id} for doc_id in doc_ids[:done]
+                ]
+            }
+            for arm in arm_names
+        },
+        "archived_m1": {
+            "replay_checks": [
+                {"doc_id": doc_id, "arm": arm, "pass": True}
+                for doc_id in doc_ids[:done]
+                for arm in replay_arms
+            ],
+            "replay_pass": done == len(doc_ids),
+        },
+        "done_documents": done,
+    }
 
 
 def _literal_constants(path):
@@ -1257,6 +1326,181 @@ def test_mergecert_q1_uses_sdpa_only_for_auxiliary_replay_and_one_q1_prefill():
     assert "full_cache=replay_full_cache" in run_source
     assert "_verify_archived_replay(replay_report, archive" in run_source
     assert "reference_cache =" not in run_source
+
+
+def test_mergecert_q1_records_exact_versioned_execution_semantics():
+    runner = _load_module(RUNNER, "mergecert_q1_execution_semantics")
+    constants = _literal_constants(RUNNER)
+    semantics = runner._q1_execution_semantics()
+
+    assert constants["Q1_EXECUTION_SEMANTICS_VERSION"] == (
+        Q1_EXECUTION_SEMANTICS_VERSION
+    )
+    assert semantics == {
+        "version": Q1_EXECUTION_SEMANTICS_VERSION,
+        "archive_replay_prefill": {
+            "attention_backend": "sdpa",
+            "scope": "auxiliary-archive-replay-gate",
+        },
+        "reported_five_arm_prefill": {
+            "attention_backend": "eager",
+            "mode": "real-attention",
+            "cache_policy": "single-common-prefill",
+        },
+        "continuation_and_scoring": {
+            "attention_backend": "sdpa",
+            "backend_state": "restored-configured",
+        },
+    }
+    assert runner._q1_provenance()["execution_semantics"] == semantics
+
+
+def test_mergecert_q1_zero_progress_legacy_partial_smoke_resets_wholly_fresh():
+    runner = _load_module(RUNNER, "mergecert_q1_legacy_smoke_resume")
+    selected_doc_ids = ["financial/00000", "financial/00008"]
+    fresh = _q1_resume_state(runner)
+    prior = _q1_resume_state(
+        runner, fingerprint=_q1_fingerprint(runtime_version="stale")
+    )
+    prior["provenance"].pop("execution_semantics")
+    prior.pop("execution_semantics")
+    prior.pop("compatibility_fingerprint_schema")
+    prior["peak_gpu_bytes"] = 123
+    prior["documents"] = [{"doc_id": "financial/00000"}]
+    report_counts = {
+        "control-0.00": 1,
+        "eviction-0.25": 1,
+        "eviction-0.40": 0,
+        "merge-0.25": 0,
+        "merge-0.40": 0,
+    }
+    for arm_name, count in report_counts.items():
+        prior["arms"][arm_name]["reports"] = [
+            {"doc_id": "financial/00000"}
+        ][:count]
+    prior["archived_m1"]["replay_checks"] = [
+        {
+            "doc_id": "financial/00000",
+            "arm": arm_name,
+            "pass": True,
+        }
+        for arm_name in ("control-0.00", "eviction-0.25")
+    ]
+
+    resumed = runner._resume_q1_state(prior, fresh, selected_doc_ids)
+
+    assert resumed is fresh
+    assert resumed["documents"] == []
+    assert all(not arm["reports"] for arm in resumed["arms"].values())
+    assert resumed["archived_m1"]["replay_checks"] == []
+    assert resumed["compatibility_fingerprint"] == (
+        _q1_fingerprint().to_dict()
+    )
+    assert "peak_gpu_bytes" not in resumed
+
+
+def test_mergecert_q1_zero_progress_stale_fingerprint_is_reset():
+    runner = _load_module(RUNNER, "mergecert_q1_stale_fingerprint_reset")
+    fresh = _q1_resume_state(runner)
+    prior = _q1_resume_state(
+        runner, fingerprint=_q1_fingerprint(runtime_version="stale")
+    )
+
+    resumed = runner._resume_q1_state(
+        prior, fresh, fresh["sample_doc_ids"]
+    )
+
+    assert resumed is fresh
+    assert resumed["compatibility_fingerprint"] != prior[
+        "compatibility_fingerprint"
+    ]
+
+
+def test_mergecert_q1_completed_prefix_rejects_old_execution_semantics():
+    runner = _load_module(RUNNER, "mergecert_q1_old_semantics_resume")
+    fresh = _q1_resume_state(runner, done=1)
+    prior = _q1_resume_state(runner, done=1)
+    prior["execution_semantics"]["archive_replay_prefill"][
+        "attention_backend"
+    ] = "eager"
+
+    with pytest.raises(ValueError, match="execution semantics"):
+        runner._resume_q1_state(
+            prior, fresh, fresh["sample_doc_ids"]
+        )
+
+
+def test_mergecert_q1_matching_completed_prefix_is_preserved():
+    runner = _load_module(RUNNER, "mergecert_q1_matching_resume")
+    fresh = _q1_resume_state(runner)
+    prior = _q1_resume_state(runner, done=1)
+
+    resumed = runner._resume_q1_state(
+        prior, fresh, fresh["sample_doc_ids"]
+    )
+
+    assert resumed is prior
+    assert resumed["done_documents"] == 1
+    assert resumed["documents"] == [{"doc_id": "financial/00000"}]
+    assert all(
+        arm["reports"] == [{"doc_id": "financial/00000"}]
+        for arm in resumed["arms"].values()
+    )
+
+
+@pytest.mark.parametrize("mutation", ("digest", "live"))
+def test_mergecert_q1_completed_prefix_rejects_fingerprint_drift(mutation):
+    runner = _load_module(
+        RUNNER, f"mergecert_q1_bad_fingerprint_resume_{mutation}"
+    )
+    fresh = _q1_resume_state(runner)
+    prior = _q1_resume_state(runner, done=1)
+    if mutation == "digest":
+        prior["compatibility_fingerprint_sha256"] = (
+            "sha256:" + "f" * 64
+        )
+    else:
+        stale = _q1_fingerprint(runtime_version="stale")
+        prior["compatibility_fingerprint"] = stale.to_dict()
+        prior["compatibility_fingerprint_sha256"] = stale.digest()
+
+    with pytest.raises(ValueError, match="compatibility fingerprint"):
+        runner._resume_q1_state(
+            prior, fresh, fresh["sample_doc_ids"]
+        )
+
+
+def test_mergecert_q1_releases_auxiliary_and_document_gpu_caches_in_order():
+    tree = ast.parse(RUNNER.read_text())
+    run_q1 = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_run_q1"
+    )
+    run_source = ast.unparse(run_q1)
+
+    document_cleanup = (
+        "del candidate_caches, q1_full_cache, full_predictions"
+    )
+    auxiliary_cleanup = [
+        "del replay_report, replay_candidate_caches",
+        "del replay_full_predictions, replay_full_cache",
+        "del replay_eviction",
+    ]
+    q1_prefill = (
+        "q1_full_cache, _, attention_mass = "
+        "prefill_with_real_attention(runtime, context['context_ids'])"
+    )
+    assert (
+        run_source.index("_verify_archived_replay(replay_report, archive")
+        < min(run_source.index(cleanup) for cleanup in auxiliary_cleanup)
+        <= max(run_source.index(cleanup) for cleanup in auxiliary_cleanup)
+        < run_source.index(q1_prefill)
+    )
+    assert (
+        run_source.index(document_cleanup)
+        < run_source.index("torch.cuda.empty_cache()")
+    )
 
 
 def test_mergecert_q1_resume_discards_only_an_unfinished_document():

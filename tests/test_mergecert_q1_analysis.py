@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from memsub.fingerprint import CompatibilityFingerprint
+
 
 ROOT = Path(__file__).resolve().parents[1]
 ANALYZER_PATH = (
@@ -18,6 +20,23 @@ Q1_P0_VERDICT_SHA256 = (
 )
 Q1_REGISTRATION_PENDING = "PENDING_CPU_EXTRACTION"
 Q1_TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
+Q1_EXECUTION_SEMANTICS = {
+    "version": "mergecert-q1-execution-semantics-v1",
+    "archive_replay_prefill": {
+        "attention_backend": "sdpa",
+        "scope": "auxiliary-archive-replay-gate",
+    },
+    "reported_five_arm_prefill": {
+        "attention_backend": "eager",
+        "mode": "real-attention",
+        "cache_policy": "single-common-prefill",
+    },
+    "continuation_and_scoring": {
+        "attention_backend": "sdpa",
+        "backend_state": "restored-configured",
+    },
+}
+Q1_FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
 CORPUS_MANIFEST_SHA256 = "1" * 64
 TOKENIZER_FILES_SHA256 = {
     "config.json": (
@@ -72,6 +91,25 @@ def _token_counts(doc_id):
 
 def _source_document_sha256(doc_id):
     return hashlib.sha256(f"source:{doc_id}".encode()).hexdigest()
+
+
+def _fingerprint():
+    return CompatibilityFingerprint(
+        model_id="test-model",
+        tokenizer_hash="sha256:" + "1" * 64,
+        chat_template_hash="sha256:" + "2" * 64,
+        rope_config_hash="sha256:" + "3" * 64,
+        sliding_window_config="none",
+        attention_impl="sdpa",
+        kv_layout="gqa",
+        quantization="bfloat16",
+        adapter_hash=None,
+        runtime_version="test-runtime",
+        compaction_policy_version="evict-oldest-nonsink-v1",
+        position_policy_version="pos-v1-preserve-logical-rope",
+        channel_registry_version="memchan-v1",
+        kernel_numeric_profile_hash="sha256:" + "4" * 64,
+    )
 
 
 def _registration():
@@ -277,13 +315,19 @@ def _payload(*, documents_per_domain=5, smoke=False):
             for doc in docs
         ],
     }
+    fingerprint = _fingerprint()
     return {
         "provenance": {
             "model_id": "Qwen/Qwen3-4B-Instruct-2507",
             "ratios": [0.25, 0.40],
             "sink_token_count": 4,
             "budget_mode": "archived-m1-per-document-matched-physical-v1",
+            "execution_semantics": Q1_EXECUTION_SEMANTICS,
         },
+        "execution_semantics": Q1_EXECUTION_SEMANTICS,
+        "compatibility_fingerprint_schema": Q1_FINGERPRINT_SCHEMA,
+        "compatibility_fingerprint": fingerprint.to_dict(),
+        "compatibility_fingerprint_sha256": fingerprint.digest(),
         "q1_authorization": {
             "protocol": "MERGECERT-Q1",
             "budget_mode": "archived-m1-per-document-matched-physical-v1",
@@ -612,6 +656,51 @@ def test_q1_analysis_requires_the_exact_settled_negative_authorization():
     payload["q1_authorization"]["settled_p0"]["p0_3_pass"] = True
 
     with pytest.raises(ValueError, match="authorization"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ("missing_top_level", "missing_provenance", "backend_drift"),
+)
+def test_q1_analysis_requires_exact_execution_semantics(mutation):
+    analyzer = _load_analyzer()
+    payload = _payload()
+    if mutation == "missing_top_level":
+        payload.pop("execution_semantics")
+    elif mutation == "missing_provenance":
+        payload["provenance"].pop("execution_semantics")
+    else:
+        payload["execution_semantics"] = json.loads(
+            json.dumps(Q1_EXECUTION_SEMANTICS)
+        )
+        payload["execution_semantics"]["archive_replay_prefill"][
+            "attention_backend"
+        ] = "eager"
+
+    with pytest.raises(ValueError, match="execution semantics"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ("missing", "schema", "digest", "extra_field"),
+)
+def test_q1_analysis_validates_canonical_compatibility_fingerprint(mutation):
+    analyzer = _load_analyzer()
+    payload = _payload()
+    if mutation == "missing":
+        payload.pop("compatibility_fingerprint")
+    elif mutation == "schema":
+        payload["compatibility_fingerprint_schema"] = "legacy"
+    elif mutation == "digest":
+        payload["compatibility_fingerprint_sha256"] = (
+            "sha256:" + "f" * 64
+        )
+    else:
+        payload["compatibility_fingerprint"]["unexpected"] = True
+
+    with pytest.raises(ValueError, match="compatibility fingerprint"):
         analyzer.analyze(payload, expected_documents=20, n_resamples=20)
 
 

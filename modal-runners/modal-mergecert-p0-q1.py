@@ -11,6 +11,7 @@ import os
 
 import modal
 
+from memsub.fingerprint import CompatibilityFingerprint, FIELDS
 from memsub.mergecert_q1_registration import (
     Q1_REGISTRATION_PENDING,
     Q1_REGISTRATION_SHA256,
@@ -34,6 +35,8 @@ Q1_ADDENDUM_SHA256 = (
 Q1_P0_VERDICT_SHA256 = (
     "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
 )
+Q1_EXECUTION_SEMANTICS_VERSION = "mergecert-q1-execution-semantics-v1"
+Q1_FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
 SINKS = 4
 P0_ITEMS = 200
 SEED = 20260727
@@ -135,7 +138,77 @@ def _q1_provenance() -> dict:
         "sink_token_count": SINKS,
         "budget_mode": Q1_BUDGET_MODE,
         "seed": SEED,
+        "execution_semantics": _q1_execution_semantics(),
     }
+
+
+def _q1_execution_semantics() -> dict:
+    return {
+        "version": Q1_EXECUTION_SEMANTICS_VERSION,
+        "archive_replay_prefill": {
+            "attention_backend": "sdpa",
+            "scope": "auxiliary-archive-replay-gate",
+        },
+        "reported_five_arm_prefill": {
+            "attention_backend": "eager",
+            "mode": "real-attention",
+            "cache_policy": "single-common-prefill",
+        },
+        "continuation_and_scoring": {
+            "attention_backend": "sdpa",
+            "backend_state": "restored-configured",
+        },
+    }
+
+
+def _q1_fingerprint_record(fingerprint: CompatibilityFingerprint) -> dict:
+    value = fingerprint.to_dict()
+    if set(value) != set(FIELDS):
+        raise ValueError("Q1 live compatibility fingerprint schema mismatch")
+    canonical = CompatibilityFingerprint.from_dict(value)
+    if canonical.to_dict() != value:
+        raise ValueError("Q1 live compatibility fingerprint is noncanonical")
+    return {
+        "compatibility_fingerprint_schema": Q1_FINGERPRINT_SCHEMA,
+        "compatibility_fingerprint": value,
+        "compatibility_fingerprint_sha256": canonical.digest(),
+    }
+
+
+def _validate_q1_fingerprint_record(
+    state: dict,
+    expected: dict,
+) -> None:
+    value = state.get("compatibility_fingerprint")
+    if (
+        state.get("compatibility_fingerprint_schema")
+        != Q1_FINGERPRINT_SCHEMA
+        or not isinstance(value, dict)
+        or set(value) != set(FIELDS)
+    ):
+        raise ValueError("existing Q1 compatibility fingerprint schema mismatch")
+    try:
+        canonical = CompatibilityFingerprint.from_dict(value)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError(
+            "existing Q1 compatibility fingerprint is invalid"
+        ) from exc
+    if (
+        canonical.to_dict() != value
+        or state.get("compatibility_fingerprint_sha256")
+        != canonical.digest()
+        or any(
+            state.get(field) != expected.get(field)
+            for field in (
+                "compatibility_fingerprint_schema",
+                "compatibility_fingerprint",
+                "compatibility_fingerprint_sha256",
+            )
+        )
+    ):
+        raise ValueError(
+            "existing Q1 compatibility fingerprint differs from live runtime"
+        )
 
 
 def _stable_rank(item_id: str) -> str:
@@ -1299,6 +1372,55 @@ def _restore_q1_completed_prefix(
     )
 
 
+def _resume_q1_state(
+    prior: dict,
+    fresh: dict,
+    selected_doc_ids: list[str],
+) -> dict:
+    if prior.get("sample_doc_ids") != fresh.get("sample_doc_ids"):
+        raise ValueError("existing Q1 artifact uses a different sample")
+    if prior.get("q1_authorization") != fresh.get("q1_authorization"):
+        raise ValueError("existing Q1 artifact uses a different authorization")
+    if (
+        prior.get("q1_registration_sha256")
+        != fresh.get("q1_registration_sha256")
+    ):
+        raise ValueError("existing Q1 artifact uses a different registration")
+    done = prior.get("done_documents")
+    if (
+        not isinstance(done, int)
+        or isinstance(done, bool)
+        or not 0 <= done <= len(selected_doc_ids)
+    ):
+        raise ValueError("existing Q1 artifact has invalid progress")
+    if done == 0:
+        legacy_provenance = dict(fresh["provenance"])
+        legacy_provenance.pop("execution_semantics")
+        if prior.get("provenance") not in (
+            fresh["provenance"],
+            legacy_provenance,
+        ):
+            raise ValueError(
+                "existing Q1 artifact uses a different Q1 provenance"
+            )
+        _restore_q1_completed_prefix(prior, selected_doc_ids)
+        return fresh
+    if (
+        prior.get("execution_semantics")
+        != fresh.get("execution_semantics")
+        or prior.get("provenance", {}).get("execution_semantics")
+        != fresh.get("provenance", {}).get("execution_semantics")
+    ):
+        raise ValueError(
+            "existing Q1 artifact uses different execution semantics"
+        )
+    if prior.get("provenance") != fresh.get("provenance"):
+        raise ValueError("existing Q1 artifact uses a different Q1 provenance")
+    _validate_q1_fingerprint_record(prior, fresh)
+    _restore_q1_completed_prefix(prior, selected_doc_ids)
+    return prior
+
+
 def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
     import sys
 
@@ -1377,10 +1499,11 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             for ratio in Q1_RATIOS
         ],
     ]
+    fingerprint_record = _q1_fingerprint_record(fingerprint)
     state = {
         "provenance": _q1_provenance(),
-        "compatibility_fingerprint": fingerprint.to_dict(),
-        "compatibility_fingerprint_sha256": fingerprint.digest(),
+        "execution_semantics": _q1_execution_semantics(),
+        **fingerprint_record,
         "q1_authorization": gate,
         "q1_registration_sha256": registration_record["sha256"],
         "archived_m1": {
@@ -1416,10 +1539,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             != registration_record["sha256"]
         ):
             raise ValueError("existing Q1 artifact uses a different registration")
-        if prior.get("provenance") != _q1_provenance():
-            raise ValueError("existing Q1 artifact uses a different Q1 provenance")
-        state = prior
-        _restore_q1_completed_prefix(state, selected_doc_ids)
+        state = _resume_q1_state(prior, state, selected_doc_ids)
 
     def save() -> None:
         state["peak_gpu_bytes"] = int(torch.cuda.max_memory_allocated())
@@ -1557,6 +1677,9 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                     f"{arm_name}: {check['mismatches'][:3]}"
                 )
 
+        del replay_report, replay_candidate_caches
+        del replay_full_predictions, replay_full_cache
+        del replay_eviction
         q1_full_cache, _, attention_mass = prefill_with_real_attention(
             runtime, context["context_ids"]
         )
@@ -1645,6 +1768,8 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             f"Q1: {state['done_documents']}/{len(contexts)} documents",
             flush=True,
         )
+        del candidate_caches, q1_full_cache, full_predictions
+        del attention_mass, eviction
         torch.cuda.empty_cache()
 
     save()

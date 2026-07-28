@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 
 from memsub.certification.experiment_protocol import paired_metric_cis
+from memsub.fingerprint import CompatibilityFingerprint, FIELDS
 from memsub.mergecert_q1_registration import (
     Q1_REGISTRATION_PENDING,
     Q1_REGISTRATION_SHA256,
@@ -38,6 +39,23 @@ ADDENDUM_SHA256 = (
 P0_VERDICT_SHA256 = (
     "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
 )
+FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
+EXPECTED_EXECUTION_SEMANTICS = {
+    "version": "mergecert-q1-execution-semantics-v1",
+    "archive_replay_prefill": {
+        "attention_backend": "sdpa",
+        "scope": "auxiliary-archive-replay-gate",
+    },
+    "reported_five_arm_prefill": {
+        "attention_backend": "eager",
+        "mode": "real-attention",
+        "cache_policy": "single-common-prefill",
+    },
+    "continuation_and_scoring": {
+        "attention_backend": "sdpa",
+        "backend_state": "restored-configured",
+    },
+}
 EXPECTED_ARMS = {
     "control-0.00",
     *(f"eviction-{ratio:.2f}" for ratio in RATIOS),
@@ -156,6 +174,29 @@ def _require_q1_registration_binding() -> str:
     if not _is_sha256(Q1_REGISTRATION_SHA256):
         raise ValueError("Q1 finalized registration SHA-256 binding is invalid")
     return Q1_REGISTRATION_SHA256
+
+
+def _validate_compatibility_fingerprint(payload: dict) -> None:
+    value = payload.get("compatibility_fingerprint")
+    if (
+        payload.get("compatibility_fingerprint_schema")
+        != FINGERPRINT_SCHEMA
+        or not isinstance(value, dict)
+        or set(value) != set(FIELDS)
+    ):
+        raise ValueError("Q1 compatibility fingerprint schema mismatch")
+    try:
+        canonical = CompatibilityFingerprint.from_dict(value)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError("Q1 compatibility fingerprint is invalid") from exc
+    if (
+        canonical.to_dict() != value
+        or payload.get("compatibility_fingerprint_sha256")
+        != canonical.digest()
+    ):
+        raise ValueError(
+            "Q1 compatibility fingerprint canonical digest mismatch"
+        )
 
 
 def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
@@ -497,6 +538,14 @@ def analyze(
         raise ValueError("Q1 sink provenance mismatch")
     if provenance.get("budget_mode") != BUDGET_MODE:
         raise ValueError("Q1 budget provenance mismatch")
+    if (
+        provenance.get("execution_semantics")
+        != EXPECTED_EXECUTION_SEMANTICS
+        or payload.get("execution_semantics")
+        != EXPECTED_EXECUTION_SEMANTICS
+    ):
+        raise ValueError("Q1 execution semantics are missing or drifted")
+    _validate_compatibility_fingerprint(payload)
 
     authorization = payload.get("q1_authorization", {})
     if (
