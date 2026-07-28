@@ -183,9 +183,11 @@ def _q1_verdict(*, positive, aggregation_only=False):
     aggregation_favorable = ["0.40:acc_delta"] if positive else []
     favorable = pointwise_favorable + aggregation_favorable
     per_document_budgets = {}
+    sample_doc_ids = []
     for domain in ("financial", "legal", "code", "literature"):
         for index in range(5):
             doc_id = f"{domain}/{index}"
+            sample_doc_ids.append(doc_id)
             source_tokens = 3921 if doc_id == "legal/0" else 4096
             per_document_budgets[doc_id] = {
                 f"{ratio:.2f}": {
@@ -193,6 +195,14 @@ def _q1_verdict(*, positive, aggregation_only=False):
                     "model_input_token_count": source_tokens,
                     "requested_evicted_token_count": int(
                         source_tokens * ratio
+                    ),
+                    "eviction_source_start": 4,
+                    "eviction_source_end": (
+                        4 + int(source_tokens * ratio)
+                    ),
+                    "physical_before_count": source_tokens,
+                    "physical_after_count": (
+                        source_tokens - int(source_tokens * ratio)
                     ),
                     "evicted_token_count": int(source_tokens * ratio),
                     "retained_token_count": (
@@ -207,7 +217,28 @@ def _q1_verdict(*, positive, aggregation_only=False):
     return {
         "pass": True,
         "budget_mode": "archived-m1-per-document-matched-physical-v1",
+        "authorization": {
+            "protocol": "MERGECERT-Q1",
+            "budget_mode": "archived-m1-per-document-matched-physical-v1",
+            "addendum_sha256": (
+                "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+            ),
+            "p0_verdict_sha256": (
+                "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+            ),
+        },
         "documents": 20,
+        "sample_doc_ids": sample_doc_ids,
+        "archive_replay_matrix": [
+            {
+                "doc_id": doc_id,
+                "archive": (
+                    f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json"
+                ),
+            }
+            for doc_id in sample_doc_ids
+            for ratio in (0.0, 0.25, 0.40)
+        ],
         "domain_counts": {
             "financial": 5,
             "legal": 5,
@@ -460,7 +491,10 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
         "Per-document matched physical budgets preserve the exact archived "
         "M1 population."
     ) in report
-    assert "4096-token documents retain 3072 tokens at 0.25" in report
+    assert (
+        "4,096-token source/model inputs retain 3,072 tokens at 0.25"
+        in report
+    )
     assert "Shorter archived contexts use their measured matched budgets." in report
     assert Q1_APP_IDS[0] in report
     assert Q1_APP_IDS[1] in report
@@ -497,6 +531,37 @@ def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
     assert "all moderate ratios" not in report
     assert "merge-plus-anchor" not in report
     assert Q2_APP_ID in report
+
+
+def test_report_validation_rejects_a_fake_4096_one_token_budget(tmp_path):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_fake_budget")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_fake_budget")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    evidence = renderer.load_evidence(plan, root=root)
+    budget = evidence["q1"]["per_document_budgets"]["financial/0"]["0.25"]
+    budget.update(
+        {
+            "evicted_token_count": 1,
+            "physical_after_count": 4095,
+            "retained_token_count": 4095,
+            "merge_target_retained": 4095,
+        }
+    )
+
+    with pytest.raises(ValueError, match="budget"):
+        validator._validate_q1(evidence)
+
+
+def test_report_validation_rejects_duplicate_archive_replay_rows(tmp_path):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_duplicate_replay")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_duplicate_replay")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    evidence = renderer.load_evidence(plan, root=root)
+    matrix = evidence["q1"]["archive_replay_matrix"]
+    matrix[-1] = dict(matrix[0])
+
+    with pytest.raises(ValueError, match="replay"):
+        validator._validate_q1(evidence)
 
 
 def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):

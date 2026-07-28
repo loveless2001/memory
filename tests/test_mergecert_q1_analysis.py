@@ -10,6 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q1.py"
 )
+Q1_ADDENDUM_SHA256 = (
+    "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+)
+Q1_P0_VERDICT_SHA256 = (
+    "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
 
 
 def _load_analyzer():
@@ -29,6 +35,8 @@ def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
     source_tokens, model_tokens = _token_counts(doc_id)
     evicted = int(source_tokens * ratio)
     retained = model_tokens - evicted
+    source_start = 0 if ratio == 0 else 4
+    source_end = source_start + evicted
     return {
         "doc_id": doc_id,
         "domain": doc_id.split("/", 1)[0],
@@ -37,6 +45,10 @@ def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
         "model_input_token_count": model_tokens,
         "context_token_count": model_tokens,
         "requested_evicted_token_count": evicted,
+        "eviction_source_start": source_start,
+        "eviction_source_end": source_end,
+        "physical_before_count": model_tokens,
+        "physical_after_count": retained,
         "evicted_token_count": evicted,
         "target_retained": retained,
         "source_hashes": {
@@ -125,8 +137,8 @@ def _payload(*, documents_per_domain=1):
         "q1_authorization": {
             "protocol": "MERGECERT-Q1",
             "budget_mode": "archived-m1-per-document-matched-physical-v1",
-            "addendum_sha256": "a" * 64,
-            "p0_verdict_sha256": "b" * 64,
+            "addendum_sha256": Q1_ADDENDUM_SHA256,
+            "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
             "settled_p0": {
                 "p0_3_pass": False,
                 "p0_4_pass": True,
@@ -207,6 +219,15 @@ def _payload(*, documents_per_domain=1):
                         "requested_evicted_token_count": int(
                             _token_counts(doc)[0] * ratio
                         ),
+                        "eviction_source_start": 4,
+                        "eviction_source_end": (
+                            4 + int(_token_counts(doc)[0] * ratio)
+                        ),
+                        "physical_before_count": _token_counts(doc)[1],
+                        "physical_after_count": (
+                            _token_counts(doc)[1]
+                            - int(_token_counts(doc)[0] * ratio)
+                        ),
                         "evicted_token_count": int(
                             _token_counts(doc)[0] * ratio
                         ),
@@ -232,6 +253,7 @@ def _payload(*, documents_per_domain=1):
             for doc in docs
         ],
         "arms": arms,
+        "sample_doc_ids": docs,
         "done_documents": len(docs),
     }
 
@@ -278,6 +300,13 @@ def test_q1_analysis_validates_all_registered_rows_and_paired_intervals():
     assert verdict["budget_mode"] == (
         "archived-m1-per-document-matched-physical-v1"
     )
+    assert verdict["sample_doc_ids"] == [
+        "financial/0",
+        "legal/0",
+        "code/0",
+        "literature/0",
+    ]
+    assert len(verdict["archive_replay_matrix"]) == 12
     assert verdict["per_document_budgets"]["legal/0"]["0.25"][
         "retained_token_count"
     ] == 2941
@@ -287,6 +316,22 @@ def test_q1_analysis_requires_the_exact_settled_negative_authorization():
     analyzer = _load_analyzer()
     payload = _payload()
     payload["q1_authorization"]["settled_p0"]["p0_3_pass"] = True
+
+    with pytest.raises(ValueError, match="authorization"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("addendum_sha256", "a" * 64),
+        ("p0_verdict_sha256", "b" * 64),
+    ),
+)
+def test_q1_analysis_rejects_arbitrary_authorization_hashes(field, value):
+    analyzer = _load_analyzer()
+    payload = _payload()
+    payload["q1_authorization"][field] = value
 
     with pytest.raises(ValueError, match="authorization"):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
@@ -318,6 +363,57 @@ def test_q1_analysis_rejects_merge_eviction_per_document_budget_drift():
     payload["arms"]["merge-0.25"]["reports"][1]["target_retained"] += 1
 
     with pytest.raises(ValueError, match="per-document budget"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
+def test_q1_analysis_rejects_duplicate_replay_or_sample_identity_drift():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    payload["archived_m1"]["replay_checks"][-1] = dict(
+        payload["archived_m1"]["replay_checks"][0]
+    )
+    with pytest.raises(ValueError, match="replay"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+    payload = _payload()
+    payload["sample_doc_ids"][-1] = "foreign/document"
+    with pytest.raises(ValueError, match="sample"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
+def test_q1_analysis_rejects_a_4096_context_with_fake_one_token_removal():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    document = payload["documents"][0]
+    budget = document["budgets"]["0.25"]
+    budget.update(
+        {
+            "evicted_token_count": 1,
+            "physical_after_count": 4095,
+            "retained_token_count": 4095,
+            "merge_target_retained": 4095,
+        }
+    )
+    for arm_name in ("eviction-0.25", "merge-0.25"):
+        report = payload["arms"][arm_name]["reports"][0]
+        report.update(
+            {
+                "evicted_token_count": 1,
+                "physical_after_count": 4095,
+                "target_retained": 4095,
+            }
+        )
+
+    with pytest.raises(ValueError, match="budget"):
+        analyzer.analyze(payload, expected_documents=4, n_resamples=20)
+
+
+def test_q1_analysis_rejects_boolean_token_counts():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    payload["documents"][0]["source_context_token_count"] = True
+
+    with pytest.raises(ValueError, match="token-length"):
         analyzer.analyze(payload, expected_documents=4, n_resamples=20)
 
 
@@ -464,8 +560,8 @@ def test_q1_cli_writes_trigger_with_the_verdict_evidence_hash(tmp_path, monkeypa
             "0.40:acc_delta",
         ],
         "q1_verdict_sha256": hashlib.sha256(output_path.read_bytes()).hexdigest(),
-        "addendum_sha256": "a" * 64,
-        "p0_verdict_sha256": "b" * 64,
+        "addendum_sha256": Q1_ADDENDUM_SHA256,
+        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
     }
     assert (
         table_path.read_text()

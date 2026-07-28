@@ -313,9 +313,9 @@ def render_report(evidence: dict) -> str:
         "",
         (
             "Per-document matched physical budgets preserve the exact "
-            "archived M1 population. 4096-token documents retain 3072 tokens "
-            "at 0.25 and 2458 tokens at 0.40. Shorter archived contexts use "
-            "their measured matched budgets."
+            "archived M1 population. 4,096-token source/model inputs retain "
+            "3,072 tokens at 0.25 and 2,458 tokens at 0.40. Shorter archived "
+            "contexts use their measured matched budgets."
         ),
         "",
         _interval_table(q1),

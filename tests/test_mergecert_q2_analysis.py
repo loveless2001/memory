@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[1]
 ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q2.py"
 )
+Q1_ADDENDUM_SHA256 = (
+    "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+)
+Q1_P0_VERDICT_SHA256 = (
+    "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
 ARMS = (
     "c0_refit",
     "mechanics_refit",
@@ -53,8 +59,8 @@ def _q1_trigger(**overrides):
         "run_q2_q3": True,
         "favorable_intervals": ["0.40:mean_kl"],
         "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": "a" * 64,
-        "p0_verdict_sha256": "b" * 64,
+        "addendum_sha256": Q1_ADDENDUM_SHA256,
+        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
     }
     trigger.update(overrides)
     return trigger
@@ -201,6 +207,8 @@ def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):
         _q1_trigger(favorable_intervals={"0.40:mean_kl": True}),
         _q1_trigger(q1_verdict_sha256=["c"] * 64),
         _q1_trigger(budget_mode="fixed-4096"),
+        _q1_trigger(addendum_sha256="a" * 64),
+        _q1_trigger(p0_verdict_sha256="b" * 64),
     ),
 )
 def test_q2_analysis_rejects_an_invalid_registered_q1_trigger(tmp_path, trigger):

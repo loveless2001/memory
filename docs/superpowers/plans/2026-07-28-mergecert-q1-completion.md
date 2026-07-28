@@ -602,7 +602,7 @@ launch either command until the user approves.
 - Consumes: approved Modal runner and private source artifacts.
 - Produces: immutable Q1 evidence and the conditional trigger decision.
 
-- [x] **Step 1: Upload only the authorization inputs**
+- [x] **Step 1: Upload the pre-amendment authorization inputs (superseded)**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
@@ -611,6 +611,20 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
   memsub-artifacts plans/260727-mergecert/p0-verdict.json \
   /mergecert-q1/p0-verdict.json
 ```
+
+These files authorized the initial failed smoke. The addendum changed after
+the settled 2026-07-29 budget amendment, so this completed upload does not make
+the retry ready.
+
+- [ ] **Step 1a: Re-upload and verify the amended authorization inputs**
+
+Before retrying the smoke, upload only the amended `MERGECERT-Q1.md` and the
+unchanged registered P0 verdict to the same private paths. Verify their remote
+SHA-256 values are exactly
+`35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509`
+and
+`4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a`.
+Do not launch the retry from stale authorization inputs.
 
 - [ ] **Step 2: Launch the two-document smoke**
 

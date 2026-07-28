@@ -16,6 +16,12 @@ PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
 Q1_PROVENANCE = (
     ROOT / "plans" / "260728-mergecert-q1" / "source-provenance.json"
 )
+Q1_ADDENDUM_SHA256 = (
+    "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+)
+Q1_P0_VERDICT_SHA256 = (
+    "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
 Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
 Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
 
@@ -27,8 +33,8 @@ def _q1_trigger(**overrides):
         "run_q2_q3": True,
         "favorable_intervals": ["0.40:mean_kl"],
         "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": "a" * 64,
-        "p0_verdict_sha256": "b" * 64,
+        "addendum_sha256": Q1_ADDENDUM_SHA256,
+        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
     }
     trigger.update(overrides)
     return trigger
@@ -172,17 +178,9 @@ def test_mergecert_q1_addendum_accepts_only_the_settled_negative_p0(tmp_path):
     runner = _load_module(RUNNER, "mergecert_q1_addendum_gate")
     addendum = tmp_path / "MERGECERT-Q1.md"
     verdict = tmp_path / "p0-verdict.json"
-    addendum.write_text("# MERGECERT-Q1.md\n")
-    verdict.write_text(
-        json.dumps(
-            {
-                "p0_3": {"pass": False},
-                "p0_4": {"pass": True},
-                "real_attention": {"pass": True},
-                "p0_pass": False,
-                "stop_q1_q3": True,
-            }
-        )
+    addendum.write_bytes((ROOT / "MERGECERT-Q1.md").read_bytes())
+    verdict.write_bytes(
+        (ROOT / "plans/260727-mergecert/p0-verdict.json").read_bytes()
     )
 
     gate = runner._load_q1_authorization(
@@ -197,6 +195,27 @@ def test_mergecert_q1_addendum_accepts_only_the_settled_negative_p0(tmp_path):
     assert gate["settled_p0"]["p0_3_pass"] is False
     assert len(gate["addendum_sha256"]) == 64
     assert len(gate["p0_verdict_sha256"]) == 64
+
+
+@pytest.mark.parametrize("changed", ("addendum", "p0"))
+def test_mergecert_q1_addendum_rejects_nonregistered_authorization_hashes(
+    tmp_path, changed
+):
+    runner = _load_module(RUNNER, f"mergecert_q1_hash_gate_{changed}")
+    addendum = tmp_path / "MERGECERT-Q1.md"
+    verdict = tmp_path / "p0-verdict.json"
+    addendum.write_bytes((ROOT / "MERGECERT-Q1.md").read_bytes())
+    verdict.write_bytes(
+        (ROOT / "plans/260727-mergecert/p0-verdict.json").read_bytes()
+    )
+    target = addendum if changed == "addendum" else verdict
+    target.write_bytes(target.read_bytes() + b"\n")
+
+    with pytest.raises(ValueError, match="registered.*hash"):
+        runner._load_q1_authorization(
+            addendum_path=str(addendum),
+            p0_verdict_path=str(verdict),
+        )
 
 
 def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
@@ -278,6 +297,10 @@ def test_mergecert_q1_matches_merge_to_each_document_eviction_budget(
         "source_context_token_count": source_tokens,
         "model_input_token_count": model_tokens,
         "requested_evicted_token_count": evicted,
+        "eviction_source_start": 4,
+        "eviction_source_end": 4 + evicted,
+        "physical_before_count": model_tokens,
+        "physical_after_count": retained,
         "evicted_token_count": evicted,
         "retained_token_count": retained,
         "merge_target_retained": retained,
@@ -290,16 +313,27 @@ def test_mergecert_q1_uses_the_eviction_cache_measured_physical_budget():
     runner = _load_module(RUNNER, "mergecert_q1_measured_budget")
 
     budget = runner._q1_document_budget(
-        4096, 4000, 0.40, evicted_token_count=1600
+        4096,
+        4000,
+        0.40,
+        evicted_token_count=1000,
+        eviction_source_start=3000,
+        eviction_source_end=4638,
+        physical_before_count=4000,
+        physical_after_count=3000,
     )
 
     assert budget == {
         "source_context_token_count": 4096,
         "model_input_token_count": 4000,
         "requested_evicted_token_count": 1638,
-        "evicted_token_count": 1600,
-        "retained_token_count": 2400,
-        "merge_target_retained": 2400,
+        "eviction_source_start": 3000,
+        "eviction_source_end": 4638,
+        "physical_before_count": 4000,
+        "physical_after_count": 3000,
+        "evicted_token_count": 1000,
+        "retained_token_count": 3000,
+        "merge_target_retained": 3000,
     }
 
 
@@ -378,6 +412,8 @@ def test_mergecert_q2_runner_has_no_training_or_publication_path():
         _q1_trigger(favorable_intervals={"0.40:mean_kl": True}),
         _q1_trigger(q1_verdict_sha256=["c"] * 64),
         _q1_trigger(budget_mode="fixed-4096"),
+        _q1_trigger(addendum_sha256="a" * 64),
+        _q1_trigger(p0_verdict_sha256="b" * 64),
     ),
 )
 def test_q2_runners_reject_a_missing_or_non_authorizing_q1_trigger(

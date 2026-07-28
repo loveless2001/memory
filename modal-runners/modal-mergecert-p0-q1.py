@@ -16,6 +16,12 @@ UPSTREAM_COMMIT = "cd4ed948d62231449dbab9669608bbb4fd220713"
 RATIOS = (0.25, 0.40, 0.90)
 Q1_RATIOS = (0.25, 0.40)
 Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
+Q1_ADDENDUM_SHA256 = (
+    "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+)
+Q1_P0_VERDICT_SHA256 = (
+    "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
 SINKS = 4
 P0_ITEMS = 200
 SEED = 20260727
@@ -484,6 +490,13 @@ def _load_q1_authorization(
 ) -> dict:
     if not os.path.exists(addendum_path) or not os.path.exists(p0_verdict_path):
         raise ValueError("Q1 addendum authorization files are missing")
+    addendum_sha256 = _sha256_file(addendum_path)
+    p0_verdict_sha256 = _sha256_file(p0_verdict_path)
+    if (
+        addendum_sha256 != Q1_ADDENDUM_SHA256
+        or p0_verdict_sha256 != Q1_P0_VERDICT_SHA256
+    ):
+        raise ValueError("Q1 registered authorization hash mismatch")
     with open(p0_verdict_path) as handle:
         verdict = json.load(handle)
     settled = {
@@ -505,8 +518,8 @@ def _load_q1_authorization(
     return {
         "protocol": "MERGECERT-Q1",
         "budget_mode": Q1_BUDGET_MODE,
-        "addendum_sha256": _sha256_file(addendum_path),
-        "p0_verdict_sha256": _sha256_file(p0_verdict_path),
+        "addendum_sha256": addendum_sha256,
+        "p0_verdict_sha256": p0_verdict_sha256,
         "settled_p0": settled,
     }
 
@@ -560,20 +573,64 @@ def _q1_document_budget(
     ratio: float,
     *,
     evicted_token_count: int | None = None,
+    eviction_source_start: int | None = None,
+    eviction_source_end: int | None = None,
+    physical_before_count: int | None = None,
+    physical_after_count: int | None = None,
 ) -> dict:
     if ratio not in Q1_RATIOS:
         raise ValueError(f"unregistered Q1 ratio: {ratio}")
     requested_evicted = int(source_context_token_count * ratio)
+    source_start = (
+        SINKS
+        if eviction_source_start is None
+        else eviction_source_start
+    )
+    source_end = (
+        source_start + requested_evicted
+        if eviction_source_end is None
+        else eviction_source_end
+    )
     evicted = (
         requested_evicted
         if evicted_token_count is None
         else evicted_token_count
     )
-    retained = model_input_token_count - evicted
+    physical_before = (
+        model_input_token_count
+        if physical_before_count is None
+        else physical_before_count
+    )
+    physical_after = (
+        physical_before - evicted
+        if physical_after_count is None
+        else physical_after_count
+    )
+    retained = physical_after
+    counts = (
+        source_context_token_count,
+        model_input_token_count,
+        source_start,
+        source_end,
+        physical_before,
+        physical_after,
+        evicted,
+    )
+    expected_physical_removed = max(
+        0,
+        min(source_end, physical_before)
+        - min(max(source_start, 0), physical_before),
+    )
     if (
-        not isinstance(evicted, int)
+        any(not isinstance(value, int) or isinstance(value, bool) for value in counts)
+        or source_context_token_count <= SINKS
+        or model_input_token_count <= SINKS
+        or source_start < SINKS
+        or source_end - source_start != requested_evicted
+        or physical_before != model_input_token_count
+        or physical_before - physical_after != evicted
+        or evicted != expected_physical_removed
         or evicted <= 0
-        or evicted > requested_evicted
         or retained <= SINKS
     ):
         raise ValueError("Q1 per-document budget is invalid")
@@ -581,6 +638,10 @@ def _q1_document_budget(
         "source_context_token_count": source_context_token_count,
         "model_input_token_count": model_input_token_count,
         "requested_evicted_token_count": requested_evicted,
+        "eviction_source_start": source_start,
+        "eviction_source_end": source_end,
+        "physical_before_count": physical_before,
+        "physical_after_count": physical_after,
         "evicted_token_count": evicted,
         "retained_token_count": retained,
         "merge_target_retained": retained,
@@ -812,6 +873,10 @@ def _q1_report(
         "requested_evicted_token_count": budget[
             "requested_evicted_token_count"
         ],
+        "eviction_source_start": budget["eviction_source_start"],
+        "eviction_source_end": budget["eviction_source_end"],
+        "physical_before_count": budget["physical_before_count"],
+        "physical_after_count": budget["physical_after_count"],
         "evicted_token_count": budget["evicted_token_count"],
         "target_retained": candidate_cache.physical_length,
         "source_hashes": context["source_hashes"],
@@ -1015,6 +1080,14 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                     "model_input_token_count"
                 ],
                 "requested_evicted_token_count": 0,
+                "eviction_source_start": 0,
+                "eviction_source_end": 0,
+                "physical_before_count": context[
+                    "model_input_token_count"
+                ],
+                "physical_after_count": context[
+                    "model_input_token_count"
+                ],
                 "evicted_token_count": 0,
                 "retained_token_count": context[
                     "model_input_token_count"
@@ -1026,17 +1099,23 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         }
         for ratio in Q1_RATIOS:
             eviction = full_cache.clone_detached()
+            physical_before = eviction.physical_length
             start, end = _q1_eviction_range(
                 ratio,
                 context["eviction_anchor"],
                 context["source_context_token_count"],
             )
             evicted = eviction.evict_logical_range(start, end)
+            physical_after = eviction.physical_length
             budget = _q1_document_budget(
                 context["source_context_token_count"],
                 context["model_input_token_count"],
                 ratio,
                 evicted_token_count=evicted,
+                eviction_source_start=start,
+                eviction_source_end=end,
+                physical_before_count=physical_before,
+                physical_after_count=physical_after,
             )
             if eviction.physical_length != budget["retained_token_count"]:
                 raise ValueError("Q1 measured eviction budget is inconsistent")

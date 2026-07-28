@@ -24,6 +24,12 @@ CAPTURE_ROOT = "/artifacts/mergecert/q2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
 Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
+Q1_ADDENDUM_SHA256 = (
+    "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+)
+Q1_P0_VERDICT_SHA256 = (
+    "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
 HEADS = ((25, 14), (26, 26), (28, 19), (35, 15))
 DOMAINS = ("financial", "legal", "code", "literature")
 PINNED = (
@@ -77,6 +83,8 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
         isinstance(trigger, dict)
         and trigger.get("protocol") == "MERGECERT-Q1"
         and trigger.get("budget_mode") == Q1_BUDGET_MODE
+        and trigger.get("addendum_sha256") == Q1_ADDENDUM_SHA256
+        and trigger.get("p0_verdict_sha256") == Q1_P0_VERDICT_SHA256
         and trigger.get("run_q2_q3") is True
         and isinstance(favorable_intervals, list)
         and bool(favorable_intervals)

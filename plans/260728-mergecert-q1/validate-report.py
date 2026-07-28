@@ -169,6 +169,10 @@ def _is_number(value) -> bool:
     )
 
 
+def _is_strict_int(value) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
 def _validate_file_hashes(evidence: dict) -> None:
     files = evidence.get("_files")
     if not isinstance(files, dict) or not files:
@@ -303,11 +307,44 @@ def _validate_q1(evidence: dict) -> None:
         != {"frozen_subsample", "unfrozen_compactor"}
         or set(q1.get("per_domain", {})) != EXPECTED_DOMAINS
         or q1.get("budget_mode") != BUDGET_MODE
+        or q1.get("authorization")
+        != {
+            "protocol": "MERGECERT-Q1",
+            "budget_mode": BUDGET_MODE,
+            "addendum_sha256": EXPECTED_ADDENDUM["sha256"],
+            "p0_verdict_sha256": EXPECTED_SETTLED_P0["verdict_sha256"],
+        }
     ):
         raise ValueError("Q1 verdict is incomplete")
     per_document_budgets = q1.get("per_document_budgets", {})
-    if len(per_document_budgets) != 20:
+    sample_doc_ids = q1.get("sample_doc_ids", [])
+    if (
+        not isinstance(sample_doc_ids, list)
+        or len(sample_doc_ids) != 20
+        or len(set(sample_doc_ids)) != 20
+        or set(per_document_budgets) != set(sample_doc_ids)
+    ):
         raise ValueError("Q1 per-document budgets are incomplete")
+    expected_replay = {
+        (
+            doc_id,
+            f"{doc_id.split('/', 1)[0]}-evict{ratio:.2f}.json",
+        )
+        for doc_id in sample_doc_ids
+        for ratio in (0.0, 0.25, 0.40)
+    }
+    replay_matrix = q1.get("archive_replay_matrix", [])
+    actual_replay = [
+        (row.get("doc_id"), row.get("archive"))
+        for row in replay_matrix
+        if isinstance(row, dict)
+    ]
+    if (
+        len(actual_replay) != 60
+        or len(set(actual_replay)) != 60
+        or set(actual_replay) != expected_replay
+    ):
+        raise ValueError("Q1 archive replay matrix is incomplete")
     for doc_id, ratios in per_document_budgets.items():
         if set(ratios) != {"0.25", "0.40"}:
             raise ValueError(f"Q1 per-document budgets are incomplete for {doc_id}")
@@ -315,19 +352,46 @@ def _validate_q1(evidence: dict) -> None:
             source_tokens = budget.get("source_context_token_count")
             model_tokens = budget.get("model_input_token_count")
             actual_evicted = budget.get("evicted_token_count")
+            source_start = budget.get("eviction_source_start")
+            source_end = budget.get("eviction_source_end")
+            physical_before = budget.get("physical_before_count")
+            physical_after = budget.get("physical_after_count")
             ratio = float(ratio_text)
+            counts = (
+                source_tokens,
+                model_tokens,
+                actual_evicted,
+                source_start,
+                source_end,
+                physical_before,
+                physical_after,
+            )
+            expected_removed = (
+                max(
+                    0,
+                    min(source_end, physical_before)
+                    - min(max(source_start, 0), physical_before),
+                )
+                if all(_is_strict_int(value) for value in counts)
+                else None
+            )
             if (
-                not isinstance(source_tokens, int)
-                or not isinstance(model_tokens, int)
-                or not isinstance(actual_evicted, int)
+                not all(_is_strict_int(value) for value in counts)
+                or source_tokens <= 4
+                or model_tokens <= 4
                 or actual_evicted <= 0
-                or actual_evicted > int(source_tokens * ratio)
+                or source_start < 4
+                or source_end - source_start != int(source_tokens * ratio)
                 or budget.get("requested_evicted_token_count")
                 != int(source_tokens * ratio)
+                or physical_before != model_tokens
+                or physical_before - physical_after != actual_evicted
+                or actual_evicted != expected_removed
+                or physical_after <= 4
                 or budget.get("retained_token_count")
-                != model_tokens - actual_evicted
+                != physical_after
                 or budget.get("merge_target_retained")
-                != budget.get("retained_token_count")
+                != physical_after
             ):
                 raise ValueError(
                     f"Q1 per-document budget is malformed for {doc_id}/{ratio_text}"
@@ -347,7 +411,7 @@ def _validate_q1(evidence: dict) -> None:
             if (
                 any(not _is_number(row.get(field)) for field in numeric_fields)
                 or any(
-                    not isinstance(row.get(field), int) or row[field] < 0
+                    not _is_strict_int(row.get(field)) or row[field] < 0
                     for field in (
                         "documents",
                         "aggregation_probes",

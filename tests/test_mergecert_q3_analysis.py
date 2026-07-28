@@ -11,6 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q3.py"
 )
+Q1_ADDENDUM_SHA256 = (
+    "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+)
+Q1_P0_VERDICT_SHA256 = (
+    "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
 
 
 def _load_analyzer():
@@ -29,8 +35,8 @@ def _q1_trigger(**overrides):
         "run_q2_q3": True,
         "favorable_intervals": ["0.40:mean_kl"],
         "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": "a" * 64,
-        "p0_verdict_sha256": "b" * 64,
+        "addendum_sha256": Q1_ADDENDUM_SHA256,
+        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
     }
     trigger.update(overrides)
     return trigger
@@ -133,6 +139,15 @@ def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
 
     trigger_path.write_text(json.dumps(_q1_trigger(favorable_intervals=["other"])))
     with pytest.raises(ValueError, match="trigger.*Q2 result"):
+        analyzer.analyze(
+            scores, references, hashes, q2_results,
+            expected_items=4, trigger_path=trigger_path,
+        )
+
+    trigger_path.write_text(
+        json.dumps(_q1_trigger(addendum_sha256="a" * 64))
+    )
+    with pytest.raises(ValueError, match="Q2 is blocked"):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=trigger_path,
