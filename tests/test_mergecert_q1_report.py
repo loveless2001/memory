@@ -457,7 +457,7 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
             ),
             "sha256": _sha256(registration_source),
             "status": (
-                "source-evidence-only; finalized CPU extraction pending"
+                "source-evidence-only; finalized CPU extraction completed"
             ),
         },
         "q1_registration": {

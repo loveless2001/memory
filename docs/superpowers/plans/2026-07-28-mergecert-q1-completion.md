@@ -648,11 +648,10 @@ SHA-256
 `6d90677469c5548d0fde863db886e7a6665e25f15c23d351ba07a0ad4db6e2d5`;
 the app stopped with zero tasks after a 60-second lifetime. The extraction
 and cost-estimate record is
-`plans/260728-mergecert-q1/q1-registration-extraction.json`. Step 1b remains
-blocked on independent review of the separate binding commit; no upload or
+`plans/260728-mergecert-q1/q1-registration-extraction.json`. No upload or
 smoke was performed as part of Step 1a.
 
-- [ ] **Step 1b: Upload and remotely verify all reviewed Q1 inputs**
+- [x] **Step 1b: Upload and remotely verify all reviewed Q1 inputs**
 
 Only after the Step 1a binding commit passes independent review, upload the
 finalized registration to the exact runner path together with the amended
@@ -702,12 +701,11 @@ must be exactly
 `35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509`
 and
 `4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a`.
-Record this verification before Step 2. The existing remote addendum is stale,
-the existing P0 verdict is unchanged but not yet reverified for this retry,
-and no finalized registration has been uploaded. Do not launch the retry from
-that pre-amendment state.
+Record this verification before Step 2. Completed on 2026-07-29: all three
+remote files were retrieved into a unique temporary directory, matched the
+reviewed local bytes with `cmp`, and had the three exact SHA-256 values above.
 
-- [ ] **Step 2: Launch the two-document smoke**
+- [x] **Step 2: Launch the two-document smoke**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
@@ -718,14 +716,20 @@ Copy `/mergecert-q1/q1-smoke.json` locally, then run the analyzer with
 `--expected-documents 2 --n-resamples 2000`. Verify five arms, two documents,
 identical partitions, exact zero control, archive replay, finite attention,
 and per-document merge/eviction physical-budget equality. For 4096-token
-documents, verify budgets `{0.25: 3072, 0.40: 2458}`.
+documents, verify budgets `{0.25: 3072, 0.40: 2458}`. The one authorized
+retry launched as app `ap-amdd5k9Ybxoxv1d8c3vbon` but failed during
+container hydration, before user code or artifact creation, with
+`ModuleNotFoundError: No module named 'memsub'`.
 
-- [ ] **Step 3: Stop on any smoke defect**
+- [x] **Step 3: Stop on any smoke defect**
 
 If any check fails, stop all Modal apps, diagnose under
 `superpowers:systematic-debugging`, add a failing regression test, fix locally,
 and rerun the smoke within the approved `$15` bound. Never launch full Q1 from
-an invalid smoke.
+an invalid smoke. The failed app was stopped with zero tasks. Under the
+one-retry execution instruction, no duplicate smoke was launched and full Q1
+remains blocked. The immutable attempt record is
+`plans/260728-mergecert-q1/q1-smoke-attempt.json`.
 
 - [ ] **Step 4: Launch full Q1 detached only after a valid smoke**
 

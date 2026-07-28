@@ -74,7 +74,7 @@ EXPECTED_ADDENDUM = {
 EXPECTED_REGISTRATION_SOURCE = {
     "path": "plans/260728-mergecert-q1/q1-registration-source.json",
     "sha256": "6ab5b8cd8b63ff086795796220f458d5d3caf7127cc51c253102d473da45c9c4",
-    "status": "source-evidence-only; finalized CPU extraction pending",
+    "status": "source-evidence-only; finalized CPU extraction completed",
 }
 EXPECTED_SETTLED_P0 = {
     "verdict_path": "plans/260727-mergecert/p0-verdict.json",

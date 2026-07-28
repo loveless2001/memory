@@ -24,6 +24,9 @@ Q1_REGISTRATION_EXTRACTION = (
     / "260728-mergecert-q1"
     / "q1-registration-extraction.json"
 )
+Q1_SMOKE_ATTEMPT = (
+    ROOT / "plans" / "260728-mergecert-q1" / "q1-smoke-attempt.json"
+)
 Q1_REGISTRATION_SOURCE = (
     ROOT / "plans" / "260728-mergecert-q1" / "q1-registration-source.json"
 )
@@ -395,7 +398,7 @@ def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
         "sha256": hashlib.sha256(
             Q1_REGISTRATION_SOURCE.read_bytes()
         ).hexdigest(),
-        "status": "source-evidence-only; finalized CPU extraction pending",
+        "status": "source-evidence-only; finalized CPU extraction completed",
     }
     assert provenance["q1_registration"] == {
         "path": "plans/260728-mergecert-q1/q1-registration.json",
@@ -433,6 +436,36 @@ def test_mergecert_q1_records_the_bounded_cpu_extraction():
         registration_path.stat().st_size
     )
     assert evidence["registration"]["sha256"] == Q1_REGISTRATION_SHA256
+
+
+def test_mergecert_q1_records_remote_verification_and_smoke_stop():
+    evidence = json.loads(Q1_SMOKE_ATTEMPT.read_text())
+
+    assert evidence["status"] == "failed-before-user-code"
+    assert evidence["step_1b"] == {
+        "status": "remote-byte-verification-passed",
+        "files": {
+            "/mergecert-q1/q1-registration.json": Q1_REGISTRATION_SHA256,
+            "/mergecert-q1/MERGECERT-Q1.md": Q1_ADDENDUM_SHA256,
+            "/mergecert-q1/p0-verdict.json": Q1_P0_VERDICT_SHA256,
+        },
+        "byte_comparison_passed": True,
+    }
+    assert evidence["smoke"]["app_id"] == "ap-amdd5k9Ybxoxv1d8c3vbon"
+    assert evidence["smoke"]["state"] == "stopped"
+    assert evidence["smoke"]["tasks_after_stop"] == 0
+    assert evidence["smoke"]["failure_stage"] == (
+        "container hydration before user code"
+    )
+    assert evidence["outputs"] == {
+        "q1_smoke_artifact_produced": False,
+        "independent_analyzer_run": False,
+        "full_q1_launched": False,
+        "q2_q3_launched": False,
+    }
+    assert evidence["cost_estimate"]["usd"] < (
+        evidence["cost_estimate"]["campaign_bound_usd"]
+    )
 
 
 def test_mergecert_q1_registration_source_pins_exact_population_and_archives():

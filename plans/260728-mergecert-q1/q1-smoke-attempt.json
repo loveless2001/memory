@@ -1,0 +1,42 @@
+{
+ "schema": "mergecert-q1-smoke-attempt-v1",
+ "status": "failed-before-user-code",
+ "step_1b": {
+  "status": "remote-byte-verification-passed",
+  "files": {
+   "/mergecert-q1/q1-registration.json": "6d90677469c5548d0fde863db886e7a6665e25f15c23d351ba07a0ad4db6e2d5",
+   "/mergecert-q1/MERGECERT-Q1.md": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
+   "/mergecert-q1/p0-verdict.json": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+  },
+  "byte_comparison_passed": true
+ },
+ "smoke": {
+  "app_id": "ap-amdd5k9Ybxoxv1d8c3vbon",
+  "app_name": "memsub-mergecert-p0-q1",
+  "function": "q1_addendum_smoke",
+  "registered_documents": 2,
+  "state": "stopped",
+  "tasks_after_stop": 0,
+  "created_at": "2026-07-29 02:56:35+07:00",
+  "stopped_at": "2026-07-29 02:57:30+07:00",
+  "app_lifetime_seconds": 55,
+  "gpu_request": "H100",
+  "memory_request_mib": 65536,
+  "error_type": "ModuleNotFoundError",
+  "error": "No module named 'memsub'",
+  "failure_stage": "container hydration before user code"
+ },
+ "outputs": {
+  "q1_smoke_artifact_produced": false,
+  "independent_analyzer_run": false,
+  "full_q1_launched": false,
+  "q2_q3_launched": false
+ },
+ "cost_estimate": {
+  "usd": 0.06887,
+  "basis": "Conservative 55-second whole-app estimate at one H100, one physical CPU core, and the 64 GiB memory request.",
+  "pricing_source": "https://modal.com/pricing",
+  "campaign_bound_usd": 15.0
+ },
+ "stop_rule": "The single smoke had a packaging defect, so no duplicate smoke or full Q1 was launched."
+}
