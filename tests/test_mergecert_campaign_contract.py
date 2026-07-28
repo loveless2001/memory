@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 import torch
 
 from memsub.runtime import CompactedPrefixCache
@@ -13,6 +14,19 @@ RUNNER = ROOT / "modal-runners" / "modal-mergecert-p0-q1.py"
 PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
 Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
 Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
+
+
+def _q1_trigger(**overrides):
+    trigger = {
+        "protocol": "MERGECERT-Q1",
+        "run_q2_q3": True,
+        "favorable_intervals": ["0.40:mean_kl"],
+        "q1_verdict_sha256": "c" * 64,
+        "addendum_sha256": "a" * 64,
+        "p0_verdict_sha256": "b" * 64,
+    }
+    trigger.update(overrides)
+    return trigger
 
 
 def _load_module(path, name):
@@ -264,6 +278,44 @@ def test_mergecert_q2_runner_has_no_training_or_publication_path():
         "git push",
     ):
         assert forbidden not in source
+
+
+@pytest.mark.parametrize(
+    "trigger",
+    (
+        None,
+        _q1_trigger(run_q2_q3=False),
+        _q1_trigger(favorable_intervals=[]),
+        _q1_trigger(q1_verdict_sha256=""),
+    ),
+)
+def test_q2_runners_reject_a_missing_or_non_authorizing_q1_trigger(
+    tmp_path, trigger
+):
+    trigger_path = tmp_path / "q1-trigger.json"
+    if trigger is not None:
+        trigger_path.write_text(json.dumps(trigger))
+
+    for path, name in (
+        (Q2_RUNNER, "mergecert_q2_capture_q1_trigger"),
+        (Q2_PROBE_RUNNER, "mergecert_q2_probes_q1_trigger"),
+    ):
+        runner = _load_module(path, name)
+        with pytest.raises(ValueError, match="Q2 is blocked"):
+            runner._require_q1_trigger(str(trigger_path))
+
+
+def test_q2_runners_accept_the_registered_q1_trigger(tmp_path):
+    trigger = _q1_trigger()
+    trigger_path = tmp_path / "q1-trigger.json"
+    trigger_path.write_text(json.dumps(trigger))
+
+    for path, name in (
+        (Q2_RUNNER, "mergecert_q2_capture_q1_trigger_accept"),
+        (Q2_PROBE_RUNNER, "mergecert_q2_probes_q1_trigger_accept"),
+    ):
+        runner = _load_module(path, name)
+        assert runner._require_q1_trigger(str(trigger_path)) == trigger
 
 
 def test_mergecert_q2_probe_runner_pins_registered_arms_and_splits():

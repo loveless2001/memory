@@ -29,7 +29,7 @@ EMBEDDINGS_PATH = "/artifacts/corpus-gate-labels/embeddings.npz"
 SHADOW_CHECKPOINT = "/artifacts/gate-eval/gate-checkpoint.pt"
 COMPACTOR_SINK_PATH = "/artifacts/probe/followup-f3-headfeats.npz"
 EVICTION_SINK_GLOB = "/artifacts/probe/followup2-f5-eviction-slice-*.npz"
-P0_VERDICT_PATH = "/artifacts/mergecert/p0-verdict.json"
+Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
 ARM_NAMES = (
     "c0_refit",
     "mechanics_refit",
@@ -73,16 +73,37 @@ def _sha256_file(path: str) -> str:
     return digest.hexdigest()
 
 
-def _require_gate_and_capture() -> tuple[dict, dict]:
-    with open(P0_VERDICT_PATH) as handle:
-        gate = json.load(handle)
-    if gate.get("p0_pass") is not True or gate.get("stop_q1_q3") is not False:
-        raise ValueError("Q2 probes are blocked by the registered P0 gate")
+def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
+    if not os.path.exists(path):
+        raise ValueError("Q2 is blocked until q1-trigger.json exists")
+    with open(path) as handle:
+        trigger = json.load(handle)
+    valid = (
+        trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("run_q2_q3") is True
+        and bool(trigger.get("favorable_intervals"))
+        and len(trigger.get("q1_verdict_sha256", "")) == 64
+        and len(trigger.get("addendum_sha256", "")) == 64
+        and len(trigger.get("p0_verdict_sha256", "")) == 64
+    )
+    if not valid:
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
+    return trigger
+
+
+def _require_gate_and_capture() -> tuple[dict, dict, str]:
+    q1_trigger = _require_q1_trigger()
+    q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     with open(CAPTURE_SUMMARY) as handle:
         summary = json.load(handle)
     if summary.get("pass") is not True:
         raise ValueError("Q2 probes require a passing frozen capture summary")
-    return gate, summary
+    if (
+        summary.get("q1_trigger") != q1_trigger
+        or summary.get("q1_trigger_sha256") != q1_trigger_sha256
+    ):
+        raise ValueError("Q2 capture summary is not bound to the Q1 trigger")
+    return q1_trigger, summary, q1_trigger_sha256
 
 
 FACT_TYPES = {
@@ -113,7 +134,7 @@ def complete_fact_types() -> dict:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    _require_gate_and_capture()
+    q1_trigger, _, q1_trigger_sha256 = _require_gate_and_capture()
     with open(MANIFEST_PATH) as handle:
         manifest = json.load(handle)
     with open(FACT_TYPES_SOURCE) as handle:
@@ -123,6 +144,8 @@ def complete_fact_types() -> dict:
         "source_path": FACT_TYPES_SOURCE,
         "source_sha256": _sha256_file(FACT_TYPES_SOURCE),
         "manifest_sha256": _sha256_file(MANIFEST_PATH),
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
         "types": dict(source_types),
         "completed_missing_item_ids": [],
     }
@@ -132,6 +155,8 @@ def complete_fact_types() -> dict:
         if (
             prior.get("source_sha256") != state["source_sha256"]
             or prior.get("manifest_sha256") != state["manifest_sha256"]
+            or prior.get("q1_trigger") != q1_trigger
+            or prior.get("q1_trigger_sha256") != q1_trigger_sha256
         ):
             raise ValueError("existing completed fact types use different inputs")
         state = prior
@@ -410,7 +435,7 @@ def run_probes() -> dict:
     from memsub.gate import DualEncoderExpansionGate, TrainConfig, train_gate
     from memsub.gate.label_dataset_splits import GateDataset
 
-    gate, capture_summary = _require_gate_and_capture()
+    q1_trigger, capture_summary, q1_trigger_sha256 = _require_gate_and_capture()
     if not os.path.exists(FACT_TYPES_COMPLETE):
         raise ValueError("run complete_fact_types before Q2 probes")
     with open(MANIFEST_PATH) as handle:
@@ -823,10 +848,8 @@ def run_probes() -> dict:
     ] = pooled_layer_curve
 
     output = {
-        "gate": {
-            "p0_pass": True,
-            "p0_verdict_sha256": _sha256_file(P0_VERDICT_PATH),
-        },
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
         "model_id": MODEL_ID,
         "ratios": list(RATIOS),
         "seeds": list(SEEDS),
@@ -837,6 +860,7 @@ def run_probes() -> dict:
             "test": f">= {VALIDATION_END}",
         },
         "source_hashes": {
+            "q1_trigger": q1_trigger_sha256,
             "capture_summary": _sha256_file(CAPTURE_SUMMARY),
             "manifest": _sha256_file(MANIFEST_PATH),
             "surface": _sha256_file(SURFACE_PATH),
@@ -861,6 +885,10 @@ def run_probes() -> dict:
         [np.full(count, ratio, dtype=np.float32) for ratio in RATIOS]
     )
     score_arrays = {
+        "q1_trigger_json": np.asarray(
+            [json.dumps(q1_trigger, sort_keys=True, separators=(",", ":"))]
+        ),
+        "q1_trigger_sha256": np.asarray([q1_trigger_sha256]),
         "item_ids": flat_item_ids,
         "doc_ids": pooled_documents,
         "domain": pooled_domains,

@@ -22,7 +22,7 @@ Q2_SLICES = 8
 CHUNK_ITEMS = 100
 CAPTURE_ROOT = "/artifacts/mergecert/q2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
-P0_VERDICT_PATH = "/artifacts/mergecert/p0-verdict.json"
+Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
 HEADS = ((25, 14), (26, 26), (28, 19), (35, 15))
 DOMAINS = ("financial", "legal", "code", "literature")
 PINNED = (
@@ -61,17 +61,22 @@ def _item_ids_sha256(item_ids: list[str]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _require_p0_gate() -> dict:
-    if not os.path.exists(P0_VERDICT_PATH):
-        raise ValueError("Q2 is blocked until p0-verdict.json is on the volume")
-    with open(P0_VERDICT_PATH) as handle:
-        verdict = json.load(handle)
-    if verdict.get("p0_pass") is not True or verdict.get("stop_q1_q3") is not False:
-        raise ValueError("Q2 is blocked because the registered P0 gate did not pass")
-    return {
-        "p0_pass": True,
-        "p0_verdict_sha256": _sha256_file(P0_VERDICT_PATH),
-    }
+def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
+    if not os.path.exists(path):
+        raise ValueError("Q2 is blocked until q1-trigger.json exists")
+    with open(path) as handle:
+        trigger = json.load(handle)
+    valid = (
+        trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("run_q2_q3") is True
+        and bool(trigger.get("favorable_intervals"))
+        and len(trigger.get("q1_verdict_sha256", "")) == 64
+        and len(trigger.get("addendum_sha256", "")) == 64
+        and len(trigger.get("p0_verdict_sha256", "")) == 64
+    )
+    if not valid:
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
+    return trigger
 
 
 def _sorted_manifest() -> tuple[list[dict], str]:
@@ -235,7 +240,8 @@ def _run_capture(
     )
     from memsub.reference_config import build_runtime
 
-    gate = _require_p0_gate()
+    q1_trigger = _require_q1_trigger()
+    q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_sha256 = _sorted_manifest()
     selected = [
         row
@@ -249,7 +255,8 @@ def _run_capture(
     os.makedirs(output_dir, exist_ok=True)
     state_path = f"{output_dir}/state.json"
     state = {
-        "gate": gate,
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
         "model_id": MODEL_ID,
         "ratios": list(RATIOS),
         "sink_token_count": SINKS,
@@ -271,7 +278,8 @@ def _run_capture(
             prior.get("source_manifest_sha256") != manifest_sha256
             or prior.get("registered_item_ids_sha256")
             != _item_ids_sha256(registered_item_ids)
-            or prior.get("gate") != gate
+            or prior.get("q1_trigger") != q1_trigger
+            or prior.get("q1_trigger_sha256") != q1_trigger_sha256
         ):
             raise ValueError("existing Q2 state uses different registered inputs")
         state = prior
@@ -549,7 +557,8 @@ def freeze_capture_summary() -> dict:
 
     from memsub.compaction import validate_capture_chunk
 
-    gate = _require_p0_gate()
+    q1_trigger = _require_q1_trigger()
+    q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_hash = _sorted_manifest()
     expected_ids = [row["item_id"] for row in manifest]
     coverage = {f"{ratio:.2f}": [] for ratio in RATIOS}
@@ -571,6 +580,8 @@ def freeze_capture_summary() -> dict:
             state["source_manifest_sha256"] != manifest_hash
             or state["completed_count"] != len(registered_ids)
             or state["completed_item_ids"] != registered_ids
+            or state.get("q1_trigger") != q1_trigger
+            or state.get("q1_trigger_sha256") != q1_trigger_sha256
         ):
             raise ValueError(f"Q2 slice {slice_idx} state coverage mismatch")
         compute_seconds += float(state["compute_seconds"])
@@ -615,7 +626,8 @@ def freeze_capture_summary() -> dict:
         ):
             raise ValueError(f"Q2 ratio {key} does not cover the full manifest")
     output = {
-        "gate": gate,
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
         "model_id": MODEL_ID,
         "ratios": list(RATIOS),
         "source_manifest_sha256": manifest_hash,

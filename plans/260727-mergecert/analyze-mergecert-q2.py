@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -35,6 +36,7 @@ ARMS = (
     "residual_mlp",
 )
 DOMAINS = ("financial", "legal", "code", "literature")
+Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
 
 
 def _sha256_file(path: Path) -> str:
@@ -43,6 +45,37 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
+    if not os.path.exists(path):
+        raise ValueError("Q2 is blocked until q1-trigger.json exists")
+    with open(path) as handle:
+        trigger = json.load(handle)
+    valid = (
+        trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("run_q2_q3") is True
+        and bool(trigger.get("favorable_intervals"))
+        and len(trigger.get("q1_verdict_sha256", "")) == 64
+        and len(trigger.get("addendum_sha256", "")) == 64
+        and len(trigger.get("p0_verdict_sha256", "")) == 64
+    )
+    if not valid:
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
+    return trigger
+
+
+def _validate_q1_trigger(trigger: dict) -> None:
+    valid = (
+        trigger.get("protocol") == "MERGECERT-Q1"
+        and trigger.get("run_q2_q3") is True
+        and bool(trigger.get("favorable_intervals"))
+        and len(trigger.get("q1_verdict_sha256", "")) == 64
+        and len(trigger.get("addendum_sha256", "")) == 64
+        and len(trigger.get("p0_verdict_sha256", "")) == 64
+    )
+    if not valid:
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
 
 
 def _recompute_metric(y, scores, split, documents, domains, *, seed, n_resamples):
@@ -153,14 +186,39 @@ def analyze(
     expected_e1_items=2_000,
     n_resamples=2_000,
 ):
-    if payload.get("gate", {}).get("p0_pass") is not True:
-        raise ValueError("Q2 evidence is not bound to a passing P0 gate")
+    q1_trigger = payload.get("q1_trigger")
+    if not isinstance(q1_trigger, dict):
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
+    _validate_q1_trigger(q1_trigger)
+    q1_trigger_sha256 = payload.get("q1_trigger_sha256", "")
+    if len(q1_trigger_sha256) != 64:
+        raise ValueError("Q2 trigger file hash is missing or invalid")
     if payload.get("model_id") != "Qwen/Qwen3-4B-Instruct-2507":
         raise ValueError("Q2 model provenance mismatch")
     if payload.get("ratios") != list(RATIOS) or payload.get("seeds") != [0, 1, 2]:
         raise ValueError("Q2 registered ratios/seeds mismatch")
     if not payload.get("source_hashes"):
         raise ValueError("Q2 source hashes are missing")
+    if payload["source_hashes"].get("q1_trigger") != q1_trigger_sha256:
+        raise ValueError("Q2 trigger file hash differs from source hashes")
+    score_trigger_json = np.asarray(
+        arrays.get("q1_trigger_json", [])
+    ).reshape(-1)
+    score_trigger_sha256 = np.asarray(
+        arrays.get("q1_trigger_sha256", [])
+    ).reshape(-1)
+    if len(score_trigger_json) != 1 or len(score_trigger_sha256) != 1:
+        raise ValueError("Q2 score manifest Q1 trigger is missing")
+    try:
+        score_trigger = json.loads(str(score_trigger_json[0]))
+    except json.JSONDecodeError as error:
+        raise ValueError("Q2 score manifest Q1 trigger is invalid") from error
+    if (
+        score_trigger != q1_trigger
+        or str(score_trigger_sha256[0]) != q1_trigger_sha256
+    ):
+        raise ValueError("Q2 score manifest Q1 trigger differs from result")
+    _validate_q1_trigger(score_trigger)
 
     required = {
         "item_ids",
