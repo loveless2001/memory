@@ -11,7 +11,14 @@ import os
 
 import modal
 
+from memsub.mergecert_q1_registration import (
+    Q1_REGISTRATION_PENDING,
+    Q1_REGISTRATION_SHA256,
+    canonical_q1_registration_sha256,
+)
+
 MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+Q1_TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
 UPSTREAM_COMMIT = "cd4ed948d62231449dbab9669608bbb4fd220713"
 RATIOS = (0.25, 0.40, 0.90)
 Q1_RATIOS = (0.25, 0.40)
@@ -40,7 +47,7 @@ Q1_REGISTRATION_SOURCE_PATH = (
     "/root/repo/plans/260728-mergecert-q1/q1-registration-source.json"
 )
 Q1_REGISTRATION_SOURCE_SHA256 = (
-    "509a69717e07f2b46b893612a5fa8668beb4c7dd711ec11e906c35cdb05e2906"
+    "6ab5b8cd8b63ff086795796220f458d5d3caf7127cc51c253102d473da45c9c4"
 )
 Q1_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-certification.json"
 Q1_SMOKE_OUTPUT = f"{Q1_ARTIFACT_ROOT}/q1-smoke.json"
@@ -143,6 +150,14 @@ def _json_sha256(value) -> str:
         value, sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _is_sha256(value) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
 
 
 def _runtime_budget_audit(full_cache, attention_mass):
@@ -540,6 +555,11 @@ def _load_q1_registration(
     registration_path: str = Q1_REGISTRATION_PATH,
     source_path: str = Q1_REGISTRATION_SOURCE_PATH,
 ) -> dict:
+    if Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING:
+        raise ValueError(
+            "Q1 finalized registration binding is pending CPU extraction "
+            "and independent review"
+        )
     if (
         not os.path.exists(registration_path)
         or not os.path.exists(source_path)
@@ -548,12 +568,39 @@ def _load_q1_registration(
         raise ValueError("Q1 finalized registration is missing or unbound")
     with open(source_path) as handle:
         source = json.load(handle)
+    registration_sha256 = _sha256_file(registration_path)
+    if registration_sha256 != Q1_REGISTRATION_SHA256:
+        raise ValueError("Q1 finalized registration is missing or unbound")
     with open(registration_path) as handle:
         registration = json.load(handle)
+    if (
+        canonical_q1_registration_sha256(registration)
+        != Q1_REGISTRATION_SHA256
+    ):
+        raise ValueError(
+            "Q1 finalized registration differs from its literal binding"
+        )
+    tokenizer = registration.get("tokenizer", {})
+    tokenizer_files = tokenizer.get("files_sha256", {})
+    source_hashes = registration.get("source_hashes", {})
+    source_document_sha256 = source_hashes.get(
+        "source_document_sha256", {}
+    )
     if (
         registration.get("schema") != "mergecert-q1-registration-v1"
         or registration.get("status") != "finalized"
         or registration.get("model_id") != MODEL_ID
+        or source.get("tokenizer_revision") != Q1_TOKENIZER_REVISION
+        or tokenizer.get("model_id") != MODEL_ID
+        or tokenizer.get("revision") != Q1_TOKENIZER_REVISION
+        or not isinstance(tokenizer_files, dict)
+        or not tokenizer_files
+        or any(
+            not isinstance(name, str) or not _is_sha256(digest)
+            for name, digest in tokenizer_files.items()
+        )
+        or tokenizer.get("artifact_sha256")
+        != _json_sha256(tokenizer_files)
         or registration.get("source_registration_sha256")
         != Q1_REGISTRATION_SOURCE_SHA256
         or registration.get("population_doc_ids")
@@ -563,6 +610,18 @@ def _load_q1_registration(
         != source["all_items_sha256"]
         or registration.get("archive_sha256")
         != source["archive_sha256"]
+        or source_hashes.get("all_items_sha256")
+        != source["all_items_sha256"]
+        or not _is_sha256(
+            source_hashes.get("corpus_manifest_sha256")
+        )
+        or not isinstance(source_document_sha256, dict)
+        or set(source_document_sha256)
+        != set(source["population_doc_ids"])
+        or any(
+            not _is_sha256(digest)
+            for digest in source_document_sha256.values()
+        )
     ):
         raise ValueError("Q1 finalized registration differs from source evidence")
     documents = registration.get("documents", [])
@@ -579,7 +638,11 @@ def _load_q1_registration(
         if (
             not isinstance(document.get("context_start"), int)
             or isinstance(document["context_start"], bool)
-            or document["context_start"] < 0
+            or document["context_start"]
+            != max(
+                0,
+                source["anchor_chunk_token_start"][doc_id] - 1024,
+            )
             or not isinstance(source_tokens, int)
             or isinstance(source_tokens, bool)
             or source_tokens <= SINKS
@@ -636,7 +699,7 @@ def _load_q1_registration(
             ):
                 raise ValueError("Q1 finalized registration budget is invalid")
     return {
-        "sha256": _sha256_file(registration_path),
+        "sha256": registration_sha256,
         "payload": registration,
     }
 
@@ -784,17 +847,78 @@ def _q1_merge_plan(model_input_token_count: int, target_retained: int):
     return plan
 
 
-def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
+def _load_q1_source_texts(
+    doc_ids: list[str], *, corpus_root: str = "/artifacts/corpus"
+) -> dict[str, str]:
+    expected = set(doc_ids)
+    texts = {}
+    domains = {doc_id.split("/", 1)[0] for doc_id in doc_ids}
+    for domain in sorted(domains):
+        with open(f"{corpus_root}/{domain}.jsonl") as handle:
+            for line in handle:
+                row = json.loads(line)
+                doc_id = row.get("doc_id")
+                if doc_id not in expected:
+                    continue
+                if doc_id in texts:
+                    raise ValueError(
+                        f"duplicate Q1 source document row: {doc_id}"
+                    )
+                if not isinstance(row.get("text"), str):
+                    raise ValueError(f"{doc_id}: Q1 source text is invalid")
+                texts[doc_id] = row["text"]
+    missing = sorted(expected - set(texts))
+    if missing:
+        raise ValueError(f"Q1 source documents missing: {missing[:10]}")
+    return texts
+
+
+def _verify_q1_source_integrity(
+    registration: dict,
+    doc_ids: list[str],
+    *,
+    corpus_root: str = "/artifacts/corpus",
+    manifest_path: str = "/artifacts/corpus/manifest.json",
+    items_path: str = Q1_ITEMS_PATH,
+) -> tuple[dict[str, str], dict]:
+    source_hashes = registration.get("source_hashes", {})
+    if (
+        _sha256_file(manifest_path)
+        != source_hashes.get("corpus_manifest_sha256")
+        or _sha256_file(items_path)
+        != source_hashes.get("all_items_sha256")
+    ):
+        raise ValueError("Q1 source manifest or all-items hash drift")
+    texts = _load_q1_source_texts(doc_ids, corpus_root=corpus_root)
+    expected_documents = source_hashes.get("source_document_sha256", {})
+    actual_documents = {
+        doc_id: hashlib.sha256(texts[doc_id].encode("utf-8")).hexdigest()
+        for doc_id in doc_ids
+    }
+    expected_selected = {
+        doc_id: expected_documents.get(doc_id) for doc_id in doc_ids
+    }
+    if actual_documents != expected_selected:
+        raise ValueError("Q1 source document hash drift")
+    return texts, {
+        "corpus_manifest_sha256": source_hashes[
+            "corpus_manifest_sha256"
+        ],
+        "all_items_sha256": source_hashes["all_items_sha256"],
+    }
+
+
+def _load_q1_contexts(
+    tokenizer,
+    archived_reports: dict,
+    *,
+    texts: dict[str, str],
+    source_hashes: dict,
+) -> tuple[list, dict]:
     from memsub.certification import McqItem
 
     with open(Q1_ITEMS_PATH) as handle:
         items = [McqItem(**row) for row in json.load(handle)]
-    source_hashes = {
-        "corpus_manifest_sha256": _sha256_file(
-            "/artifacts/corpus/manifest.json"
-        ),
-        "all_items_sha256": _sha256_file(Q1_ITEMS_PATH),
-    }
     by_doc = {}
     for item in items:
         by_doc.setdefault(item.doc_id, []).append(item)
@@ -804,13 +928,6 @@ def _load_q1_contexts(tokenizer, archived_reports: dict) -> tuple[list, dict]:
         for domain in DOMAINS
         for report in archived_reports[domain][0.25]
     }
-    texts = {}
-    for domain in DOMAINS:
-        with open(f"/artifacts/corpus/{domain}.jsonl") as handle:
-            for line in handle:
-                row = json.loads(line)
-                if row["doc_id"] in needed_docs:
-                    texts[row["doc_id"]] = row["text"]
     missing = sorted(needed_docs - set(texts))
     if missing:
         raise ValueError(f"Q1 source documents missing: {missing[:10]}")
@@ -1113,10 +1230,17 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         != registration["archive_sha256"]
     ):
         raise ValueError("Q1 archive files differ from finalized registration")
+    texts, source_hashes = _verify_q1_source_integrity(
+        registration,
+        registration["population_doc_ids"],
+    )
     runtime = build_runtime(reference=True)
     fingerprint = runtime.fingerprint()
     contexts, source_hashes = _load_q1_contexts(
-        runtime.tokenizer, archived_reports
+        runtime.tokenizer,
+        archived_reports,
+        texts=texts,
+        source_hashes=source_hashes,
     )
     if require_full and documents != Q1_EXPECTED_DOCUMENTS:
         raise ValueError(

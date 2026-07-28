@@ -7,6 +7,11 @@ import hashlib
 import json
 from pathlib import Path
 
+from memsub.mergecert_q1_registration import (
+    Q1_REGISTRATION_PENDING,
+    Q1_REGISTRATION_SHA256,
+)
+
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -76,6 +81,10 @@ def _record(files: dict, name: str, path: Path, root: Path) -> None:
 def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
     """Load the complete report input set and retain byte-level provenance."""
 
+    if Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING:
+        raise ValueError(
+            "Q1 report is pending finalized registration extraction and review"
+        )
     plan_dir = Path(plan_dir)
     root = Path(root)
     files = {}
@@ -89,6 +98,13 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
     }
     evidence = {}
     for name, path in fixed.items():
+        if (
+            name == "registration"
+            and _sha256(path) != Q1_REGISTRATION_SHA256
+        ):
+            raise ValueError(
+                "Q1 finalized registration differs from its literal binding"
+            )
         evidence[name] = _read_json(path)
         _record(files, name, path, root)
 

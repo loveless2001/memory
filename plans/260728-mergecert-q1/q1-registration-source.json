@@ -2,6 +2,7 @@
   "schema": "mergecert-q1-registration-source-v1",
   "status": "source-evidence-only",
   "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "tokenizer_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
   "population_doc_ids": [
     "financial/00000",
     "financial/00008",
@@ -87,5 +88,5 @@
     "literature/00024": 1024,
     "literature/00032": 1024
   },
-  "pending": "CPU extractor must pin exact source/model lengths and ratio-specific source ends before Q1 smoke."
+  "pending": "CPU extractor must pin exact tokenizer artifacts, corpus manifest, per-document source hashes, source/model lengths, and ratio-specific source ends before Q1 smoke."
 }

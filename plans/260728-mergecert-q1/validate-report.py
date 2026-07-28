@@ -12,6 +12,12 @@ import re
 from datetime import date
 from pathlib import Path
 
+from memsub.mergecert_q1_registration import (
+    Q1_REGISTRATION_PENDING,
+    Q1_REGISTRATION_SHA256,
+    canonical_q1_registration_sha256,
+)
+
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -37,6 +43,7 @@ EXPECTED_ARMS = {
 }
 EXPECTED_DOMAINS = {"financial", "legal", "code", "literature"}
 BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
+TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
 Q1_REGISTRATION_SOURCE_PATH = HERE / "q1-registration-source.json"
 with Q1_REGISTRATION_SOURCE_PATH.open() as _registration_handle:
     Q1_REGISTRATION_SOURCE = json.load(_registration_handle)
@@ -65,7 +72,7 @@ EXPECTED_ADDENDUM = {
 }
 EXPECTED_REGISTRATION_SOURCE = {
     "path": "plans/260728-mergecert-q1/q1-registration-source.json",
-    "sha256": "509a69717e07f2b46b893612a5fa8668beb4c7dd711ec11e906c35cdb05e2906",
+    "sha256": "6ab5b8cd8b63ff086795796220f458d5d3caf7127cc51c253102d473da45c9c4",
     "status": "source-evidence-only; finalized CPU extraction pending",
 }
 EXPECTED_SETTLED_P0 = {
@@ -186,6 +193,25 @@ def _is_strict_int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+def _is_sha256(value) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _require_q1_registration_binding() -> str:
+    if Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING:
+        raise ValueError(
+            "Q1 report is pending finalized registration extraction "
+            "and independent review"
+        )
+    if not _is_sha256(Q1_REGISTRATION_SHA256):
+        raise ValueError("Q1 finalized registration SHA-256 binding is invalid")
+    return Q1_REGISTRATION_SHA256
+
+
 def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
     if (
         len(documents) != 20
@@ -199,14 +225,23 @@ def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
         model_tokens = document.get("model_input_token_count")
         if (
             not _is_strict_int(document.get("context_start"))
-            or document["context_start"] < 0
+            or document["context_start"]
+            != max(
+                0,
+                Q1_REGISTRATION_SOURCE["anchor_chunk_token_start"][
+                    doc_id
+                ]
+                - 1024,
+            )
             or not _is_strict_int(source_tokens)
             or source_tokens <= 4
             or not _is_strict_int(model_tokens)
             or model_tokens <= 4
             or set(document.get("budgets", {})) != {"0.25", "0.40"}
         ):
-            raise ValueError("Q1 finalized registration counts are invalid")
+            raise ValueError(
+                "Q1 finalized registration context start or counts are invalid"
+            )
         for ratio_text, budget in document["budgets"].items():
             fields = (
                 "requested_evicted_token_count",
@@ -326,10 +361,20 @@ def _validate_source(evidence: dict) -> None:
         raise ValueError("source provenance file hashes are incomplete")
     addendum = source.get("addendum", {})
     registration_source = source.get("q1_registration_source", {})
+    registration_binding = source.get("q1_registration", {})
     settled = source.get("settled_p0", {})
     if (
         addendum != EXPECTED_ADDENDUM
         or registration_source != EXPECTED_REGISTRATION_SOURCE
+        or registration_binding
+        != {
+            "path": "plans/260728-mergecert-q1/q1-registration.json",
+            "remote_path": (
+                "/artifacts/mergecert-q1/q1-registration.json"
+            ),
+            "sha256": Q1_REGISTRATION_SHA256,
+            "status": "finalized and hash-bound",
+        }
         or settled != EXPECTED_SETTLED_P0
         or source.get("parent_source_provenance_sha256")
         != EXPECTED_PARENT_SOURCE_SHA256
@@ -339,6 +384,8 @@ def _validate_source(evidence: dict) -> None:
         addendum.get("sha256") != files["addendum"]["sha256"]
         or registration_source.get("sha256")
         != files["registration_source"]["sha256"]
+        or registration_binding.get("sha256")
+        != files["registration"]["sha256"]
         or settled.get("verdict_sha256") != files["p0"]["sha256"]
         or settled.get("raw_sha256") != files["p0_raw"]["sha256"]
         or source.get("parent_source_provenance_sha256")
@@ -348,6 +395,7 @@ def _validate_source(evidence: dict) -> None:
     expected_paths = {
         "addendum": addendum.get("path"),
         "registration_source": registration_source.get("path"),
+        "registration": registration_binding.get("path"),
         "p0": settled.get("verdict_path"),
         "p0_raw": settled.get("raw_path"),
     }
@@ -393,8 +441,22 @@ def _validate_interval(interval: dict, label: str) -> None:
 
 
 def _validate_q1(evidence: dict) -> None:
+    expected_registration_sha256 = _require_q1_registration_binding()
     q1 = evidence.get("q1", {})
     registration = evidence.get("registration", {})
+    if (
+        canonical_q1_registration_sha256(registration)
+        != expected_registration_sha256
+    ):
+        raise ValueError(
+            "Q1 finalized registration differs from its literal binding"
+        )
+    tokenizer = registration.get("tokenizer", {})
+    tokenizer_files = tokenizer.get("files_sha256", {})
+    source_hashes = registration.get("source_hashes", {})
+    source_document_sha256 = source_hashes.get(
+        "source_document_sha256", {}
+    )
     if (
         registration.get("schema") != "mergecert-q1-registration-v1"
         or registration.get("status") != "finalized"
@@ -402,6 +464,25 @@ def _validate_q1(evidence: dict) -> None:
         != _sha256(Q1_REGISTRATION_SOURCE_PATH)
         or registration.get("model_id")
         != "Qwen/Qwen3-4B-Instruct-2507"
+        or Q1_REGISTRATION_SOURCE.get("tokenizer_revision")
+        != TOKENIZER_REVISION
+        or tokenizer.get("model_id")
+        != "Qwen/Qwen3-4B-Instruct-2507"
+        or tokenizer.get("revision") != TOKENIZER_REVISION
+        or not isinstance(tokenizer_files, dict)
+        or not tokenizer_files
+        or any(
+            not isinstance(name, str) or not _is_sha256(digest)
+            for name, digest in tokenizer_files.items()
+        )
+        or tokenizer.get("artifact_sha256")
+        != hashlib.sha256(
+            json.dumps(
+                tokenizer_files,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
         or registration.get("population_doc_ids") != REGISTERED_FULL_DOC_IDS
         or registration.get("smoke_doc_ids")
         != Q1_REGISTRATION_SOURCE["smoke_doc_ids"]
@@ -409,10 +490,23 @@ def _validate_q1(evidence: dict) -> None:
         != REGISTERED_ARCHIVE_SHA256
         or registration.get("all_items_sha256")
         != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+        or source_hashes.get("all_items_sha256")
+        != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+        or not _is_sha256(source_hashes.get("corpus_manifest_sha256"))
+        or not isinstance(source_document_sha256, dict)
+        or set(source_document_sha256) != set(REGISTERED_FULL_DOC_IDS)
+        or any(
+            not _is_sha256(digest)
+            for digest in source_document_sha256.values()
+        )
         or q1.get("q1_registration_sha256")
-        != evidence["_files"]["registration"]["sha256"]
+        != expected_registration_sha256
+        or evidence["_files"]["registration"]["sha256"]
+        != expected_registration_sha256
     ):
-        raise ValueError("Q1 finalized registration is missing or differs")
+        raise ValueError(
+            "Q1 finalized registration or source hash set is missing or differs"
+        )
     registered_documents = registration.get("documents", [])
     registered_by_doc = _validate_registered_documents(
         registered_documents
@@ -767,6 +861,7 @@ def _validate_privacy(evidence: dict) -> str:
 def validate_report_text(report: str, evidence: dict) -> dict:
     """Validate evidence and require byte-for-byte canonical report text."""
 
+    _require_q1_registration_binding()
     _validate_file_hashes(evidence)
     _validate_source(evidence)
     _validate_q1(evidence)

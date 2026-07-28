@@ -2,6 +2,8 @@ import ast
 import hashlib
 import importlib.util
 import json
+import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -22,6 +24,11 @@ Q1_REGISTRATION_SOURCE = (
 Q1_REGISTRATION_RUNNER = (
     ROOT / "modal-runners" / "modal-mergecert-q1-registration.py"
 )
+Q1_REGISTRATION_BINDER = (
+    ROOT / "scripts" / "bind-mergecert-q1-registration.py"
+)
+Q1_REGISTRATION_PENDING = "PENDING_CPU_EXTRACTION"
+Q1_TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -241,12 +248,19 @@ def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
         ).hexdigest(),
         "status": "source-evidence-only; finalized CPU extraction pending",
     }
+    assert provenance["q1_registration"] == {
+        "path": "plans/260728-mergecert-q1/q1-registration.json",
+        "remote_path": "/artifacts/mergecert-q1/q1-registration.json",
+        "sha256": Q1_REGISTRATION_PENDING,
+        "status": "pending CPU extraction and independent review",
+    }
 
 
 def test_mergecert_q1_registration_source_pins_exact_population_and_archives():
     registration = json.loads(Q1_REGISTRATION_SOURCE.read_text())
 
     assert registration["schema"] == "mergecert-q1-registration-source-v1"
+    assert registration["tokenizer_revision"] == Q1_TOKENIZER_REVISION
     assert registration["population_doc_ids"] == [
         "financial/00000",
         "financial/00008",
@@ -294,6 +308,7 @@ def test_mergecert_q1_registration_extractor_is_cpu_read_only_and_no_model():
     constants = _literal_constants(Q1_REGISTRATION_RUNNER)
 
     assert constants["MODEL_ID"] == "Qwen/Qwen3-4B-Instruct-2507"
+    assert constants["TOKENIZER_REVISION"] == Q1_TOKENIZER_REVISION
     assert "gpu=" not in source
     assert "artifacts.commit" not in source
     assert 'local_files_only=True' in source
@@ -307,6 +322,269 @@ def test_mergecert_q1_registration_extractor_is_cpu_read_only_and_no_model():
         "upload_file",
     ):
         assert forbidden not in source
+
+
+def test_mergecert_q1_registration_extractor_hashes_exact_tokenizer_revision(
+    tmp_path, monkeypatch
+):
+    extractor = _load_module(
+        Q1_REGISTRATION_RUNNER,
+        "mergecert_q1_registration_tokenizer_provenance",
+    )
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    (snapshot / "tokenizer.json").write_bytes(b"tokenizer-bytes")
+    (snapshot / "tokenizer_config.json").write_bytes(b"config-bytes")
+    (snapshot / "model.safetensors").write_bytes(b"must-not-be-emitted")
+
+    class ExactRevisionTokenizer:
+        @classmethod
+        def from_pretrained(
+            cls, model_id, *, revision, local_files_only
+        ):
+            if (
+                model_id != "Qwen/Qwen3-4B-Instruct-2507"
+                or revision != Q1_TOKENIZER_REVISION
+                or local_files_only is not True
+            ):
+                raise AssertionError("tokenizer revision was not exact")
+            return object()
+
+    def snapshot_download(
+        *,
+        repo_id,
+        revision,
+        local_files_only,
+        allow_patterns,
+    ):
+        if (
+            repo_id != "Qwen/Qwen3-4B-Instruct-2507"
+            or revision != Q1_TOKENIZER_REVISION
+            or local_files_only is not True
+            or not allow_patterns
+        ):
+            raise AssertionError("snapshot revision was not exact")
+        return str(snapshot)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "transformers",
+        types.SimpleNamespace(AutoTokenizer=ExactRevisionTokenizer),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "huggingface_hub",
+        types.SimpleNamespace(snapshot_download=snapshot_download),
+    )
+
+    assert hasattr(extractor, "_load_tokenizer_with_provenance")
+    _, provenance = extractor._load_tokenizer_with_provenance()
+
+    files = {
+        "tokenizer.json": hashlib.sha256(b"tokenizer-bytes").hexdigest(),
+        "tokenizer_config.json": hashlib.sha256(b"config-bytes").hexdigest(),
+    }
+    assert provenance == {
+        "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+        "revision": Q1_TOKENIZER_REVISION,
+        "files_sha256": files,
+        "artifact_sha256": hashlib.sha256(
+            json.dumps(
+                files,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest(),
+    }
+
+
+@pytest.mark.parametrize("mode", ("duplicate", "incomplete"))
+def test_mergecert_q1_registration_extractor_rejects_bad_source_rows(
+    tmp_path, mode, monkeypatch
+):
+    extractor = _load_module(
+        Q1_REGISTRATION_RUNNER,
+        f"mergecert_q1_registration_source_{mode}",
+    )
+    rows = [{"doc_id": "financial/00000", "text": "first"}]
+    if mode == "duplicate":
+        rows.append({"doc_id": "financial/00000", "text": "second"})
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    (corpus / "financial.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in rows)
+    )
+    monkeypatch.setattr(extractor, "CORPUS_ROOT", str(corpus))
+    expected = (
+        {"financial/00000"}
+        if mode == "duplicate"
+        else {"financial/00000", "financial/00008"}
+    )
+
+    with pytest.raises(ValueError, match=mode):
+        extractor._load_source_texts(expected)
+
+
+def test_mergecert_q1_registration_binding_is_explicitly_pending():
+    runner = _load_module(RUNNER, "mergecert_q1_pending_binding")
+
+    assert runner.Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING
+
+
+@pytest.mark.parametrize("mutation", ("wrong_hash", "duplicate"))
+def test_mergecert_q1_runner_rejects_live_source_integrity_drift(
+    tmp_path, mutation
+):
+    runner = _load_module(
+        RUNNER, f"mergecert_q1_live_source_{mutation}"
+    )
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    manifest = corpus / "manifest.json"
+    items = tmp_path / "all-items.json"
+    manifest.write_bytes(b"manifest")
+    items.write_bytes(b"items")
+    rows = [{"doc_id": "financial/00000", "text": "source"}]
+    if mutation == "duplicate":
+        rows.append({"doc_id": "financial/00000", "text": "duplicate"})
+    (corpus / "financial.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in rows)
+    )
+    registration = {
+        "source_hashes": {
+            "corpus_manifest_sha256": hashlib.sha256(
+                b"manifest"
+            ).hexdigest(),
+            "all_items_sha256": hashlib.sha256(b"items").hexdigest(),
+            "source_document_sha256": {
+                "financial/00000": hashlib.sha256(b"source").hexdigest()
+            },
+        }
+    }
+    if mutation == "wrong_hash":
+        registration["source_hashes"]["source_document_sha256"][
+            "financial/00000"
+        ] = "f" * 64
+
+    assert hasattr(runner, "_verify_q1_source_integrity")
+    with pytest.raises(ValueError, match="source document hash|duplicate"):
+        runner._verify_q1_source_integrity(
+            registration,
+            ["financial/00000"],
+            corpus_root=str(corpus),
+            manifest_path=str(manifest),
+            items_path=str(items),
+        )
+
+
+def test_mergecert_q1_runner_checks_live_sources_before_model_runtime():
+    runner = _load_module(RUNNER, "mergecert_q1_early_source_gate")
+    calls = [
+        node
+        for node in ast.walk(
+            next(
+                node
+                for node in ast.parse(RUNNER.read_text()).body
+                if isinstance(node, ast.FunctionDef)
+                and node.name == "_run_q1"
+            )
+        )
+        if isinstance(node, ast.Call)
+    ]
+    names = [
+        (
+            call.func.id
+            if isinstance(call.func, ast.Name)
+            else call.func.attr
+            if isinstance(call.func, ast.Attribute)
+            else ""
+        )
+        for call in calls
+    ]
+
+    assert hasattr(runner, "_verify_q1_source_integrity")
+    assert names.index("_verify_q1_source_integrity") < names.index(
+        "build_runtime"
+    )
+
+
+def test_mergecert_q1_binder_updates_one_literal_and_provenance(
+    tmp_path,
+):
+    assert Q1_REGISTRATION_BINDER.exists()
+    binder = _load_module(
+        Q1_REGISTRATION_BINDER, "mergecert_q1_registration_binder"
+    )
+    root = tmp_path / "repo"
+    binding_path = root / "memsub" / "mergecert_q1_registration.py"
+    provenance_path = (
+        root / "plans" / "260728-mergecert-q1" / "source-provenance.json"
+    )
+    binding_path.parent.mkdir(parents=True)
+    provenance_path.parent.mkdir(parents=True)
+    binding_path.write_text(
+        (
+            ROOT / "memsub" / "mergecert_q1_registration.py"
+        ).read_text()
+    )
+    provenance_path.write_text(
+        json.dumps(
+            {
+                "q1_registration": {
+                    "path": (
+                        "plans/260728-mergecert-q1/q1-registration.json"
+                    ),
+                    "remote_path": (
+                        "/artifacts/mergecert-q1/q1-registration.json"
+                    ),
+                    "sha256": Q1_REGISTRATION_PENDING,
+                    "status": (
+                        "pending CPU extraction and independent review"
+                    ),
+                }
+            },
+            indent=1,
+        )
+    )
+    extracted = tmp_path / "extracted.json"
+    extracted_payload = {
+        "schema": "mergecert-q1-registration-v1",
+        "status": "finalized",
+        "source_registration_sha256": "a" * 64,
+        "documents": [],
+    }
+    extracted.write_text(
+        json.dumps(extracted_payload, indent=1, allow_nan=False)
+    )
+    expected_bytes = (
+        json.dumps(extracted_payload, indent=1, allow_nan=False) + "\n"
+    ).encode()
+    expected_sha256 = hashlib.sha256(expected_bytes).hexdigest()
+
+    result = binder.bind_registration(extracted, root=root)
+
+    target = (
+        root
+        / "plans"
+        / "260728-mergecert-q1"
+        / "q1-registration.json"
+    )
+    provenance = json.loads(provenance_path.read_text())
+    assert result == {
+        "path": target,
+        "sha256": expected_sha256,
+    }
+    assert target.read_bytes() == expected_bytes
+    assert (
+        f'Q1_REGISTRATION_SHA256 = "{expected_sha256}"'
+        in binding_path.read_text()
+    )
+    assert provenance["q1_registration"] == {
+        "path": "plans/260728-mergecert-q1/q1-registration.json",
+        "remote_path": "/artifacts/mergecert-q1/q1-registration.json",
+        "sha256": expected_sha256,
+        "status": "finalized and hash-bound",
+    }
 
 
 def test_mergecert_q1_registration_extractor_builds_runner_shaped_exact_budget():

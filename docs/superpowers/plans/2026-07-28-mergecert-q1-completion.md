@@ -622,23 +622,82 @@ Run the CPU-only, read-only
 `modal-runners/modal-mergecert-q1-registration.py` entrypoint. It may read the
 existing private archives, all-items registry, source corpus, and pinned
 tokenizer, but it must not load model weights, request a GPU, write the remote
-volume, or launch Q1. Save its small JSON result as
-`plans/260728-mergecert-q1/q1-registration.json`, verify the exact 20-document
-population, the two financial smoke documents, all 12 archive hashes, and
-every per-document source/model length and 0.25/0.40 start/end/requested/
-physical count. Commit and independently review the finalized registry and
-its SHA-256 binding before any smoke retry. This step is pending; production
-lengths and source ends were not invented during local fix round 3.
+volume, or launch Q1. Save its small JSON result outside the production path
+first. Verify the exact tokenizer revision and tokenizer-file digest set, the
+corpus manifest and all-items digests, the exact 20-document source-hash set,
+the two financial smoke documents, all 12 archive hashes, and every
+per-document source/model length and 0.25/0.40 start/end/requested/physical
+count. Then run:
 
-- [ ] **Step 1b: Re-upload and verify the amended authorization inputs**
+```bash
+./.venv/bin/python scripts/bind-mergecert-q1-registration.py \
+  /path/to/reviewed-extractor-output.json
+```
 
-Before retrying the smoke, upload only the amended `MERGECERT-Q1.md` and the
-unchanged registered P0 verdict to the same private paths. Verify their remote
-SHA-256 values are exactly
+This single local binding action copies the reviewed bytes to
+`plans/260728-mergecert-q1/q1-registration.json`, replaces the explicit
+`PENDING_CPU_EXTRACTION` sentinel with one literal
+`Q1_REGISTRATION_SHA256`, and records the same literal and finalized output
+path in `plans/260728-mergecert-q1/source-provenance.json`. Run all local
+validators, commit, and independently review that separate post-extraction
+binding commit before any upload or smoke retry. This step is pending:
+`q1-registration.json` is deliberately absent, the shared hash literal and
+source provenance still say pending, and production lengths, source ends,
+tokenizer digests, corpus-manifest digest, and source-document digests have
+not been invented.
+
+- [ ] **Step 1b: Upload and remotely verify all reviewed Q1 inputs**
+
+Only after the Step 1a binding commit passes independent review, upload the
+finalized registration to the exact runner path together with the amended
+`MERGECERT-Q1.md` and unchanged registered P0 verdict:
+
+```bash
+UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
+  memsub-artifacts plans/260728-mergecert-q1/q1-registration.json \
+  /mergecert-q1/q1-registration.json
+UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
+  memsub-artifacts MERGECERT-Q1.md /mergecert-q1/MERGECERT-Q1.md
+UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
+  memsub-artifacts plans/260727-mergecert/p0-verdict.json \
+  /mergecert-q1/p0-verdict.json
+```
+
+Retrieve all three remote files to a fresh temporary directory, hash the
+retrieved bytes, and compare them byte-for-byte with the reviewed local files.
+
+```bash
+mkdir -p /tmp/mergecert-q1-reviewed-remote
+UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
+  memsub-artifacts /mergecert-q1/q1-registration.json \
+  /tmp/mergecert-q1-reviewed-remote/q1-registration.json --force
+UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
+  memsub-artifacts /mergecert-q1/MERGECERT-Q1.md \
+  /tmp/mergecert-q1-reviewed-remote/MERGECERT-Q1.md --force
+UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
+  memsub-artifacts /mergecert-q1/p0-verdict.json \
+  /tmp/mergecert-q1-reviewed-remote/p0-verdict.json --force
+cmp plans/260728-mergecert-q1/q1-registration.json \
+  /tmp/mergecert-q1-reviewed-remote/q1-registration.json
+cmp MERGECERT-Q1.md \
+  /tmp/mergecert-q1-reviewed-remote/MERGECERT-Q1.md
+cmp plans/260727-mergecert/p0-verdict.json \
+  /tmp/mergecert-q1-reviewed-remote/p0-verdict.json
+sha256sum /tmp/mergecert-q1-reviewed-remote/q1-registration.json \
+  /tmp/mergecert-q1-reviewed-remote/MERGECERT-Q1.md \
+  /tmp/mergecert-q1-reviewed-remote/p0-verdict.json
+```
+
+The remote registration SHA-256 must equal the exact literal
+`Q1_REGISTRATION_SHA256` recorded by Step 1a. The remote authorization hashes
+must be exactly
 `35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509`
 and
 `4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a`.
-Do not launch the retry from stale authorization inputs.
+Record this verification before Step 2. The existing remote addendum is stale,
+the existing P0 verdict is unchanged but not yet reverified for this retry,
+and no finalized registration has been uploaded. Do not launch the retry from
+that pre-amendment state.
 
 - [ ] **Step 2: Launch the two-document smoke**
 

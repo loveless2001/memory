@@ -10,12 +10,23 @@ import modal
 
 
 MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
 RATIOS = (0.25, 0.40)
 SINKS = 4
 ARCHIVE_ROOT = "/artifacts/corpus-certification-full"
 ITEMS_PATH = "/artifacts/corpus-mcq-full/all-items.json"
 CORPUS_ROOT = "/artifacts/corpus"
+CORPUS_MANIFEST_PATH = f"{CORPUS_ROOT}/manifest.json"
 SOURCE_REGISTRY_PATH = "/root/q1-registration-source.json"
+TOKENIZER_ARTIFACT_PATTERNS = (
+    "config.json",
+    "tokenizer*",
+    "special_tokens_map.json",
+    "added_tokens.json",
+    "vocab.*",
+    "merges.txt",
+    "chat_template*",
+)
 LOCAL_SOURCE_REGISTRY = (
     Path(__file__).resolve().parents[1]
     / "plans"
@@ -48,6 +59,60 @@ def _sha256_file(path: str | Path) -> str:
 
 def _strict_int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _json_sha256(value) -> str:
+    encoded = json.dumps(
+        value, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _is_tokenizer_artifact(path: Path) -> bool:
+    name = path.name
+    return (
+        name.startswith("tokenizer")
+        or name in {
+            "config.json",
+            "special_tokens_map.json",
+            "added_tokens.json",
+            "merges.txt",
+        }
+        or name.startswith("vocab.")
+        or name.startswith("chat_template")
+    )
+
+
+def _load_tokenizer_with_provenance():
+    from huggingface_hub import snapshot_download
+    from transformers import AutoTokenizer
+
+    snapshot = Path(
+        snapshot_download(
+            repo_id=MODEL_ID,
+            revision=TOKENIZER_REVISION,
+            local_files_only=True,
+            allow_patterns=TOKENIZER_ARTIFACT_PATTERNS,
+        )
+    )
+    files_sha256 = {
+        path.relative_to(snapshot).as_posix(): _sha256_file(path)
+        for path in sorted(snapshot.rglob("*"))
+        if path.is_file() and _is_tokenizer_artifact(path)
+    }
+    if not files_sha256:
+        raise ValueError("tokenizer artifact digest set is incomplete")
+    tokenizer = AutoTokenizer.from_pretrained(
+        MODEL_ID,
+        revision=TOKENIZER_REVISION,
+        local_files_only=True,
+    )
+    return tokenizer, {
+        "model_id": MODEL_ID,
+        "revision": TOKENIZER_REVISION,
+        "files_sha256": files_sha256,
+        "artifact_sha256": _json_sha256(files_sha256),
+    }
 
 
 def build_document_registration(
@@ -120,20 +185,33 @@ def _load_source_texts(doc_ids: set[str]) -> dict[str, str]:
         with open(f"{CORPUS_ROOT}/{domain}.jsonl") as handle:
             for line in handle:
                 row = json.loads(line)
-                if row["doc_id"] in doc_ids:
-                    texts[row["doc_id"]] = row["text"]
-                if len(texts) == len(doc_ids):
-                    return texts
+                doc_id = row.get("doc_id")
+                if doc_id not in doc_ids:
+                    continue
+                if doc_id in texts:
+                    raise ValueError(
+                        f"duplicate registered source document row: {doc_id}"
+                    )
+                if not isinstance(row.get("text"), str):
+                    raise ValueError(
+                        f"{doc_id}: registered source text is invalid"
+                    )
+                texts[doc_id] = row["text"]
+    missing = sorted(doc_ids - set(texts))
+    if missing:
+        raise ValueError(
+            f"registered source documents are incomplete: {missing[:10]}"
+        )
     return texts
 
 
 def extract_registration() -> dict:
     """Read registered private evidence and return a small finalized registry."""
 
-    from transformers import AutoTokenizer
-
     with open(SOURCE_REGISTRY_PATH) as handle:
         source = json.load(handle)
+    if source.get("tokenizer_revision") != TOKENIZER_REVISION:
+        raise ValueError("tokenizer revision differs from source registration")
     if _sha256_file(ITEMS_PATH) != source["all_items_sha256"]:
         raise ValueError("all-items registry hash drift")
     archive_rows = {}
@@ -158,11 +236,13 @@ def extract_registration() -> dict:
 
     doc_ids = source["population_doc_ids"]
     texts = _load_source_texts(set(doc_ids))
-    if set(texts) != set(doc_ids):
-        raise ValueError("registered source documents are incomplete")
-    tokenizer = AutoTokenizer.from_pretrained(
-        MODEL_ID, local_files_only=True
-    )
+    source_document_sha256 = {
+        doc_id: hashlib.sha256(texts[doc_id].encode("utf-8")).hexdigest()
+        for doc_id in doc_ids
+    }
+    if set(source_document_sha256) != set(doc_ids):
+        raise ValueError("source-document digest set is incomplete")
+    tokenizer, tokenizer_provenance = _load_tokenizer_with_provenance()
     documents = [
         build_document_registration(
             tokenizer,
@@ -180,6 +260,14 @@ def extract_registration() -> dict:
         "status": "finalized",
         "source_registration_sha256": _sha256_file(SOURCE_REGISTRY_PATH),
         "model_id": MODEL_ID,
+        "tokenizer": tokenizer_provenance,
+        "source_hashes": {
+            "corpus_manifest_sha256": _sha256_file(
+                CORPUS_MANIFEST_PATH
+            ),
+            "all_items_sha256": source["all_items_sha256"],
+            "source_document_sha256": source_document_sha256,
+        },
         "population_doc_ids": doc_ids,
         "smoke_doc_ids": source["smoke_doc_ids"],
         "all_items_sha256": source["all_items_sha256"],

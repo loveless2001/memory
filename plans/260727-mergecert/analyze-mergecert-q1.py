@@ -11,6 +11,11 @@ from pathlib import Path
 import numpy as np
 
 from memsub.certification.experiment_protocol import paired_metric_cis
+from memsub.mergecert_q1_registration import (
+    Q1_REGISTRATION_PENDING,
+    Q1_REGISTRATION_SHA256,
+    canonical_q1_registration_sha256,
+)
 
 
 HERE = Path(__file__).resolve().parent
@@ -25,6 +30,7 @@ DEFAULT_TABLE = Q1_ARTIFACT_DIR / "q1-table.md"
 DOMAINS = ("financial", "legal", "code", "literature")
 RATIOS = (0.25, 0.40)
 BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
+TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
 ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -132,6 +138,25 @@ def _is_strict_int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+def _is_sha256(value) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _require_q1_registration_binding() -> str:
+    if Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING:
+        raise ValueError(
+            "Q1 finalized registration binding is pending CPU extraction "
+            "and independent review"
+        )
+    if not _is_sha256(Q1_REGISTRATION_SHA256):
+        raise ValueError("Q1 finalized registration SHA-256 binding is invalid")
+    return Q1_REGISTRATION_SHA256
+
+
 def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
     if (
         len(documents) != 20
@@ -145,14 +170,23 @@ def _validate_registered_documents(documents: list[dict]) -> dict[str, dict]:
         model_tokens = document.get("model_input_token_count")
         if (
             not _is_strict_int(document.get("context_start"))
-            or document["context_start"] < 0
+            or document["context_start"]
+            != max(
+                0,
+                Q1_REGISTRATION_SOURCE["anchor_chunk_token_start"][
+                    doc_id
+                ]
+                - 1024,
+            )
             or not _is_strict_int(source_tokens)
             or source_tokens <= 4
             or not _is_strict_int(model_tokens)
             or model_tokens <= 4
             or set(document.get("budgets", {})) != {"0.25", "0.40"}
         ):
-            raise ValueError("Q1 finalized registration counts are invalid")
+            raise ValueError(
+                "Q1 finalized registration context start or counts are invalid"
+            )
         for ratio in RATIOS:
             ratio_text = f"{ratio:.2f}"
             budget = document["budgets"][ratio_text]
@@ -376,6 +410,20 @@ def analyze(
     registration: dict,
     registration_sha256: str,
 ):
+    expected_registration_sha256 = _require_q1_registration_binding()
+    if (
+        canonical_q1_registration_sha256(registration)
+        != expected_registration_sha256
+    ):
+        raise ValueError(
+            "Q1 finalized registration differs from its literal binding"
+        )
+    tokenizer = registration.get("tokenizer", {})
+    tokenizer_files = tokenizer.get("files_sha256", {})
+    registration_source_hashes = registration.get("source_hashes", {})
+    registered_source_documents = registration_source_hashes.get(
+        "source_document_sha256", {}
+    )
     if (
         registration.get("schema") != "mergecert-q1-registration-v1"
         or registration.get("status") != "finalized"
@@ -383,17 +431,49 @@ def analyze(
         != Q1_REGISTRATION_SOURCE_SHA256
         or registration.get("model_id")
         != "Qwen/Qwen3-4B-Instruct-2507"
+        or Q1_REGISTRATION_SOURCE.get("tokenizer_revision")
+        != TOKENIZER_REVISION
+        or tokenizer.get("model_id")
+        != "Qwen/Qwen3-4B-Instruct-2507"
+        or tokenizer.get("revision") != TOKENIZER_REVISION
+        or not isinstance(tokenizer_files, dict)
+        or not tokenizer_files
+        or any(
+            not isinstance(name, str) or not _is_sha256(digest)
+            for name, digest in tokenizer_files.items()
+        )
+        or tokenizer.get("artifact_sha256")
+        != hashlib.sha256(
+            json.dumps(
+                tokenizer_files,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
         or registration.get("population_doc_ids") != REGISTERED_FULL_DOC_IDS
         or registration.get("smoke_doc_ids") != REGISTERED_SMOKE_DOC_IDS
         or registration.get("archive_sha256")
         != REGISTERED_ARCHIVE_SHA256
         or registration.get("all_items_sha256")
         != Q1_REGISTRATION_SOURCE["all_items_sha256"]
-        or not isinstance(registration_sha256, str)
-        or len(registration_sha256) != 64
-        or payload.get("q1_registration_sha256") != registration_sha256
+        or registration_source_hashes.get("all_items_sha256")
+        != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+        or not _is_sha256(
+            registration_source_hashes.get("corpus_manifest_sha256")
+        )
+        or not isinstance(registered_source_documents, dict)
+        or set(registered_source_documents) != set(REGISTERED_FULL_DOC_IDS)
+        or any(
+            not _is_sha256(digest)
+            for digest in registered_source_documents.values()
+        )
+        or registration_sha256 != expected_registration_sha256
+        or payload.get("q1_registration_sha256")
+        != expected_registration_sha256
     ):
-        raise ValueError("Q1 finalized registration is missing or differs")
+        raise ValueError(
+            "Q1 finalized registration or source hash set is missing or differs"
+        )
     registered_documents = registration.get("documents", [])
     registered_by_doc = _validate_registered_documents(
         registered_documents
@@ -463,8 +543,12 @@ def analyze(
     if (
         source_hashes["all_items_sha256"]
         != Q1_REGISTRATION_SOURCE["all_items_sha256"]
+        or source_hashes["all_items_sha256"]
+        != registration_source_hashes["all_items_sha256"]
+        or source_hashes["corpus_manifest_sha256"]
+        != registration_source_hashes["corpus_manifest_sha256"]
     ):
-        raise ValueError("Q1 all-items registry hash differs from registration")
+        raise ValueError("Q1 source hashes differ from registration")
 
     documents = payload.get("documents", [])
     if (
@@ -525,7 +609,8 @@ def analyze(
             != source_hashes["corpus_manifest_sha256"]
             or hashes.get("all_items_sha256")
             != source_hashes["all_items_sha256"]
-            or not hashes.get("source_document_sha256")
+            or hashes.get("source_document_sha256")
+            != registered_source_documents[document["doc_id"]]
         ):
             raise ValueError("Q1 document source hashes are incomplete")
         source_tokens = document.get("source_context_token_count")
@@ -793,6 +878,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def main():
+    _require_q1_registration_binding()
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)

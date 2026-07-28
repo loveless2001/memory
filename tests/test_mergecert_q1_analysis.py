@@ -16,6 +16,13 @@ Q1_ADDENDUM_SHA256 = (
 Q1_P0_VERDICT_SHA256 = (
     "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
 )
+Q1_REGISTRATION_PENDING = "PENDING_CPU_EXTRACTION"
+Q1_TOKENIZER_REVISION = "cdbee75f17c01a7cc42f958dc650907174af0554"
+CORPUS_MANIFEST_SHA256 = "1" * 64
+TOKENIZER_FILES_SHA256 = {
+    "tokenizer.json": "2" * 64,
+    "tokenizer_config.json": "3" * 64,
+}
 Q1_REGISTRATION_SOURCE = json.loads(
     (
         ROOT
@@ -26,12 +33,14 @@ Q1_REGISTRATION_SOURCE = json.loads(
 )
 
 
-def _load_analyzer():
+def _load_analyzer(*, bind=True):
     spec = importlib.util.spec_from_file_location(
         "mergecert_q1_analysis", ANALYZER_PATH
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    if bind:
+        module.Q1_REGISTRATION_SHA256 = _registration_sha256()
     raw_analyze = module.analyze
 
     def analyze_with_registration(payload, **kwargs):
@@ -46,6 +55,10 @@ def _load_analyzer():
 
 def _token_counts(doc_id):
     return (3921, 3921) if doc_id == "legal/00000" else (4096, 4096)
+
+
+def _source_document_sha256(doc_id):
+    return hashlib.sha256(f"source:{doc_id}".encode()).hexdigest()
 
 
 def _registration():
@@ -105,6 +118,30 @@ def _registration():
             source_path.read_bytes()
         ).hexdigest(),
         "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+        "tokenizer": {
+            "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+            "revision": Q1_TOKENIZER_REVISION,
+            "files_sha256": TOKENIZER_FILES_SHA256,
+            "artifact_sha256": hashlib.sha256(
+                json.dumps(
+                    TOKENIZER_FILES_SHA256,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest(),
+        },
+        "source_hashes": {
+            "corpus_manifest_sha256": CORPUS_MANIFEST_SHA256,
+            "all_items_sha256": Q1_REGISTRATION_SOURCE[
+                "all_items_sha256"
+            ],
+            "source_document_sha256": {
+                doc_id: _source_document_sha256(doc_id)
+                for doc_id in Q1_REGISTRATION_SOURCE[
+                    "population_doc_ids"
+                ]
+            },
+        },
         "population_doc_ids": Q1_REGISTRATION_SOURCE[
             "population_doc_ids"
         ],
@@ -116,7 +153,7 @@ def _registration():
 
 
 def _registration_text():
-    return json.dumps(_registration(), sort_keys=True)
+    return json.dumps(_registration(), indent=1, allow_nan=False) + "\n"
 
 
 def _registration_sha256():
@@ -148,11 +185,11 @@ def _report(doc_id, ratio, *, kl, acc_delta, lost, lost_prior):
         "evicted_token_count": evicted,
         "target_retained": retained,
         "source_hashes": {
-            "corpus_manifest_sha256": "manifest-sha",
+            "corpus_manifest_sha256": CORPUS_MANIFEST_SHA256,
             "all_items_sha256": Q1_REGISTRATION_SOURCE[
                 "all_items_sha256"
             ],
-            "source_document_sha256": f"document-sha-{doc_id}",
+            "source_document_sha256": _source_document_sha256(doc_id),
         },
         "needle_item_ids": [f"{doc_id}:needle"],
         "aggregation_item_ids": [f"{doc_id}:agg"],
@@ -309,7 +346,7 @@ def _payload(*, documents_per_domain=5, smoke=False):
             },
         },
         "source_hashes": {
-            "corpus_manifest_sha256": "manifest-sha",
+            "corpus_manifest_sha256": CORPUS_MANIFEST_SHA256,
             "all_items_sha256": Q1_REGISTRATION_SOURCE[
                 "all_items_sha256"
             ],
@@ -365,11 +402,11 @@ def _payload(*, documents_per_domain=5, smoke=False):
                     for ratio in (0.25, 0.40)
                 },
                 "source_hashes": {
-                    "corpus_manifest_sha256": "manifest-sha",
+                    "corpus_manifest_sha256": CORPUS_MANIFEST_SHA256,
                     "all_items_sha256": Q1_REGISTRATION_SOURCE[
                         "all_items_sha256"
                     ],
-                    "source_document_sha256": f"document-sha-{doc}",
+                    "source_document_sha256": _source_document_sha256(doc),
                 },
                 "needle_item_ids": [f"{doc}:needle"],
                 "aggregation_item_ids": [f"{doc}:agg"],
@@ -461,7 +498,91 @@ def test_q1_analysis_requires_the_hash_bound_finalized_registration():
     registration["documents"][0]["budgets"]["0.25"][
         "requested_evicted_token_count"
     ] = True
+    malformed_sha256 = analyzer.canonical_q1_registration_sha256(
+        registration
+    )
+    analyzer.Q1_REGISTRATION_SHA256 = malformed_sha256
+    payload["q1_registration_sha256"] = malformed_sha256
     with pytest.raises(ValueError, match="registration counts"):
+        analyzer.analyze(
+            payload,
+            expected_documents=20,
+            n_resamples=20,
+            registration=registration,
+            registration_sha256=malformed_sha256,
+        )
+
+
+def test_q1_analysis_fails_closed_while_registration_binding_is_pending():
+    analyzer = _load_analyzer(bind=False)
+
+    assert analyzer.Q1_REGISTRATION_SHA256 == Q1_REGISTRATION_PENDING
+    with pytest.raises(ValueError, match="pending"):
+        analyzer.analyze(
+            _payload(),
+            expected_documents=20,
+            n_resamples=20,
+            registration=_registration(),
+            registration_sha256=_registration_sha256(),
+        )
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ("wrong_source_hash", "incomplete_hash_set", "duplicate", "forged_start"),
+)
+def test_q1_analysis_rejects_registration_source_integrity_drift(mutation):
+    analyzer = _load_analyzer()
+    payload = _payload()
+    registration = _registration()
+    if mutation == "wrong_source_hash":
+        registration["source_hashes"]["source_document_sha256"][
+            "financial/00000"
+        ] = "f" * 64
+    elif mutation == "incomplete_hash_set":
+        registration["source_hashes"]["source_document_sha256"].pop(
+            "financial/00000"
+        )
+    elif mutation == "duplicate":
+        registration["documents"][-1] = dict(registration["documents"][0])
+    else:
+        registration["documents"][0]["context_start"] += 1
+    malformed_sha256 = analyzer.canonical_q1_registration_sha256(
+        registration
+    )
+    analyzer.Q1_REGISTRATION_SHA256 = malformed_sha256
+    payload["q1_registration_sha256"] = malformed_sha256
+
+    with pytest.raises(
+        ValueError,
+        match="source hash|population|context start",
+    ):
+        analyzer.analyze(
+            payload,
+            expected_documents=20,
+            n_resamples=20,
+            registration=registration,
+            registration_sha256=malformed_sha256,
+        )
+
+
+def test_q1_analysis_rejects_synchronized_self_relative_source_hashes():
+    analyzer = _load_analyzer()
+    payload = _payload()
+    registration = _registration()
+    forged = "f" * 64
+    registration["source_hashes"]["source_document_sha256"][
+        "financial/00000"
+    ] = forged
+    payload["documents"][0]["source_hashes"][
+        "source_document_sha256"
+    ] = forged
+    for arm in payload["arms"].values():
+        arm["reports"][0]["source_hashes"][
+            "source_document_sha256"
+        ] = forged
+
+    with pytest.raises(ValueError, match="literal binding"):
         analyzer.analyze(
             payload,
             expected_documents=20,
