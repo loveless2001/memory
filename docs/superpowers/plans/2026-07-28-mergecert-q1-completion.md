@@ -731,6 +731,16 @@ one-retry execution instruction, no duplicate smoke was launched and full Q1
 remains blocked. The immutable attempt record is
 `plans/260728-mergecert-q1/q1-smoke-attempt.json`.
 
+After independent review of the packaging repair at `a2f8293`, one authorized
+smoke retry launched as app `ap-FS1Y8Y3bcazBqzMybadmyo`. Packaging and
+hydration passed, all three model shards loaded, and execution reached the
+registered archive replay gate. It then failed for `financial/00000`,
+`eviction-0.25`: `aggregation_axis.mean_kl` was `0.068229`, versus the
+registered `0.063958`. The app stopped with zero tasks. No smoke artifact was
+accepted or retrieved, no analyzer ran, and full Q1 remains blocked. The
+immutable retry record is
+`plans/260728-mergecert-q1/q1-smoke-retry.json`.
+
 - [ ] **Step 4: Launch full Q1 detached only after a valid smoke**
 
 ```bash

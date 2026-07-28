@@ -1,0 +1,47 @@
+{
+ "schema": "mergecert-q1-smoke-retry-v1",
+ "status": "failed-registered-archive-replay",
+ "reviewed_fix_commit": "a2f82932702b13cdfc8f71a1ab2fe99404a564ec",
+ "smoke": {
+  "app_id": "ap-FS1Y8Y3bcazBqzMybadmyo",
+  "app_name": "memsub-mergecert-p0-q1",
+  "function": "q1_addendum_smoke",
+  "registered_documents": 2,
+  "state": "stopped",
+  "tasks_after_stop": 0,
+  "created_at": "2026-07-29 03:12:25+07:00",
+  "stopped_at": "2026-07-29 03:13:09+07:00",
+  "app_lifetime_seconds": 44,
+  "gpu_request": "H100",
+  "memory_request_mib": 65536
+ },
+ "milestones": [
+  "mounted PythonPackage:memsub",
+  "container hydration passed",
+  "loaded three model checkpoint shards",
+  "entered registered archived M1 replay validation"
+ ],
+ "failure": {
+  "error_type": "ValueError",
+  "document_id": "financial/00000",
+  "arm": "eviction-0.25",
+  "metric": "aggregation_axis.mean_kl",
+  "actual": 0.068229,
+  "registered_archive": 0.063958,
+  "absolute_difference": 0.004271,
+  "message": "financial/00000: archived M1 replay failed for eviction-0.25: ['aggregation_axis.mean_kl: 0.068229 != 0.063958']"
+ },
+ "outputs": {
+  "q1_smoke_artifact_retrieved": false,
+  "independent_analyzer_run": false,
+  "full_q1_launched": false,
+  "q2_q3_launched": false
+ },
+ "cost_estimate": {
+  "usd": 0.055096,
+  "basis": "Conservative 44-second whole-app estimate at one H100, one physical CPU core, and the 64 GiB memory request.",
+  "pricing_source": "https://modal.com/pricing",
+  "campaign_bound_usd": 15.0
+ },
+ "stop_rule": "The registered archived replay check failed, so the app stopped and no smoke artifact, analyzer, or full run was accepted."
+}

@@ -27,6 +27,9 @@ Q1_REGISTRATION_EXTRACTION = (
 Q1_SMOKE_ATTEMPT = (
     ROOT / "plans" / "260728-mergecert-q1" / "q1-smoke-attempt.json"
 )
+Q1_SMOKE_RETRY = (
+    ROOT / "plans" / "260728-mergecert-q1" / "q1-smoke-retry.json"
+)
 Q1_REGISTRATION_SOURCE = (
     ROOT / "plans" / "260728-mergecert-q1" / "q1-registration-source.json"
 )
@@ -459,6 +462,47 @@ def test_mergecert_q1_records_remote_verification_and_smoke_stop():
     )
     assert evidence["outputs"] == {
         "q1_smoke_artifact_produced": False,
+        "independent_analyzer_run": False,
+        "full_q1_launched": False,
+        "q2_q3_launched": False,
+    }
+    assert evidence["cost_estimate"]["usd"] < (
+        evidence["cost_estimate"]["campaign_bound_usd"]
+    )
+
+
+def test_mergecert_q1_records_the_reviewed_smoke_retry_stop():
+    evidence = json.loads(Q1_SMOKE_RETRY.read_text())
+
+    assert evidence["reviewed_fix_commit"] == (
+        "a2f82932702b13cdfc8f71a1ab2fe99404a564ec"
+    )
+    assert evidence["status"] == "failed-registered-archive-replay"
+    assert evidence["smoke"]["app_id"] == "ap-FS1Y8Y3bcazBqzMybadmyo"
+    assert evidence["smoke"]["state"] == "stopped"
+    assert evidence["smoke"]["tasks_after_stop"] == 0
+    assert evidence["milestones"] == [
+        "mounted PythonPackage:memsub",
+        "container hydration passed",
+        "loaded three model checkpoint shards",
+        "entered registered archived M1 replay validation",
+    ]
+    assert evidence["failure"] == {
+        "error_type": "ValueError",
+        "document_id": "financial/00000",
+        "arm": "eviction-0.25",
+        "metric": "aggregation_axis.mean_kl",
+        "actual": 0.068229,
+        "registered_archive": 0.063958,
+        "absolute_difference": 0.004271,
+        "message": (
+            "financial/00000: archived M1 replay failed for "
+            "eviction-0.25: ['aggregation_axis.mean_kl: "
+            "0.068229 != 0.063958']"
+        ),
+    }
+    assert evidence["outputs"] == {
+        "q1_smoke_artifact_retrieved": False,
         "independent_analyzer_run": False,
         "full_q1_launched": False,
         "q2_q3_launched": False,
