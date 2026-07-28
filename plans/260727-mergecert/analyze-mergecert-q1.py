@@ -189,6 +189,7 @@ def _validate_compatibility_fingerprint(payload: dict) -> None:
         canonical = CompatibilityFingerprint.from_dict(value)
     except (KeyError, TypeError, ValueError) as exc:
         raise ValueError("Q1 compatibility fingerprint is invalid") from exc
+    canonical.validate()
     if (
         canonical.to_dict() != value
         or payload.get("compatibility_fingerprint_sha256")

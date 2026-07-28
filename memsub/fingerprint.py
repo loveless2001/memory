@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import re
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -24,6 +25,39 @@ FIELDS = (
     "position_policy_version", "channel_registry_version",
     "kernel_numeric_profile_hash",
 )
+HASH_FIELDS = (
+    "tokenizer_hash",
+    "chat_template_hash",
+    "rope_config_hash",
+    "kernel_numeric_profile_hash",
+)
+KV_LAYOUT_VALUES = frozenset(("mha", "gqa", "mqa", "mla_latent"))
+QUANTIZATION_VALUES = frozenset(
+    ("bf16", "bfloat16", "fp16", "float32", "int8", "gguf-q4_k_m")
+)
+POSITION_POLICY_VALUES = frozenset(
+    ("pos-v1", POSITION_POLICY_VERSION)
+)
+ATTENTION_IMPL_VALUES = frozenset(("sdpa", "eager", "custom"))
+_SHA256_PATTERN = re.compile(r"sha256:[0-9a-f]{64}\Z")
+_SLIDING_WINDOW_PATTERN = re.compile(
+    r"(?:local-[1-9][0-9]*|hybrid-[A-Za-z0-9][A-Za-z0-9._+-]*)\Z"
+)
+_ATTENTION_IMPL_PATTERN = re.compile(
+    r"(?:flash-attn|paged-attn)-[A-Za-z0-9][A-Za-z0-9._+-]*\Z"
+)
+
+
+def _require_string(field: str, value: Any) -> None:
+    if type(value) is not str or not value.strip():
+        raise ValueError(f"{field} must be a non-empty string")
+
+
+def _require_sha256(field: str, value: Any) -> None:
+    if type(value) is not str or _SHA256_PATTERN.fullmatch(value) is None:
+        raise ValueError(
+            f"{field} must be canonical sha256:<64 lowercase hex>"
+        )
 
 
 @dataclass(frozen=True)
@@ -43,12 +77,84 @@ class CompatibilityFingerprint:
     channel_registry_version: str
     kernel_numeric_profile_hash: str
 
+    def __post_init__(self) -> None:
+        self.validate()
+
+    def validate(self) -> None:
+        values = self.to_dict()
+        for field in (
+            "model_id",
+            "runtime_version",
+            "compaction_policy_version",
+        ):
+            _require_string(field, values[field])
+        for field in HASH_FIELDS:
+            _require_sha256(field, values[field])
+        if self.adapter_hash is not None:
+            _require_sha256("adapter_hash", self.adapter_hash)
+        if (
+            type(self.sliding_window_config) is not str
+            or (
+                self.sliding_window_config != "none"
+                and _SLIDING_WINDOW_PATTERN.fullmatch(
+                    self.sliding_window_config
+                )
+                is None
+            )
+        ):
+            raise ValueError(
+                "sliding_window_config must be none, local-<positive-int>, "
+                "or hybrid-<version>"
+            )
+        if (
+            type(self.attention_impl) is not str
+            or (
+                self.attention_impl not in ATTENTION_IMPL_VALUES
+                and _ATTENTION_IMPL_PATTERN.fullmatch(self.attention_impl)
+                is None
+            )
+        ):
+            raise ValueError("attention_impl is not a registered backend")
+        if (
+            type(self.kv_layout) is not str
+            or self.kv_layout not in KV_LAYOUT_VALUES
+        ):
+            raise ValueError("kv_layout is not a registered layout")
+        if (
+            type(self.quantization) is not str
+            or self.quantization not in QUANTIZATION_VALUES
+        ):
+            raise ValueError("quantization is not a registered value")
+        if (
+            type(self.position_policy_version) is not str
+            or self.position_policy_version not in POSITION_POLICY_VALUES
+        ):
+            raise ValueError(
+                "position_policy_version is not a registered value"
+            )
+        if (
+            type(self.channel_registry_version) is not str
+            or self.channel_registry_version != CHANNEL_REGISTRY_VERSION
+        ):
+            raise ValueError(
+                "channel_registry_version is not a registered value"
+            )
+
     def to_dict(self) -> dict:
         return dataclasses.asdict(self)
 
     @classmethod
     def from_dict(cls, d: dict) -> "CompatibilityFingerprint":
-        return cls(**{f: d[f] for f in FIELDS})
+        if type(d) is not dict:
+            raise ValueError("compatibility fingerprint must be an object")
+        if set(d) != set(FIELDS):
+            missing = sorted(set(FIELDS) - set(d))
+            extra = sorted(set(d) - set(FIELDS))
+            raise ValueError(
+                "compatibility fingerprint fields mismatch: "
+                f"missing={missing}, extra={extra}"
+            )
+        return cls(**{field: d[field] for field in FIELDS})
 
     def canonical_json(self) -> str:
         return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))

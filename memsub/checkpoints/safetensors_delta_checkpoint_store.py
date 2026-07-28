@@ -124,7 +124,12 @@ class SafetensorsDeltaCheckpointStore:
         """Hard-gated hydration: fingerprint validated all-or-nothing before
         any KV blob is opened (spec 4.6/7.4; GT3)."""
         ckpt = self.load_checkpoint(checkpoint_id)
-        stored = ckpt.fingerprint()
+        try:
+            stored = ckpt.fingerprint()
+        except (TypeError, ValueError) as exc:
+            raise CompatibilityError(
+                "checkpoint fingerprint schema is invalid"
+            ) from exc
         if not stored.matches(live_fingerprint):
             raise CompatibilityError(
                 "checkpoint fingerprint mismatch — KV may never be loaded as live context")

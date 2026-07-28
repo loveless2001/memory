@@ -707,6 +707,35 @@ def test_q1_analysis_validates_canonical_compatibility_fingerprint(mutation):
 @pytest.mark.parametrize(
     ("field", "value"),
     (
+        ("kernel_numeric_profile_hash", "not-a-hash"),
+        ("attention_impl", False),
+        ("adapter_hash", 42),
+        ("tokenizer_hash", "sha256:" + "A" * 64),
+        ("chat_template_hash", "sha256:" + "1" * 63),
+    ),
+)
+def test_q1_analysis_rejects_rehashed_invalid_fingerprint_values(
+    field, value
+):
+    analyzer = _load_analyzer()
+    payload = _payload()
+    fingerprint = payload["compatibility_fingerprint"]
+    fingerprint[field] = value
+    canonical_json = json.dumps(
+        fingerprint, sort_keys=True, separators=(",", ":")
+    )
+    payload["compatibility_fingerprint_sha256"] = (
+        "sha256:"
+        + hashlib.sha256(canonical_json.encode()).hexdigest()
+    )
+
+    with pytest.raises(ValueError, match="compatibility fingerprint"):
+        analyzer.analyze(payload, expected_documents=20, n_resamples=20)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
         ("addendum_sha256", "a" * 64),
         ("p0_verdict_sha256", "b" * 64),
     ),
