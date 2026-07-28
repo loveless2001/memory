@@ -1208,6 +1208,108 @@ def test_mergecert_q1_constructs_only_control_and_moderate_ratio_arms():
     assert "RATIOS" not in arm_spec_source.replace("Q1_RATIOS", "")
 
 
+def test_mergecert_q1_gates_real_attention_prefill_on_auxiliary_replay():
+    tree = ast.parse(RUNNER.read_text())
+    run_q1 = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_run_q1"
+    )
+    run_source = ast.unparse(run_q1)
+
+    replay_prefill = (
+        "replay_full_cache, _ = runtime.prefill(context['context_ids'])"
+    )
+    q1_prefill = (
+        "q1_full_cache, _, attention_mass = "
+        "prefill_with_real_attention(runtime, context['context_ids'])"
+    )
+    assert replay_prefill in run_source
+    assert q1_prefill in run_source
+    assert (
+        run_source.index(replay_prefill)
+        < run_source.index("_verify_archived_replay(replay_report, archive")
+        < run_source.index(q1_prefill)
+    )
+
+
+def test_mergecert_q1_uses_sdpa_only_for_auxiliary_replay_and_one_q1_prefill():
+    source = RUNNER.read_text()
+    tree = ast.parse(source)
+    run_q1 = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_run_q1"
+    )
+    run_source = ast.unparse(run_q1)
+
+    assert "_prefill_q1_document" not in run_source
+    assert (
+        "candidate_caches = {'control-0.00': "
+        "q1_full_cache.clone_detached()}"
+        in run_source
+    )
+    assert "eviction = q1_full_cache.clone_detached()" in run_source
+    assert "merge_cache(q1_full_cache, attention_mass, plan)" in run_source
+    assert "cache=q1_full_cache" in run_source
+    assert "full_cache=q1_full_cache" in run_source
+    assert "replay_eviction = replay_full_cache.clone_detached()" in run_source
+    assert "full_cache=replay_full_cache" in run_source
+    assert "_verify_archived_replay(replay_report, archive" in run_source
+    assert "reference_cache =" not in run_source
+
+
+def test_mergecert_q1_resume_discards_only_an_unfinished_document():
+    runner = _load_module(RUNNER, "mergecert_q1_partial_resume")
+    state = {
+        "done_documents": 1,
+        "documents": [
+            {"doc_id": "financial/00000"},
+            {"doc_id": "financial/00008"},
+        ],
+        "arms": {
+            arm: {
+                "reports": [
+                    {"doc_id": "financial/00000"},
+                    {"doc_id": "financial/00008"},
+                ]
+            }
+            for arm in (
+                "control-0.00",
+                "eviction-0.25",
+                "eviction-0.40",
+                "merge-0.25",
+                "merge-0.40",
+            )
+        },
+        "archived_m1": {
+            "replay_checks": [
+                {"doc_id": doc_id, "arm": arm, "pass": True}
+                for doc_id in ("financial/00000", "financial/00008")
+                for arm in (
+                    "control-0.00",
+                    "eviction-0.25",
+                    "eviction-0.40",
+                )
+            ],
+            "replay_pass": True,
+        },
+    }
+
+    runner._restore_q1_completed_prefix(
+        state,
+        ["financial/00000", "financial/00008"],
+    )
+
+    assert state["documents"] == [{"doc_id": "financial/00000"}]
+    assert all(
+        arm["reports"] == [{"doc_id": "financial/00000"}]
+        for arm in state["arms"].values()
+    )
+    assert len(state["archived_m1"]["replay_checks"]) == 3
+    assert state["archived_m1"]["replay_pass"] is False
+
+
 def test_mergecert_q1_reconstructs_the_original_short_archived_m1_context():
     runner = _load_module(RUNNER, "mergecert_q1_short_context_replay")
 

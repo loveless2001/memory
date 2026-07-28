@@ -1232,6 +1232,73 @@ def _verify_archived_replay(
     }
 
 
+def _restore_q1_completed_prefix(
+    state: dict,
+    selected_doc_ids: list[str],
+) -> None:
+    done = state.get("done_documents")
+    arm_names = (
+        "control-0.00",
+        *[f"eviction-{ratio:.2f}" for ratio in Q1_RATIOS],
+        *[f"merge-{ratio:.2f}" for ratio in Q1_RATIOS],
+    )
+    replay_arms = (
+        "control-0.00",
+        *[f"eviction-{ratio:.2f}" for ratio in Q1_RATIOS],
+    )
+    if (
+        not isinstance(done, int)
+        or isinstance(done, bool)
+        or not 0 <= done <= len(selected_doc_ids)
+        or set(state.get("arms", {})) != set(arm_names)
+    ):
+        raise ValueError("existing Q1 artifact has invalid progress")
+    completed_doc_ids = selected_doc_ids[:done]
+    documents = state.get("documents")
+    if (
+        not isinstance(documents, list)
+        or len(documents) < done
+        or [row.get("doc_id") for row in documents[:done]]
+        != completed_doc_ids
+    ):
+        raise ValueError("existing Q1 artifact has invalid document progress")
+    for arm_name in arm_names:
+        reports = state["arms"][arm_name].get("reports")
+        if (
+            not isinstance(reports, list)
+            or len(reports) < done
+            or [row.get("doc_id") for row in reports[:done]]
+            != completed_doc_ids
+        ):
+            raise ValueError("existing Q1 artifact has invalid arm progress")
+        del reports[done:]
+    checks = state.get("archived_m1", {}).get("replay_checks")
+    expected_replay_prefix = [
+        (doc_id, arm_name)
+        for doc_id in completed_doc_ids
+        for arm_name in replay_arms
+    ]
+    if (
+        not isinstance(checks, list)
+        or len(checks) < len(expected_replay_prefix)
+        or [
+            (row.get("doc_id"), row.get("arm"))
+            for row in checks[: len(expected_replay_prefix)]
+        ]
+        != expected_replay_prefix
+        or not all(
+            row.get("pass") is True
+            for row in checks[: len(expected_replay_prefix)]
+        )
+    ):
+        raise ValueError("existing Q1 artifact has invalid replay progress")
+    del documents[done:]
+    del checks[len(expected_replay_prefix) :]
+    state["archived_m1"]["replay_pass"] = (
+        done == len(selected_doc_ids) and bool(checks)
+    )
+
+
 def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
     import sys
 
@@ -1352,12 +1419,14 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
         if prior.get("provenance") != _q1_provenance():
             raise ValueError("existing Q1 artifact uses a different Q1 provenance")
         state = prior
+        _restore_q1_completed_prefix(state, selected_doc_ids)
 
     def save() -> None:
         state["peak_gpu_bytes"] = int(torch.cuda.max_memory_allocated())
         checks = state["archived_m1"]["replay_checks"]
-        state["archived_m1"]["replay_pass"] = bool(checks) and all(
-            check["pass"] for check in checks
+        state["archived_m1"]["replay_pass"] = (
+            len(checks) == len(selected_doc_ids) * 3
+            and all(check["pass"] for check in checks)
         )
         with open(output_path, "w") as handle:
             json.dump(state, handle, indent=1, allow_nan=False)
@@ -1367,24 +1436,18 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
     for document_index, context in enumerate(contexts):
         if document_index < state["done_documents"]:
             continue
-        full_cache, _, attention_mass = prefill_with_real_attention(
-            runtime, context["context_ids"]
-        )
-        if (
-            not torch.isfinite(attention_mass).all()
-            or float(attention_mass.min()) < 0
-            or float(attention_mass.var()) <= 0
-        ):
-            raise ValueError(f"{context['doc_id']}: invalid real attention mass")
+        replay_full_cache, _ = runtime.prefill(context["context_ids"])
 
         all_items = context["aggregations"] + context["needles"]
-        full_predictions = {
+        replay_full_predictions = {
             item.item_id: runtime.answer_letter(
-                "", item.question, item.options, cache=full_cache
+                "", item.question, item.options, cache=replay_full_cache
             )
             for item in all_items
         }
-        candidate_caches = {"control-0.00": full_cache.clone_detached()}
+        replay_candidate_caches = {
+            "control-0.00": replay_full_cache.clone_detached()
+        }
         candidate_budgets = {
             "control-0.00": {
                 "source_context_token_count": context[
@@ -1412,15 +1475,15 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             }
         }
         for ratio in Q1_RATIOS:
-            eviction = full_cache.clone_detached()
-            physical_before = eviction.physical_length
+            replay_eviction = replay_full_cache.clone_detached()
+            physical_before = replay_eviction.physical_length
             start, end = _q1_eviction_range(
                 ratio,
                 context["eviction_anchor"],
                 context["source_context_token_count"],
             )
-            evicted = eviction.evict_logical_range(start, end)
-            physical_after = eviction.physical_length
+            evicted = replay_eviction.evict_logical_range(start, end)
+            physical_after = replay_eviction.physical_length
             budget = _q1_document_budget(
                 context["source_context_token_count"],
                 context["model_input_token_count"],
@@ -1446,7 +1509,86 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                 raise ValueError(
                     f"{context['doc_id']}: finalized registration budget drift"
                 )
-            if eviction.physical_length != budget["retained_token_count"]:
+            if (
+                replay_eviction.physical_length
+                != budget["retained_token_count"]
+            ):
+                raise ValueError("Q1 measured eviction budget is inconsistent")
+            replay_candidate_caches[
+                f"eviction-{ratio:.2f}"
+            ] = replay_eviction
+            candidate_budgets[f"eviction-{ratio:.2f}"] = budget
+            candidate_budgets[f"merge-{ratio:.2f}"] = budget
+
+        replay_specs = [
+            ("control-0.00", "zero-compression-control", 0.0),
+            *[
+                (f"eviction-{ratio:.2f}", "contiguous-eviction", ratio)
+                for ratio in Q1_RATIOS
+            ],
+        ]
+        for arm_name, policy, ratio in replay_specs:
+            replay_report = _q1_report(
+                runtime,
+                context=context,
+                full_cache=replay_full_cache,
+                candidate_cache=replay_candidate_caches[arm_name],
+                ratio=ratio,
+                policy=policy,
+                budget=candidate_budgets[arm_name],
+                full_predictions=replay_full_predictions,
+            )
+            archive = archived_reports[context["domain"]][ratio][
+                context["archive_index"]
+            ]
+            archive_name = f"{context['domain']}-evict{ratio:.2f}.json"
+            check = _verify_archived_replay(
+                replay_report,
+                archive,
+                archive_name=archive_name,
+                archive_sha256=archive_files[archive_name]["sha256"],
+                arm_name=arm_name,
+            )
+            state["archived_m1"]["replay_checks"].append(check)
+            if not check["pass"]:
+                save()
+                raise ValueError(
+                    f"{context['doc_id']}: archived M1 replay failed for "
+                    f"{arm_name}: {check['mismatches'][:3]}"
+                )
+
+        q1_full_cache, _, attention_mass = prefill_with_real_attention(
+            runtime, context["context_ids"]
+        )
+        if (
+            not torch.isfinite(attention_mass).all()
+            or float(attention_mass.min()) < 0
+            or float(attention_mass.var()) <= 0
+        ):
+            raise ValueError(f"{context['doc_id']}: invalid real attention mass")
+        full_predictions = {
+            item.item_id: runtime.answer_letter(
+                "", item.question, item.options, cache=q1_full_cache
+            )
+            for item in all_items
+        }
+        candidate_caches = {
+            "control-0.00": q1_full_cache.clone_detached()
+        }
+        for ratio in Q1_RATIOS:
+            eviction = q1_full_cache.clone_detached()
+            start, end = _q1_eviction_range(
+                ratio,
+                context["eviction_anchor"],
+                context["source_context_token_count"],
+            )
+            evicted = eviction.evict_logical_range(start, end)
+            budget = candidate_budgets[f"eviction-{ratio:.2f}"]
+            if (
+                eviction.physical_length
+                != budget["retained_token_count"]
+                or evicted != budget["evicted_token_count"]
+            ):
                 raise ValueError("Q1 measured eviction budget is inconsistent")
             candidate_caches[f"eviction-{ratio:.2f}"] = eviction
             plan = _q1_merge_plan(
@@ -1454,10 +1596,8 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                 budget["merge_target_retained"],
             )
             candidate_caches[f"merge-{ratio:.2f}"] = merge_cache(
-                full_cache, attention_mass, plan
+                q1_full_cache, attention_mass, plan
             ).cache
-            candidate_budgets[f"eviction-{ratio:.2f}"] = budget
-            candidate_budgets[f"merge-{ratio:.2f}"] = budget
 
         document_record = {
             "doc_id": context["doc_id"],
@@ -1491,7 +1631,7 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
             report = _q1_report(
                 runtime,
                 context=context,
-                full_cache=full_cache,
+                full_cache=q1_full_cache,
                 candidate_cache=candidate_caches[arm_name],
                 ratio=ratio,
                 policy=policy,
@@ -1499,29 +1639,6 @@ def _run_q1(*, documents: int, output_path: str, require_full: bool) -> dict:
                 full_predictions=full_predictions,
             )
             state["arms"][arm_name]["reports"].append(report)
-            if ratio in (0.0, 0.25, 0.40) and arm_name.startswith(
-                ("control", "eviction")
-            ):
-                archive = archived_reports[context["domain"]][ratio][
-                    context["archive_index"]
-                ]
-                archive_name = (
-                    f"{context['domain']}-evict{ratio:.2f}.json"
-                )
-                check = _verify_archived_replay(
-                    report,
-                    archive,
-                    archive_name=archive_name,
-                    archive_sha256=archive_files[archive_name]["sha256"],
-                    arm_name=arm_name,
-                )
-                state["archived_m1"]["replay_checks"].append(check)
-                if not check["pass"]:
-                    save()
-                    raise ValueError(
-                        f"{context['doc_id']}: archived M1 replay failed for "
-                        f"{arm_name}: {check['mismatches'][:3]}"
-                    )
         state["done_documents"] = document_index + 1
         save()
         print(
