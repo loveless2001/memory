@@ -1,0 +1,317 @@
+{
+ "pass": true,
+ "budget_mode": "archived-m1-per-document-matched-physical-v1",
+ "q1_registration_sha256": "6d90677469c5548d0fde863db886e7a6665e25f15c23d351ba07a0ad4db6e2d5",
+ "authorization": {
+  "protocol": "MERGECERT-Q1",
+  "budget_mode": "archived-m1-per-document-matched-physical-v1",
+  "addendum_sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
+  "p0_verdict_sha256": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+ },
+ "documents": 2,
+ "sample_doc_ids": [
+  "financial/00000",
+  "financial/00008"
+ ],
+ "archive_replay_matrix": [
+  {
+   "doc_id": "financial/00000",
+   "archive": "financial-evict0.00.json",
+   "arm": "control-0.00",
+   "archive_sha256": "443646a08c59ae57daf676d07c0277ef149940f31870d7be63d2dfb0dd27131d"
+  },
+  {
+   "doc_id": "financial/00000",
+   "archive": "financial-evict0.25.json",
+   "arm": "eviction-0.25",
+   "archive_sha256": "356570c30fa860bea2de43e4627d7d7d2303e9680cd6f0384d5eb1ebaedc3e18"
+  },
+  {
+   "doc_id": "financial/00000",
+   "archive": "financial-evict0.40.json",
+   "arm": "eviction-0.40",
+   "archive_sha256": "6202133a815d1fd91ff38e10c6f2b7dfdf1193bf957037c06fc44cb1a873466f"
+  },
+  {
+   "doc_id": "financial/00008",
+   "archive": "financial-evict0.00.json",
+   "arm": "control-0.00",
+   "archive_sha256": "443646a08c59ae57daf676d07c0277ef149940f31870d7be63d2dfb0dd27131d"
+  },
+  {
+   "doc_id": "financial/00008",
+   "archive": "financial-evict0.25.json",
+   "arm": "eviction-0.25",
+   "archive_sha256": "356570c30fa860bea2de43e4627d7d7d2303e9680cd6f0384d5eb1ebaedc3e18"
+  },
+  {
+   "doc_id": "financial/00008",
+   "archive": "financial-evict0.40.json",
+   "arm": "eviction-0.40",
+   "archive_sha256": "6202133a815d1fd91ff38e10c6f2b7dfdf1193bf957037c06fc44cb1a873466f"
+  }
+ ],
+ "domain_counts": {
+  "financial": 2
+ },
+ "archived_m1_replay_pass": true,
+ "summaries": {
+  "control-0.00": {
+   "documents": 2,
+   "aggregation_probes": 6,
+   "needle_probes": 2,
+   "mean_kl": 0.0,
+   "accuracy_delta": 0.0,
+   "lost_fact": 0.0,
+   "lost_prior": 0.0
+  },
+  "eviction-0.25": {
+   "documents": 2,
+   "aggregation_probes": 6,
+   "needle_probes": 2,
+   "mean_kl": 0.041329,
+   "accuracy_delta": 0.0,
+   "lost_fact": 1.0,
+   "lost_prior": 1.0
+  },
+  "eviction-0.40": {
+   "documents": 2,
+   "aggregation_probes": 6,
+   "needle_probes": 2,
+   "mean_kl": 0.0391205,
+   "accuracy_delta": 0.0,
+   "lost_fact": 1.0,
+   "lost_prior": 1.0
+  },
+  "merge-0.25": {
+   "documents": 2,
+   "aggregation_probes": 6,
+   "needle_probes": 2,
+   "mean_kl": 0.0349605,
+   "accuracy_delta": 0.0,
+   "lost_fact": 0.5,
+   "lost_prior": 0.5
+  },
+  "merge-0.40": {
+   "documents": 2,
+   "aggregation_probes": 6,
+   "needle_probes": 2,
+   "mean_kl": 0.0464725,
+   "accuracy_delta": -0.33335,
+   "lost_fact": 0.5,
+   "lost_prior": 0.5
+  }
+ },
+ "references": {
+  "frozen_subsample": {
+   "mean_kl": 0.2566,
+   "accuracy_delta": 0.063,
+   "lost_prior": 0.188
+  },
+  "unfrozen_compactor": {
+   "mean_kl": 0.1385,
+   "accuracy_delta": 0.042,
+   "lost_prior": 0.083
+  }
+ },
+ "paired_merge_minus_eviction": {
+  "0.25": {
+   "mean_kl": {
+    "n": 2,
+    "mean_diff": -0.006368499999999998,
+    "ci95": [
+     -0.016530999999999997,
+     0.0037940000000000005
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 1
+   },
+   "acc_delta": {
+    "n": 2,
+    "mean_diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 0
+   },
+   "lost_fact": {
+    "n": 2,
+    "mean_diff": -0.5,
+    "ci95": [
+     -1.0,
+     0.0
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 1
+   },
+   "lost_prior": {
+    "n": 2,
+    "mean_diff": -0.5,
+    "ci95": [
+     -1.0,
+     0.0
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 1
+   }
+  },
+  "0.40": {
+   "mean_kl": {
+    "n": 2,
+    "mean_diff": 0.007351999999999999,
+    "ci95": [
+     0.0018589999999999995,
+     0.012844999999999999
+    ],
+    "excludes_zero": true,
+    "documents_favoring_candidate": 0
+   },
+   "acc_delta": {
+    "n": 2,
+    "mean_diff": -0.33335,
+    "ci95": [
+     -0.6667,
+     0.0
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 0
+   },
+   "lost_fact": {
+    "n": 2,
+    "mean_diff": -0.5,
+    "ci95": [
+     -1.0,
+     0.0
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 1
+   },
+   "lost_prior": {
+    "n": 2,
+    "mean_diff": -0.5,
+    "ci95": [
+     -1.0,
+     0.0
+    ],
+    "excludes_zero": false,
+    "documents_favoring_candidate": 1
+   }
+  }
+ },
+ "registered_readings": {
+  "r1": "R2",
+  "r3": "aggregation-negative",
+  "pointwise_favorable": [],
+  "aggregation_favorable": [],
+  "favorable_intervals": [],
+  "run_q2_q3": false
+ },
+ "per_domain": {
+  "financial": {
+   "control-0.00": {
+    "documents": 2,
+    "aggregation_probes": 6,
+    "needle_probes": 2,
+    "mean_kl": 0.0,
+    "accuracy_delta": 0.0,
+    "lost_fact": 0.0,
+    "lost_prior": 0.0
+   },
+   "eviction-0.25": {
+    "documents": 2,
+    "aggregation_probes": 6,
+    "needle_probes": 2,
+    "mean_kl": 0.041329,
+    "accuracy_delta": 0.0,
+    "lost_fact": 1.0,
+    "lost_prior": 1.0
+   },
+   "eviction-0.40": {
+    "documents": 2,
+    "aggregation_probes": 6,
+    "needle_probes": 2,
+    "mean_kl": 0.0391205,
+    "accuracy_delta": 0.0,
+    "lost_fact": 1.0,
+    "lost_prior": 1.0
+   },
+   "merge-0.25": {
+    "documents": 2,
+    "aggregation_probes": 6,
+    "needle_probes": 2,
+    "mean_kl": 0.0349605,
+    "accuracy_delta": 0.0,
+    "lost_fact": 0.5,
+    "lost_prior": 0.5
+   },
+   "merge-0.40": {
+    "documents": 2,
+    "aggregation_probes": 6,
+    "needle_probes": 2,
+    "mean_kl": 0.0464725,
+    "accuracy_delta": -0.33335,
+    "lost_fact": 0.5,
+    "lost_prior": 0.5
+   }
+  }
+ },
+ "per_document_budgets": {
+  "financial/00000": {
+   "0.25": {
+    "source_context_token_count": 4096,
+    "model_input_token_count": 4096,
+    "requested_evicted_token_count": 1024,
+    "eviction_source_start": 1024,
+    "eviction_source_end": 2048,
+    "physical_before_count": 4096,
+    "physical_after_count": 3072,
+    "evicted_token_count": 1024,
+    "retained_token_count": 3072,
+    "merge_target_retained": 3072
+   },
+   "0.40": {
+    "source_context_token_count": 4096,
+    "model_input_token_count": 4096,
+    "requested_evicted_token_count": 1638,
+    "eviction_source_start": 1024,
+    "eviction_source_end": 2662,
+    "physical_before_count": 4096,
+    "physical_after_count": 2458,
+    "evicted_token_count": 1638,
+    "retained_token_count": 2458,
+    "merge_target_retained": 2458
+   }
+  },
+  "financial/00008": {
+   "0.25": {
+    "source_context_token_count": 4096,
+    "model_input_token_count": 4096,
+    "requested_evicted_token_count": 1024,
+    "eviction_source_start": 1024,
+    "eviction_source_end": 2048,
+    "physical_before_count": 4096,
+    "physical_after_count": 3072,
+    "evicted_token_count": 1024,
+    "retained_token_count": 3072,
+    "merge_target_retained": 3072
+   },
+   "0.40": {
+    "source_context_token_count": 4096,
+    "model_input_token_count": 4096,
+    "requested_evicted_token_count": 1638,
+    "eviction_source_start": 1024,
+    "eviction_source_end": 2662,
+    "physical_before_count": 4096,
+    "physical_after_count": 2458,
+    "evicted_token_count": 1638,
+    "retained_token_count": 2458,
+    "merge_target_retained": 2458
+   }
+  }
+ },
+ "run_q2_q3": false,
+ "favorable_intervals": [],
+ "markdown_table": "| arm (matched budget) | agg KL | agg accDelta | pointwise lost|prior | merge - eviction 95% CIs |\n|---|---:|---:|---:|---|\n| eviction 0.25 (existing row) | 0.0413 | +0.000 | 1.000 | - |\n| eviction 0.40 (existing row) | 0.0391 | +0.000 | 1.000 | - |\n| frozen subsample (reference) | 0.2566 | +0.063 | 0.188 | - |\n| unfrozen compactor (reference) | 0.1385 | +0.042 | 0.083 | - |\n| MERGE 0.25 | 0.0350 | +0.000 | 0.500 | KL -0.0064 [-0.0165, +0.0038]; accDelta +0.0000 [+0.0000, +0.0000]; lost|prior -0.5000 [-1.0000, +0.0000] |\n| MERGE 0.40 | 0.0465 | -0.333 | 0.500 | KL +0.0074 [+0.0019, +0.0128]; accDelta -0.3333 [-0.6667, +0.0000]; lost|prior -0.5000 [-1.0000, +0.0000] |\n| zero-compression control | 0.0000 | +0.000 | 0.000 | - |\n"
+}

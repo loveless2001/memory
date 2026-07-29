@@ -741,6 +741,28 @@ accepted or retrieved, no analyzer ran, and full Q1 remains blocked. The
 immutable retry record is
 `plans/260728-mergecert-q1/q1-smoke-retry.json`.
 
+After independent review of the replay-semantics and strict-fingerprint
+repairs through `e83e0f2`, the directly authorized two-document diagnostic
+launched as app `ap-f53tWxXjsQH95pN0uZzxQx` and completed both registered
+financial documents. The copied artifact is
+`plans/260728-mergecert-q1/q1-smoke.json` at SHA-256
+`c3949b641e4ad0ed00596ec38194bed7a46084c58667750afb94bb7682e75564`.
+Independent local analysis with `--expected-documents 2 --n-resamples 2000`
+passed: all six auxiliary archive rows replayed with zero recorded
+mismatches; all five reported arms used identical partitions; control was
+exact zero; attention was finite and nondegenerate; and both documents had
+matched eviction/merge retained counts of 3,072 at 0.25 and 2,458 at 0.40.
+The separate smoke verdict and table are
+`plans/260728-mergecert-q1/q1-smoke-verdict.json` and
+`plans/260728-mergecert-q1/q1-smoke-table.md`.
+
+The smoke preview had no favorable intervals and `run_q2_q3=false`, but it is
+not a registered campaign decision: the analyzer intentionally writes a
+trigger only for `--expected-documents 20`. Therefore no smoke trigger was
+created or copied, and no full Q1, Q2, or Q3 action is authorized by this
+evidence. Full Q1 remains pending a separate controller decision and
+independent review of this smoke-evidence commit.
+
 - [ ] **Step 4: Launch full Q1 detached only after a valid smoke**
 
 ```bash
