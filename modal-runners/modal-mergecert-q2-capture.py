@@ -1385,8 +1385,14 @@ def freeze_capture_summary() -> dict:
     }
     os.makedirs(CAPTURE_ROOT, exist_ok=True)
     summary_path = f"{CAPTURE_ROOT}/capture-summary.json"
-    with open(summary_path, "wb") as handle:
-        handle.write(_canonical_json_bytes(output))
+    encoded = _canonical_json_bytes(output)
+    if os.path.exists(summary_path):
+        with open(summary_path, "rb") as handle:
+            if handle.read() != encoded:
+                raise ValueError("frozen Q2 capture summary is stale or tampered")
+    else:
+        with open(summary_path, "xb") as handle:
+            handle.write(encoded)
     artifacts.commit()
     return {
         "artifact": summary_path,

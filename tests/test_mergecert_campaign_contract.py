@@ -2532,6 +2532,39 @@ def test_q2_freeze_emits_frozen_amended_summary_with_accounting_bindings(
     assert all("audit" in chunk for chunk in summary["chunks"])
 
 
+def test_q2_freeze_accepts_an_existing_identical_canonical_summary(
+    tmp_path, monkeypatch
+):
+    runner, fixture, _ = _prepare_q2_amended_freeze_fixture(tmp_path, monkeypatch)
+    runner.freeze_capture_summary.get_raw_f()()
+    summary_path = fixture["capture_root"] / "capture-summary.json"
+    before = summary_path.read_bytes()
+    summary_path.chmod(0o444)
+
+    try:
+        result = runner.freeze_capture_summary.get_raw_f()()
+    finally:
+        summary_path.chmod(0o644)
+
+    assert result["pass"] is True
+    assert summary_path.read_bytes() == before
+
+
+def test_q2_freeze_rejects_existing_tampered_summary_without_overwrite(
+    tmp_path, monkeypatch
+):
+    runner, fixture, _ = _prepare_q2_amended_freeze_fixture(tmp_path, monkeypatch)
+    runner.freeze_capture_summary.get_raw_f()()
+    summary_path = fixture["capture_root"] / "capture-summary.json"
+    tampered = b'{"schema":"tampered"}\n'
+    summary_path.write_bytes(tampered)
+
+    with pytest.raises(ValueError, match="frozen Q2 capture summary"):
+        runner.freeze_capture_summary.get_raw_f()()
+
+    assert summary_path.read_bytes() == tampered
+
+
 @pytest.mark.parametrize(
     "trigger",
     (
