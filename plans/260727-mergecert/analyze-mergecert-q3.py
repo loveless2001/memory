@@ -10,6 +10,12 @@ from pathlib import Path
 
 import numpy as np
 
+from memsub.certification import (
+    Q2_CONTEXT_MECHANICS_VERSION,
+    Q2_NAMESPACE_VERSION,
+    Q2_PROTOCOL_VERSION,
+    load_q2_amendment,
+)
 from memsub.certification.mergecert_statistics import (
     cohen_kappa,
     directional_failure_nesting,
@@ -22,6 +28,7 @@ DEFAULT_Q2_RESULTS = HERE / "q2-routability.json"
 DEFAULT_REFERENCE_DIR = Path("/tmp/mergecert-q3-references")
 DEFAULT_OUTPUT = HERE / "q3-fragility.json"
 DEFAULT_TRIGGER = HERE / "q1-trigger.json"
+DEFAULT_AMENDMENT = HERE.parent / "260728-mergecert-q1" / "q2-amendment.json"
 REFERENCE_FILES = {
     "A": "e1-relabel-A2.state.json",
     "B": "e1-relabel-B.state.json",
@@ -76,6 +83,60 @@ def _require_q1_trigger(path: str) -> dict:
     if not valid:
         raise ValueError("Q2 is blocked by the registered Q1 trigger")
     return trigger
+
+
+def _singleton_score_value(scores: dict, name: str) -> str:
+    values = np.asarray(scores.get(name, [])).reshape(-1)
+    if len(values) != 1:
+        raise ValueError(f"Q3 score manifest {name} is missing")
+    return str(values[0])
+
+
+def _require_amended_q2_provenance(
+    scores: dict, q2_results: dict, amendment_path: Path
+) -> tuple[dict, str, str]:
+    try:
+        amendment_sha256 = _sha256_file(amendment_path)
+        amendment = load_q2_amendment(amendment_path, amendment_sha256)
+        amendment_json = amendment_path.read_text(encoding="utf-8")
+    except FileNotFoundError as error:
+        raise ValueError("Q3 amendment authority is missing") from error
+    source_hashes = q2_results.get("source_hashes")
+    if not isinstance(source_hashes, dict):
+        raise ValueError("Q3 Q2 source hashes are missing")
+    if (
+        q2_results.get("q2_amendment") != amendment
+        or q2_results.get("q2_amendment_sha256") != amendment_sha256
+        or source_hashes.get("q2_amendment") != amendment_sha256
+    ):
+        raise ValueError("Q3 amendment differs from the local authority")
+    expected_versions = {
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+    }
+    for name, expected in expected_versions.items():
+        if q2_results.get(name) != expected:
+            raise ValueError(f"Q3 Q2 {name} differs from the amendment")
+        if _singleton_score_value(scores, f"q2_{name}") != expected:
+            raise ValueError(
+                f"Q3 score {name} differs from the amended Q2 protocol"
+            )
+    if (
+        _singleton_score_value(scores, "q2_amendment_json") != amendment_json
+        or _singleton_score_value(scores, "q2_amendment_sha256")
+        != amendment_sha256
+    ):
+        raise ValueError("Q3 score amendment differs from the local authority")
+    audit_sha256 = q2_results.get("context_accounting_audit_sha256")
+    if (
+        not isinstance(audit_sha256, str)
+        or len(audit_sha256) != 64
+        or _singleton_score_value(scores, "accounting_audit_sha256")
+        != audit_sha256
+    ):
+        raise ValueError("Q3 score accounting audit differs from the Q2 result")
+    return amendment, amendment_sha256, audit_sha256
 
 
 def _comparison(merge, reference) -> dict:
@@ -144,6 +205,7 @@ def analyze(
     *,
     expected_items=2_000,
     trigger_path: Path = DEFAULT_TRIGGER,
+    amendment_path: Path = DEFAULT_AMENDMENT,
 ):
     q1_trigger = _require_q1_trigger(str(trigger_path))
     q1_trigger_sha256 = _sha256_file(Path(trigger_path))
@@ -154,6 +216,11 @@ def analyze(
         != q1_trigger_sha256
     ):
         raise ValueError("Q3 trigger differs from Q2 result manifest")
+    amendment, amendment_sha256, accounting_audit_sha256 = (
+        _require_amended_q2_provenance(
+            scores, q2_results, Path(amendment_path)
+        )
+    )
     score_trigger_json = np.asarray(scores.get("q1_trigger_json", [])).reshape(-1)
     score_trigger_sha256 = np.asarray(
         scores.get("q1_trigger_sha256", [])
@@ -257,6 +324,12 @@ def analyze(
         "pass": True,
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "q2_amendment": amendment,
+        "q2_amendment_sha256": amendment_sha256,
+        "context_accounting_audit_sha256": accounting_audit_sha256,
         "protocol": {
             "ratio": 0.40,
             "items": expected_items,
@@ -294,6 +367,7 @@ def main():
     )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--trigger", type=Path, default=DEFAULT_TRIGGER)
+    parser.add_argument("--amendment", type=Path, default=DEFAULT_AMENDMENT)
     args = parser.parse_args()
     with args.q2_results.open() as handle:
         q2_results = json.load(handle)
@@ -309,7 +383,8 @@ def main():
             references[name] = json.load(handle)
         hashes[name] = _sha256_file(path)
     verdict = analyze(
-        scores, references, hashes, q2_results, trigger_path=args.trigger
+        scores, references, hashes, q2_results, trigger_path=args.trigger,
+        amendment_path=args.amendment,
     )
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)

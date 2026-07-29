@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q3.py"
 )
+AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -47,6 +48,12 @@ def _fixture(tmp_path):
     trigger_path.write_text(json.dumps(_q1_trigger()))
     trigger = json.loads(trigger_path.read_text())
     trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
+    amendment_path = tmp_path / "q2-amendment.json"
+    amendment_path.write_bytes(AMENDMENT_PATH.read_bytes())
+    amendment_json = amendment_path.read_text()
+    amendment = json.loads(amendment_json)
+    amendment_sha256 = hashlib.sha256(amendment_path.read_bytes()).hexdigest()
+    accounting_audit_sha256 = "a" * 64
     item_ids = np.array(["a", "b", "c", "d"])
     domains = np.array(["financial", "legal", "code", "literature"])
     scores = {
@@ -54,6 +61,14 @@ def _fixture(tmp_path):
             [json.dumps(trigger, sort_keys=True, separators=(",", ":"))]
         ),
         "q1_trigger_sha256": np.array([trigger_sha256]),
+        "q2_amendment_json": np.array([amendment_json]),
+        "q2_amendment_sha256": np.array([amendment_sha256]),
+        "q2_protocol_version": np.array([amendment["protocol_version"]]),
+        "q2_namespace_version": np.array([amendment["namespace_version"]]),
+        "q2_context_mechanics_version": np.array([
+            amendment["context_mechanics_version"]
+        ]),
+        "accounting_audit_sha256": np.array([accounting_audit_sha256]),
         "item_ids": np.tile(item_ids, 2),
         "domain": np.tile(domains, 2),
         "ratio": np.repeat(np.array([0.25, 0.40]), 4),
@@ -82,18 +97,28 @@ def _fixture(tmp_path):
     q2_results = {
         "q1_trigger": trigger,
         "q1_trigger_sha256": trigger_sha256,
-        "source_hashes": {"q1_trigger": trigger_sha256},
+        "source_hashes": {
+            "q1_trigger": trigger_sha256,
+            "q2_amendment": amendment_sha256,
+        },
+        "protocol_version": amendment["protocol_version"],
+        "namespace_version": amendment["namespace_version"],
+        "context_mechanics_version": amendment["context_mechanics_version"],
+        "q2_amendment": amendment,
+        "q2_amendment_sha256": amendment_sha256,
+        "context_accounting_audit_sha256": accounting_audit_sha256,
     }
-    return scores, references, hashes, q2_results, trigger_path
+    return scores, references, hashes, q2_results, trigger_path, amendment_path
 
 
 def test_q3_analysis_reports_kappa_directional_nesting_and_base_rates(tmp_path):
     analyzer = _load_analyzer()
-    scores, references, hashes, q2_results, trigger_path = _fixture(tmp_path)
+    scores, references, hashes, q2_results, trigger_path, amendment_path = _fixture(tmp_path)
 
     verdict = analyzer.analyze(
         scores, references, hashes, q2_results,
         expected_items=4, trigger_path=trigger_path,
+        amendment_path=amendment_path,
     )
 
     assert verdict["pass"] is True
@@ -109,36 +134,48 @@ def test_q3_analysis_reports_kappa_directional_nesting_and_base_rates(tmp_path):
     assert verdict["q1_trigger_sha256"] == hashlib.sha256(
         trigger_path.read_bytes()
     ).hexdigest()
+    assert verdict["q2_amendment"] == json.loads(amendment_path.read_text())
+    assert verdict["q2_amendment_sha256"] == hashlib.sha256(
+        amendment_path.read_bytes()
+    ).hexdigest()
+    assert verdict["protocol_version"] == "mergecert-q2-amended-v2"
+    assert verdict["namespace_version"] == "mergecert-q2-amended-v2"
+    assert verdict["context_mechanics_version"] == (
+        "mergecert-q2-context-mechanics-v2"
+    )
 
 
 def test_q3_analysis_rejects_reference_coverage_or_domain_drift(tmp_path):
     analyzer = _load_analyzer()
-    scores, references, hashes, q2_results, trigger_path = _fixture(tmp_path)
+    scores, references, hashes, q2_results, trigger_path, amendment_path = _fixture(tmp_path)
     references["FR"]["rows"].pop()
     references["FR"]["done"] = 3
     with pytest.raises(ValueError, match="FR.*coverage"):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=trigger_path,
+            amendment_path=amendment_path,
         )
 
-    scores, references, hashes, q2_results, trigger_path = _fixture(tmp_path)
+    scores, references, hashes, q2_results, trigger_path, amendment_path = _fixture(tmp_path)
     references["A"]["rows"][0]["domain"] = "wrong"
     with pytest.raises(ValueError, match="domain"):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=trigger_path,
+            amendment_path=amendment_path,
         )
 
 
 def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
     analyzer = _load_analyzer()
-    scores, references, hashes, q2_results, trigger_path = _fixture(tmp_path)
+    scores, references, hashes, q2_results, trigger_path, amendment_path = _fixture(tmp_path)
 
     with pytest.raises(ValueError, match="q1-trigger.json exists"):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=tmp_path / "missing.json",
+            amendment_path=amendment_path,
         )
 
     trigger_path.write_text(json.dumps(_q1_trigger(favorable_intervals=["other"])))
@@ -146,6 +183,7 @@ def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=trigger_path,
+            amendment_path=amendment_path,
         )
 
     trigger_path.write_text(
@@ -155,4 +193,68 @@ def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=trigger_path,
+            amendment_path=amendment_path,
+        )
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "local-amendment",
+        "q2-amendment-payload",
+        "q2-amendment-hash",
+        "score-amendment-payload",
+        "score-amendment-hash",
+        "q2-protocol-version",
+        "score-protocol-version",
+        "q2-namespace-version",
+        "score-namespace-version",
+        "q2-context-mechanics-version",
+        "score-context-mechanics-version",
+        "q2-accounting-audit-hash",
+        "score-accounting-audit-hash",
+    ),
+)
+def test_q3_analysis_rejects_amended_q2_drift_before_e1_selection(
+    tmp_path, monkeypatch, mutation
+):
+    """A stale Q2 protocol must not reach the fixed ratio-0.40 E1 selection."""
+    analyzer = _load_analyzer()
+    scores, references, hashes, q2_results, trigger_path, amendment_path = _fixture(tmp_path)
+    if mutation == "local-amendment":
+        amendment_path.write_bytes(amendment_path.read_bytes() + b"\n")
+    elif mutation == "q2-amendment-payload":
+        q2_results["q2_amendment"] = {**q2_results["q2_amendment"], "status": "stale"}
+    elif mutation == "q2-amendment-hash":
+        q2_results["q2_amendment_sha256"] = "0" * 64
+    elif mutation == "score-amendment-payload":
+        scores["q2_amendment_json"] = np.asarray(["{}"])
+    elif mutation == "score-amendment-hash":
+        scores["q2_amendment_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "q2-protocol-version":
+        q2_results["protocol_version"] = "mergecert-q2-v1"
+    elif mutation == "score-protocol-version":
+        scores["q2_protocol_version"] = np.asarray(["mergecert-q2-v1"])
+    elif mutation == "q2-namespace-version":
+        q2_results["namespace_version"] = "mergecert-q2-v1"
+    elif mutation == "score-namespace-version":
+        scores["q2_namespace_version"] = np.asarray(["mergecert-q2-v1"])
+    elif mutation == "q2-context-mechanics-version":
+        q2_results["context_mechanics_version"] = "fixed-4096"
+    elif mutation == "score-context-mechanics-version":
+        scores["q2_context_mechanics_version"] = np.asarray(["fixed-4096"])
+    elif mutation == "q2-accounting-audit-hash":
+        q2_results["context_accounting_audit_sha256"] = "0" * 64
+    elif mutation == "score-accounting-audit-hash":
+        scores["accounting_audit_sha256"] = np.asarray(["0" * 64])
+
+    def selection_must_not_run(*args, **kwargs):
+        raise AssertionError("amended Q2 drift reached ratio-0.40 E1 selection")
+
+    monkeypatch.setattr(analyzer.np, "isclose", selection_must_not_run)
+    with pytest.raises(ValueError):
+        analyzer.analyze(
+            scores, references, hashes, q2_results,
+            expected_items=4, trigger_path=trigger_path,
+            amendment_path=amendment_path,
         )
