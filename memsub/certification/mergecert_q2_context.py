@@ -146,6 +146,8 @@ def derive_q2_context_window(document_tokens: int, chunk_token_start: int, chunk
 def validate_q2_context_length(context_tokens: int) -> None:
     if isinstance(context_tokens, bool) or not isinstance(context_tokens, int):
         raise ValueError("context_tokens must be a non-boolean integer")
+    if context_tokens > Q2_REFERENCE_CONTEXT_TOKENS:
+        raise ValueError("context_tokens must not exceed the 4096-token cap")
     for ratio in Q2_RATIOS:
         plan = build_merge_plan(context_tokens, ratio, sink_token_count=Q2_SINK_TOKEN_COUNT)
         requested = int(context_tokens * ratio)

@@ -81,6 +81,11 @@ def test_q2_protocol_rejects_eight_tokens_and_accepts_nine():
     validate_q2_context_length(9)
 
 
+def test_q2_protocol_rejects_contexts_above_the_4096_token_cap():
+    with pytest.raises(ValueError, match="4096"):
+        validate_q2_context_length(4097)
+
+
 @pytest.mark.parametrize(
     ("ratio", "retained", "recent_start"),
     ((0.25, 3072, 2562), (0.40, 2458, 2869)),
