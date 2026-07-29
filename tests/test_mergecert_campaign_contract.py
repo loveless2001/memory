@@ -76,6 +76,9 @@ Q1_EXECUTION_SEMANTICS_VERSION = "mergecert-q1-execution-semantics-v1"
 Q1_FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
 Q2_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-capture.py"
 Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
+Q2_FLEET_ATTEMPT = (
+    ROOT / "plans" / "260728-mergecert-q1" / "q2-fleet-attempt.json"
+)
 
 
 def _q1_trigger(**overrides):
@@ -2395,3 +2398,155 @@ def test_mergecert_q2_probe_runner_pins_registered_arms_and_splits():
         "residual_mlp",
     )
     assert {"complete_fact_types", "run_probes"} <= functions
+
+
+def test_q2_failed_fleet_evidence_records_protocol_contradiction_and_stop():
+    attempt = json.loads(Q2_FLEET_ATTEMPT.read_text())
+
+    assert attempt["schema"] == "mergecert-q2-fleet-attempt-v1"
+    assert attempt["status"] == "stopped-on-registered-short-context-defect"
+    assert attempt["launch_checkout_commit"] == (
+        "7de3fd83f1503de73bfad4393dd92b3d6ff2eb33"
+    )
+    assert attempt["reviewed_runner_commit"] == (
+        "307e7641fa5ef55725fd0c5dd37ed193f000e298"
+    )
+
+    fleet = attempt["fleet"]
+    assert fleet == {
+        "app_id": "ap-94yLmlHzYzxS6y44wZocc8",
+        "app_name": "memsub-mergecert-q2-capture",
+        "function": "fleet",
+        "function_id": "fu-SN6sadtSpowHTq1pdAgS8j",
+        "requested_slices": 8,
+        "spawned_slices": 8,
+        "observed_tasks": 9,
+        "state": "stopped",
+        "tasks_after_stop": 0,
+        "created_at": "2026-07-29 18:18:43+07:00",
+        "stopped_at": "2026-07-29 18:20:59+07:00",
+        "app_lifetime_seconds": 136,
+    }
+
+    failures = attempt["observed_failures"]
+    assert failures["error_type"] == "ValueError"
+    assert failures["message_suffix"] == "short Q2 context"
+    assert failures["runner_trace"] == [
+        "q2_capture_slice:919",
+        "_run_capture:791",
+    ]
+    assert [
+        (failure["item_id"], failure["function_call_id"])
+        for failure in failures["registered_items"]
+    ] == [
+        ("mcq_code/00130_1230_28", "fc-01KYPSJT93Z07JBDFWSXZHA4M2"),
+        ("mcq_code/00130_204_27", "fc-01KYPSJTKE5PNFMQ3N481KEHVE"),
+        ("mcq_code/00130_239_29", "fc-01KYPSJTZFCFXDEB3Z5EEJMC7F"),
+    ]
+
+    assert attempt["stop_response"] == {
+        "stopped_immediately_after_registered_failures": True,
+        "duplicate_fleet_launched": False,
+        "freeze_capture_summary_run": False,
+        "q2_probes_run": False,
+        "q3_run": False,
+        "retry_run": False,
+        "post_stop_remote_mutation": False,
+    }
+
+    outputs = attempt["outputs"]
+    assert outputs["fleet_completed"] is False
+    assert outputs["capture_summary_created"] is False
+    assert outputs["partial_outputs_accepted_as_campaign_evidence"] is False
+    assert outputs["empty_slices"] == [2, 3, 4, 5]
+    assert [state["slice"] for state in outputs["audited_partial_states"]] == [
+        0,
+        1,
+        6,
+        7,
+    ]
+    assert [
+        (state["completed_rows"], state["slice_rows"])
+        for state in outputs["audited_partial_states"]
+    ] == [(100, 3856), (100, 3856), (100, 3856), (100, 3855)]
+    assert {
+        state["required_pilot_verdict_sha256"]
+        for state in outputs["audited_partial_states"]
+    } == {
+        "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4"
+    }
+
+    diagnosis = attempt["root_cause_diagnosis"]
+    assert diagnosis["classification"] == "registered-protocol-contradiction"
+    assert diagnosis["fixed_context_tokens"] == 4096
+    assert diagnosis["historical_origin_commit"] == (
+        "e6f5496d74d8ab6f218815acf6214aa49bcc204e"
+    )
+    assert diagnosis["recent_code_drift"] is False
+    assert (
+        diagnosis["standard_manifest_filters_tokenized_document_length"]
+        is False
+    )
+    assert diagnosis["q1_variable_budget_amendment_authorizes_q2"] is False
+    assert (
+        diagnosis[
+            "silent_padding_skipping_replacement_or_budget_change_valid"
+        ]
+        is False
+    )
+
+    pilot = diagnosis["pilot_miss"]
+    assert pilot["registered_rows"] == [0, 15]
+    assert pilot["documents"] == [
+        "code/00001",
+        "code/00004",
+        "code/00007",
+        "code/00008",
+        "code/00009",
+        "code/00012",
+        "code/00013",
+        "code/00016",
+        "code/00017",
+    ]
+    assert pilot["first_observed_short_document"] == "code/00130"
+    assert pilot["first_observed_short_global_rows"] == [130, 131, 132]
+
+    scan = diagnosis["capped_local_tokenizer_scan"]
+    assert scan["tokenizer"] == "Qwen/Qwen3-4B-Instruct-2507"
+    assert scan["tokenizer_sha256"] == (
+        "a63080b4b30dc861fe1b0e420c53a241304dc81aff3d9bb315e6e33e2a1ab794"
+    )
+    assert scan["controller_capped"] is True
+    assert scan["restart_prohibited"] is True
+    assert scan["completed_domains"] == ["code"]
+    assert scan["unscanned_domains"] == ["financial", "legal", "literature"]
+    assert scan["code_items"] == 9510
+    assert scan["code_referenced_documents"] == 4767
+    assert scan["short_code_documents"] == [
+        {"doc_id": "code/00130", "tokens": 4073, "registered_items": 3},
+        {"doc_id": "code/05272", "tokens": 4067, "registered_items": 4},
+    ]
+    assert scan["proven_affected_registered_items_lower_bound"] == 7
+    assert scan["whole_manifest_total_claimed"] is False
+
+    decision = attempt["protocol_decision"]
+    assert decision["recommended_option"] == "stop-and-report"
+    assert len(decision["options"]) == 3
+    assert decision["protocol_amendment_implemented"] is False
+    assert decision["q2_result_claimed"] is False
+    assert decision["q3_result_claimed"] is False
+
+    billing = attempt["billing_actual_usd"]
+    assert billing["fleet"]["total"] == pytest.approx(
+        billing["fleet"]["h100"]
+        + billing["fleet"]["memory"]
+        + billing["fleet"]["cpu"]
+    )
+    assert billing["campaign_total"] == pytest.approx(
+        billing["campaign_before_fleet_and_delayed_validator"]
+        + billing["fleet"]["total"]
+        + billing["delayed_validator"]
+    )
+    assert billing["remaining"] == pytest.approx(
+        billing["campaign_bound"] - billing["campaign_total"]
+    )

@@ -848,6 +848,7 @@ git commit -m "docs: record moderate-ratio MergeCert placement"
 - Conditional create: `plans/260728-mergecert-q1/q2-pilot-run.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-pilot-state.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-pilot-verdict.json`
+- Conditional create: `plans/260728-mergecert-q1/q2-fleet-attempt.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-capture-summary.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-routability-remote.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-scores.npz`
@@ -937,7 +938,7 @@ tracked evidence is `q2-pilot-run.json`, `q2-pilot-state.json`, and
 their exact hashes and audited schemas are recorded in the run evidence. The
 fleet and probes were not launched.
 
-- [ ] **Step 4: Launch the eight-slice Q2 fleet**
+- [x] **Step 4: Launch the eight-slice Q2 fleet — stopped on defect**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run --detach \
@@ -957,7 +958,58 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
   modal-runners/modal-mergecert-q2-capture.py::freeze_capture_summary
 ```
 
-- [ ] **Step 5: Run registered Q2 probes**
+One fleet app, `ap-94yLmlHzYzxS6y44wZocc8`, spawned the registered eight
+slices and showed nine tasks. Logs then reported registered items failing
+with `ValueError: short Q2 context`, including
+`mcq_code/00130_1230_28`, `mcq_code/00130_204_27`, and
+`mcq_code/00130_239_29`. The app was stopped immediately and terminal
+inventory showed `stopped` with zero tasks at 18:20:59 +07:00 after a
+136-second lifetime. No duplicate fleet, freeze, probe, or Q3 action ran.
+
+Exact fleet billing was H100 `$0.95836057`, memory `$0.12440516`, and CPU
+`$0.00862954`, totaling `$1.09139527`; delayed validator billing was
+`$0.00139660`. Exact campaign actual is now `$1.52004448`. The immutable
+attempt record is `plans/260728-mergecert-q1/q2-fleet-attempt.json`.
+Read-only namespace and state audit found one committed 100-row chunk in each
+of slices 00, 01, 06, and 07; slices 02, 03, 04, and 05 were empty. Every
+audited state binds the canonical pilot-verdict hash. The raw partial NPZs
+were not downloaded, and no partial output is accepted as a campaign result.
+
+The exception is a latent contradiction in the original registration, not
+recent code drift. Commit `e6f5496` introduced both fixed `CTX = 4096` and
+the short-context exception, while the standard-manifest builder filtered
+only on a 24,000-character heuristic and never verified document length with
+the pinned tokenizer. The Q1 variable-length amendment is scoped to Q1 and
+does not authorize changing the parent's unchanged Q2 fixed-context mechanics
+or budgets.
+
+The registered 16-row pilot missed the defect because it covered sorted rows
+0–15 from nine early code documents; the first observed short document,
+`code/00130`, occurs at global rows 130–132. A controller-capped local scan
+with the exact registered tokenizer completed only the code domain and proved
+two short documents (`code/00130`: 4,073 tokens; `code/05272`: 4,067 tokens)
+affecting seven registered items. This is a whole-manifest lower bound, not a
+total; financial, legal, and literature were not scanned, and the scan or
+downloads must not be restarted.
+
+Three scientifically honest dispositions are recorded:
+
+1. **Stop and report (recommended):** make no Q2 routability or Q3 fragility
+   claim. This changes no registered population, context, budget, or Q2
+   semantics.
+2. **Version a variable-length Q2 amendment:** preserve all 30,847 rows, but
+   change fixed-4096 mechanics/budgets. Any future result would be an amended
+   mixed-length Q2 claim and requires fresh review, validation, pilot, and
+   authorization.
+3. **Re-register a tokenizer-filtered full-length population:** preserve
+   fixed-4096 mechanics/budgets, but change the sampled population and all
+   dependent hashes/pilot evidence. Any claim would apply only to that
+   filtered population.
+
+Padding, runtime skipping, replacement, or silent budget variation are not
+valid alternatives. No protocol amendment was implemented.
+
+- [x] **Step 5: Do not run registered Q2 probes after the stopped fleet**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
@@ -969,7 +1021,10 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run --detach \
 Retrieve capture summary, routability JSON, and scores NPZ. Verify their hashes
 and run `analyze-mergecert-q2.py`.
 
-- [ ] **Step 6: Compute Q3 locally**
+Not run. The stopped fleet produced no capture summary, and the recommended
+least claim-changing disposition ends Q2/Q3 without a routability result.
+
+- [x] **Step 6: Do not compute Q3 without registered Q2 evidence**
 
 Copy `/preprobe/e1-relabel-A2.state.json`,
 `/preprobe/e1-relabel-B.state.json`,
@@ -985,21 +1040,32 @@ Copy `/preprobe/e1-relabel-A2.state.json`,
   --output plans/260728-mergecert-q1/q3-fragility.json
 ```
 
-- [ ] **Step 7: Write the completed conditional record**
+Not run. The registered Q3 inputs do not exist, so no fragility result is
+claimed.
+
+- [x] **Step 7: Write the immutable failed-conditional record**
 
 Record `status: completed`, Q1 trigger hash, Q2/Q3 artifact hashes, Modal app
 IDs, item counts, and output paths in `conditional-work.json`.
 
-- [ ] **Step 8: Commit conditional evidence or skip**
+The conditional phase did not complete and was not a trigger-based skip.
+Instead, `q2-fleet-attempt.json` records the exact third terminal state:
+stopped on a registered-protocol contradiction. It binds the app/log items,
+terminal inventory, partial-state audit, exact billing, local diagnostic
+scope, decision options, and the recommended stop-and-report disposition.
+No Q2 or Q3 result is recorded.
+
+- [x] **Step 8: Commit the failed-fleet evidence and protocol decision**
 
 ```bash
-git add plans/260728-mergecert-q1/conditional-work.json \
-  plans/260728-mergecert-q1/q2-* \
-  plans/260728-mergecert-q1/q3-fragility.json
-git commit -m "docs: record MergeCert conditional placement work"
+git add plans/260728-mergecert-q1/q2-fleet-attempt.json \
+  tests/test_mergecert_campaign_contract.py \
+  docs/superpowers/plans/2026-07-28-mergecert-q1-completion.md
+git commit -m "docs: record stopped MergeCert Q2 fleet"
 ```
 
-When skipped, stage only `conditional-work.json`; do not pass unmatched globs.
+No unmatched globs, partial raw outputs, or unregistered result files are
+staged.
 
 ---
 

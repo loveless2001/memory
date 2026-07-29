@@ -1,0 +1,257 @@
+{
+  "schema": "mergecert-q2-fleet-attempt-v1",
+  "status": "stopped-on-registered-short-context-defect",
+  "launch_checkout_commit": "7de3fd83f1503de73bfad4393dd92b3d6ff2eb33",
+  "reviewed_runner_commit": "307e7641fa5ef55725fd0c5dd37ed193f000e298",
+  "fleet": {
+    "app_id": "ap-94yLmlHzYzxS6y44wZocc8",
+    "app_name": "memsub-mergecert-q2-capture",
+    "function": "fleet",
+    "function_id": "fu-SN6sadtSpowHTq1pdAgS8j",
+    "requested_slices": 8,
+    "spawned_slices": 8,
+    "observed_tasks": 9,
+    "state": "stopped",
+    "tasks_after_stop": 0,
+    "created_at": "2026-07-29 18:18:43+07:00",
+    "stopped_at": "2026-07-29 18:20:59+07:00",
+    "app_lifetime_seconds": 136
+  },
+  "observed_failures": {
+    "error_type": "ValueError",
+    "message_suffix": "short Q2 context",
+    "runner_trace": [
+      "q2_capture_slice:919",
+      "_run_capture:791"
+    ],
+    "registered_items": [
+      {
+        "item_id": "mcq_code/00130_1230_28",
+        "observed_at": "2026-07-29 18:19:43+07:00",
+        "function_call_id": "fc-01KYPSJT93Z07JBDFWSXZHA4M2"
+      },
+      {
+        "item_id": "mcq_code/00130_204_27",
+        "observed_at": "2026-07-29 18:19:53+07:00",
+        "function_call_id": "fc-01KYPSJTKE5PNFMQ3N481KEHVE"
+      },
+      {
+        "item_id": "mcq_code/00130_239_29",
+        "observed_at": "2026-07-29 18:20:00+07:00",
+        "function_call_id": "fc-01KYPSJTZFCFXDEB3Z5EEJMC7F"
+      }
+    ]
+  },
+  "stop_response": {
+    "stopped_immediately_after_registered_failures": true,
+    "duplicate_fleet_launched": false,
+    "freeze_capture_summary_run": false,
+    "q2_probes_run": false,
+    "q3_run": false,
+    "retry_run": false,
+    "post_stop_remote_mutation": false
+  },
+  "outputs": {
+    "fleet_completed": false,
+    "capture_summary_created": false,
+    "partial_outputs_accepted_as_campaign_evidence": false,
+    "audit_scope": "read-only state and namespace inventory; raw partial NPZs were not downloaded",
+    "empty_slices": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "audited_partial_states": [
+      {
+        "slice": 0,
+        "state_sha256": "bb76dfddbd0abc31a74d8d7faa586c4bb8d5ee2c93a127dcc2b5692ca21a3156",
+        "completed_rows": 100,
+        "slice_rows": 3856,
+        "compute_seconds": 55.798030142,
+        "completed_chunks": [
+          [
+            0,
+            100
+          ]
+        ],
+        "required_pilot_verdict_sha256": "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4",
+        "ratio_0.25_npz_sha256": "042a0debd534b20f0e820b30a2db6b08811764084586617e9c867666f38f7127",
+        "ratio_0.40_npz_sha256": "4d667576d31b1f19dab18aab109d5fbe3f324b0b0f1e25e802b253ba2e918942"
+      },
+      {
+        "slice": 1,
+        "state_sha256": "6da7037fba3376ba090100e1df3f2bac31d8cbcdcf95d9816c883e6eecfaa1de",
+        "completed_rows": 100,
+        "slice_rows": 3856,
+        "compute_seconds": 57.07554606699999,
+        "completed_chunks": [
+          [
+            0,
+            100
+          ]
+        ],
+        "required_pilot_verdict_sha256": "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4",
+        "ratio_0.25_npz_sha256": "3e46906e197ccc8719e2e814a5a874c88aeed572c0cb9cfce9933ff951419cf8",
+        "ratio_0.40_npz_sha256": "faca2be67ba6e1fd57215769b213f2995707c4ace389a312a53ef9cbe9e41b0d"
+      },
+      {
+        "slice": 6,
+        "state_sha256": "14063d2ab3414de283b8f88f03785008c7a3fa1ab5943eb987edb6fe5f9f532e",
+        "completed_rows": 100,
+        "slice_rows": 3856,
+        "compute_seconds": 56.394372111,
+        "completed_chunks": [
+          [
+            0,
+            100
+          ]
+        ],
+        "required_pilot_verdict_sha256": "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4",
+        "ratio_0.25_npz_sha256": "223ef6483df1095da25ac390f7bb7acfe9716cabeb353ec319cbd2d47adc4726",
+        "ratio_0.40_npz_sha256": "9eddb4d9455d0134693db6fb6c66ea07e9d2d39ce0704966ca2c01e2a63d4285"
+      },
+      {
+        "slice": 7,
+        "state_sha256": "5fafe3b20250e9618097f2db2a8c7f359d3ca7804391fa104951cac0cb27e96d",
+        "completed_rows": 100,
+        "slice_rows": 3855,
+        "compute_seconds": 57.280392542,
+        "completed_chunks": [
+          [
+            0,
+            100
+          ]
+        ],
+        "required_pilot_verdict_sha256": "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4",
+        "ratio_0.25_npz_sha256": "bc28e7269be2b0b9517a656cbf6f8cb75e49952cdb4dfe86c393980331327ff0",
+        "ratio_0.40_npz_sha256": "6222c20e5745eb1278c4059d4caef77b292bac271760097ed0e29a8b1e8584a4"
+      }
+    ]
+  },
+  "root_cause_diagnosis": {
+    "classification": "registered-protocol-contradiction",
+    "fixed_context_tokens": 4096,
+    "failure_condition": "The pinned tokenizer produces fewer than 4096 document tokens; for documents with at least 4096 tokens, the registered clamp always returns exactly 4096.",
+    "historical_origin_commit": "e6f5496d74d8ab6f218815acf6214aa49bcc204e",
+    "recent_code_drift": false,
+    "standard_manifest_filters_tokenized_document_length": false,
+    "manifest_length_heuristic": {
+      "minimum_source_characters": 24000,
+      "description": "The source builder treated 24000 characters as approximately 6000 tokens, but did not validate length with the pinned tokenizer."
+    },
+    "q1_variable_budget_amendment_authorizes_q2": false,
+    "silent_padding_skipping_replacement_or_budget_change_valid": false,
+    "pilot_miss": {
+      "registered_rows": [
+        0,
+        15
+      ],
+      "selection": "first 16 rows after sorting by domain, doc_id, item_id",
+      "documents": [
+        "code/00001",
+        "code/00004",
+        "code/00007",
+        "code/00008",
+        "code/00009",
+        "code/00012",
+        "code/00013",
+        "code/00016",
+        "code/00017"
+      ],
+      "first_observed_short_document": "code/00130",
+      "first_observed_short_global_rows": [
+        130,
+        131,
+        132
+      ],
+      "explanation": "The registered pilot sampled rows 0-15 only and therefore did not exercise document-length readiness at or beyond the first observed short document."
+    },
+    "capped_local_tokenizer_scan": {
+      "tokenizer": "Qwen/Qwen3-4B-Instruct-2507",
+      "tokenizer_sha256": "a63080b4b30dc861fe1b0e420c53a241304dc81aff3d9bb315e6e33e2a1ab794",
+      "matches_registered_pilot_fingerprint": true,
+      "controller_capped": true,
+      "restart_prohibited": true,
+      "downloaded_domain": "code",
+      "downloaded_domain_remote_listing_size": "633.3 MiB",
+      "completed_domains": [
+        "code"
+      ],
+      "unscanned_domains": [
+        "financial",
+        "legal",
+        "literature"
+      ],
+      "manifest_items": 30847,
+      "manifest_referenced_documents": 16044,
+      "code_items": 9510,
+      "code_referenced_documents": 4767,
+      "code_scan_seconds": 60.519,
+      "short_code_documents": [
+        {
+          "doc_id": "code/00130",
+          "tokens": 4073,
+          "registered_items": 3
+        },
+        {
+          "doc_id": "code/05272",
+          "tokens": 4067,
+          "registered_items": 4
+        }
+      ],
+      "proven_affected_registered_items_lower_bound": 7,
+      "whole_manifest_total_claimed": false,
+      "scope_note": "Seven affected items are proven in the completed code-domain scan; no whole-manifest affected-item total is claimed because three domains were not scanned."
+    }
+  },
+  "protocol_decision": {
+    "recommended_option": "stop-and-report",
+    "recommendation_reason": "This is the only option that changes no registered population, context mechanics, budgets, or Q2 claim semantics.",
+    "options": [
+      {
+        "id": "stop-and-report",
+        "action": "End conditional Q2/Q3 and publish the registered protocol incompatibility with the Q1 result and this failed-attempt evidence.",
+        "claim_impact": "No Q2 routability or Q3 fragility result is claimed; existing Q1 claims remain scoped to Q1.",
+        "protocol_change_required": false
+      },
+      {
+        "id": "amend-variable-length",
+        "action": "Create a new, reviewed Q2 protocol version with per-document source/model context lengths and matched per-document budgets.",
+        "claim_impact": "Preserves all 30847 registered rows, but any result is an amended mixed-length Q2 result rather than the original unchanged fixed-4096 Q2.",
+        "protocol_change_required": true
+      },
+      {
+        "id": "reregister-full-length-population",
+        "action": "Create a tokenizer-filtered full-length manifest, new hashes, readiness validation, and a new pilot.",
+        "claim_impact": "Preserves fixed-4096 mechanics and budgets, but changes the sampled population; claims apply only to the filtered population.",
+        "protocol_change_required": true
+      }
+    ],
+    "invalid_silent_workarounds": [
+      "padding",
+      "skip-at-runtime",
+      "replacement",
+      "varying-budgets"
+    ],
+    "protocol_amendment_implemented": false,
+    "q2_result_claimed": false,
+    "q3_result_claimed": false
+  },
+  "billing_actual_usd": {
+    "fleet": {
+      "h100": 0.95836057,
+      "memory": 0.12440516,
+      "cpu": 0.00862954,
+      "total": 1.09139527
+    },
+    "delayed_validator": 0.00139660,
+    "campaign_before_fleet_and_delayed_validator": 0.42725261,
+    "campaign_total": 1.52004448,
+    "campaign_bound": 45.0,
+    "remaining": 43.47995552,
+    "within_bound": true,
+    "exact_billing_actual": true
+  },
+  "next_action": "Stop and report. Preserve the failed-fleet and partial-state evidence, make no Q2 or Q3 result claim, and do not retry, freeze, probe, pad, skip, replace, vary budgets, or amend the protocol without a separately reviewed version and fresh authorization."
+}
