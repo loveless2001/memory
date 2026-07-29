@@ -500,10 +500,23 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
     }
     _write_json(plan / "q1-trigger.json", trigger)
     if positive:
+        amendment_path = plan / "q2-amendment.json"
+        amendment_path.write_bytes((PLAN / "q2-amendment.json").read_bytes())
+        amendment = json.loads(amendment_path.read_text())
+        amendment_sha256 = _sha256(amendment_path)
+        accounting_audit_sha256 = "a" * 64
         q2 = {
             "pass": True,
             "q1_trigger": trigger,
             "q1_trigger_sha256": _sha256(plan / "q1-trigger.json"),
+            "protocol_version": amendment["protocol_version"],
+            "namespace_version": amendment["namespace_version"],
+            "context_mechanics_version": amendment[
+                "context_mechanics_version"
+            ],
+            "q2_amendment": amendment,
+            "q2_amendment_sha256": amendment_sha256,
+            "context_accounting_audit_sha256": accounting_audit_sha256,
             "registered_reading": "Merged loss is mechanics-routable.",
             "markdown_table": (
                 "| Q2 arm | 0.25 | 0.40 |\n"
@@ -520,6 +533,14 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
             "pass": True,
             "q1_trigger": trigger,
             "q1_trigger_sha256": _sha256(plan / "q1-trigger.json"),
+            "protocol_version": amendment["protocol_version"],
+            "namespace_version": amendment["namespace_version"],
+            "context_mechanics_version": amendment[
+                "context_mechanics_version"
+            ],
+            "q2_amendment": amendment,
+            "q2_amendment_sha256": amendment_sha256,
+            "context_accounting_audit_sha256": accounting_audit_sha256,
             "interpretation": "Marginal-aware nesting interpretation.",
             "markdown_table": (
                 "| Q3 reference | kappa | nesting |\n"
@@ -533,6 +554,16 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
             "protocol": "MERGECERT-Q1",
             "status": "completed",
             "q1_trigger_sha256": _sha256(plan / "q1-trigger.json"),
+            "q2_amendment": {
+                "path": "plans/260728-mergecert-q1/q2-amendment.json",
+                "sha256": amendment_sha256,
+            },
+            "protocol_version": amendment["protocol_version"],
+            "namespace_version": amendment["namespace_version"],
+            "context_mechanics_version": amendment[
+                "context_mechanics_version"
+            ],
+            "context_accounting_audit_sha256": accounting_audit_sha256,
             "q2": {
                 "path": (
                     "plans/260728-mergecert-q1/q2-routability.json"
@@ -691,6 +722,57 @@ def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
     assert "all moderate ratios" not in report
     assert "merge-plus-anchor" not in report
     assert Q2_APP_ID in report
+    assert "amended variable-context Q2" in report
+    assert "unchanged fixed-4,096 protocol" not in report
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    (
+        ("missing-conditional-declaration", "amendment"),
+        ("drifted-conditional-declaration", "amendment"),
+        ("drifted-amendment-file", "amendment"),
+        ("drifted-q2-binding", "amendment"),
+        ("drifted-q3-binding", "amendment"),
+        ("drifted-protocol-version", "protocol version"),
+        ("drifted-namespace-version", "namespace version"),
+        ("drifted-mechanics-version", "mechanics version"),
+        ("drifted-accounting-audit", "accounting audit"),
+    ),
+)
+def test_validator_rejects_amended_q2_report_evidence_drift(
+    tmp_path, mutation, message
+):
+    renderer = _load(RENDERER, f"mergecert_q1_renderer_{mutation}")
+    validator = _load(VALIDATOR, f"mergecert_q1_validator_{mutation}")
+    root, plan = _build_bundle(tmp_path, positive=True)
+
+    if mutation == "drifted-amendment-file":
+        amendment_path = plan / "q2-amendment.json"
+        amendment_path.write_bytes(amendment_path.read_bytes() + b"\n")
+        evidence = renderer.load_evidence(plan, root=root)
+    else:
+        evidence = renderer.load_evidence(plan, root=root)
+        if mutation == "missing-conditional-declaration":
+            evidence["conditional"].pop("q2_amendment")
+        elif mutation == "drifted-conditional-declaration":
+            evidence["conditional"]["q2_amendment"]["sha256"] = "0" * 64
+        elif mutation == "drifted-q2-binding":
+            evidence["q2"]["q2_amendment"] = {"status": "drifted"}
+        elif mutation == "drifted-q3-binding":
+            evidence["q3"]["q2_amendment"] = {"status": "drifted"}
+        elif mutation == "drifted-protocol-version":
+            evidence["q2"]["protocol_version"] = "mergecert-q2-v1"
+        elif mutation == "drifted-namespace-version":
+            evidence["q3"]["namespace_version"] = "mergecert-q2-v1"
+        elif mutation == "drifted-mechanics-version":
+            evidence["q2"]["context_mechanics_version"] = "fixed-4096"
+        elif mutation == "drifted-accounting-audit":
+            evidence["q3"]["context_accounting_audit_sha256"] = "0" * 64
+
+    report = renderer.render_report(evidence)
+    with pytest.raises(ValueError, match=message):
+        validator.validate_report_text(report, evidence)
 
 
 def test_report_validation_rejects_a_fake_4096_one_token_budget(tmp_path):
@@ -1172,6 +1254,7 @@ def test_manifest_records_report_and_every_loaded_evidence_file(tmp_path):
         "plans/260728-mergecert-q1/q1-verdict.json",
         "plans/260728-mergecert-q1/q1-trigger.json",
         "plans/260728-mergecert-q1/conditional-work.json",
+        "plans/260728-mergecert-q1/q2-amendment.json",
         "plans/260728-mergecert-q1/q2-routability.json",
         "plans/260728-mergecert-q1/q3-fragility.json",
         "plans/260728-mergecert-q1/compute-actuals.json",

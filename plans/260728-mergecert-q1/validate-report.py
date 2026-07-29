@@ -89,6 +89,60 @@ EXPECTED_SETTLED_P0 = {
 EXPECTED_PARENT_SOURCE_SHA256 = (
     "cbaaec6a20cb4e53ab36a56f377c91c6bd97b8028f1fd60e2c63bdb759576930"
 )
+EXPECTED_Q2_AMENDMENT = {
+    "schema": "mergecert-q2-amendment-v1",
+    "protocol": "MERGECERT-Q2",
+    "protocol_version": "mergecert-q2-amended-v2",
+    "settled_date": "2026-07-29",
+    "status": "settled",
+    "authority": "user-selected-option-2",
+    "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+    "population": {
+        "manifest_items": 30847,
+        "selection": "unchanged-standard-30847-manifest",
+        "item_ids_labels_and_order_rule_unchanged": True,
+    },
+    "ratios": [0.25, 0.4],
+    "sink_token_count": 4,
+    "reference_context_tokens": 4096,
+    "minimum_context_tokens": 9,
+    "budget_mode": "per-item-actual-context-matched-physical-v2",
+    "context_mechanics_version": "mergecert-q2-context-mechanics-v2",
+    "namespace_version": "mergecert-q2-amended-v2",
+    "remote_root": "/artifacts/mergecert/q2-amended-v2",
+    "context_rule": (
+        "canonical registered source window capped at 4096 "
+        "pinned-tokenizer tokens"
+    ),
+    "requested_eviction_rule": (
+        "floor(source_context_token_count * ratio) from logical position 4"
+    ),
+    "physical_budget_rule": (
+        "measure removal on an independent full-cache clone and give merge "
+        "the measured retained count"
+    ),
+    "merge_plan_rule": (
+        "build_merge_plan(source_context_token_count, exact registered "
+        "ratio, sink_token_count=4)"
+    ),
+    "legacy_fixed_context_evidence_authorizes": False,
+    "forbidden": [
+        "padding",
+        "runtime-skip",
+        "replacement",
+        "population-filter",
+        "label-change",
+        "silent-budget-change",
+        "legacy-state-resume",
+    ],
+    "rerun_gate": {
+        "new_pilot_items": 16,
+        "pilot_review_required_before_fleet": True,
+        "new_fleet_slices": 8,
+        "fleet_items": 30847,
+        "fresh_authorization_required": True,
+    },
+}
 MARKDOWN_ESCAPE_PATTERN = re.compile(
     r"\\([\\`*_[\]{}()#+\-.!|>?~])"
 )
@@ -333,7 +387,7 @@ def _validate_loaded_evidence(evidence: dict) -> None:
             evidence[name], sort_keys=True
         ):
             raise ValueError(f"loaded evidence differs from hashed file {name}")
-    for name in ("q2", "q3"):
+    for name in ("q2_amendment", "q2", "q3"):
         if name not in evidence:
             continue
         with evidence["_files"][name]["path"].open() as handle:
@@ -730,6 +784,24 @@ def _validate_trigger(evidence: dict) -> None:
         raise ValueError("Q1 trigger differs from the registered verdict")
 
 
+def _validate_q2_amendment(evidence: dict) -> dict:
+    conditional = evidence["conditional"]
+    declaration = conditional.get("q2_amendment")
+    metadata = evidence["_files"].get("q2_amendment")
+    if not isinstance(declaration, dict) or not isinstance(metadata, dict):
+        raise ValueError("conditional Q2 amendment declaration is missing")
+    if (
+        declaration.get("path") != metadata.get("relative_path")
+        or declaration.get("sha256") != metadata.get("sha256")
+        or not _is_sha256(declaration.get("sha256"))
+    ):
+        raise ValueError("conditional Q2 amendment declaration drift")
+    amendment = evidence.get("q2_amendment")
+    if amendment != EXPECTED_Q2_AMENDMENT:
+        raise ValueError("conditional Q2 amendment schema or payload drift")
+    return amendment
+
+
 def _validate_conditional(evidence: dict) -> str:
     conditional = evidence.get("conditional", {})
     trigger = evidence["trigger"]
@@ -742,6 +814,22 @@ def _validate_conditional(evidence: dict) -> str:
     if trigger["run_q2_q3"]:
         if conditional.get("status") != "completed":
             raise ValueError("conditional work was not completed after trigger")
+        amendment = _validate_q2_amendment(evidence)
+        versions = {
+            "protocol_version": amendment["protocol_version"],
+            "namespace_version": amendment["namespace_version"],
+            "context_mechanics_version": amendment[
+                "context_mechanics_version"
+            ],
+        }
+        accounting_audit_sha256 = conditional.get(
+            "context_accounting_audit_sha256"
+        )
+        if (
+            any(conditional.get(name) != value for name, value in versions.items())
+            or not _is_sha256(accounting_audit_sha256)
+        ):
+            raise ValueError("conditional Q2 amendment version or accounting audit drift")
         for name in ("q2", "q3"):
             if name not in evidence:
                 raise ValueError(f"conditional {name.upper()} evidence drift")
@@ -752,6 +840,28 @@ def _validate_conditional(evidence: dict) -> str:
                 f5_table = evidence[name].get("f5_markdown_table")
                 if not isinstance(f5_table, str) or not f5_table.strip():
                     raise ValueError("conditional Q2 F5 evidence is missing")
+            if evidence[name].get("q2_amendment") != amendment:
+                raise ValueError(
+                    f"conditional {name.upper()} amendment evidence drift"
+                )
+            if evidence[name].get("q2_amendment_sha256") != evidence[
+                "_files"
+            ]["q2_amendment"]["sha256"]:
+                raise ValueError(
+                    f"conditional {name.upper()} amendment evidence drift"
+                )
+            for field, value in versions.items():
+                if evidence[name].get(field) != value:
+                    raise ValueError(
+                        f"conditional {name.upper()} {field.replace('_', ' ')} drift"
+                    )
+            if (
+                evidence[name].get("context_accounting_audit_sha256")
+                != accounting_audit_sha256
+            ):
+                raise ValueError(
+                    f"conditional {name.upper()} accounting audit drift"
+                )
             if (
                 declaration.get("path")
                 != evidence["_files"][name]["relative_path"]
@@ -762,7 +872,7 @@ def _validate_conditional(evidence: dict) -> str:
                 or embedded_hash
                 != evidence["_files"]["trigger"]["sha256"]
             ):
-                raise ValueError(f"conditional {name.upper()} evidence drift")
+                raise ValueError(f"conditional {name.upper()} amendment evidence drift")
         return "completed"
     renderer = _renderer_module()
     if (

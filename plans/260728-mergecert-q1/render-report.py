@@ -131,6 +131,14 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
 
     conditional = evidence["conditional"]
     if conditional.get("status") == "completed":
+        amendment = conditional.get("q2_amendment", {})
+        if not isinstance(amendment, dict) or not isinstance(
+            amendment.get("path"), str
+        ):
+            raise ValueError("completed conditional work lacks a Q2 amendment")
+        amendment_path = root / amendment["path"]
+        evidence["q2_amendment"] = _read_json(amendment_path)
+        _record(files, "q2_amendment", amendment_path, root)
         for name in ("q2", "q3"):
             path = root / conditional[name]["path"]
             evidence[name] = _read_json(path)
@@ -258,13 +266,18 @@ def _conditional_section(evidence: dict) -> str:
         return conditional["reason"]
     return "\n\n".join(
         [
-            "The registered Q1 trigger authorized the conditional work.",
-            "### Q2 — Routability",
+            (
+                "The registered Q1 trigger authorized amended variable-context "
+                "Q2/Q3. It preserves the original 30,847-item population and "
+                "uses per-item matched physical budgets rather than the failed "
+                "fixed-context protocol."
+            ),
+            "### Amended variable-context Q2 — Routability",
             evidence["q2"]["markdown_table"].rstrip(),
             evidence["q2"]["registered_reading"],
             "### F5 fifth-regime row",
             evidence["q2"]["f5_markdown_table"].rstrip(),
-            "### Q3 — Fragility",
+            "### Amended variable-context Q3 — Fragility",
             evidence["q3"]["markdown_table"].rstrip(),
             evidence["q3"]["interpretation"],
         ]

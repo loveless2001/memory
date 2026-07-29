@@ -997,7 +997,7 @@ downloads must not be restarted.
 
 Three scientifically honest dispositions are recorded:
 
-1. **Stop and report (recommended):** make no Q2 routability or Q3 fragility
+1. **Stop and report (initially recommended):** make no Q2 routability or Q3 fragility
    claim. This changes no registered population, context, budget, or Q2
    semantics.
 2. **Version a variable-length Q2 amendment:** preserve all 30,847 rows, but
@@ -1010,7 +1010,8 @@ Three scientifically honest dispositions are recorded:
    filtered population.
 
 Padding, runtime skipping, replacement, or silent budget variation are not
-valid alternatives. No protocol amendment was implemented.
+valid alternatives. At this point in the record, no protocol amendment had
+been implemented.
 
 - [x] **Step 5: Do not run registered Q2 probes after the stopped fleet**
 
@@ -1069,6 +1070,50 @@ git commit -m "docs: record stopped MergeCert Q2 fleet"
 
 No unmatched globs, partial raw outputs, or unregistered result files are
 staged.
+
+---
+
+### Task 7 amendment: selected variable-context Q2 rerun
+
+Option 2 is selected and settled by the dated 2026-07-29 amendment
+`plans/260728-mergecert-q1/q2-amendment.json`, SHA-256
+`7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a`.
+The amended protocol is `mergecert-q2-amended-v2`: it retains the original
+30,847-item standard manifest and uses per-item actual-context matched physical
+budgets. This is an amended variable-context Q2/Q3 result, not a result under
+the failed fixed-context protocol.
+
+`plans/260728-mergecert-q1/q2-fleet-attempt.json` remains immutable failed
+fixed-context evidence. It does not authorize amendment-state reuse, a result
+claim, a fleet retry, probes, or Q3.
+
+- [ ] **Step A: Run one new amended-v2 pilot only after fresh authorization**
+
+The pilot path is
+`/artifacts/mergecert/q2-amended-v2/pilot-amended-v2/`. Run exactly 16
+registered items, even if the selected rows happen to be long-context rows;
+the amendment's accounting and provenance checks, rather than row length,
+define the pilot. Validate and review the new canonical pilot verdict at
+`/artifacts/mergecert/q2-amended-v2/pilot-amended-v2/pilot-verdict.json`
+before authorizing any fleet work.
+
+- [ ] **Step B: Run one new amended-v2 fleet only after pilot-verdict review and fresh authorization**
+
+Run one eight-slice fleet, retaining exactly 30,847 items per registered ratio,
+under these amended-v2 paths:
+
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-00/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-01/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-02/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-03/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-04/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-05/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-06/`
+- `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-07/`
+
+No remote action occurred while implementing this amendment/report provenance
+binding. The pilot, fleet, capture summary, probes, and Q3 remain pending their
+separate authorization gates.
 
 ---
 
