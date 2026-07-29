@@ -2625,13 +2625,13 @@ def test_mergecert_q2_probe_runner_pins_registered_arms_and_splits():
     assert constants["VALIDATION_END"] == 0.7
     assert constants["RESIDUAL_LAYERS"] == tuple(range(37))
     assert constants["CAPTURE_SUMMARY"] == (
-        "/artifacts/mergecert/q2/capture-summary.json"
+        "/artifacts/mergecert/q2-amended-v2/capture-summary.json"
     )
     assert constants["ROUTABILITY_OUTPUT"] == (
-        "/artifacts/mergecert/q2/routability.json"
+        "/artifacts/mergecert/q2-amended-v2/routability.json"
     )
     assert constants["SCORES_OUTPUT"] == (
-        "/artifacts/mergecert/q2/scores.npz"
+        "/artifacts/mergecert/q2-amended-v2/scores.npz"
     )
     assert constants["ARM_NAMES"] == (
         "c0_refit",

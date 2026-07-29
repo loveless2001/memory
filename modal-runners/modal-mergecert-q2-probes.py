@@ -18,13 +18,15 @@ RESIDUAL_LAYERS = (
     20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
     30, 31, 32, 33, 34, 35, 36,
 )
-CAPTURE_SUMMARY = "/artifacts/mergecert/q2/capture-summary.json"
-ROUTABILITY_OUTPUT = "/artifacts/mergecert/q2/routability.json"
-SCORES_OUTPUT = "/artifacts/mergecert/q2/scores.npz"
+CAPTURE_ROOT = "/artifacts/mergecert/q2-amended-v2"
+LEGACY_CAPTURE_ROOT = "/artifacts/mergecert/q2"
+CAPTURE_SUMMARY = "/artifacts/mergecert/q2-amended-v2/capture-summary.json"
+ROUTABILITY_OUTPUT = "/artifacts/mergecert/q2-amended-v2/routability.json"
+SCORES_OUTPUT = "/artifacts/mergecert/q2-amended-v2/scores.npz"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 SURFACE_PATH = "/artifacts/preprobe/surface-features.json"
 FACT_TYPES_SOURCE = "/artifacts/preprobe/fact-types.state.json"
-FACT_TYPES_COMPLETE = "/artifacts/mergecert/q2/fact-types-complete.json"
+FACT_TYPES_COMPLETE = "/artifacts/mergecert/q2-amended-v2/fact-types-complete.json"
 EMBEDDINGS_PATH = "/artifacts/corpus-gate-labels/embeddings.npz"
 SHADOW_CHECKPOINT = "/artifacts/gate-eval/gate-checkpoint.pt"
 COMPACTOR_SINK_PATH = "/artifacts/probe/followup-f3-headfeats.npz"
@@ -36,6 +38,18 @@ Q1_ADDENDUM_SHA256 = (
 )
 Q1_P0_VERDICT_SHA256 = (
     "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+)
+Q2_PROTOCOL_VERSION = "mergecert-q2-amended-v2"
+Q2_CONTEXT_MECHANICS_VERSION = "mergecert-q2-context-mechanics-v2"
+Q2_NAMESPACE_VERSION = "mergecert-q2-amended-v2"
+CAPTURE_SUMMARY_SCHEMA = "mergecert-q2-capture-summary-v2"
+ROUTABILITY_SCHEMA = "mergecert-q2-routability-v2"
+SCORE_SCHEMA = "mergecert-q2-scores-v2"
+Q2_AMENDMENT_IMAGE_PATH = (
+    "/root/repo/plans/260728-mergecert-q1/q2-amendment.json"
+)
+Q2_AMENDMENT_SHA256 = (
+    "7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a"
 )
 ARM_NAMES = (
     "c0_refit",
@@ -59,13 +73,17 @@ PINNED = (
     "hf_transfer",
 )
 
-app = modal.App("memsub-mergecert-q2-probes")
+app = modal.App("memsub-mergecert-q2-amended-v2-probes")
 image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install(*PINNED)
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "MEMSUB_REFERENCE": "1"})
     .add_local_file("pyproject.toml", "/root/repo/pyproject.toml")
-    .add_local_dir("memsub", "/root/repo/memsub")
+    .add_local_file(
+        "plans/260728-mergecert-q1/q2-amendment.json",
+        Q2_AMENDMENT_IMAGE_PATH,
+    )
+    .add_local_python_source("memsub")
 )
 hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
@@ -80,7 +98,8 @@ def _sha256_file(path: str) -> str:
     return digest.hexdigest()
 
 
-def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
+def _require_q1_trigger(path: str | None = None) -> dict:
+    path = path or Q1_TRIGGER_PATH
     if not os.path.exists(path):
         raise ValueError("Q2 is blocked until q1-trigger.json exists")
     with open(path) as handle:
@@ -111,18 +130,77 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
     return trigger
 
 
+def _require_q2_amendment(path: str | None = None) -> dict:
+    """Load the one settled Q2 authority from the image-bound artifact."""
+    from memsub.certification import load_q2_amendment
+
+    amendment_path = path or Q2_AMENDMENT_IMAGE_PATH
+    amendment = load_q2_amendment(amendment_path, Q2_AMENDMENT_SHA256)
+    with open(amendment_path, encoding="utf-8") as handle:
+        amendment_json = handle.read()
+    if _sha256_file(amendment_path) != Q2_AMENDMENT_SHA256:
+        raise ValueError("Q2 amendment image bytes do not match the authority")
+    return {
+        "q2_amendment": amendment,
+        "q2_amendment_json": amendment_json,
+        "q2_amendment_sha256": Q2_AMENDMENT_SHA256,
+    }
+
+
 def _require_gate_and_capture() -> tuple[dict, dict, str]:
+    if CAPTURE_SUMMARY.startswith(f"{LEGACY_CAPTURE_ROOT}/"):
+        raise ValueError("Q2 probes reject the legacy capture root; use amended v2")
     q1_trigger = _require_q1_trigger()
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
+    amendment = _require_q2_amendment()
+    if not os.path.exists(CAPTURE_SUMMARY):
+        raise ValueError("Q2 probes require the frozen amended capture summary")
     with open(CAPTURE_SUMMARY) as handle:
         summary = json.load(handle)
-    if summary.get("pass") is not True:
-        raise ValueError("Q2 probes require a passing frozen capture summary")
+    required_fields = {
+        "schema", "protocol", "protocol_version", "namespace_version",
+        "context_mechanics_version", "q2_amendment", "q2_amendment_sha256",
+        "q1_trigger", "q1_trigger_sha256", "model_id", "ratios",
+        "source_manifest", "source_manifest_sha256", "pilot_verdict",
+        "items_per_ratio", "unique_items_per_ratio", "positive_labels",
+        "positive_rates", "locator_found", "locator_rates", "domain_counts",
+        "worker_compute_seconds", "chunks", "pass",
+    }
+    if not isinstance(summary, dict) or "q2_amendment" not in summary:
+        raise ValueError("Q2 capture summary amendment is missing")
+    if not isinstance(summary, dict) or set(summary) != required_fields:
+        raise ValueError("Q2 probes require the complete amended capture summary")
     if (
-        summary.get("q1_trigger") != q1_trigger
-        or summary.get("q1_trigger_sha256") != q1_trigger_sha256
+        summary["schema"] != CAPTURE_SUMMARY_SCHEMA
+        or summary["protocol"] != "MERGECERT-Q2"
+        or summary["protocol_version"] != Q2_PROTOCOL_VERSION
+    ):
+        raise ValueError("Q2 capture summary schema/protocol mismatch")
+    if summary["namespace_version"] != Q2_NAMESPACE_VERSION:
+        raise ValueError("Q2 capture summary namespace mismatch")
+    if summary["context_mechanics_version"] != Q2_CONTEXT_MECHANICS_VERSION:
+        raise ValueError("Q2 capture summary context mechanics mismatch")
+    if (
+        summary["q2_amendment"] != amendment["q2_amendment"]
+        or summary["q2_amendment_sha256"] != amendment["q2_amendment_sha256"]
+    ):
+        raise ValueError("Q2 capture summary amendment mismatch")
+    if (
+        summary["pass"] is not True
+        or summary["q1_trigger"] != q1_trigger
+        or summary["q1_trigger_sha256"] != q1_trigger_sha256
     ):
         raise ValueError("Q2 capture summary is not bound to the Q1 trigger")
+    if (
+        summary["model_id"] != MODEL_ID
+        or summary["ratios"] != list(RATIOS)
+        or not isinstance(summary["source_manifest"], dict)
+        or summary["source_manifest"].get("sha256")
+        != summary["source_manifest_sha256"]
+        or not isinstance(summary["chunks"], list)
+        or not summary["chunks"]
+    ):
+        raise ValueError("Q2 capture summary contract is incomplete")
     return q1_trigger, summary, q1_trigger_sha256
 
 
@@ -155,6 +233,7 @@ def complete_fact_types() -> dict:
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     q1_trigger, _, q1_trigger_sha256 = _require_gate_and_capture()
+    amendment = _require_q2_amendment()
     with open(MANIFEST_PATH) as handle:
         manifest = json.load(handle)
     with open(FACT_TYPES_SOURCE) as handle:
@@ -166,6 +245,11 @@ def complete_fact_types() -> dict:
         "manifest_sha256": _sha256_file(MANIFEST_PATH),
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
+        "q2_protocol_version": Q2_PROTOCOL_VERSION,
+        "q2_namespace_version": Q2_NAMESPACE_VERSION,
+        "q2_context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "q2_amendment_json": amendment["q2_amendment_json"],
+        "q2_amendment_sha256": amendment["q2_amendment_sha256"],
         "types": dict(source_types),
         "completed_missing_item_ids": [],
     }
@@ -177,6 +261,14 @@ def complete_fact_types() -> dict:
             or prior.get("manifest_sha256") != state["manifest_sha256"]
             or prior.get("q1_trigger") != q1_trigger
             or prior.get("q1_trigger_sha256") != q1_trigger_sha256
+            or prior.get("q2_protocol_version") != Q2_PROTOCOL_VERSION
+            or prior.get("q2_namespace_version") != Q2_NAMESPACE_VERSION
+            or prior.get("q2_context_mechanics_version")
+            != Q2_CONTEXT_MECHANICS_VERSION
+            or prior.get("q2_amendment_json")
+            != amendment["q2_amendment_json"]
+            or prior.get("q2_amendment_sha256")
+            != amendment["q2_amendment_sha256"]
         ):
             raise ValueError("existing completed fact types use different inputs")
         state = prior
@@ -433,6 +525,141 @@ def _source_sink_models(manifest_by_id: dict):
     return compactor_fit, eviction_fit
 
 
+def _c0_distance(merge_recent_start, source_chunk_context_start):
+    """Return the captured distance from the answer anchor to the recent span."""
+    import numpy as np
+
+    return np.asarray(merge_recent_start, dtype=np.float32) - (
+        np.asarray(source_chunk_context_start, dtype=np.float32) + 1024
+    )
+
+
+def _empty_capture_target(count: int, *, residual_path: str | None = None):
+    import numpy as np
+
+    from memsub.certification import Q2_ACCOUNTING_ARRAY_FIELDS
+
+    target = {
+        "y": np.empty(count, dtype=np.int8),
+        "mechanics": np.empty((count, 4), dtype=np.float32),
+        "sink": np.empty((count, 8), dtype=np.float32),
+        "overlap": np.empty(count, dtype=np.float32),
+        "residuals": (
+            np.memmap(
+                residual_path,
+                mode="w+",
+                dtype=np.float16,
+                shape=(count, 37, 2560),
+            )
+            if residual_path is not None
+            else np.empty((count, 37, 2560), dtype=np.float16)
+        ),
+        "seen": np.zeros(count, dtype=bool),
+    }
+    for field in Q2_ACCOUNTING_ARRAY_FIELDS:
+        if field == "item_id":
+            target[field] = np.empty(count, dtype="U256")
+        elif field == "ratio":
+            target[field] = np.empty(count, dtype=np.float64)
+        elif field == "context_mechanics_version":
+            target[field] = np.empty(count, dtype="U256")
+        else:
+            target[field] = np.empty(count, dtype=np.int64)
+    return target
+
+
+def _assemble_capture_chunks(
+    capture_summary: dict,
+    manifest: list[dict],
+    *,
+    ratios=RATIOS,
+    residual_dir: str | None = None,
+):
+    """Validate immutable chunks and assemble all score/accounting vectors."""
+    import numpy as np
+
+    from memsub.certification import validate_q2_accounting_arrays
+    from memsub.compaction import validate_capture_chunk
+
+    manifest_by_id = {row["item_id"]: row for row in manifest}
+    if len(manifest_by_id) != len(manifest):
+        raise ValueError("Q2 probe manifest contains duplicate item IDs")
+    index_by_id = {row["item_id"]: index for index, row in enumerate(manifest)}
+    captured = {}
+    for ratio in ratios:
+        key = f"{ratio:.2f}"
+        residual_path = (
+            f"{residual_dir}/mergecert-residual-{key}.dat"
+            if residual_dir is not None
+            else None
+        )
+        captured[key] = _empty_capture_target(
+            len(manifest), residual_path=residual_path
+        )
+    for chunk in capture_summary["chunks"]:
+        try:
+            ratio = float(chunk["ratio"])
+            key = f"{ratio:.2f}"
+            expected_hash = chunk["sha256"]
+            path = chunk["path"]
+            frozen_audit = chunk["audit"]["context_accounting"]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("Q2 capture summary chunk is incomplete") from exc
+        if key not in captured:
+            raise ValueError("Q2 capture summary contains an unregistered ratio")
+        if path.startswith(f"{LEGACY_CAPTURE_ROOT}/"):
+            raise ValueError("Q2 probes reject legacy capture chunks")
+        if _sha256_file(path) != expected_hash:
+            raise ValueError("Q2 capture chunk hash differs from frozen summary")
+        with np.load(path, allow_pickle=False) as archive:
+            arrays = {name: archive[name] for name in archive.files}
+        source_manifest = np.asarray(
+            arrays["source_manifest_sha256"]
+        ).reshape(-1)
+        if (
+            len(source_manifest) != 1
+            or str(source_manifest[0])
+            != capture_summary["source_manifest_sha256"]
+        ):
+            raise ValueError("Q2 capture chunk manifest hash differs from frozen summary")
+        capture_audit = validate_capture_chunk(arrays, expected_ratio=ratio)
+        chunk_ids = arrays["item_ids"].astype(str)
+        if any(item_id not in index_by_id for item_id in chunk_ids):
+            raise ValueError("Q2 capture chunk contains an item outside the manifest")
+        indices = np.asarray([index_by_id[item_id] for item_id in chunk_ids])
+        target = captured[key]
+        if target["seen"][indices].any():
+            raise ValueError("duplicate Q2 capture item during assembly")
+        expected_rows = [manifest_by_id[item_id] for item_id in chunk_ids]
+        accounting_audit = validate_q2_accounting_arrays(
+            arrays, expected_rows, ratio
+        )
+        if accounting_audit != frozen_audit:
+            raise ValueError("Q2 capture accounting audit differs from frozen summary")
+        if capture_audit != {
+            key: chunk["audit"][key] for key in capture_audit
+        }:
+            raise ValueError("Q2 capture audit differs from frozen summary")
+        target["y"][indices] = arrays["y"]
+        target["mechanics"][indices] = arrays["mechanics"]
+        target["sink"][indices] = arrays["sink_features"]
+        target["overlap"][indices] = arrays["merge_overlap"]
+        target["residuals"][indices] = arrays["residuals"]
+        for field in target:
+            if field in arrays and field not in {
+                "y", "mechanics", "sink", "overlap", "residuals", "seen",
+            }:
+                target[field][indices] = arrays[field]
+        target["seen"][indices] = True
+        target["accounting_audit"] = accounting_audit
+    for key, target in captured.items():
+        if not target["seen"].all():
+            raise ValueError(f"Q2 capture assembly has missing rows for ratio {key}")
+        if "accounting_audit" not in target:
+            raise ValueError(f"Q2 capture accounting audit is missing for ratio {key}")
+    return captured
+
+
 @app.function(
     image=image,
     gpu="L4",
@@ -478,40 +705,9 @@ def run_probes() -> dict:
     if len(set(documents[split == 0]) & set(documents[split != 0])):
         raise ValueError("Q2 document split leaked")
 
-    captured = {}
-    for ratio in RATIOS:
-        key = f"{ratio:.2f}"
-        residual_path = f"/tmp/mergecert-residual-{key}.dat"
-        residuals = np.memmap(
-            residual_path,
-            mode="w+",
-            dtype=np.float16,
-            shape=(count, 37, 2560),
-        )
-        captured[key] = {
-            "y": np.empty(count, dtype=np.int8),
-            "mechanics": np.empty((count, 4), dtype=np.float32),
-            "sink": np.empty((count, 8), dtype=np.float32),
-            "overlap": np.empty(count, dtype=np.float32),
-            "residuals": residuals,
-            "seen": np.zeros(count, dtype=bool),
-        }
-    for chunk in capture_summary["chunks"]:
-        key = f"{float(chunk['ratio']):.2f}"
-        with np.load(chunk["path"], allow_pickle=False) as archive:
-            chunk_ids = archive["item_ids"].astype(str)
-            indices = np.asarray([index_by_id[item_id] for item_id in chunk_ids])
-            target = captured[key]
-            if target["seen"][indices].any():
-                raise ValueError("duplicate Q2 capture item during assembly")
-            target["y"][indices] = archive["y"]
-            target["mechanics"][indices] = archive["mechanics"]
-            target["sink"][indices] = archive["sink_features"]
-            target["overlap"][indices] = archive["merge_overlap"]
-            target["residuals"][indices] = archive["residuals"]
-            target["seen"][indices] = True
-    if any(not values["seen"].all() for values in captured.values()):
-        raise ValueError("Q2 capture assembly has missing rows")
+    captured = _assemble_capture_chunks(
+        capture_summary, manifest, residual_dir="/tmp"
+    )
 
     with open(SURFACE_PATH) as handle:
         surface = json.load(handle)
@@ -555,13 +751,9 @@ def run_probes() -> dict:
         )
         offset_median = float(np.nanmedian(offsets[train]))
         offsets = np.where(np.isnan(offsets), offset_median, offsets)
-        recent_start = 4096 - ((4096 - int(4096 * ratio) - 4) // 2)
-        distance = np.asarray(
-            [
-                recent_start - (row["chunk_rel_start"] + 1024)
-                for row in manifest
-            ],
-            dtype=np.float32,
+        distance = _c0_distance(
+            target["merge_recent_start"],
+            target["source_chunk_context_start"],
         )
         c0 = np.asarray(
             [
@@ -867,7 +1059,24 @@ def run_probes() -> dict:
         "validation_layer_curve"
     ] = pooled_layer_curve
 
+    amendment = _require_q2_amendment()
+    capture_summary_sha256 = _sha256_file(CAPTURE_SUMMARY)
+    accounting_audit = {
+        f"{ratio:.2f}": captured[f"{ratio:.2f}"]["accounting_audit"]
+        for ratio in RATIOS
+    }
+    accounting_audit_sha256 = hashlib.sha256(
+        json.dumps(
+            accounting_audit, sort_keys=True, separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
     output = {
+        "schema": ROUTABILITY_SCHEMA,
+        "q2_amendment": amendment["q2_amendment"],
+        "q2_amendment_sha256": amendment["q2_amendment_sha256"],
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
         "model_id": MODEL_ID,
@@ -881,7 +1090,7 @@ def run_probes() -> dict:
         },
         "source_hashes": {
             "q1_trigger": q1_trigger_sha256,
-            "capture_summary": _sha256_file(CAPTURE_SUMMARY),
+            "capture_summary": capture_summary_sha256,
             "manifest": _sha256_file(MANIFEST_PATH),
             "surface": _sha256_file(SURFACE_PATH),
             "fact_types": _sha256_file(FACT_TYPES_COMPLETE),
@@ -893,6 +1102,11 @@ def run_probes() -> dict:
                 for path in sorted(glob.glob(EVICTION_SINK_GLOB))
             },
         },
+        "capture_summary_sha256": capture_summary_sha256,
+        "manifest_sha256": _sha256_file(MANIFEST_PATH),
+        "accounting_audit": accounting_audit,
+        "accounting_audit_sha256": accounting_audit_sha256,
+        "score_schema": SCORE_SCHEMA,
         "ratios_results": ratio_results,
         "pooled": {
             "items": 2 * count,
@@ -905,6 +1119,16 @@ def run_probes() -> dict:
         [np.full(count, ratio, dtype=np.float32) for ratio in RATIOS]
     )
     score_arrays = {
+        "score_schema": np.asarray([SCORE_SCHEMA]),
+        "q2_amendment_json": np.asarray([amendment["q2_amendment_json"]]),
+        "q2_amendment_sha256": np.asarray([amendment["q2_amendment_sha256"]]),
+        "q2_protocol_version": np.asarray([Q2_PROTOCOL_VERSION]),
+        "q2_namespace_version": np.asarray([Q2_NAMESPACE_VERSION]),
+        "q2_context_mechanics_version": np.asarray([
+            Q2_CONTEXT_MECHANICS_VERSION
+        ]),
+        "capture_summary_sha256": np.asarray([capture_summary_sha256]),
+        "accounting_audit_sha256": np.asarray([accounting_audit_sha256]),
         "q1_trigger_json": np.asarray(
             [json.dumps(q1_trigger, sort_keys=True, separators=(",", ":"))]
         ),
@@ -912,11 +1136,16 @@ def run_probes() -> dict:
         "item_ids": flat_item_ids,
         "doc_ids": pooled_documents,
         "domain": pooled_domains,
-        "ratio": flat_ratios,
         "y": pooled_labels.astype(np.int8),
         "split": pooled_split.astype(np.int8),
         "in_e1": np.tile(in_e1, len(RATIOS)),
     }
+    from memsub.certification import Q2_ACCOUNTING_ARRAY_FIELDS
+
+    for field in Q2_ACCOUNTING_ARRAY_FIELDS:
+        score_arrays[field] = np.concatenate(
+            [captured[f"{ratio:.2f}"][field] for ratio in RATIOS]
+        )
     for arm_name in ARM_NAMES:
         score_arrays[f"{arm_name}_separate"] = np.concatenate(
             [ratio_scores[f"{ratio:.2f}"][arm_name] for ratio in RATIOS]
@@ -925,8 +1154,6 @@ def run_probes() -> dict:
             pooled_scores[arm_name], dtype=np.float32
         )
     os.makedirs(os.path.dirname(ROUTABILITY_OUTPUT), exist_ok=True)
-    with open(ROUTABILITY_OUTPUT, "w") as handle:
-        json.dump(output, handle, indent=1, allow_nan=False)
     np.savez_compressed(SCORES_OUTPUT, **score_arrays)
     output["scores_sha256"] = _sha256_file(SCORES_OUTPUT)
     with open(ROUTABILITY_OUTPUT, "w") as handle:
