@@ -20,6 +20,8 @@ AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
 AMENDMENT_JSON = AMENDMENT_PATH.read_text()
 AMENDMENT = json.loads(AMENDMENT_JSON)
 AMENDMENT_SHA256 = hashlib.sha256(AMENDMENT_PATH.read_bytes()).hexdigest()
+TRIGGER_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q1-trigger.json"
+TRIGGER = json.loads(TRIGGER_PATH.read_text())
 
 
 def _load_runner(name: str):
@@ -30,15 +32,7 @@ def _load_runner(name: str):
 
 
 def _trigger():
-    return {
-        "protocol": "MERGECERT-Q1",
-        "budget_mode": "archived-m1-per-document-matched-physical-v1",
-        "run_q2_q3": True,
-        "favorable_intervals": ["0.40:mean_kl"],
-        "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
-        "p0_verdict_sha256": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a",
-    }
+    return dict(TRIGGER)
 
 
 def _short_manifest_row():
@@ -78,8 +72,8 @@ def _short_arrays(row, *, ratio=0.25):
         "source_context_end": np.asarray([4073], dtype=np.int64),
         "source_context_token_count": np.asarray([4073], dtype=np.int64),
         "model_input_token_count": np.asarray([4073], dtype=np.int64),
-        "source_chunk_token_start": np.asarray([128], dtype=np.int64),
-        "source_chunk_context_start": np.asarray([128], dtype=np.int64),
+        "source_chunk_token_start": np.asarray([1230], dtype=np.int64),
+        "source_chunk_context_start": np.asarray([1230], dtype=np.int64),
         "requested_eviction_start": np.asarray([plan["requested_eviction_start"]], dtype=np.int64),
         "requested_eviction_end": np.asarray([plan["requested_eviction_end"]], dtype=np.int64),
         "requested_evicted_token_count": np.asarray([plan["requested_evicted_token_count"]], dtype=np.int64),
@@ -119,7 +113,7 @@ def _write_short_capture(tmp_path):
             "sha256": manifest_sha256,
         },
         "source_manifest_sha256": manifest_sha256,
-        "pilot_verdict": {"path": "/tmp/pilot.json", "sha256": "p" * 64, "schema": "mergecert-q2-pilot-verdict-v3-amended"},
+        "pilot_verdict": {},
         "items_per_ratio": 1,
         "unique_items_per_ratio": {"0.25": 1, "0.40": 1},
         "positive_labels": {"0.25": 1, "0.40": 1},
@@ -138,10 +132,69 @@ def _write_short_capture(tmp_path):
         "pass": True,
     }
     summary_path = tmp_path / "capture-summary.json"
-    summary_path.write_text(json.dumps(summary))
     trigger_path = tmp_path / "q1-trigger.json"
-    trigger_path.write_text(json.dumps(summary["q1_trigger"]))
+    trigger_path.write_bytes(TRIGGER_PATH.read_bytes())
     summary["q1_trigger_sha256"] = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
+    pilot_dir = tmp_path / "q2-amended-v2" / "pilot-amended-v2"
+    pilot_dir.mkdir(parents=True)
+    pilot_path = pilot_dir / "pilot-verdict.json"
+    pilot = {
+        "schema": "mergecert-q2-pilot-verdict-v3-amended",
+        "protocol": "MERGECERT-Q2",
+        "protocol_version": "mergecert-q2-amended-v2",
+        "namespace_version": "mergecert-q2-amended-v2",
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "validator_version": "mergecert-q2-pilot-validator-v3-amended",
+        "validation_mode": "single-registered-run",
+        "run_tag": "amended-v2",
+        "run_tags": ["amended-v2"],
+        "items": 16,
+        "ratios": [0.25, 0.4],
+        "q2_amendment": AMENDMENT,
+        "q2_amendment_sha256": AMENDMENT_SHA256,
+        "q1_trigger": _trigger(),
+        "q1_trigger_sha256": summary["q1_trigger_sha256"],
+        "source_manifest": {
+            "path": str(manifest_path),
+            "sha256": manifest_sha256,
+        },
+        "state": {
+            "path": str(pilot_dir / "state.json"),
+            "sha256": "a" * 64,
+        },
+        "artifacts": {
+            key: {
+                "path": str(pilot_dir / f"ratio-{key}.npz"),
+                "sha256": character * 64,
+                "audit": {"context_accounting": {"rows": 16}},
+            }
+            for key, character in (("0.25", "b"), ("0.40", "c"))
+        },
+        "compatibility_fingerprint_schema": (
+            "memsub-compatibility-fingerprint-v1"
+        ),
+        "compatibility_fingerprint": {"model": "fixture"},
+        "compatibility_fingerprint_sha256": "d" * 64,
+        "audits": {
+            "0.25": {"context_accounting": {"rows": 16}},
+            "0.40": {"context_accounting": {"rows": 16}},
+        },
+        "comparisons": {},
+        "pass": True,
+    }
+    pilot_path.write_bytes(
+        (
+            json.dumps(
+                pilot, sort_keys=True, separators=(",", ":"), allow_nan=False
+            )
+            + "\n"
+        ).encode()
+    )
+    summary["pilot_verdict"] = {
+        "path": str(pilot_path),
+        "sha256": hashlib.sha256(pilot_path.read_bytes()).hexdigest(),
+        "schema": pilot["schema"],
+    }
     summary_path.write_text(json.dumps(summary))
     return row, arrays, chunk_path, summary, summary_path, trigger_path
 
@@ -162,10 +215,10 @@ def _write_two_chunk_capture(tmp_path):
         arrays = _short_arrays(row)
         arrays["source_manifest_sha256"] = np.asarray([manifest_sha256])
         arrays["source_chunk_token_start"] = np.asarray(
-            [row["chunk_rel_start"]], dtype=np.int64
+            [int(row["item_id"].rsplit("_", 2)[1])], dtype=np.int64
         )
         arrays["source_chunk_context_start"] = np.asarray(
-            [row["chunk_rel_start"]], dtype=np.int64
+            [int(row["item_id"].rsplit("_", 2)[1])], dtype=np.int64
         )
         chunk_path = tmp_path / f"ratio-0.25-{index}.npz"
         np.savez(chunk_path, **arrays)
@@ -214,6 +267,8 @@ def _configure_gate(monkeypatch, runner, summary_path, trigger_path):
     monkeypatch.setattr(runner, "CAPTURE_SUMMARY", str(summary_path))
     monkeypatch.setattr(runner, "Q1_TRIGGER_PATH", str(trigger_path))
     monkeypatch.setattr(runner, "Q2_AMENDMENT_IMAGE_PATH", str(AMENDMENT_PATH))
+    pilot_path = json.loads(summary_path.read_text())["pilot_verdict"]["path"]
+    monkeypatch.setattr(runner, "CAPTURE_ROOT", str(Path(pilot_path).parents[1]))
 
 
 def test_probe_runner_uses_only_amended_artifact_paths_and_app_source():
@@ -224,6 +279,8 @@ def test_probe_runner_uses_only_amended_artifact_paths_and_app_source():
     assert runner.SCORES_OUTPUT == "/artifacts/mergecert/q2-amended-v2/scores.npz"
     assert runner.FACT_TYPES_COMPLETE == "/artifacts/mergecert/q2-amended-v2/fact-types-complete.json"
     assert runner.app.name == "memsub-mergecert-q2-amended-v2-probes"
+    assert runner.ROUTABILITY_SCHEMA == "mergecert-q2-routability-amended-v2"
+    assert runner.SCORE_SCHEMA == "mergecert-q2-scores-amended-v2"
 
 
 def test_probe_routability_provenance_hashes_the_settled_amendment(monkeypatch):
@@ -284,6 +341,60 @@ def test_probe_gate_rejects_legacy_capture_root(tmp_path, monkeypatch):
         runner._require_gate_and_capture()
 
 
+def test_probe_gate_accepts_real_canonical_amended_pilot_verdict(
+    tmp_path, monkeypatch
+):
+    _, _, _, summary, summary_path, trigger_path = _write_short_capture(
+        tmp_path
+    )
+    runner = _load_runner("mergecert_q2_probe_real_pilot")
+    _configure_gate(monkeypatch, runner, summary_path, trigger_path)
+
+    assert runner._require_gate_and_capture()[1] == summary
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "missing",
+        "tampered-bytes",
+        "non-object",
+        "legacy-path",
+        "legacy-schema",
+    ),
+)
+def test_probe_gate_rejects_missing_tampered_or_legacy_pilot_verdict(
+    tmp_path, monkeypatch, mutation
+):
+    _, _, _, summary, summary_path, trigger_path = _write_short_capture(
+        tmp_path
+    )
+    runner = _load_runner(f"mergecert_q2_probe_pilot_{mutation}")
+    _configure_gate(monkeypatch, runner, summary_path, trigger_path)
+    pilot_path = Path(summary["pilot_verdict"]["path"])
+    if mutation == "missing":
+        pilot_path.unlink()
+    elif mutation == "tampered-bytes":
+        pilot_path.write_bytes(pilot_path.read_bytes() + b" ")
+    elif mutation == "non-object":
+        pilot_path.write_text("[]\n")
+        summary["pilot_verdict"]["sha256"] = hashlib.sha256(
+            pilot_path.read_bytes()
+        ).hexdigest()
+        summary_path.write_text(json.dumps(summary))
+    elif mutation == "legacy-path":
+        summary["pilot_verdict"]["path"] = (
+            "/artifacts/mergecert/q2/pilot-q1-triggered/pilot-verdict.json"
+        )
+        summary_path.write_text(json.dumps(summary))
+    elif mutation == "legacy-schema":
+        summary["pilot_verdict"]["schema"] = "mergecert-q2-pilot-verdict-v2"
+        summary_path.write_text(json.dumps(summary))
+
+    with pytest.raises(ValueError, match="pilot"):
+        runner._require_gate_and_capture()
+
+
 @pytest.mark.parametrize(
     "mutation",
     [
@@ -321,9 +432,23 @@ def test_assembly_uses_per_item_short_context_distance(tmp_path):
         assembled["0.25"]["source_chunk_context_start"],
     )
 
-    assert distance.tolist() == [arrays["merge_recent_start"][0] - (128 + 1024)]
+    assert distance.tolist() == [arrays["merge_recent_start"][0] - (1230 + 1024)]
     old_fixed = 4096 - ((4096 - int(4096 * 0.25) - 4) // 2) - (128 + 1024)
     assert distance.tolist() != [old_fixed]
+
+
+def test_assembly_rejects_coherently_shifted_item_anchor(tmp_path):
+    row, arrays, chunk_path, summary, _, _ = _write_short_capture(tmp_path)
+    arrays["source_chunk_token_start"][0] += 10
+    arrays["source_chunk_context_start"][0] += 10
+    np.savez(chunk_path, **arrays)
+    summary["chunks"][0]["sha256"] = hashlib.sha256(
+        chunk_path.read_bytes()
+    ).hexdigest()
+
+    runner = _load_runner("mergecert_q2_probe_shifted_item_anchor")
+    with pytest.raises(ValueError, match="source_chunk_token_start"):
+        runner._assemble_capture_chunks(summary, [row], ratios=(0.25,))
 
 
 def test_assembly_aggregates_full_accounting_audit_across_chunks(tmp_path):

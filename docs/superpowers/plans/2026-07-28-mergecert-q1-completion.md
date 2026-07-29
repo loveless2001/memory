@@ -1080,8 +1080,8 @@ Option 2 is selected and settled by the dated 2026-07-29 amendment
 `7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a`.
 The amended protocol is `mergecert-q2-amended-v2`: it retains the original
 30,847-item standard manifest and uses per-item actual-context matched physical
-budgets. This is an amended variable-context Q2/Q3 result, not a result under
-the failed fixed-context protocol.
+budgets. This is the pending amended variable-context Q2/Q3 protocol, not
+evidence under the failed fixed-context protocol.
 
 `plans/260728-mergecert-q1/q2-fleet-attempt.json` remains immutable failed
 fixed-context evidence. It does not authorize amendment-state reuse, a result

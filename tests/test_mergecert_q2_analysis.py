@@ -20,6 +20,13 @@ ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q2.py"
 )
 AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
+CANONICAL_TRIGGER_PATH = (
+    ROOT / "plans" / "260728-mergecert-q1" / "q1-trigger.json"
+)
+CANONICAL_TRIGGER = json.loads(CANONICAL_TRIGGER_PATH.read_text())
+CANONICAL_TRIGGER_SHA256 = hashlib.sha256(
+    CANONICAL_TRIGGER_PATH.read_bytes()
+).hexdigest()
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -60,22 +67,17 @@ def _test_documents(n=8):
 
 
 def _q1_trigger(**overrides):
-    trigger = {
-        "protocol": "MERGECERT-Q1",
-        "budget_mode": "archived-m1-per-document-matched-physical-v1",
-        "run_q2_q3": True,
-        "favorable_intervals": ["0.40:mean_kl"],
-        "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": Q1_ADDENDUM_SHA256,
-        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
-    }
+    trigger = dict(CANONICAL_TRIGGER)
     trigger.update(overrides)
     return trigger
 
 
 def _write_q1_trigger(tmp_path, trigger=None):
     path = tmp_path / "q1-trigger.json"
-    path.write_text(json.dumps(trigger or _q1_trigger()))
+    if trigger is None:
+        path.write_bytes(CANONICAL_TRIGGER_PATH.read_bytes())
+    else:
+        path.write_text(json.dumps(trigger))
     return path
 
 
@@ -94,7 +96,9 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
     docs = _test_documents()
     n = len(docs)
     y = np.array([0, 1] * (n // 2), dtype=np.int8)
-    item_ids = np.array([f"item-{index}" for index in range(n)])
+    item_ids = np.array(
+        [f"fixture/item-{index}_{100 + index}_0" for index in range(n)]
+    )
     manifest_path = trigger_path.parent / "capture-manifest.json"
     manifest = [
         {
@@ -197,6 +201,7 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
     ).hexdigest()
     capture_summary_sha256 = "d" * 64
     arrays.update({
+        "score_schema": np.array(["mergecert-q2-scores-amended-v2"]),
         "q2_amendment_json": np.array([amendment_json]),
         "q2_amendment_sha256": np.array([amendment_sha256]),
         "q2_protocol_version": np.array([amendment["protocol_version"]]),
@@ -218,13 +223,13 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
         "per_domain_auc": {},
     }
     payload = {
+        "schema": "mergecert-q2-routability-amended-v2",
         "q1_trigger": trigger,
         "q1_trigger_sha256": trigger_sha256,
         "model_id": "Qwen/Qwen3-4B-Instruct-2507",
         "ratios": [0.25, 0.40],
         "seeds": [0, 1, 2],
         "source_hashes": {
-            "scores": "source",
             "q1_trigger": trigger_sha256,
             "q2_amendment": amendment_sha256,
             "capture_summary": capture_summary_sha256,
@@ -239,6 +244,8 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
         "manifest_sha256": manifest_sha256,
         "accounting_audit": audits,
         "accounting_audit_sha256": accounting_audit_sha256,
+        "score_schema": "mergecert-q2-scores-amended-v2",
+        "scores_sha256": "e" * 64,
         "ratios_results": {
             key: {
                 "items": n,
@@ -272,6 +279,7 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     )
 
     assert verdict["pass"] is True
+    assert verdict["schema"] == "mergecert-q2-verdict-amended-v2"
     assert verdict["ratios"]["0.25"]["mechanics_refit"]["auc"] == 1.0
     assert verdict["pooled"]["residual_mlp"]["auc"] == 1.0
     assert "compactor to merge" in verdict["f5_markdown_table"]
@@ -288,6 +296,11 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     assert verdict["context_accounting_audit_sha256"] == payload[
         "accounting_audit_sha256"
     ]
+    assert verdict["accounting_audit_sha256"] == payload[
+        "accounting_audit_sha256"
+    ]
+    assert verdict["source_hashes"] == payload["source_hashes"]
+    assert verdict["scores_sha256"] == payload["scores_sha256"]
 
 
 @pytest.mark.parametrize(
@@ -298,6 +311,8 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
         "payload-amendment-hash",
         "score-amendment",
         "score-amendment-json",
+        "routability-schema",
+        "score-schema",
         "protocol-version",
         "namespace-version",
         "fixed-short-context",
@@ -306,6 +321,7 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
         "capture-summary-hash",
         "accounting-audit-hash",
         "ratio-count",
+        "near-ratio",
         "ratio-id",
         "manifest-association",
     ),
@@ -328,6 +344,10 @@ def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
         arrays["q2_amendment_sha256"] = np.asarray(["0" * 64])
     elif mutation == "score-amendment-json":
         arrays["q2_amendment_json"] = np.asarray(["{}"])
+    elif mutation == "routability-schema":
+        payload["schema"] = "mergecert-q2-routability-v2"
+    elif mutation == "score-schema":
+        arrays["score_schema"] = np.asarray(["mergecert-q2-scores-v2"])
     elif mutation == "protocol-version":
         arrays["q2_protocol_version"] = np.asarray(["mergecert-q2-v1"])
     elif mutation == "namespace-version":
@@ -352,6 +372,8 @@ def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
         arrays["accounting_audit_sha256"] = np.asarray(["0" * 64])
     elif mutation == "ratio-count":
         arrays["ratio"][0] = 0.40
+    elif mutation == "near-ratio":
+        arrays["ratio"][0] = 0.2500005
     elif mutation == "ratio-id":
         arrays["item_ids"][0] = arrays["item_ids"][1]
     elif mutation == "manifest-association":
@@ -367,6 +389,91 @@ def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
             amendment_path=amendment_path,
             manifest_path=trigger_path.parent / "capture-manifest.json",
+        )
+
+
+def test_q2_analysis_requires_exact_manifest_cardinality(tmp_path, monkeypatch):
+    analyzer = _load_analyzer()
+    trigger_path = _write_q1_trigger(tmp_path)
+    amendment_path = _write_amendment(tmp_path)
+    payload, arrays = _fixture(trigger_path, amendment_path)
+    manifest_path = trigger_path.parent / "capture-manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest.append(
+        {
+            "item_id": "fixture/extra_999_0",
+            "doc_id": "doc-extra",
+            "domain": "financial",
+            "chunk_rel_start": 0,
+        }
+    )
+    manifest_path.write_text(json.dumps(manifest))
+    digest = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    payload["manifest_sha256"] = digest
+    payload["source_hashes"]["manifest"] = digest
+    arrays["source_manifest_sha256"] = np.asarray([digest])
+    monkeypatch.setattr(
+        analyzer,
+        "_recompute_metric",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("manifest cardinality drift reached metrics")
+        ),
+    )
+
+    with pytest.raises(ValueError, match="manifest.*8"):
+        analyzer.analyze(
+            payload,
+            arrays,
+            expected_items_per_ratio=8,
+            expected_e1_items=4,
+            n_resamples=20,
+            trigger_path=trigger_path,
+            amendment_path=amendment_path,
+            manifest_path=manifest_path,
+        )
+
+
+def test_q2_analysis_requires_each_ratio_to_equal_the_full_manifest_id_set(
+    tmp_path, monkeypatch
+):
+    analyzer = _load_analyzer()
+    trigger_path = _write_q1_trigger(tmp_path)
+    amendment_path = _write_amendment(tmp_path)
+    payload, arrays = _fixture(trigger_path, amendment_path)
+    manifest_path = trigger_path.parent / "capture-manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest.append(
+        {
+            "item_id": "fixture/extra_999_0",
+            "doc_id": "doc-extra",
+            "domain": "financial",
+            "chunk_rel_start": 0,
+        }
+    )
+    manifest_path.write_text(json.dumps(manifest))
+    digest = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    payload["manifest_sha256"] = digest
+    payload["source_hashes"]["manifest"] = digest
+    arrays["source_manifest_sha256"] = np.asarray([digest])
+    monkeypatch.setattr(
+        analyzer,
+        "_recompute_metric",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("manifest subset drift reached metrics")
+        ),
+    )
+
+    with pytest.raises(ValueError, match="full frozen manifest"):
+        analyzer.analyze(
+            payload,
+            arrays,
+            expected_items_per_ratio=8,
+            expected_manifest_items=9,
+            expected_e1_items=4,
+            n_resamples=20,
+            trigger_path=trigger_path,
+            amendment_path=amendment_path,
+            manifest_path=manifest_path,
         )
 
 
@@ -462,7 +569,7 @@ def test_q2_analysis_rejects_a_stale_trigger_file_with_matching_copies(tmp_path)
     payload, arrays = _fixture(trigger_path)
     trigger_path.write_text(json.dumps(_q1_trigger(favorable_intervals=["other"])))
 
-    with pytest.raises(ValueError, match="trigger.*result"):
+    with pytest.raises(ValueError, match="Q2 is blocked"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,

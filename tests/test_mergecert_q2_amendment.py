@@ -26,7 +26,12 @@ PROVEN_SHORT_ITEMS = (
 )
 
 
-def _row(context_tokens=4096, ratio=0.25, item_id="item-long", anchor=3000):
+def _row(
+    context_tokens=4096,
+    ratio=0.25,
+    item_id="fixture/item-long_3000_0",
+    anchor=3000,
+):
     requested = int(context_tokens * ratio)
     document_tokens = 6000 if context_tokens == 4096 else context_tokens
     context_start = max(0, document_tokens - context_tokens)
@@ -100,10 +105,13 @@ def test_q2_long_context_plan_fields_are_unchanged(ratio, retained, recent_start
 
 
 def test_q2_accounting_accepts_literal_long_and_short_rows_and_arrays():
-    rows = [_row(4096, 0.40, "item-long"), _row(4073, 0.40, "item-short", 1230)]
+    rows = [
+        _row(4096, 0.40, "fixture/item-long_3000_0"),
+        _row(4073, 0.40, "mcq_code/00130_1230_28", 1230),
+    ]
     manifests = [
-        {"item_id": "item-long", "chunk_rel_start": 0},
-        {"item_id": "item-short", "chunk_rel_start": 0},
+        {"item_id": "fixture/item-long_3000_0", "chunk_rel_start": 0},
+        {"item_id": "mcq_code/00130_1230_28", "chunk_rel_start": 0},
     ]
     assert validate_q2_accounting_row(rows[0], manifests[0], 0.40) == rows[0]
     arrays = {
@@ -141,14 +149,53 @@ def test_q2_accounting_rejects_each_named_break(name, mutate, match):
     row = _row()
     mutate(row)
     with pytest.raises(ValueError, match=match):
-        validate_q2_accounting_row(row, {"item_id": "item-long", "chunk_rel_start": 0}, 0.25)
+        validate_q2_accounting_row(
+            row,
+            {"item_id": "fixture/item-long_3000_0", "chunk_rel_start": 0},
+            0.25,
+        )
 
 
 def test_q2_accounting_rejects_manifest_item_and_anchor_mismatch():
     with pytest.raises(ValueError, match="item_id"):
-        validate_q2_accounting_row(_row(), {"item_id": "other", "chunk_rel_start": 0}, 0.25)
+        validate_q2_accounting_row(
+            _row(),
+            {"item_id": "fixture/other_3000_0", "chunk_rel_start": 0},
+            0.25,
+        )
     with pytest.raises(ValueError, match="source_context_start"):
-        validate_q2_accounting_row(_row(), {"item_id": "item-long", "chunk_rel_start": 2000}, 0.25)
+        validate_q2_accounting_row(
+            _row(),
+            {"item_id": "fixture/item-long_3000_0", "chunk_rel_start": 2000},
+            0.25,
+        )
+
+
+def test_q2_accounting_rejects_coherently_shifted_absolute_chunk_anchor():
+    row = _row(4073, 0.25, "mcq_code/00130_1230_28", 1230)
+    row["source_chunk_token_start"] = 1240
+    row["source_chunk_context_start"] = 1240
+
+    with pytest.raises(ValueError, match="source_chunk_token_start"):
+        validate_q2_accounting_row(
+            row,
+            {"item_id": "mcq_code/00130_1230_28", "chunk_rel_start": 0},
+            0.25,
+        )
+
+
+@pytest.mark.parametrize("ratio", (0.2500005, 0.4000005))
+def test_q2_accounting_rejects_near_registered_ratios(ratio):
+    registered = 0.25 if ratio < 0.3 else 0.40
+    row = _row(4096, registered)
+    row["ratio"] = ratio
+
+    with pytest.raises(ValueError, match="ratio"):
+        validate_q2_accounting_row(
+            row,
+            {"item_id": "fixture/item-long_3000_0", "chunk_rel_start": 0},
+            registered,
+        )
 
 
 def test_q2_amendment_is_exact_and_hash_bound(tmp_path):

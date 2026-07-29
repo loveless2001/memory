@@ -89,18 +89,13 @@ Q2_FLEET_ATTEMPT = (
 Q2_AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
 Q2_AMENDMENT_JSON = Q2_AMENDMENT_PATH.read_text()
 Q2_AMENDMENT_SHA256 = hashlib.sha256(Q2_AMENDMENT_PATH.read_bytes()).hexdigest()
+Q1_TRIGGER_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q1-trigger.json"
+Q1_TRIGGER = json.loads(Q1_TRIGGER_PATH.read_text())
+Q1_TRIGGER_SHA256 = hashlib.sha256(Q1_TRIGGER_PATH.read_bytes()).hexdigest()
 
 
 def _q1_trigger(**overrides):
-    trigger = {
-        "protocol": "MERGECERT-Q1",
-        "budget_mode": "archived-m1-per-document-matched-physical-v1",
-        "run_q2_q3": True,
-        "favorable_intervals": ["0.40:mean_kl"],
-        "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": Q1_ADDENDUM_SHA256,
-        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
-    }
+    trigger = dict(Q1_TRIGGER)
     trigger.update(overrides)
     return trigger
 
@@ -109,11 +104,11 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
     capture_root = tmp_path / "q2"
     trigger_path = tmp_path / "q1-trigger.json"
     trigger = _q1_trigger()
-    trigger_path.write_text(json.dumps(trigger))
+    trigger_path.write_bytes(Q1_TRIGGER_PATH.read_bytes())
     manifest_path = tmp_path / "capture-manifest.json"
     manifest = [
         {
-            "item_id": f"item-{index:02d}",
+            "item_id": f"fixture/item-{index:02d}_{index}_0",
             "doc_id": f"doc-{index // 2:02d}",
             "domain": "financial",
             "question": f"Question {index}",
@@ -2599,7 +2594,7 @@ def test_q2_runners_reject_a_missing_or_non_authorizing_q1_trigger(
 def test_q2_runners_accept_the_registered_q1_trigger(tmp_path):
     trigger = _q1_trigger()
     trigger_path = tmp_path / "q1-trigger.json"
-    trigger_path.write_text(json.dumps(trigger))
+    trigger_path.write_bytes(Q1_TRIGGER_PATH.read_bytes())
 
     for path, name in (
         (Q2_RUNNER, "mergecert_q2_capture_q1_trigger_accept"),
@@ -2607,6 +2602,20 @@ def test_q2_runners_accept_the_registered_q1_trigger(tmp_path):
     ):
         runner = _load_module(path, name)
         assert runner._require_q1_trigger(str(trigger_path)) == trigger
+
+
+def test_q2_runners_reject_coordinated_noncanonical_trigger_drift(tmp_path):
+    trigger = _q1_trigger(favorable_intervals=["0.40:mean_kl"])
+    trigger_path = tmp_path / "q1-trigger.json"
+    trigger_path.write_text(json.dumps(trigger))
+
+    for path, name in (
+        (Q2_RUNNER, "mergecert_q2_capture_q1_trigger_drift"),
+        (Q2_PROBE_RUNNER, "mergecert_q2_probes_q1_trigger_drift"),
+    ):
+        runner = _load_module(path, name)
+        with pytest.raises(ValueError, match="Q2 is blocked"):
+            runner._require_q1_trigger(str(trigger_path))
 
 
 def test_mergecert_q2_probe_runner_pins_registered_arms_and_splits():

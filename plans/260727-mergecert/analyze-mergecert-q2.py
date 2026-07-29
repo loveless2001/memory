@@ -15,6 +15,11 @@ from memsub.certification import (
     Q2_CONTEXT_MECHANICS_VERSION,
     Q2_NAMESPACE_VERSION,
     Q2_PROTOCOL_VERSION,
+    Q2_REGISTERED_ITEMS,
+    Q2_ROUTABILITY_SCHEMA,
+    Q2_SCORE_SCHEMA,
+    Q2_VERDICT_SCHEMA,
+    load_q1_trigger,
     load_q2_amendment,
     validate_q2_accounting_arrays,
 )
@@ -31,7 +36,7 @@ DEFAULT_SCORES = HERE / "q2-scores.npz"
 DEFAULT_OUTPUT = HERE / "q2-verdict.json"
 DEFAULT_TABLE = HERE / "q2-table.md"
 DEFAULT_F5_TABLE = HERE / "q2-f5-table.md"
-DEFAULT_TRIGGER = HERE / "q1-trigger.json"
+DEFAULT_TRIGGER = HERE.parent / "260728-mergecert-q1" / "q1-trigger.json"
 DEFAULT_AMENDMENT = HERE.parent / "260728-mergecert-q1" / "q2-amendment.json"
 DEFAULT_MANIFEST = Path("/artifacts/probe/capture-manifest.json")
 RATIOS = (0.25, 0.40)
@@ -66,34 +71,10 @@ def _sha256_file(path: Path) -> str:
 
 
 def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
-    if not os.path.exists(path):
-        raise ValueError("Q2 is blocked until q1-trigger.json exists")
-    with open(path) as handle:
-        trigger = json.load(handle)
-    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
-    hashes = (
-        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
-    )
-    valid = (
-        isinstance(trigger, dict)
-        and trigger.get("protocol") == "MERGECERT-Q1"
-        and trigger.get("budget_mode") == Q1_BUDGET_MODE
-        and trigger.get("addendum_sha256") == Q1_ADDENDUM_SHA256
-        and trigger.get("p0_verdict_sha256") == Q1_P0_VERDICT_SHA256
-        and trigger.get("run_q2_q3") is True
-        and isinstance(favorable_intervals, list)
-        and bool(favorable_intervals)
-        and all(
-            isinstance(interval, str) and bool(interval.strip())
-            for interval in favorable_intervals
-        )
-        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
-    )
-    if not valid:
-        raise ValueError("Q2 is blocked by the registered Q1 trigger")
-    return trigger
+    try:
+        return load_q1_trigger(path)
+    except (FileNotFoundError, OSError) as exc:
+        raise ValueError("Q2 is blocked until q1-trigger.json exists") from exc
 
 
 def _singleton_array(arrays: dict, name: str) -> str:
@@ -143,7 +124,12 @@ def _require_amended_provenance(payload: dict, arrays: dict, amendment_path: Pat
     return amendment, amendment_sha256
 
 
-def _require_frozen_manifest(payload: dict, arrays: dict, manifest_path: Path):
+def _require_frozen_manifest(
+    payload: dict,
+    arrays: dict,
+    manifest_path: Path,
+    expected_items: int,
+):
     manifest_sha256 = _sha256_file(manifest_path)
     source_hashes = payload["source_hashes"]
     if (
@@ -159,6 +145,10 @@ def _require_frozen_manifest(payload: dict, arrays: dict, manifest_path: Path):
         raise ValueError("Q2 frozen manifest is not valid JSON") from error
     if not isinstance(manifest, list):
         raise ValueError("Q2 frozen manifest must be a list")
+    if len(manifest) != expected_items:
+        raise ValueError(
+            f"Q2 frozen manifest must contain exactly {expected_items} rows"
+        )
     manifest_by_id = {}
     for row in manifest:
         if (
@@ -186,7 +176,7 @@ def _validate_flattened_accounting(
     }
     for ratio in RATIOS:
         key = f"{ratio:.2f}"
-        mask = np.isclose(ratios, ratio, rtol=0, atol=1e-6)
+        mask = ratios == ratio
         indices = np.flatnonzero(mask)
         expected_rows = []
         for index in indices:
@@ -202,10 +192,10 @@ def _validate_flattened_accounting(
             expected_rows.append(manifest_row)
         if len(set(item_ids[indices])) != len(indices):
             raise ValueError("Q2 score ratio contains duplicate manifest item IDs")
-        segment = {field: flattened[field][indices] for field in Q2_ACCOUNTING_ARRAY_FIELDS}
-        # Score archives flatten ratios as float32; bind the selected arm to
-        # the exact registered value before the shared validator fingerprints.
-        segment["ratio"] = np.full(len(indices), ratio, dtype=np.float64)
+        segment = {
+            field: flattened[field][indices]
+            for field in Q2_ACCOUNTING_ARRAY_FIELDS
+        }
         audits[key] = validate_q2_accounting_arrays(
             segment, expected_rows, ratio
         )
@@ -325,12 +315,20 @@ def analyze(
     arrays,
     *,
     expected_items_per_ratio=30_847,
+    expected_manifest_items=None,
     expected_e1_items=2_000,
     n_resamples=2_000,
     trigger_path: Path = DEFAULT_TRIGGER,
     amendment_path: Path = DEFAULT_AMENDMENT,
     manifest_path: Path = DEFAULT_MANIFEST,
 ):
+    if expected_manifest_items is None:
+        expected_manifest_items = expected_items_per_ratio
+    if (
+        expected_items_per_ratio == Q2_REGISTERED_ITEMS
+        and expected_manifest_items != Q2_REGISTERED_ITEMS
+    ):
+        raise ValueError("production Q2 manifest size is fixed at 30,847")
     q1_trigger = _require_q1_trigger(str(trigger_path))
     q1_trigger_sha256 = _sha256_file(Path(trigger_path))
     if (
@@ -338,6 +336,19 @@ def analyze(
         or payload.get("q1_trigger_sha256") != q1_trigger_sha256
     ):
         raise ValueError("Q2 trigger differs from result manifest")
+    if payload.get("schema") != Q2_ROUTABILITY_SCHEMA:
+        raise ValueError("Q2 routability schema is not amended-v2")
+    if payload.get("score_schema") != Q2_SCORE_SCHEMA:
+        raise ValueError("Q2 routed score schema is not amended-v2")
+    if _singleton_array(arrays, "score_schema") != Q2_SCORE_SCHEMA:
+        raise ValueError("Q2 score archive schema is not amended-v2")
+    scores_sha256 = payload.get("scores_sha256")
+    if (
+        not isinstance(scores_sha256, str)
+        or len(scores_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in scores_sha256)
+    ):
+        raise ValueError("Q2 scores SHA-256 is missing or noncanonical")
     if payload.get("model_id") != "Qwen/Qwen3-4B-Instruct-2507":
         raise ValueError("Q2 model provenance mismatch")
     if payload.get("ratios") != list(RATIOS) or payload.get("seeds") != [0, 1, 2]:
@@ -365,7 +376,7 @@ def analyze(
     ):
         raise ValueError("Q2 score manifest Q1 trigger differs from result")
     manifest_by_id = _require_frozen_manifest(
-        payload, arrays, Path(manifest_path)
+        payload, arrays, Path(manifest_path), expected_manifest_items
     )
 
     required = {
@@ -406,6 +417,8 @@ def analyze(
         raise ValueError("Q2 stored split differs from SHA-256 document split")
     if not np.isin(y, (0, 1)).all() or not np.isin(in_e1, (0, 1)).all():
         raise ValueError("Q2 labels and E1 membership must be binary")
+    if not np.isfinite(ratios).all() or not np.isin(ratios, RATIOS).all():
+        raise ValueError("Q2 ratios must be exact registered values")
     accounting_audit, accounting_audit_sha256 = _validate_flattened_accounting(
         arrays, item_ids, documents, domains, ratios, manifest_by_id
     )
@@ -415,11 +428,11 @@ def analyze(
     ):
         raise ValueError("Q2 accounting audit differs from routed evidence")
 
-    ratio_metrics = {}
+    ratio_masks = {}
     item_sets = []
-    for ratio_index, ratio in enumerate(RATIOS):
+    for ratio in RATIOS:
         key = f"{ratio:.2f}"
-        mask = np.isclose(ratios, ratio, rtol=0, atol=1e-6)
+        mask = ratios == ratio
         if mask.sum() != expected_items_per_ratio:
             raise ValueError(f"Q2 ratio {key} item count mismatch")
         ids = item_ids[mask]
@@ -427,7 +440,17 @@ def analyze(
             raise ValueError(f"Q2 ratio {key} item IDs are not unique")
         if int(in_e1[mask].sum()) != expected_e1_items:
             raise ValueError(f"Q2 ratio {key} E1 coverage mismatch")
+        ratio_masks[key] = mask
         item_sets.append(set(ids))
+    if item_sets[0] != item_sets[1]:
+        raise ValueError("Q2 ratios do not cover the same registered items")
+    if any(item_set != set(manifest_by_id) for item_set in item_sets):
+        raise ValueError("Q2 ratios do not equal the full frozen manifest ID set")
+
+    ratio_metrics = {}
+    for ratio_index, ratio in enumerate(RATIOS):
+        key = f"{ratio:.2f}"
+        mask = ratio_masks[key]
         ratio_metrics[key] = {}
         remote_arms = payload["ratios_results"][key]["arms"]
         for arm_index, arm in enumerate(ARMS):
@@ -445,9 +468,6 @@ def analyze(
             )
             _assert_metric_matches(remote_arms[arm], local, f"{key} {arm}")
             ratio_metrics[key][arm] = local
-    if item_sets[0] != item_sets[1]:
-        raise ValueError("Q2 ratios do not cover the same registered items")
-
     pooled_metrics = {}
     for arm_index, arm in enumerate(ARMS):
         scores = np.asarray(arrays[f"{arm}_pooled"], dtype=float)
@@ -493,6 +513,7 @@ def analyze(
     table = _markdown_table(ratio_metrics, pooled_metrics)
     f5_table = _f5_table(ratio_metrics)
     return {
+        "schema": Q2_VERDICT_SCHEMA,
         "pass": True,
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
@@ -503,6 +524,10 @@ def analyze(
         "q2_amendment_sha256": amendment_sha256,
         "context_accounting_audit": accounting_audit,
         "context_accounting_audit_sha256": accounting_audit_sha256,
+        "accounting_audit_sha256": accounting_audit_sha256,
+        "source_hashes": dict(payload["source_hashes"]),
+        "score_schema": Q2_SCORE_SCHEMA,
+        "scores_sha256": scores_sha256,
         "items_per_ratio": expected_items_per_ratio,
         "e1_items_per_ratio": expected_e1_items,
         "ratios": ratio_metrics,

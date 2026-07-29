@@ -18,6 +18,29 @@ Q2_RATIOS = (0.25, 0.40)
 Q2_SINK_TOKEN_COUNT = 4
 Q2_REFERENCE_CONTEXT_TOKENS = 4096
 Q2_MINIMUM_CONTEXT_TOKENS = 9
+Q2_REGISTERED_ITEMS = 30_847
+Q2_ROUTABILITY_SCHEMA = "mergecert-q2-routability-amended-v2"
+Q2_SCORE_SCHEMA = "mergecert-q2-scores-amended-v2"
+Q2_VERDICT_SCHEMA = "mergecert-q2-verdict-amended-v2"
+Q3_RESULT_SCHEMA = "mergecert-q3-fragility-amended-v2"
+Q1_TRIGGER_SHA256 = (
+    "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1"
+)
+Q1_TRIGGER_PAYLOAD = {
+    "protocol": "MERGECERT-Q1",
+    "budget_mode": "archived-m1-per-document-matched-physical-v1",
+    "run_q2_q3": True,
+    "favorable_intervals": ["0.40:lost_prior"],
+    "q1_verdict_sha256": (
+        "4266eb66c5b0979da504b124dfa0ceb89d50e29348ea78d9ca7ac8c2614ee036"
+    ),
+    "addendum_sha256": (
+        "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
+    ),
+    "p0_verdict_sha256": (
+        "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+    ),
+}
 
 Q2_ACCOUNTING_INTEGER_FIELDS = (
     "source_document_token_count",
@@ -119,6 +142,33 @@ def load_q2_amendment(path: str | Path, expected_sha256: str | None = None) -> d
     return amendment
 
 
+def load_q1_trigger(path: str | Path) -> dict:
+    """Load the one unchanged tracked Q1 authorization by payload and bytes."""
+    raw = Path(path).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != Q1_TRIGGER_SHA256:
+        raise ValueError("Q2 is blocked by noncanonical q1-trigger.json bytes")
+    try:
+        trigger = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Q2 is blocked by invalid q1-trigger.json") from exc
+    if trigger != Q1_TRIGGER_PAYLOAD:
+        raise ValueError("Q2 is blocked by the registered Q1 trigger")
+    return trigger
+
+
+def _registered_chunk_token_start(item_id: str) -> int:
+    try:
+        encoded = item_id.rsplit("_", 2)[1]
+        value = int(encoded)
+    except (IndexError, ValueError) as exc:
+        raise ValueError(
+            "item_id does not encode source_chunk_token_start"
+        ) from exc
+    if value < 0 or str(value) != encoded:
+        raise ValueError("item_id source_chunk_token_start is noncanonical")
+    return value
+
+
 def derive_q2_context_window(document_tokens: int, chunk_token_start: int, chunk_rel_start: int) -> dict:
     """Clamp the registered source window without padding short documents."""
     for name, value in (("document_tokens", document_tokens), ("chunk_token_start", chunk_token_start), ("chunk_rel_start", chunk_rel_start)):
@@ -212,6 +262,13 @@ def validate_q2_accounting_row(row: dict, manifest_row: dict | None = None, expe
     if manifest_row is not None:
         if row["item_id"] != manifest_row.get("item_id"):
             raise ValueError("item_id does not match manifest row")
+        if (
+            row["source_chunk_token_start"]
+            != _registered_chunk_token_start(row["item_id"])
+        ):
+            raise ValueError(
+                "source_chunk_token_start does not match registered item_id"
+            )
         window = derive_q2_context_window(
             row["source_document_token_count"], row["source_chunk_token_start"], manifest_row.get("chunk_rel_start")
         )

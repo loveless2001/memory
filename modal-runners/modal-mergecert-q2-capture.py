@@ -44,6 +44,9 @@ PILOT_VERDICT_FILENAME = "pilot-verdict.json"
 CAPTURE_SUMMARY_SCHEMA = "mergecert-q2-capture-summary-v2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
+Q1_TRIGGER_SHA256 = (
+    "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1"
+)
 Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
@@ -245,34 +248,12 @@ def _registered_pilot_verdict_path() -> str:
 
 
 def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
-    if not os.path.exists(path):
-        raise ValueError("Q2 is blocked until q1-trigger.json exists")
-    with open(path) as handle:
-        trigger = json.load(handle)
-    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
-    hashes = (
-        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
-    )
-    valid = (
-        isinstance(trigger, dict)
-        and trigger.get("protocol") == "MERGECERT-Q1"
-        and trigger.get("budget_mode") == Q1_BUDGET_MODE
-        and trigger.get("addendum_sha256") == Q1_ADDENDUM_SHA256
-        and trigger.get("p0_verdict_sha256") == Q1_P0_VERDICT_SHA256
-        and trigger.get("run_q2_q3") is True
-        and isinstance(favorable_intervals, list)
-        and bool(favorable_intervals)
-        and all(
-            isinstance(interval, str) and bool(interval.strip())
-            for interval in favorable_intervals
-        )
-        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
-    )
-    if not valid:
-        raise ValueError("Q2 is blocked by the registered Q1 trigger")
-    return trigger
+    from memsub.certification import load_q1_trigger
+
+    try:
+        return load_q1_trigger(path)
+    except (FileNotFoundError, OSError) as exc:
+        raise ValueError("Q2 is blocked until q1-trigger.json exists") from exc
 
 
 def _validate_manifest_rows(manifest: list[dict]) -> None:
@@ -1409,4 +1390,4 @@ def fleet() -> None:
         q2_capture_slice.spawn(slice_idx, Q2_SLICES)
         for slice_idx in range(Q2_SLICES)
     ]
-    print(f"spawned fixed Q2 fleet: {len(handles)} slices")
+    print(f"spawned amended-v2 Q2 fleet: {len(handles)} slices")

@@ -14,6 +14,10 @@ from memsub.certification import (
     Q2_CONTEXT_MECHANICS_VERSION,
     Q2_NAMESPACE_VERSION,
     Q2_PROTOCOL_VERSION,
+    Q2_SCORE_SCHEMA,
+    Q2_VERDICT_SCHEMA,
+    Q3_RESULT_SCHEMA,
+    load_q1_trigger,
     load_q2_amendment,
 )
 from memsub.certification.mergecert_statistics import (
@@ -24,10 +28,10 @@ from memsub.certification.mergecert_statistics import (
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_SCORES = HERE / "q2-scores.npz"
-DEFAULT_Q2_RESULTS = HERE / "q2-routability.json"
+DEFAULT_Q2_RESULTS = HERE / "q2-verdict.json"
 DEFAULT_REFERENCE_DIR = Path("/tmp/mergecert-q3-references")
 DEFAULT_OUTPUT = HERE / "q3-fragility.json"
-DEFAULT_TRIGGER = HERE / "q1-trigger.json"
+DEFAULT_TRIGGER = HERE.parent / "260728-mergecert-q1" / "q1-trigger.json"
 DEFAULT_AMENDMENT = HERE.parent / "260728-mergecert-q1" / "q2-amendment.json"
 REFERENCE_FILES = {
     "A": "e1-relabel-A2.state.json",
@@ -55,34 +59,10 @@ def _sha256_file(path: Path) -> str:
 
 
 def _require_q1_trigger(path: str) -> dict:
-    if not os.path.exists(path):
-        raise ValueError("Q2 is blocked until q1-trigger.json exists")
-    with open(path) as handle:
-        trigger = json.load(handle)
-    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
-    hashes = (
-        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
-    )
-    valid = (
-        isinstance(trigger, dict)
-        and trigger.get("protocol") == "MERGECERT-Q1"
-        and trigger.get("budget_mode") == Q1_BUDGET_MODE
-        and trigger.get("addendum_sha256") == Q1_ADDENDUM_SHA256
-        and trigger.get("p0_verdict_sha256") == Q1_P0_VERDICT_SHA256
-        and trigger.get("run_q2_q3") is True
-        and isinstance(favorable_intervals, list)
-        and bool(favorable_intervals)
-        and all(
-            isinstance(interval, str) and bool(interval.strip())
-            for interval in favorable_intervals
-        )
-        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
-    )
-    if not valid:
-        raise ValueError("Q2 is blocked by the registered Q1 trigger")
-    return trigger
+    try:
+        return load_q1_trigger(path)
+    except (FileNotFoundError, OSError) as exc:
+        raise ValueError("Q2 is blocked until q1-trigger.json exists") from exc
 
 
 def _singleton_score_value(scores: dict, name: str) -> str:
@@ -104,6 +84,12 @@ def _require_amended_q2_provenance(
     source_hashes = q2_results.get("source_hashes")
     if not isinstance(source_hashes, dict):
         raise ValueError("Q3 Q2 source hashes are missing")
+    if (
+        q2_results.get("schema") != Q2_VERDICT_SCHEMA
+        or q2_results.get("score_schema") != Q2_SCORE_SCHEMA
+        or _singleton_score_value(scores, "score_schema") != Q2_SCORE_SCHEMA
+    ):
+        raise ValueError("Q3 requires the amended-v2 Q2 verdict and score schemas")
     if (
         q2_results.get("q2_amendment") != amendment
         or q2_results.get("q2_amendment_sha256") != amendment_sha256
@@ -132,6 +118,7 @@ def _require_amended_q2_provenance(
     if (
         not isinstance(audit_sha256, str)
         or len(audit_sha256) != 64
+        or q2_results.get("accounting_audit_sha256") != audit_sha256
         or _singleton_score_value(scores, "accounting_audit_sha256")
         != audit_sha256
     ):
@@ -249,7 +236,11 @@ def analyze(
         == len(in_e1)
     ):
         raise ValueError("Q3 score arrays are not aligned")
-    selected = np.isclose(ratios, 0.40, rtol=0, atol=1e-6) & (in_e1 == 1)
+    if not np.isfinite(ratios).all() or not np.isin(
+        ratios, (0.25, 0.40)
+    ).all():
+        raise ValueError("Q3 score ratios must be exact registered values")
+    selected = (ratios == 0.40) & (in_e1 == 1)
     if int(selected.sum()) != expected_items:
         raise ValueError(
             f"Q3 merge 0.40 E1 coverage must be {expected_items}"
@@ -321,6 +312,8 @@ def analyze(
         "as disagreement."
     )
     return {
+        "schema": Q3_RESULT_SCHEMA,
+        "q2_verdict_schema": Q2_VERDICT_SCHEMA,
         "pass": True,
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,

@@ -12,6 +12,10 @@ ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q3.py"
 )
 AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
+CANONICAL_TRIGGER_PATH = (
+    ROOT / "plans" / "260728-mergecert-q1" / "q1-trigger.json"
+)
+CANONICAL_TRIGGER = json.loads(CANONICAL_TRIGGER_PATH.read_text())
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -30,22 +34,14 @@ def _load_analyzer():
 
 
 def _q1_trigger(**overrides):
-    trigger = {
-        "protocol": "MERGECERT-Q1",
-        "budget_mode": "archived-m1-per-document-matched-physical-v1",
-        "run_q2_q3": True,
-        "favorable_intervals": ["0.40:mean_kl"],
-        "q1_verdict_sha256": "c" * 64,
-        "addendum_sha256": Q1_ADDENDUM_SHA256,
-        "p0_verdict_sha256": Q1_P0_VERDICT_SHA256,
-    }
+    trigger = dict(CANONICAL_TRIGGER)
     trigger.update(overrides)
     return trigger
 
 
 def _fixture(tmp_path):
     trigger_path = tmp_path / "q1-trigger.json"
-    trigger_path.write_text(json.dumps(_q1_trigger()))
+    trigger_path.write_bytes(CANONICAL_TRIGGER_PATH.read_bytes())
     trigger = json.loads(trigger_path.read_text())
     trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
     amendment_path = tmp_path / "q2-amendment.json"
@@ -57,6 +53,7 @@ def _fixture(tmp_path):
     item_ids = np.array(["a", "b", "c", "d"])
     domains = np.array(["financial", "legal", "code", "literature"])
     scores = {
+        "score_schema": np.array(["mergecert-q2-scores-amended-v2"]),
         "q1_trigger_json": np.array(
             [json.dumps(trigger, sort_keys=True, separators=(",", ":"))]
         ),
@@ -95,6 +92,8 @@ def _fixture(tmp_path):
     }
     hashes = {name: f"sha-{name}" for name in references}
     q2_results = {
+        "schema": "mergecert-q2-verdict-amended-v2",
+        "score_schema": "mergecert-q2-scores-amended-v2",
         "q1_trigger": trigger,
         "q1_trigger_sha256": trigger_sha256,
         "source_hashes": {
@@ -107,6 +106,8 @@ def _fixture(tmp_path):
         "q2_amendment": amendment,
         "q2_amendment_sha256": amendment_sha256,
         "context_accounting_audit_sha256": accounting_audit_sha256,
+        "accounting_audit_sha256": accounting_audit_sha256,
+        "scores_sha256": "e" * 64,
     }
     return scores, references, hashes, q2_results, trigger_path, amendment_path
 
@@ -122,6 +123,7 @@ def test_q3_analysis_reports_kappa_directional_nesting_and_base_rates(tmp_path):
     )
 
     assert verdict["pass"] is True
+    assert verdict["schema"] == "mergecert-q3-fragility-amended-v2"
     assert verdict["merge"]["failure_rate"] == 0.5
     assert verdict["comparisons"]["A"]["kappa"] == 0.0
     assert verdict["comparisons"]["A"]["nesting_fraction"] == 0.5
@@ -179,7 +181,7 @@ def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
         )
 
     trigger_path.write_text(json.dumps(_q1_trigger(favorable_intervals=["other"])))
-    with pytest.raises(ValueError, match="trigger.*Q2 result"):
+    with pytest.raises(ValueError, match="Q2 is blocked"):
         analyzer.analyze(
             scores, references, hashes, q2_results,
             expected_items=4, trigger_path=trigger_path,
@@ -205,6 +207,8 @@ def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
         "q2-amendment-hash",
         "score-amendment-payload",
         "score-amendment-hash",
+        "q2-verdict-schema",
+        "score-schema",
         "q2-protocol-version",
         "score-protocol-version",
         "q2-namespace-version",
@@ -213,6 +217,7 @@ def test_q3_analysis_rejects_missing_or_drifted_q1_authorization(tmp_path):
         "score-context-mechanics-version",
         "q2-accounting-audit-hash",
         "score-accounting-audit-hash",
+        "near-ratio",
     ),
 )
 def test_q3_analysis_rejects_amended_q2_drift_before_e1_selection(
@@ -231,6 +236,10 @@ def test_q3_analysis_rejects_amended_q2_drift_before_e1_selection(
         scores["q2_amendment_json"] = np.asarray(["{}"])
     elif mutation == "score-amendment-hash":
         scores["q2_amendment_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "q2-verdict-schema":
+        q2_results["schema"] = "mergecert-q2-verdict-v1"
+    elif mutation == "score-schema":
+        scores["score_schema"] = np.asarray(["mergecert-q2-scores-v2"])
     elif mutation == "q2-protocol-version":
         q2_results["protocol_version"] = "mergecert-q2-v1"
     elif mutation == "score-protocol-version":
@@ -247,6 +256,8 @@ def test_q3_analysis_rejects_amended_q2_drift_before_e1_selection(
         q2_results["context_accounting_audit_sha256"] = "0" * 64
     elif mutation == "score-accounting-audit-hash":
         scores["accounting_audit_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "near-ratio":
+        scores["ratio"][4] = 0.4000005
 
     def selection_must_not_run(*args, **kwargs):
         raise AssertionError("amended Q2 drift reached ratio-0.40 E1 selection")
@@ -258,3 +269,59 @@ def test_q3_analysis_rejects_amended_q2_drift_before_e1_selection(
             expected_items=4, trigger_path=trigger_path,
             amendment_path=amendment_path,
         )
+
+
+def test_actual_q2_analyzer_verdict_is_the_canonical_q3_input(tmp_path):
+    from tests.test_mergecert_q2_analysis import (
+        _fixture as q2_fixture,
+        _load_analyzer as load_q2_analyzer,
+        _write_amendment,
+        _write_q1_trigger,
+    )
+
+    q2_analyzer = load_q2_analyzer()
+    q3_analyzer = _load_analyzer()
+    trigger_path = _write_q1_trigger(tmp_path)
+    amendment_path = _write_amendment(tmp_path)
+    routability, scores = q2_fixture(trigger_path, amendment_path)
+    q2_verdict = q2_analyzer.analyze(
+        routability,
+        scores,
+        expected_items_per_ratio=8,
+        expected_e1_items=4,
+        n_resamples=100,
+        trigger_path=trigger_path,
+        amendment_path=amendment_path,
+        manifest_path=tmp_path / "capture-manifest.json",
+    )
+    selected = (scores["ratio"] == 0.40) & (scores["in_e1"] == 1)
+    selected_ids = scores["item_ids"][selected]
+    selected_domains = scores["domain"][selected]
+    selected_labels = scores["y"][selected]
+    references = {
+        name: {
+            "done": 4,
+            "rows": [
+                {"item_id": item_id, "domain": domain, "y": int(label)}
+                for item_id, domain, label in zip(
+                    selected_ids, selected_domains, selected_labels
+                )
+            ],
+        }
+        for name in ("A", "B", "FR", "E1F")
+    }
+    reference_hashes = {name: f"sha-{name}" for name in references}
+
+    q3_verdict = q3_analyzer.analyze(
+        scores,
+        references,
+        reference_hashes,
+        q2_verdict,
+        expected_items=4,
+        trigger_path=trigger_path,
+        amendment_path=amendment_path,
+    )
+
+    assert q2_verdict["schema"] == "mergecert-q2-verdict-amended-v2"
+    assert q3_verdict["schema"] == "mergecert-q3-fragility-amended-v2"
+    assert q3_verdict["q2_verdict_schema"] == q2_verdict["schema"]

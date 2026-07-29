@@ -13,7 +13,13 @@ from memsub.compaction.merge_capture_schema import (
 
 def _arrays(n=3, ratio=0.25):
     arrays = {
-        "item_ids": np.array([f"item-{i}" for i in range(n)]),
+        "item_ids": np.array(
+            [
+                "fixture/item-0_3000_0",
+                "mcq_code/00130_1230_28",
+                "fixture/item-2_3000_0",
+            ][:n]
+        ),
         "doc_ids": np.array([f"doc-{i}" for i in range(n)]),
         "domain": np.array(
             ["financial", "legal", "code", "literature"][:n]
@@ -40,7 +46,13 @@ def _arrays(n=3, ratio=0.25):
         raise ValueError("the literal amended-Q2 fixture is fixed at 3 rows")
     arrays.update(
         {
-            "item_id": np.array(["item-0", "item-1", "item-2"]),
+            "item_id": np.array(
+                [
+                    "fixture/item-0_3000_0",
+                    "mcq_code/00130_1230_28",
+                    "fixture/item-2_3000_0",
+                ]
+            ),
             "ratio": np.full(3, 0.25, dtype=np.float64),
             "context_mechanics_version": np.array(
                 [Q2_CONTEXT_MECHANICS_VERSION] * 3
@@ -136,6 +148,21 @@ def test_capture_chunk_schema_accepts_legacy_singleton_and_amended_row_ratios():
 @pytest.mark.parametrize(
     "ratio",
     (
+        np.array([0.2500005], dtype=np.float64),
+        np.full(3, 0.2500005, dtype=np.float64),
+    ),
+)
+def test_capture_chunk_schema_rejects_near_registered_ratios(ratio):
+    arrays = _arrays()
+    arrays["ratio"] = ratio
+
+    with pytest.raises(ValueError, match="ratio"):
+        validate_capture_chunk(arrays, expected_ratio=0.25)
+
+
+@pytest.mark.parametrize(
+    "ratio",
+    (
         np.array([0.25, 0.40, 0.25], dtype=np.float64),
         np.array([[0.25, 0.25, 0.25]], dtype=np.float64),
         np.array([0.25, np.nan, 0.25], dtype=np.float64),
@@ -163,17 +190,17 @@ def test_q2_capture_arrays_reject_short_rows_with_fixed_4096_mechanics(
     arrays = _arrays()
     expected_rows = [
         {
-            "item_id": "item-0", "doc_id": "doc-0", "domain": "financial",
+                "item_id": "fixture/item-0_3000_0", "doc_id": "doc-0", "domain": "financial",
             "pred_raw": "A", "raw_correct": 1, "in_e1": 0,
             "chunk_rel_start": 1096,
         },
         {
-            "item_id": "item-1", "doc_id": "doc-1", "domain": "legal",
+                "item_id": "mcq_code/00130_1230_28", "doc_id": "doc-1", "domain": "legal",
             "pred_raw": "A", "raw_correct": 1, "in_e1": 0,
             "chunk_rel_start": 1230,
         },
         {
-            "item_id": "item-2", "doc_id": "doc-2", "domain": "code",
+                "item_id": "fixture/item-2_3000_0", "doc_id": "doc-2", "domain": "code",
             "pred_raw": "A", "raw_correct": 1, "in_e1": 0,
             "chunk_rel_start": 2096,
         },

@@ -72,9 +72,7 @@ def validate_capture_chunk(
     if (
         not np.issubdtype(registered_ratio.dtype, np.number)
         or not np.isfinite(registered_ratio).all()
-        or not np.isclose(
-            registered_ratio, expected_ratio, rtol=0, atol=1e-6
-        ).all()
+        or not np.equal(registered_ratio, expected_ratio).all()
     ):
         raise ValueError("capture chunk ratio does not match its registered arm")
     if len(set(item_ids.tolist())) != rows:

@@ -32,6 +32,9 @@ SHADOW_CHECKPOINT = "/artifacts/gate-eval/gate-checkpoint.pt"
 COMPACTOR_SINK_PATH = "/artifacts/probe/followup-f3-headfeats.npz"
 EVICTION_SINK_GLOB = "/artifacts/probe/followup2-f5-eviction-slice-*.npz"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
+Q1_TRIGGER_SHA256 = (
+    "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1"
+)
 Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
@@ -43,8 +46,10 @@ Q2_PROTOCOL_VERSION = "mergecert-q2-amended-v2"
 Q2_CONTEXT_MECHANICS_VERSION = "mergecert-q2-context-mechanics-v2"
 Q2_NAMESPACE_VERSION = "mergecert-q2-amended-v2"
 CAPTURE_SUMMARY_SCHEMA = "mergecert-q2-capture-summary-v2"
-ROUTABILITY_SCHEMA = "mergecert-q2-routability-v2"
-SCORE_SCHEMA = "mergecert-q2-scores-v2"
+ROUTABILITY_SCHEMA = "mergecert-q2-routability-amended-v2"
+SCORE_SCHEMA = "mergecert-q2-scores-amended-v2"
+PILOT_VERDICT_SCHEMA = "mergecert-q2-pilot-verdict-v3-amended"
+PILOT_VALIDATOR_VERSION = "mergecert-q2-pilot-validator-v3-amended"
 Q2_AMENDMENT_IMAGE_PATH = (
     "/root/repo/plans/260728-mergecert-q1/q2-amendment.json"
 )
@@ -121,34 +126,12 @@ def _routability_source_hashes(
 
 def _require_q1_trigger(path: str | None = None) -> dict:
     path = path or Q1_TRIGGER_PATH
-    if not os.path.exists(path):
-        raise ValueError("Q2 is blocked until q1-trigger.json exists")
-    with open(path) as handle:
-        trigger = json.load(handle)
-    favorable_intervals = trigger.get("favorable_intervals", []) if isinstance(trigger, dict) else []
-    hashes = (
-        trigger.get("q1_verdict_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("addendum_sha256", "") if isinstance(trigger, dict) else "",
-        trigger.get("p0_verdict_sha256", "") if isinstance(trigger, dict) else "",
-    )
-    valid = (
-        isinstance(trigger, dict)
-        and trigger.get("protocol") == "MERGECERT-Q1"
-        and trigger.get("budget_mode") == Q1_BUDGET_MODE
-        and trigger.get("addendum_sha256") == Q1_ADDENDUM_SHA256
-        and trigger.get("p0_verdict_sha256") == Q1_P0_VERDICT_SHA256
-        and trigger.get("run_q2_q3") is True
-        and isinstance(favorable_intervals, list)
-        and bool(favorable_intervals)
-        and all(
-            isinstance(interval, str) and bool(interval.strip())
-            for interval in favorable_intervals
-        )
-        and all(isinstance(value, str) and len(value) == 64 for value in hashes)
-    )
-    if not valid:
-        raise ValueError("Q2 is blocked by the registered Q1 trigger")
-    return trigger
+    from memsub.certification import load_q1_trigger
+
+    try:
+        return load_q1_trigger(path)
+    except (FileNotFoundError, OSError) as exc:
+        raise ValueError("Q2 is blocked until q1-trigger.json exists") from exc
 
 
 def _require_q2_amendment(path: str | None = None) -> dict:
@@ -166,6 +149,109 @@ def _require_q2_amendment(path: str | None = None) -> dict:
         "q2_amendment_json": amendment_json,
         "q2_amendment_sha256": Q2_AMENDMENT_SHA256,
     }
+
+
+def _canonical_json_bytes(value: dict) -> bytes:
+    return (
+        json.dumps(
+            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        )
+        + "\n"
+    ).encode()
+
+
+def _is_sha256(value) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _require_amended_pilot_verdict(
+    summary: dict,
+    q1_trigger: dict,
+    q1_trigger_sha256: str,
+    amendment: dict,
+) -> dict:
+    metadata = summary.get("pilot_verdict")
+    expected_path = (
+        f"{CAPTURE_ROOT}/pilot-amended-v2/pilot-verdict.json"
+    )
+    if (
+        not isinstance(metadata, dict)
+        or set(metadata) != {"path", "sha256", "schema"}
+        or metadata.get("path") != expected_path
+        or metadata.get("schema") != PILOT_VERDICT_SCHEMA
+        or not _is_sha256(metadata.get("sha256"))
+        or not os.path.isfile(expected_path)
+        or _sha256_file(expected_path) != metadata["sha256"]
+    ):
+        raise ValueError("Q2 amended pilot verdict artifact is missing or drifted")
+    try:
+        with open(expected_path, "rb") as handle:
+            encoded = handle.read()
+        verdict = json.loads(encoded)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Q2 amended pilot verdict is invalid") from exc
+    if not isinstance(verdict, dict):
+        raise ValueError("Q2 amended pilot verdict is invalid")
+    required = {
+        "schema", "protocol", "protocol_version", "namespace_version",
+        "context_mechanics_version", "validator_version", "validation_mode",
+        "run_tag", "run_tags", "items", "ratios", "q2_amendment",
+        "q2_amendment_sha256", "q1_trigger", "q1_trigger_sha256",
+        "source_manifest", "state", "artifacts",
+        "compatibility_fingerprint_schema", "compatibility_fingerprint",
+        "compatibility_fingerprint_sha256", "audits", "comparisons", "pass",
+    }
+    source_manifest = verdict.get("source_manifest")
+    state = verdict.get("state")
+    artifacts_by_ratio = verdict.get("artifacts")
+    if (
+        set(verdict) != required
+        or encoded != _canonical_json_bytes(verdict)
+        or verdict["schema"] != PILOT_VERDICT_SCHEMA
+        or verdict["protocol"] != "MERGECERT-Q2"
+        or verdict["protocol_version"] != Q2_PROTOCOL_VERSION
+        or verdict["namespace_version"] != Q2_NAMESPACE_VERSION
+        or verdict["context_mechanics_version"]
+        != Q2_CONTEXT_MECHANICS_VERSION
+        or verdict["validator_version"] != PILOT_VALIDATOR_VERSION
+        or verdict["validation_mode"] != "single-registered-run"
+        or verdict["run_tag"] != "amended-v2"
+        or verdict["run_tags"] != ["amended-v2"]
+        or verdict["items"] != 16
+        or verdict["ratios"] != list(RATIOS)
+        or verdict["q2_amendment"] != amendment["q2_amendment"]
+        or verdict["q2_amendment_sha256"]
+        != amendment["q2_amendment_sha256"]
+        or verdict["q1_trigger"] != q1_trigger
+        or verdict["q1_trigger_sha256"] != q1_trigger_sha256
+        or source_manifest != summary.get("source_manifest")
+        or not isinstance(state, dict)
+        or set(state) != {"path", "sha256"}
+        or not _is_sha256(state.get("sha256"))
+        or not isinstance(artifacts_by_ratio, dict)
+        or set(artifacts_by_ratio) != {"0.25", "0.40"}
+        or any(
+            not isinstance(row, dict)
+            or set(row) != {"path", "sha256", "audit"}
+            or not _is_sha256(row.get("sha256"))
+            or not isinstance(row.get("audit"), dict)
+            for row in artifacts_by_ratio.values()
+        )
+        or verdict["compatibility_fingerprint_schema"]
+        != "memsub-compatibility-fingerprint-v1"
+        or not isinstance(verdict["compatibility_fingerprint"], dict)
+        or not _is_sha256(verdict["compatibility_fingerprint_sha256"])
+        or not isinstance(verdict["audits"], dict)
+        or set(verdict["audits"]) != {"0.25", "0.40"}
+        or verdict["comparisons"] != {}
+        or verdict["pass"] is not True
+    ):
+        raise ValueError("Q2 amended pilot verdict contract is invalid")
+    return verdict
 
 
 def _require_gate_and_capture() -> tuple[dict, dict, str]:
@@ -222,6 +308,9 @@ def _require_gate_and_capture() -> tuple[dict, dict, str]:
         or not summary["chunks"]
     ):
         raise ValueError("Q2 capture summary contract is incomplete")
+    _require_amended_pilot_verdict(
+        summary, q1_trigger, q1_trigger_sha256, amendment
+    )
     return q1_trigger, summary, q1_trigger_sha256
 
 
@@ -1172,7 +1261,7 @@ def run_probes() -> dict:
     }
     flat_item_ids = np.tile(item_ids, len(RATIOS))
     flat_ratios = np.concatenate(
-        [np.full(count, ratio, dtype=np.float32) for ratio in RATIOS]
+        [np.full(count, ratio, dtype=np.float64) for ratio in RATIOS]
     )
     score_arrays = {
         "score_schema": np.asarray([SCORE_SCHEMA]),

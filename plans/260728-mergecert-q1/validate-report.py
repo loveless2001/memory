@@ -836,10 +836,24 @@ def _validate_conditional(evidence: dict) -> str:
             declaration = conditional.get(name, {})
             embedded_trigger = evidence[name].get("q1_trigger")
             embedded_hash = evidence[name].get("q1_trigger_sha256")
+            expected_schema = (
+                "mergecert-q2-verdict-amended-v2"
+                if name == "q2"
+                else "mergecert-q3-fragility-amended-v2"
+            )
+            if evidence[name].get("schema") != expected_schema:
+                raise ValueError(
+                    f"conditional {name.upper()} amended-v2 schema drift"
+                )
             if name == "q2":
                 f5_table = evidence[name].get("f5_markdown_table")
                 if not isinstance(f5_table, str) or not f5_table.strip():
                     raise ValueError("conditional Q2 F5 evidence is missing")
+            elif (
+                evidence[name].get("q2_verdict_schema")
+                != "mergecert-q2-verdict-amended-v2"
+            ):
+                raise ValueError("conditional Q3 Q2 verdict schema drift")
             if evidence[name].get("q2_amendment") != amendment:
                 raise ValueError(
                     f"conditional {name.upper()} amendment evidence drift"

@@ -506,6 +506,7 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
         amendment_sha256 = _sha256(amendment_path)
         accounting_audit_sha256 = "a" * 64
         q2 = {
+            "schema": "mergecert-q2-verdict-amended-v2",
             "pass": True,
             "q1_trigger": trigger,
             "q1_trigger_sha256": _sha256(plan / "q1-trigger.json"),
@@ -530,6 +531,8 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
             ),
         }
         q3 = {
+            "schema": "mergecert-q3-fragility-amended-v2",
+            "q2_verdict_schema": "mergecert-q2-verdict-amended-v2",
             "pass": True,
             "q1_trigger": trigger,
             "q1_trigger_sha256": _sha256(plan / "q1-trigger.json"),
@@ -734,6 +737,8 @@ def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
         ("drifted-amendment-file", "amendment"),
         ("drifted-q2-binding", "amendment"),
         ("drifted-q3-binding", "amendment"),
+        ("drifted-q2-schema", "schema"),
+        ("drifted-q3-schema", "schema"),
         ("drifted-protocol-version", "protocol version"),
         ("drifted-namespace-version", "namespace version"),
         ("drifted-mechanics-version", "mechanics version"),
@@ -761,6 +766,10 @@ def test_validator_rejects_amended_q2_report_evidence_drift(
             evidence["q2"]["q2_amendment"] = {"status": "drifted"}
         elif mutation == "drifted-q3-binding":
             evidence["q3"]["q2_amendment"] = {"status": "drifted"}
+        elif mutation == "drifted-q2-schema":
+            evidence["q2"]["schema"] = "mergecert-q2-verdict-v1"
+        elif mutation == "drifted-q3-schema":
+            evidence["q3"]["schema"] = "mergecert-q3-fragility-v1"
         elif mutation == "drifted-protocol-version":
             evidence["q2"]["protocol_version"] = "mergecert-q2-v1"
         elif mutation == "drifted-namespace-version":
