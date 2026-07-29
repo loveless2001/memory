@@ -6,6 +6,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from memsub.certification import (
+    Q2_ACCOUNTING_ARRAY_FIELDS,
+    Q2_CONTEXT_MECHANICS_VERSION,
+    expected_q2_plan_fields,
+    validate_q2_accounting_arrays,
+)
 from memsub.certification.mergecert_statistics import document_split
 
 
@@ -13,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ANALYZER_PATH = (
     ROOT / "plans" / "260727-mergecert" / "analyze-mergecert-q2.py"
 )
+AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
 Q1_ADDENDUM_SHA256 = (
     "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509"
 )
@@ -72,9 +79,18 @@ def _write_q1_trigger(tmp_path, trigger=None):
     return path
 
 
-def _fixture(trigger_path):
+def _write_amendment(tmp_path):
+    path = tmp_path / "q2-amendment.json"
+    path.write_bytes(AMENDMENT_PATH.read_bytes())
+    return path
+
+
+def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
     trigger = json.loads(trigger_path.read_text())
     trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
+    amendment = json.loads(amendment_path.read_text())
+    amendment_json = amendment_path.read_text()
+    amendment_sha256 = hashlib.sha256(amendment_path.read_bytes()).hexdigest()
     docs = _test_documents()
     n = len(docs)
     y = np.array([0, 1] * (n // 2), dtype=np.int8)
@@ -97,7 +113,7 @@ def _fixture(trigger_path):
             2,
         ),
         "ratio": np.repeat(
-            np.array([0.25, 0.40], dtype=np.float32), n
+            np.array([0.25, 0.40], dtype=np.float64), n
         ),
         "y": np.tile(y, 2),
         "split": np.full(2 * n, 2, dtype=np.int8),
@@ -108,6 +124,71 @@ def _fixture(trigger_path):
     for arm in ARMS:
         arrays[f"{arm}_separate"] = arrays["y"].astype(np.float32)
         arrays[f"{arm}_pooled"] = arrays["y"].astype(np.float32)
+    flattened_contexts = np.tile(
+        np.asarray([4073, 4096, 4096, 4096, 4096, 4096, 4096, 4096]), 2
+    )
+    flattened_chunk_starts = np.tile(np.arange(100, 108), 2)
+    for index, ratio in enumerate((0.25, 0.40)):
+        start = index * n
+        end = start + n
+        plans = [expected_q2_plan_fields(int(context), ratio) for context in flattened_contexts[start:end]]
+        arrays.setdefault("item_id", arrays["item_ids"].copy())
+        arrays.setdefault(
+            "context_mechanics_version",
+            np.full(2 * n, Q2_CONTEXT_MECHANICS_VERSION),
+        )
+        arrays.setdefault("source_document_token_count", flattened_contexts.copy())
+        arrays.setdefault("source_context_start", np.zeros(2 * n, dtype=np.int64))
+        arrays.setdefault("source_context_end", flattened_contexts.copy())
+        arrays.setdefault("source_context_token_count", flattened_contexts.copy())
+        arrays.setdefault("model_input_token_count", flattened_contexts.copy())
+        arrays.setdefault("source_chunk_token_start", flattened_chunk_starts.copy())
+        arrays.setdefault("source_chunk_context_start", flattened_chunk_starts.copy())
+        for field in (
+            "requested_eviction_start", "requested_eviction_end",
+            "requested_evicted_token_count", "retained_token_count",
+            "merge_target_retained", "merge_recent_start",
+        ):
+            values = arrays.get(field, np.empty(2 * n, dtype=np.int64))
+            values[start:end] = [plan[field] for plan in plans]
+            arrays[field] = values
+        arrays.setdefault("physical_before_count", flattened_contexts.copy())
+        arrays.setdefault("physical_after_count", np.empty(2 * n, dtype=np.int64))
+        arrays.setdefault("physical_removed_count", np.empty(2 * n, dtype=np.int64))
+        arrays["physical_after_count"][start:end] = [
+            plan["retained_token_count"] for plan in plans
+        ]
+        arrays["physical_removed_count"][start:end] = [
+            plan["requested_evicted_token_count"] for plan in plans
+        ]
+    audits = {}
+    for ratio in (0.25, 0.40):
+        mask = np.isclose(arrays["ratio"], ratio)
+        segment = {field: arrays[field][mask] for field in Q2_ACCOUNTING_ARRAY_FIELDS}
+        rows = [
+            {"item_id": item_id, "chunk_rel_start": int(chunk_start)}
+            for item_id, chunk_start in zip(
+                arrays["item_ids"][mask], arrays["source_chunk_token_start"][mask]
+            )
+        ]
+        audits[f"{ratio:.2f}"] = validate_q2_accounting_arrays(
+            segment, rows, ratio
+        )
+    accounting_audit_sha256 = hashlib.sha256(
+        json.dumps(audits, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    capture_summary_sha256 = "d" * 64
+    arrays.update({
+        "q2_amendment_json": np.array([amendment_json]),
+        "q2_amendment_sha256": np.array([amendment_sha256]),
+        "q2_protocol_version": np.array([amendment["protocol_version"]]),
+        "q2_namespace_version": np.array([amendment["namespace_version"]]),
+        "q2_context_mechanics_version": np.array([
+            amendment["context_mechanics_version"]
+        ]),
+        "capture_summary_sha256": np.array([capture_summary_sha256]),
+        "accounting_audit_sha256": np.array([accounting_audit_sha256]),
+    })
     perfect = {
         "auc": 1.0,
         "ci95": [1.0, 1.0],
@@ -126,7 +207,17 @@ def _fixture(trigger_path):
         "source_hashes": {
             "scores": "source",
             "q1_trigger": trigger_sha256,
+            "q2_amendment": amendment_sha256,
+            "capture_summary": capture_summary_sha256,
         },
+        "protocol_version": amendment["protocol_version"],
+        "namespace_version": amendment["namespace_version"],
+        "context_mechanics_version": amendment["context_mechanics_version"],
+        "q2_amendment": amendment,
+        "q2_amendment_sha256": amendment_sha256,
+        "capture_summary_sha256": capture_summary_sha256,
+        "accounting_audit": audits,
+        "accounting_audit_sha256": accounting_audit_sha256,
         "ratios_results": {
             key: {
                 "items": n,
@@ -149,11 +240,13 @@ def _fixture(trigger_path):
 def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     analyzer = _load_analyzer()
     trigger_path = _write_q1_trigger(tmp_path)
-    payload, arrays = _fixture(trigger_path)
+    amendment_path = _write_amendment(tmp_path)
+    payload, arrays = _fixture(trigger_path, amendment_path)
 
     verdict = analyzer.analyze(
         payload, arrays, expected_items_per_ratio=8,
         expected_e1_items=4, n_resamples=100, trigger_path=trigger_path,
+        amendment_path=amendment_path,
     )
 
     assert verdict["pass"] is True
@@ -165,25 +258,103 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     assert verdict["q1_trigger_sha256"] == hashlib.sha256(
         trigger_path.read_bytes()
     ).hexdigest()
+    assert verdict["q2_amendment"] == json.loads(amendment_path.read_text())
+    assert verdict["q2_amendment_sha256"] == hashlib.sha256(
+        amendment_path.read_bytes()
+    ).hexdigest()
+    assert verdict["context_accounting_audit"] == payload["accounting_audit"]
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "local-amendment-bytes",
+        "payload-amendment",
+        "score-amendment",
+        "protocol-version",
+        "namespace-version",
+        "fixed-short-context",
+        "shifted-context-range",
+        "physical-count",
+        "capture-summary-hash",
+        "accounting-audit-hash",
+        "ratio-count",
+        "ratio-id",
+    ),
+)
+def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
+    tmp_path, monkeypatch, mutation
+):
+    """A missing validation gate would let a stale score archive reach AUC recomputation."""
+    analyzer = _load_analyzer()
+    trigger_path = _write_q1_trigger(tmp_path)
+    amendment_path = _write_amendment(tmp_path)
+    payload, arrays = _fixture(trigger_path, amendment_path)
+    if mutation == "local-amendment-bytes":
+        amendment_path.write_bytes(amendment_path.read_bytes() + b"\n")
+    elif mutation == "payload-amendment":
+        payload["q2_amendment"] = {**payload["q2_amendment"], "status": "stale"}
+    elif mutation == "score-amendment":
+        arrays["q2_amendment_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "protocol-version":
+        arrays["q2_protocol_version"] = np.asarray(["mergecert-q2-v1"])
+    elif mutation == "namespace-version":
+        payload["namespace_version"] = "mergecert-q2-v1"
+    elif mutation == "fixed-short-context":
+        fixed = expected_q2_plan_fields(4096, 0.25)
+        for field in ("source_document_token_count", "source_context_end",
+                      "source_context_token_count", "model_input_token_count",
+                      "physical_before_count"):
+            arrays[field][0] = 4096
+        for field, value in fixed.items():
+            arrays[field][0] = value
+    elif mutation == "shifted-context-range":
+        arrays["source_context_start"][0] = 1
+        arrays["source_context_end"][0] += 1
+        arrays["source_chunk_context_start"][0] -= 1
+    elif mutation == "physical-count":
+        arrays["physical_removed_count"][0] += 1
+    elif mutation == "capture-summary-hash":
+        arrays["capture_summary_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "accounting-audit-hash":
+        arrays["accounting_audit_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "ratio-count":
+        arrays["ratio"][0] = 0.40
+    elif mutation == "ratio-id":
+        arrays["item_ids"][0] = arrays["item_ids"][1]
+
+    def no_metric_recomputation(*args, **kwargs):
+        raise AssertionError("amendment/accounting drift reached metric recomputation")
+
+    monkeypatch.setattr(analyzer, "_recompute_metric", no_metric_recomputation)
+    with pytest.raises(ValueError):
+        analyzer.analyze(
+            payload, arrays, expected_items_per_ratio=8,
+            expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
+            amendment_path=amendment_path,
+        )
 
 
 def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):
     analyzer = _load_analyzer()
     trigger_path = _write_q1_trigger(tmp_path)
-    payload, arrays = _fixture(trigger_path)
+    amendment_path = _write_amendment(tmp_path)
+    payload, arrays = _fixture(trigger_path, amendment_path)
     payload["ratios_results"]["0.25"]["arms"]["mechanics_refit"]["auc"] = 0.9
     with pytest.raises(ValueError, match="remote/local AUC"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
+            amendment_path=amendment_path,
         )
 
-    payload, arrays = _fixture(trigger_path)
+    payload, arrays = _fixture(trigger_path, amendment_path)
     arrays["split"][0] = 0
     with pytest.raises(ValueError, match="split"):
         analyzer.analyze(
             payload, arrays, expected_items_per_ratio=8,
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
+            amendment_path=amendment_path,
         )
 
 

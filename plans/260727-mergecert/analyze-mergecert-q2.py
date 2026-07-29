@@ -10,6 +10,15 @@ from pathlib import Path
 
 import numpy as np
 
+from memsub.certification import (
+    Q2_ACCOUNTING_ARRAY_FIELDS,
+    Q2_CONTEXT_MECHANICS_VERSION,
+    Q2_NAMESPACE_VERSION,
+    Q2_PROTOCOL_VERSION,
+    load_q2_amendment,
+    q2_accounting_sha256,
+    validate_q2_accounting_row,
+)
 from memsub.certification.mergecert_statistics import (
     cluster_bootstrap_auc,
     document_split,
@@ -24,6 +33,7 @@ DEFAULT_OUTPUT = HERE / "q2-verdict.json"
 DEFAULT_TABLE = HERE / "q2-table.md"
 DEFAULT_F5_TABLE = HERE / "q2-f5-table.md"
 DEFAULT_TRIGGER = HERE / "q1-trigger.json"
+DEFAULT_AMENDMENT = HERE.parent / "260728-mergecert-q1" / "q2-amendment.json"
 RATIOS = (0.25, 0.40)
 ARMS = (
     "c0_refit",
@@ -84,6 +94,99 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
     if not valid:
         raise ValueError("Q2 is blocked by the registered Q1 trigger")
     return trigger
+
+
+def _singleton_array(arrays: dict, name: str) -> str:
+    values = np.asarray(arrays.get(name, [])).reshape(-1)
+    if len(values) != 1:
+        raise ValueError(f"Q2 score manifest {name} is missing")
+    return str(values[0])
+
+
+def _require_amended_provenance(payload: dict, arrays: dict, amendment_path: Path):
+    amendment_sha256 = _sha256_file(amendment_path)
+    amendment = load_q2_amendment(amendment_path, amendment_sha256)
+    amendment_json = amendment_path.read_text(encoding="utf-8")
+    source_hashes = payload.get("source_hashes")
+    if not isinstance(source_hashes, dict):
+        raise ValueError("Q2 source hashes are missing")
+    if (
+        payload.get("q2_amendment") != amendment
+        or payload.get("q2_amendment_sha256") != amendment_sha256
+        or source_hashes.get("q2_amendment") != amendment_sha256
+    ):
+        raise ValueError("Q2 amendment differs from the local authority")
+    expected_versions = {
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+    }
+    for name, expected in expected_versions.items():
+        if payload.get(name) != expected:
+            raise ValueError(f"Q2 {name} differs from the amendment")
+    if (
+        _singleton_array(arrays, "q2_amendment_json") != amendment_json
+        or _singleton_array(arrays, "q2_amendment_sha256") != amendment_sha256
+    ):
+        raise ValueError("Q2 score amendment differs from the local authority")
+    for name, expected in expected_versions.items():
+        if _singleton_array(arrays, f"q2_{name}") != expected:
+            raise ValueError(f"Q2 score {name} differs from the amendment")
+    capture_summary_sha256 = payload.get("capture_summary_sha256")
+    if (
+        not isinstance(capture_summary_sha256, str)
+        or source_hashes.get("capture_summary") != capture_summary_sha256
+        or _singleton_array(arrays, "capture_summary_sha256")
+        != capture_summary_sha256
+    ):
+        raise ValueError("Q2 capture summary hash differs from source evidence")
+    return amendment, amendment_sha256
+
+
+def _validate_flattened_accounting(arrays, item_ids, documents, domains, ratios):
+    audits = {}
+    flattened = {
+        field: np.asarray(arrays[field]).reshape(-1)
+        for field in Q2_ACCOUNTING_ARRAY_FIELDS
+    }
+    for ratio in RATIOS:
+        key = f"{ratio:.2f}"
+        mask = np.isclose(ratios, ratio, rtol=0, atol=1e-6)
+        rows = []
+        for index in np.flatnonzero(mask):
+            if not item_ids[index] or not documents[index] or domains[index] not in DOMAINS:
+                raise ValueError("Q2 accounting item/document/manifest metadata is invalid")
+            row = {
+                field: flattened[field][index].item()
+                if hasattr(flattened[field][index], "item")
+                else flattened[field][index]
+                for field in Q2_ACCOUNTING_ARRAY_FIELDS
+            }
+            # Score archives flatten ratios as float32; the enclosing masked
+            # ratio is the exact registered arm after the tolerance check.
+            row["ratio"] = ratio
+            if row["item_id"] != item_ids[index]:
+                raise ValueError("Q2 accounting item ID differs from score metadata")
+            rows.append(validate_q2_accounting_row(row, expected_ratio=ratio))
+        contexts = [row["source_context_token_count"] for row in rows]
+        audits[key] = {
+            "schema": "mergecert-q2-accounting-audit-v1",
+            "rows": len(rows),
+            "ratio": ratio,
+            "short_context_rows": sum(value < 4096 for value in contexts),
+            "minimum_context_tokens": min(contexts) if contexts else 0,
+            "maximum_context_tokens": max(contexts) if contexts else 0,
+            "accounting_sha256": q2_accounting_sha256(rows),
+        }
+    audit_sha256 = hashlib.sha256(
+        json.dumps(audits, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if (
+        arrays.get("accounting_audit_sha256") is None
+        or _singleton_array(arrays, "accounting_audit_sha256") != audit_sha256
+    ):
+        raise ValueError("Q2 score accounting audit hash differs from rows")
+    return audits, audit_sha256
 
 
 def _recompute_metric(y, scores, split, documents, domains, *, seed, n_resamples):
@@ -194,6 +297,7 @@ def analyze(
     expected_e1_items=2_000,
     n_resamples=2_000,
     trigger_path: Path = DEFAULT_TRIGGER,
+    amendment_path: Path = DEFAULT_AMENDMENT,
 ):
     q1_trigger = _require_q1_trigger(str(trigger_path))
     q1_trigger_sha256 = _sha256_file(Path(trigger_path))
@@ -206,8 +310,9 @@ def analyze(
         raise ValueError("Q2 model provenance mismatch")
     if payload.get("ratios") != list(RATIOS) or payload.get("seeds") != [0, 1, 2]:
         raise ValueError("Q2 registered ratios/seeds mismatch")
-    if not payload.get("source_hashes"):
-        raise ValueError("Q2 source hashes are missing")
+    amendment, amendment_sha256 = _require_amended_provenance(
+        payload, arrays, Path(amendment_path)
+    )
     if payload["source_hashes"].get("q1_trigger") != q1_trigger_sha256:
         raise ValueError("Q2 trigger file hash differs from source hashes")
     score_trigger_json = np.asarray(
@@ -236,6 +341,7 @@ def analyze(
         "y",
         "split",
         "in_e1",
+        *Q2_ACCOUNTING_ARRAY_FIELDS,
         *(
             f"{arm}_{fit}"
             for arm in ARMS
@@ -265,6 +371,14 @@ def analyze(
         raise ValueError("Q2 stored split differs from SHA-256 document split")
     if not np.isin(y, (0, 1)).all() or not np.isin(in_e1, (0, 1)).all():
         raise ValueError("Q2 labels and E1 membership must be binary")
+    accounting_audit, accounting_audit_sha256 = _validate_flattened_accounting(
+        arrays, item_ids, documents, domains, ratios
+    )
+    if (
+        payload.get("accounting_audit") != accounting_audit
+        or payload.get("accounting_audit_sha256") != accounting_audit_sha256
+    ):
+        raise ValueError("Q2 accounting audit differs from routed evidence")
 
     ratio_metrics = {}
     item_sets = []
@@ -347,6 +461,12 @@ def analyze(
         "pass": True,
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "q2_amendment": amendment,
+        "q2_amendment_sha256": amendment_sha256,
+        "context_accounting_audit": accounting_audit,
         "items_per_ratio": expected_items_per_ratio,
         "e1_items_per_ratio": expected_e1_items,
         "ratios": ratio_metrics,
@@ -365,6 +485,7 @@ def main():
     parser.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     parser.add_argument("--f5-table", type=Path, default=DEFAULT_F5_TABLE)
     parser.add_argument("--trigger", type=Path, default=DEFAULT_TRIGGER)
+    parser.add_argument("--amendment", type=Path, default=DEFAULT_AMENDMENT)
     args = parser.parse_args()
     with args.results.open() as handle:
         payload = json.load(handle)
@@ -374,7 +495,10 @@ def main():
         raise ValueError("Q2 scores hash differs from remote result manifest")
     with np.load(args.scores, allow_pickle=False) as archive:
         arrays = {name: archive[name] for name in archive.files}
-    verdict = analyze(payload, arrays, trigger_path=args.trigger)
+    verdict = analyze(
+        payload, arrays, trigger_path=args.trigger,
+        amendment_path=args.amendment,
+    )
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)
     args.table.write_text(verdict["markdown_table"])
