@@ -894,10 +894,16 @@ The conditional interface uses the isolated `pilot-q1-triggered` namespace.
 One invocation writes separate 0.25 and 0.40 NPZ artifacts from the same
 registered 16 items. `validate_pilot` independently verifies the live trigger
 and hash, sorted-manifest provenance and item order, state/chunk/file hashes,
-and the complete capture schema for both ratios. The older `pilot-a` /
-`pilot-b` namespaces remain available as a legacy repeated-run
-bit-identity check, but they are not required by this single-run conditional
-command.
+registered document/domain/raw-label/correctness/E1 fields, recomputed
+`eq_policy_v1` labels, the pinned runtime fingerprint, exact namespace, and
+the complete capture schema for both ratios. Only then does it write the
+canonical private verdict at
+`/artifacts/mergecert/q2/pilot-q1-triggered/pilot-verdict.json`. That verdict
+binds validator version `mergecert-q2-pilot-validator-v2`, mode and tag, the
+exact Q1 trigger payload/hash, manifest path/hash, state path/hash, both ratio
+artifact paths/hashes/audits, and compatibility fingerprint. The older
+`pilot-a` / `pilot-b` namespaces remain available as a legacy repeated-run
+bit-identity check, but they cannot authorize the conditional fleet.
 
 - [ ] **Step 4: Launch the eight-slice Q2 fleet**
 
@@ -905,6 +911,12 @@ command.
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run --detach \
   modal-runners/modal-mergecert-q2-capture.py::fleet
 ```
+
+Before spawning, `fleet` must validate that exact current canonical verdict
+through a private CPU gate. Every `q2_capture_slice` must independently
+revalidate the same verdict before capture and bind its hash plus live runtime
+fingerprint into new or resumed slice state. Missing, failed, legacy, stale,
+tampered, or namespace-drifted pilot evidence blocks all slice launches.
 
 Monitor every spawned app/task. After all slices finish:
 

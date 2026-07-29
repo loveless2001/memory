@@ -103,6 +103,15 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
             "item_id": f"item-{index:02d}",
             "doc_id": f"doc-{index // 2:02d}",
             "domain": "financial",
+            "question": f"Question {index}",
+            "options": ["one", "two", "three", "four"],
+            "gold": "A",
+            "pred_raw": "A",
+            "chunk_rel_start": index,
+            "y": 0,
+            "in_e1": index % 2,
+            "raw_correct": 1,
+            "pilot": 1,
         }
         for index in range(16)
     ]
@@ -122,7 +131,7 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
                 "doc_ids": np.asarray([row["doc_id"] for row in manifest]),
                 "domain": np.asarray([row["domain"] for row in manifest]),
                 "pred_raw": np.asarray(["A"] * 16),
-                "pred_merge": np.asarray(["A"] * 16),
+                "pred_merge": np.asarray(["A", "B"] * 8),
                 "y": np.asarray([0, 1] * 8, dtype=np.int8),
                 "raw_correct": np.ones(16, dtype=np.int8),
                 "in_e1": np.asarray([0, 1] * 8, dtype=np.int8),
@@ -139,8 +148,14 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
             files[f"{ratio:.2f}"] = {
                 "path": str(path),
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                "audit": {},
+                "audit": {
+                    "rows": 16,
+                    "unique_item_ids": 16,
+                    "locator_found": 16,
+                    "positive_labels": 8,
+                },
             }
+        fingerprint = _q2_fingerprint()
         state = {
             "q1_trigger": trigger,
             "q1_trigger_sha256": trigger_sha256,
@@ -164,6 +179,11 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
                 }
             ],
             "compute_seconds": 1.0,
+            "compatibility_fingerprint_schema": (
+                "memsub-compatibility-fingerprint-v1"
+            ),
+            "compatibility_fingerprint": fingerprint.to_dict(),
+            "compatibility_fingerprint_sha256": fingerprint.digest(),
         }
         (output_dir / "state.json").write_text(json.dumps(state))
     return {
@@ -191,6 +211,24 @@ def _configure_q2_pilot_fixture(runner, monkeypatch, fixture):
     return commits
 
 
+def _rewrite_q2_pilot_array(fixture, ratio, key, value):
+    from memsub.compaction import validate_capture_chunk
+
+    state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
+    state = json.loads(state_path.read_text())
+    file_row = state["chunks"][0]["files"][f"{ratio:.2f}"]
+    path = Path(file_row["path"])
+    with np.load(path, allow_pickle=False) as archive:
+        arrays = {name: archive[name] for name in archive.files}
+    arrays[key][0] = value
+    np.savez(path, **arrays)
+    file_row["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    file_row["audit"] = validate_capture_chunk(
+        arrays, expected_ratio=ratio
+    )
+    state_path.write_text(json.dumps(state))
+
+
 def _load_module(path, name):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -214,6 +252,34 @@ def _q1_fingerprint(*, runtime_version="test-runtime"):
         position_policy_version="pos-v1-preserve-logical-rope",
         channel_registry_version="memchan-v1",
         kernel_numeric_profile_hash="sha256:" + "4" * 64,
+    )
+
+
+def _q2_fingerprint(
+    *,
+    runtime_version="hf-transformers-4.55.2+torch-2.7.1+cu126",
+):
+    fingerprint = _q1_fingerprint(runtime_version=runtime_version)
+    return CompatibilityFingerprint(
+        **{
+            **fingerprint.to_dict(),
+            "model_id": (
+                "Qwen/Qwen3-4B-Instruct-2507#cfg=sha256:"
+                + "1" * 16
+            ),
+        }
+    )
+
+
+def _q2_fake_runtime(fingerprint=None):
+    model = types.SimpleNamespace(
+        config=types.SimpleNamespace(_attn_implementation="sdpa"),
+        model=types.SimpleNamespace(layers=[]),
+    )
+    return types.SimpleNamespace(
+        model=model,
+        tokenizer=types.SimpleNamespace(),
+        fingerprint=lambda: fingerprint or _q2_fingerprint(),
     )
 
 
@@ -1836,6 +1902,112 @@ def test_q2_pilot_maps_registered_and_legacy_tags_to_isolated_outputs(
     ]
 
 
+def test_q2_pilot_complete_resume_is_fully_validated_and_idempotent(
+    tmp_path, monkeypatch
+):
+    from memsub import reference_config
+
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_pilot_complete_resume"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    runtime_calls = []
+    monkeypatch.setattr(
+        reference_config,
+        "build_runtime",
+        lambda reference: runtime_calls.append(reference)
+        or _q2_fake_runtime(),
+    )
+    output_dir = fixture["capture_root"] / "pilot-q1-triggered"
+    before = {
+        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in output_dir.iterdir()
+    }
+
+    result = runner._run_capture(
+        slice_idx=0,
+        n_slices=1,
+        limit=16,
+        output_name="pilot-q1-triggered",
+        verify_mode_parity=True,
+    )
+
+    after = {
+        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in output_dir.iterdir()
+    }
+    assert result["items"] == 16
+    assert result["chunks"] == 1
+    assert runtime_calls == [True]
+    assert after == before
+
+
+def test_q2_pilot_resume_rejects_semantic_tamper_before_runtime(
+    tmp_path, monkeypatch
+):
+    from memsub import reference_config
+
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_pilot_tampered_resume"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    _rewrite_q2_pilot_array(fixture, 0.25, "doc_ids", "doc-wrong")
+    runtime_calls = []
+    monkeypatch.setattr(
+        reference_config,
+        "build_runtime",
+        lambda reference: runtime_calls.append(reference)
+        or _q2_fake_runtime(),
+    )
+
+    with pytest.raises(ValueError, match="registered manifest"):
+        runner._run_capture(
+            slice_idx=0,
+            n_slices=1,
+            limit=16,
+            output_name="pilot-q1-triggered",
+            verify_mode_parity=True,
+        )
+    assert runtime_calls == []
+
+
+def test_q2_pilot_resume_rejects_live_fingerprint_drift(
+    tmp_path, monkeypatch
+):
+    from memsub import reference_config
+
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_pilot_live_fingerprint_drift"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    stale = _q2_fingerprint(
+        runtime_version="hf-transformers-4.55.2+torch-2.7.1+cu999"
+    )
+    monkeypatch.setattr(
+        reference_config,
+        "build_runtime",
+        lambda reference: _q2_fake_runtime(stale),
+    )
+
+    with pytest.raises(ValueError, match="compatibility fingerprint"):
+        runner._run_capture(
+            slice_idx=0,
+            n_slices=1,
+            limit=16,
+            output_name="pilot-q1-triggered",
+            verify_mode_parity=True,
+        )
+
+
 def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
     tmp_path, monkeypatch
 ):
@@ -1858,12 +2030,111 @@ def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
     assert result["audits"]["0.25"]["rows"] == 16
     assert result["audits"]["0.40"]["rows"] == 16
     assert commits == [1]
+    verdict_path = (
+        fixture["capture_root"]
+        / "pilot-q1-triggered"
+        / "pilot-verdict.json"
+    )
+    assert verdict_path.exists()
+    assert set(path.name for path in verdict_path.parent.iterdir()) == {
+        "state.json",
+        "ratio-0.25-rows-00000-00016.npz",
+        "ratio-0.40-rows-00000-00016.npz",
+        "pilot-verdict.json",
+    }
+    assert result["validator_version"] == runner.PILOT_VALIDATOR_VERSION
+    assert result["validation_mode"] == "single-registered-run"
+    assert result["run_tag"] == "q1-triggered"
+    assert result["state"]["sha256"] == hashlib.sha256(
+        (
+            fixture["capture_root"]
+            / "pilot-q1-triggered"
+            / "state.json"
+        ).read_bytes()
+    ).hexdigest()
+    assert set(result["artifacts"]) == {"0.25", "0.40"}
+    assert verdict_path.read_bytes() == runner._canonical_json_bytes(result)
+    assert runner._require_registered_pilot_verdict() == result
+    verdict_bytes = verdict_path.read_bytes()
+    assert runner.validate_pilot.get_raw_f()() == result
+    assert verdict_path.read_bytes() == verdict_bytes
+    assert commits == [1, 1]
 
     state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
     state = json.loads(state_path.read_text())
     state["q1_trigger_sha256"] = "0" * 64
     state_path.write_text(json.dumps(state))
-    with pytest.raises(ValueError, match="state/provenance mismatch"):
+    with pytest.raises(ValueError, match="registered inputs"):
+        runner.validate_pilot.get_raw_f()()
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    (
+        ("item_ids", "item-99"),
+        ("doc_ids", "doc-wrong"),
+        ("domain", "legal"),
+        ("pred_raw", "B"),
+        ("pred_merge", "E"),
+        ("y", 1),
+        ("raw_correct", 0),
+        ("in_e1", 1),
+    ),
+)
+def test_q2_registered_pilot_rejects_rehashed_manifest_row_tampering(
+    tmp_path, monkeypatch, key, value
+):
+    runner = _load_module(
+        Q2_RUNNER, f"mergecert_q2_pilot_tamper_{key}"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    _rewrite_q2_pilot_array(fixture, 0.25, key, value)
+
+    with pytest.raises(ValueError, match="Q2 pilot"):
+        runner.validate_pilot.get_raw_f()()
+
+
+def test_q2_registered_pilot_rejects_extra_namespace_files(
+    tmp_path, monkeypatch
+):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_pilot_extra_namespace"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    (
+        fixture["capture_root"]
+        / "pilot-q1-triggered"
+        / "unexpected.json"
+    ).write_text("{}")
+
+    with pytest.raises(ValueError, match="namespace"):
+        runner.validate_pilot.get_raw_f()()
+
+
+def test_q2_registered_pilot_rejects_compatibility_fingerprint_tampering(
+    tmp_path, monkeypatch
+):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_pilot_fingerprint_tamper"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
+    state = json.loads(state_path.read_text())
+    stale = _q2_fingerprint(runtime_version="stale")
+    state["compatibility_fingerprint"] = stale.to_dict()
+    state["compatibility_fingerprint_sha256"] = stale.digest()
+    state_path.write_text(json.dumps(state))
+
+    with pytest.raises(ValueError, match="compatibility fingerprint"):
         runner.validate_pilot.get_raw_f()()
 
 
@@ -1886,6 +2157,126 @@ def test_q2_legacy_pilots_keep_repeated_run_bit_identity_validation(
         "0.40": {"bit_identical": True, "unequal_arrays": []},
     }
     assert commits == [1]
+
+
+def test_q2_capture_slice_requires_registered_pilot_before_capture(monkeypatch):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_slice_pilot_gate"
+    )
+    events = []
+    verdict = {"pass": True, "run_tag": "q1-triggered"}
+    monkeypatch.setattr(
+        runner,
+        "_require_registered_pilot_verdict",
+        lambda: events.append("gate") or verdict,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        runner,
+        "_run_capture",
+        lambda **kwargs: events.append(("capture", kwargs)) or {"pass": True},
+    )
+
+    result = runner.q2_capture_slice.get_raw_f()(3, 8)
+
+    assert result == {"pass": True}
+    assert events[0] == "gate"
+    assert events[1][0] == "capture"
+    assert events[1][1]["required_pilot_verdict"] == verdict
+
+
+def test_q2_capture_slice_stops_when_registered_pilot_is_missing(monkeypatch):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_slice_missing_pilot"
+    )
+    captures = []
+
+    def reject():
+        raise ValueError("registered Q2 pilot verdict is missing")
+
+    monkeypatch.setattr(
+        runner, "_require_registered_pilot_verdict", reject, raising=False
+    )
+    monkeypatch.setattr(
+        runner, "_run_capture", lambda **kwargs: captures.append(kwargs)
+    )
+
+    with pytest.raises(ValueError, match="pilot verdict is missing"):
+        runner.q2_capture_slice.get_raw_f()(0, 8)
+    assert captures == []
+
+
+def test_q2_fleet_checks_registered_pilot_before_spawning(monkeypatch):
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_fleet_pilot_gate")
+    events = []
+
+    class Gate:
+        @staticmethod
+        def remote():
+            events.append("gate")
+            return {"pass": True}
+
+    class Slice:
+        @staticmethod
+        def spawn(slice_idx, n_slices):
+            events.append(("spawn", slice_idx, n_slices))
+            return slice_idx
+
+    monkeypatch.setattr(runner, "pilot_gate", Gate, raising=False)
+    monkeypatch.setattr(runner, "q2_capture_slice", Slice)
+
+    runner.fleet()
+
+    assert events == [
+        "gate",
+        *(("spawn", slice_idx, 8) for slice_idx in range(8)),
+    ]
+
+
+def test_q2_fleet_stops_before_spawn_when_pilot_gate_fails(monkeypatch):
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_fleet_missing_pilot")
+    spawned = []
+
+    class Gate:
+        @staticmethod
+        def remote():
+            raise ValueError("registered Q2 pilot verdict is missing")
+
+    class Slice:
+        @staticmethod
+        def spawn(slice_idx, n_slices):
+            spawned.append((slice_idx, n_slices))
+
+    monkeypatch.setattr(runner, "pilot_gate", Gate, raising=False)
+    monkeypatch.setattr(runner, "q2_capture_slice", Slice)
+
+    with pytest.raises(ValueError, match="pilot verdict is missing"):
+        runner.fleet()
+    assert spawned == []
+
+
+def test_q2_registered_pilot_gate_rejects_tampered_verdict(
+    tmp_path, monkeypatch
+):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_tampered_pilot_verdict"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    runner.validate_pilot.get_raw_f()()
+    verdict_path = (
+        fixture["capture_root"]
+        / "pilot-q1-triggered"
+        / "pilot-verdict.json"
+    )
+    verdict = json.loads(verdict_path.read_text())
+    verdict["pass"] = False
+    verdict_path.write_text(json.dumps(verdict))
+
+    with pytest.raises(ValueError, match="pilot verdict"):
+        runner._require_registered_pilot_verdict()
 
 
 @pytest.mark.parametrize(

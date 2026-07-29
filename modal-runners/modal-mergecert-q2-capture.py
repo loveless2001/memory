@@ -7,6 +7,7 @@ and all 37 last-prompt residual vectors to the same item order.
 
 import hashlib
 import json
+import math
 import os
 import time
 from collections import Counter
@@ -23,6 +24,10 @@ CHUNK_ITEMS = 100
 PILOT_ITEMS = 16
 REGISTERED_PILOT_TAG = "q1-triggered"
 LEGACY_PILOT_TAGS = ("a", "b")
+ANSWER_LETTERS = ("A", "B", "C", "D")
+FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
+PILOT_VALIDATOR_VERSION = "mergecert-q2-pilot-validator-v2"
+PILOT_VERDICT_FILENAME = "pilot-verdict.json"
 CAPTURE_ROOT = "/artifacts/mergecert/q2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
@@ -71,6 +76,85 @@ def _item_ids_sha256(item_ids: list[str]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _canonical_json_bytes(value) -> bytes:
+    return (
+        json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode()
+
+
+def _fingerprint_record(fingerprint) -> dict:
+    from memsub.fingerprint import CompatibilityFingerprint, FIELDS
+
+    value = fingerprint.to_dict()
+    if set(value) != set(FIELDS):
+        raise ValueError("Q2 live compatibility fingerprint schema mismatch")
+    canonical = CompatibilityFingerprint.from_dict(value)
+    if canonical.to_dict() != value:
+        raise ValueError("Q2 live compatibility fingerprint is noncanonical")
+    return {
+        "compatibility_fingerprint_schema": FINGERPRINT_SCHEMA,
+        "compatibility_fingerprint": value,
+        "compatibility_fingerprint_sha256": canonical.digest(),
+    }
+
+
+def _validate_fingerprint_record(
+    state: dict, expected: dict | None = None
+) -> dict:
+    from memsub.fingerprint import CompatibilityFingerprint, FIELDS
+
+    value = state.get("compatibility_fingerprint")
+    if (
+        state.get("compatibility_fingerprint_schema") != FINGERPRINT_SCHEMA
+        or not isinstance(value, dict)
+        or set(value) != set(FIELDS)
+    ):
+        raise ValueError("Q2 compatibility fingerprint schema mismatch")
+    try:
+        canonical = CompatibilityFingerprint.from_dict(value)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError("Q2 compatibility fingerprint is invalid") from exc
+    record = {
+        "compatibility_fingerprint_schema": FINGERPRINT_SCHEMA,
+        "compatibility_fingerprint": canonical.to_dict(),
+        "compatibility_fingerprint_sha256": canonical.digest(),
+    }
+    pinned = canonical.to_dict()
+    if (
+        canonical.to_dict() != value
+        or state.get("compatibility_fingerprint_sha256")
+        != canonical.digest()
+        or not pinned["model_id"].startswith(f"{MODEL_ID}#cfg=sha256:")
+        or pinned["attention_impl"] != "sdpa"
+        or pinned["quantization"] != "bfloat16"
+        or not pinned["runtime_version"].startswith(
+            "hf-transformers-4.55.2+torch-2.7.1"
+        )
+        or (
+            expected is not None
+            and any(state.get(key) != expected.get(key) for key in record)
+        )
+    ):
+        raise ValueError(
+            "Q2 compatibility fingerprint differs from registered runtime"
+        )
+    return record
+
+
+def _registered_pilot_dir() -> str:
+    return f"{CAPTURE_ROOT}/pilot-{REGISTERED_PILOT_TAG}"
+
+
+def _registered_pilot_verdict_path() -> str:
+    return f"{_registered_pilot_dir()}/{PILOT_VERDICT_FILENAME}"
+
+
 def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
     if not os.path.exists(path):
         raise ValueError("Q2 is blocked until q1-trigger.json exists")
@@ -102,6 +186,58 @@ def _require_q1_trigger(path: str = Q1_TRIGGER_PATH) -> dict:
     return trigger
 
 
+def _validate_manifest_rows(manifest: list[dict]) -> None:
+    from memsub.certification import eq_policy_v1
+
+    required = {
+        "item_id",
+        "doc_id",
+        "domain",
+        "question",
+        "options",
+        "gold",
+        "pred_raw",
+        "chunk_rel_start",
+        "y",
+        "in_e1",
+        "raw_correct",
+        "pilot",
+    }
+    for index, row in enumerate(manifest):
+        if not isinstance(row, dict) or not required <= set(row):
+            raise ValueError(f"Q2 manifest row {index} schema mismatch")
+        if (
+            not isinstance(row["item_id"], str)
+            or not row["item_id"]
+            or not isinstance(row["doc_id"], str)
+            or not row["doc_id"]
+            or row["domain"] not in DOMAINS
+            or not isinstance(row["question"], str)
+            or not row["question"]
+            or not isinstance(row["options"], list)
+            or len(row["options"]) != len(ANSWER_LETTERS)
+            or not all(
+                isinstance(option, str) and bool(option.strip())
+                for option in row["options"]
+            )
+            or row["gold"] not in ANSWER_LETTERS
+            or row["pred_raw"] not in ANSWER_LETTERS
+            or type(row["chunk_rel_start"]) is not int
+            or row["chunk_rel_start"] < 0
+            or type(row["y"]) is not int
+            or row["y"] not in (0, 1)
+            or type(row["in_e1"]) is not int
+            or row["in_e1"] not in (0, 1)
+            or type(row["raw_correct"]) is not int
+            or row["raw_correct"] not in (0, 1)
+            or type(row["pilot"]) is not int
+            or row["pilot"] not in (0, 1)
+            or row["raw_correct"]
+            != int(eq_policy_v1(row["pred_raw"], row["gold"]))
+        ):
+            raise ValueError(f"Q2 manifest row {index} is invalid")
+
+
 def _sorted_manifest() -> tuple[list[dict], str]:
     with open(MANIFEST_PATH) as handle:
         manifest = json.load(handle)
@@ -112,6 +248,7 @@ def _sorted_manifest() -> tuple[list[dict], str]:
     item_ids = [row["item_id"] for row in manifest]
     if len(set(item_ids)) != Q2_ITEMS:
         raise ValueError("Q2 manifest item IDs must be unique")
+    _validate_manifest_rows(manifest)
     manifest.sort(key=lambda row: (row["domain"], row["doc_id"], row["item_id"]))
     return manifest, _sha256_file(MANIFEST_PATH)
 
@@ -238,6 +375,223 @@ def _stack_chunk(rows: list[dict], *, ratio: float, source_hash: str) -> dict:
     }
 
 
+def _validate_capture_arrays(
+    arrays: dict,
+    *,
+    expected_rows: list[dict],
+    expected_ratio: float,
+    manifest_sha256: str,
+    label: str,
+) -> dict:
+    import numpy as np
+
+    from memsub.certification import eq_policy_v1
+    from memsub.compaction import validate_capture_chunk
+
+    audit = validate_capture_chunk(arrays, expected_ratio=expected_ratio)
+    expected = {
+        "item_ids": np.asarray([row["item_id"] for row in expected_rows]),
+        "doc_ids": np.asarray([row["doc_id"] for row in expected_rows]),
+        "domain": np.asarray([row["domain"] for row in expected_rows]),
+        "pred_raw": np.asarray([row["pred_raw"] for row in expected_rows]),
+        "raw_correct": np.asarray(
+            [row["raw_correct"] for row in expected_rows], dtype=np.int8
+        ),
+        "in_e1": np.asarray(
+            [row["in_e1"] for row in expected_rows], dtype=np.int8
+        ),
+    }
+    for key, values in expected.items():
+        actual = np.asarray(arrays[key])
+        if values.dtype.kind in ("U", "S", "O"):
+            actual = actual.astype(str)
+            values = values.astype(str)
+        if not np.array_equal(actual, values):
+            raise ValueError(f"{label} {key} differs from registered manifest")
+    pred_raw = np.asarray(arrays["pred_raw"]).astype(str)
+    pred_merge = np.asarray(arrays["pred_merge"]).astype(str)
+    if not all(value in ANSWER_LETTERS for value in pred_raw) or not all(
+        value in ANSWER_LETTERS for value in pred_merge
+    ):
+        raise ValueError(f"{label} predictions leave registered answer alphabet")
+    expected_y = np.asarray(
+        [
+            int(not eq_policy_v1(merged, raw))
+            for merged, raw in zip(pred_merge, pred_raw)
+        ],
+        dtype=np.int8,
+    )
+    if not np.array_equal(np.asarray(arrays["y"]), expected_y):
+        raise ValueError(f"{label} y differs from eq_policy_v1")
+    source_hash = np.asarray(arrays["source_manifest_sha256"]).reshape(-1)
+    if (
+        len(source_hash) != 1
+        or str(source_hash[0]) != manifest_sha256
+    ):
+        raise ValueError(f"{label} source manifest hash mismatch")
+    if audit["rows"] != len(expected_rows):
+        raise ValueError(f"{label} row count mismatch")
+    return audit
+
+
+def _validate_capture_state(
+    state: dict,
+    *,
+    output_dir: str,
+    selected: list[dict],
+    manifest_sha256: str,
+    q1_trigger: dict,
+    q1_trigger_sha256: str,
+    slice_idx: int,
+    n_slices: int,
+    required_pilot_verdict_sha256: str | None = None,
+    allow_namespaced_verdict: bool = False,
+    expected_fingerprint: dict | None = None,
+    artifact_label: str = "Q2",
+) -> dict:
+    fields = {
+        "q1_trigger",
+        "q1_trigger_sha256",
+        "model_id",
+        "ratios",
+        "sink_token_count",
+        "source_manifest_path",
+        "source_manifest_sha256",
+        "slice_idx",
+        "n_slices",
+        "registered_item_count",
+        "registered_item_ids_sha256",
+        "completed_count",
+        "completed_item_ids",
+        "chunks",
+        "compute_seconds",
+        "compatibility_fingerprint_schema",
+        "compatibility_fingerprint",
+        "compatibility_fingerprint_sha256",
+    }
+    if required_pilot_verdict_sha256 is not None:
+        fields.add("required_pilot_verdict_sha256")
+    if not isinstance(state, dict) or set(state) != fields:
+        raise ValueError("existing Q2 state schema mismatch")
+    registered_item_ids = [row["item_id"] for row in selected]
+    done = state.get("completed_count")
+    if (
+        state.get("q1_trigger") != q1_trigger
+        or state.get("q1_trigger_sha256") != q1_trigger_sha256
+        or state.get("model_id") != MODEL_ID
+        or state.get("ratios") != list(RATIOS)
+        or state.get("sink_token_count") != SINKS
+        or state.get("source_manifest_path") != MANIFEST_PATH
+        or state.get("source_manifest_sha256") != manifest_sha256
+        or state.get("slice_idx") != slice_idx
+        or state.get("n_slices") != n_slices
+        or state.get("registered_item_count") != len(selected)
+        or state.get("registered_item_ids_sha256")
+        != _item_ids_sha256(registered_item_ids)
+        or type(done) is not int
+        or not 0 <= done <= len(selected)
+        or state.get("completed_item_ids") != registered_item_ids[:done]
+        or isinstance(state.get("compute_seconds"), bool)
+        or not isinstance(state.get("compute_seconds"), (int, float))
+        or not math.isfinite(float(state["compute_seconds"]))
+        or float(state["compute_seconds"]) < 0
+        or (
+            required_pilot_verdict_sha256 is not None
+            and state.get("required_pilot_verdict_sha256")
+            != required_pilot_verdict_sha256
+        )
+    ):
+        raise ValueError("existing Q2 state differs from registered inputs")
+    fingerprint = _validate_fingerprint_record(
+        state, expected=expected_fingerprint
+    )
+    if done != len(selected) and done % CHUNK_ITEMS:
+        raise ValueError("existing Q2 state ends between committed chunks")
+    expected_intervals = []
+    start = 0
+    while start < done:
+        end = min(start + CHUNK_ITEMS, len(selected))
+        expected_intervals.append((start, end))
+        start = end
+    chunks = state.get("chunks")
+    if not isinstance(chunks, list) or len(chunks) != len(expected_intervals):
+        raise ValueError("existing Q2 state chunk count mismatch")
+
+    expected_files = {"state.json"}
+    chunk_evidence = []
+    for chunk, (start, end) in zip(chunks, expected_intervals):
+        expected_rows = selected[start:end]
+        expected_ids = [row["item_id"] for row in expected_rows]
+        if (
+            not isinstance(chunk, dict)
+            or set(chunk) != {"start", "end", "item_ids_sha256", "files"}
+            or chunk.get("start") != start
+            or chunk.get("end") != end
+            or chunk.get("item_ids_sha256")
+            != _item_ids_sha256(expected_ids)
+            or not isinstance(chunk.get("files"), dict)
+            or set(chunk["files"]) != {
+                f"{ratio:.2f}" for ratio in RATIOS
+            }
+        ):
+            raise ValueError("existing Q2 state chunk coverage mismatch")
+        for ratio in RATIOS:
+            key = f"{ratio:.2f}"
+            filename = f"ratio-{ratio:.2f}-rows-{start:05d}-{end:05d}.npz"
+            path = f"{output_dir}/{filename}"
+            expected_files.add(filename)
+            file_row = chunk["files"][key]
+            if (
+                not isinstance(file_row, dict)
+                or set(file_row) != {"path", "sha256", "audit"}
+                or file_row.get("path") != path
+                or not os.path.isfile(path)
+                or _sha256_file(path) != file_row.get("sha256")
+            ):
+                raise ValueError(f"existing Q2 {key} chunk artifact mismatch")
+            import numpy as np
+
+            with np.load(path, allow_pickle=False) as archive:
+                arrays = {name: archive[name] for name in archive.files}
+            audit = _validate_capture_arrays(
+                arrays,
+                expected_rows=expected_rows,
+                expected_ratio=ratio,
+                manifest_sha256=manifest_sha256,
+                label=f"{artifact_label} {key} chunk",
+            )
+            if file_row.get("audit") != audit:
+                raise ValueError(f"existing Q2 {key} chunk audit mismatch")
+            chunk_evidence.append(
+                {
+                    "ratio": ratio,
+                    "path": path,
+                    "sha256": file_row["sha256"],
+                    "audit": audit,
+                }
+            )
+    actual_files = set(os.listdir(output_dir))
+    verdict_present = PILOT_VERDICT_FILENAME in actual_files
+    if allow_namespaced_verdict and verdict_present:
+        expected_files.add(PILOT_VERDICT_FILENAME)
+    if actual_files != expected_files:
+        raise ValueError(
+            f"Q2 output namespace mismatch: expected {sorted(expected_files)}, "
+            f"found {sorted(actual_files)}"
+        )
+    state_path = f"{output_dir}/state.json"
+    if not os.path.isfile(state_path):
+        raise ValueError("existing Q2 state file is missing")
+    return {
+        "state": {
+            "path": state_path,
+            "sha256": _sha256_file(state_path),
+        },
+        "chunks": chunk_evidence,
+        **fingerprint,
+    }
+
+
 def _run_capture(
     *,
     slice_idx: int,
@@ -245,6 +599,7 @@ def _run_capture(
     limit: int,
     output_name: str,
     verify_mode_parity: bool,
+    required_pilot_verdict: dict | None = None,
 ) -> dict:
     import sys
 
@@ -263,7 +618,7 @@ def _run_capture(
     )
     from memsub.reference_config import build_runtime
 
-    q1_trigger = _require_q1_trigger()
+    q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_sha256 = _sorted_manifest()
     selected = [
@@ -277,6 +632,11 @@ def _run_capture(
     output_dir = f"{CAPTURE_ROOT}/{output_name}"
     os.makedirs(output_dir, exist_ok=True)
     state_path = f"{output_dir}/state.json"
+    required_pilot_verdict_sha256 = None
+    if required_pilot_verdict is not None:
+        required_pilot_verdict_sha256 = _sha256_file(
+            _registered_pilot_verdict_path()
+        )
     state = {
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
@@ -294,30 +654,52 @@ def _run_capture(
         "chunks": [],
         "compute_seconds": 0.0,
     }
+    if required_pilot_verdict_sha256 is not None:
+        state["required_pilot_verdict_sha256"] = (
+            required_pilot_verdict_sha256
+        )
+    resumed = False
     if os.path.exists(state_path):
         with open(state_path) as handle:
             prior = json.load(handle)
+        _validate_capture_state(
+            prior,
+            output_dir=output_dir,
+            selected=selected,
+            manifest_sha256=manifest_sha256,
+            q1_trigger=q1_trigger,
+            q1_trigger_sha256=q1_trigger_sha256,
+            slice_idx=slice_idx,
+            n_slices=n_slices,
+            required_pilot_verdict_sha256=(
+                required_pilot_verdict_sha256
+            ),
+            allow_namespaced_verdict=(
+                output_name == f"pilot-{REGISTERED_PILOT_TAG}"
+            ),
+        )
         if (
-            prior.get("source_manifest_sha256") != manifest_sha256
-            or prior.get("registered_item_ids_sha256")
-            != _item_ids_sha256(registered_item_ids)
-            or prior.get("q1_trigger") != q1_trigger
-            or prior.get("q1_trigger_sha256") != q1_trigger_sha256
+            output_name == f"pilot-{REGISTERED_PILOT_TAG}"
+            and os.path.exists(_registered_pilot_verdict_path())
         ):
-            raise ValueError("existing Q2 state uses different registered inputs")
+            _require_registered_pilot_verdict()
         state = prior
+        resumed = True
+    elif os.listdir(output_dir):
+        raise ValueError(
+            f"Q2 output namespace has files without valid state: {output_dir}"
+        )
     done = int(state["completed_count"])
-    if state["completed_item_ids"] != registered_item_ids[:done]:
-        raise ValueError("Q2 resume state item order is corrupt")
 
     needed_docs = {row["doc_id"] for row in selected[done:]}
     texts = {}
-    for domain in DOMAINS:
-        with open(f"/artifacts/corpus/{domain}.jsonl") as handle:
-            for line in handle:
-                record = json.loads(line)
-                if record["doc_id"] in needed_docs:
-                    texts[record["doc_id"]] = record["text"]
+    if needed_docs:
+        for domain in DOMAINS:
+            with open(f"/artifacts/corpus/{domain}.jsonl") as handle:
+                for line in handle:
+                    record = json.loads(line)
+                    if record["doc_id"] in needed_docs:
+                        texts[record["doc_id"]] = record["text"]
     missing_docs = sorted(needed_docs - set(texts))
     if missing_docs:
         raise ValueError(f"Q2 source documents missing: {missing_docs[:10]}")
@@ -325,8 +707,18 @@ def _run_capture(
     runtime = build_runtime(reference=True)
     model, tokenizer = runtime.model, runtime.tokenizer
     fingerprint = runtime.fingerprint()
-    state["compatibility_fingerprint"] = fingerprint.to_dict()
-    state["compatibility_fingerprint_sha256"] = fingerprint.digest()
+    fingerprint_record = _fingerprint_record(fingerprint)
+    if resumed:
+        _validate_fingerprint_record(state, expected=fingerprint_record)
+    else:
+        state.update(fingerprint_record)
+    if required_pilot_verdict is not None and any(
+        required_pilot_verdict.get(key) != value
+        for key, value in fingerprint_record.items()
+    ):
+        raise ValueError(
+            "Q2 live runtime differs from registered pilot fingerprint"
+        )
     _set_attention_mode(model, "sdpa")
     doc_cache = {}
     chunk_rows = {ratio: [] for ratio in RATIOS}
@@ -523,94 +915,125 @@ def q2_capture_slice(
 ) -> dict:
     if n_slices != Q2_SLICES or not 0 <= slice_idx < Q2_SLICES:
         raise ValueError("Q2 uses the fixed registered eight-slice fleet")
+    pilot_verdict = _require_registered_pilot_verdict()
     return _run_capture(
         slice_idx=slice_idx,
         n_slices=n_slices,
         limit=0,
         output_name=f"full-slice-{slice_idx:02d}",
         verify_mode_parity=False,
+        required_pilot_verdict=pilot_verdict,
     )
 
 
 def _validate_pilot_artifact(run_tag: str) -> dict:
     import numpy as np
 
-    from memsub.compaction import validate_capture_chunk
-
     q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_sha256 = _sorted_manifest()
-    registered_item_ids = [row["item_id"] for row in manifest[:PILOT_ITEMS]]
+    selected = manifest[:PILOT_ITEMS]
     output_dir = f"{CAPTURE_ROOT}/pilot-{run_tag}"
     state_path = f"{output_dir}/state.json"
     if not os.path.exists(state_path):
         raise ValueError(f"missing Q2 pilot {run_tag}")
     with open(state_path) as handle:
         state = json.load(handle)
-    if (
-        state.get("q1_trigger") != q1_trigger
-        or state.get("q1_trigger_sha256") != q1_trigger_sha256
-        or state.get("model_id") != MODEL_ID
-        or state.get("ratios") != list(RATIOS)
-        or state.get("sink_token_count") != SINKS
-        or state.get("source_manifest_path") != MANIFEST_PATH
-        or state.get("source_manifest_sha256") != manifest_sha256
-        or state.get("slice_idx") != 0
-        or state.get("n_slices") != 1
-        or state.get("registered_item_count") != PILOT_ITEMS
-        or state.get("registered_item_ids_sha256")
-        != _item_ids_sha256(registered_item_ids)
-        or state.get("completed_count") != PILOT_ITEMS
-        or state.get("completed_item_ids") != registered_item_ids
-    ):
+    evidence = _validate_capture_state(
+        state,
+        output_dir=output_dir,
+        selected=selected,
+        manifest_sha256=manifest_sha256,
+        q1_trigger=q1_trigger,
+        q1_trigger_sha256=q1_trigger_sha256,
+        slice_idx=0,
+        n_slices=1,
+        allow_namespaced_verdict=(run_tag == REGISTERED_PILOT_TAG),
+        artifact_label=f"Q2 pilot {run_tag}",
+    )
+    if state.get("completed_count") != PILOT_ITEMS:
         raise ValueError(f"Q2 pilot {run_tag} state/provenance mismatch")
-    chunks = state.get("chunks")
-    if not isinstance(chunks, list) or len(chunks) != 1:
-        raise ValueError(f"Q2 pilot {run_tag} must contain one complete chunk")
-    chunk = chunks[0]
-    if (
-        chunk.get("start") != 0
-        or chunk.get("end") != PILOT_ITEMS
-        or chunk.get("item_ids_sha256")
-        != _item_ids_sha256(registered_item_ids)
-        or set(chunk.get("files", {})) != {
-            f"{ratio:.2f}" for ratio in RATIOS
-        }
-    ):
-        raise ValueError(f"Q2 pilot {run_tag} chunk coverage mismatch")
-
     arrays_by_ratio = {}
     audits = {}
-    for ratio in RATIOS:
-        key = f"{ratio:.2f}"
-        expected_path = (
-            f"{output_dir}/ratio-{ratio:.2f}-rows-00000-"
-            f"{PILOT_ITEMS:05d}.npz"
-        )
-        file_row = chunk["files"][key]
-        if (
-            file_row.get("path") != expected_path
-            or _sha256_file(expected_path) != file_row.get("sha256")
-        ):
-            raise ValueError(f"Q2 pilot {run_tag} {key} artifact mismatch")
-        with np.load(expected_path, allow_pickle=False) as archive:
+    artifacts_by_ratio = {}
+    for row in evidence["chunks"]:
+        key = f"{float(row['ratio']):.2f}"
+        with np.load(row["path"], allow_pickle=False) as archive:
             arrays = {name: archive[name] for name in archive.files}
-        audit = validate_capture_chunk(arrays, expected_ratio=ratio)
-        if (
-            arrays["item_ids"].astype(str).tolist() != registered_item_ids
-            or str(np.asarray(arrays["source_manifest_sha256"])[0])
-            != manifest_sha256
-            or audit["rows"] != PILOT_ITEMS
-        ):
-            raise ValueError(f"Q2 pilot {run_tag} {key} row coverage mismatch")
         arrays_by_ratio[key] = arrays
-        audits[key] = audit
+        audits[key] = row["audit"]
+        artifacts_by_ratio[key] = {
+            "path": row["path"],
+            "sha256": row["sha256"],
+            "audit": row["audit"],
+        }
     return {
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
+        "source_manifest": {
+            "path": MANIFEST_PATH,
+            "sha256": manifest_sha256,
+        },
+        "state": evidence["state"],
+        "artifacts": artifacts_by_ratio,
+        "compatibility_fingerprint_schema": evidence[
+            "compatibility_fingerprint_schema"
+        ],
+        "compatibility_fingerprint": evidence[
+            "compatibility_fingerprint"
+        ],
+        "compatibility_fingerprint_sha256": evidence[
+            "compatibility_fingerprint_sha256"
+        ],
         "arrays": arrays_by_ratio,
         "audits": audits,
     }
+
+
+def _build_registered_pilot_verdict(evidence: dict) -> dict:
+    return {
+        "protocol": "MERGECERT-Q2",
+        "validator_version": PILOT_VALIDATOR_VERSION,
+        "validation_mode": "single-registered-run",
+        "run_tag": REGISTERED_PILOT_TAG,
+        "run_tags": [REGISTERED_PILOT_TAG],
+        "items": PILOT_ITEMS,
+        "ratios": list(RATIOS),
+        "q1_trigger": evidence["q1_trigger"],
+        "q1_trigger_sha256": evidence["q1_trigger_sha256"],
+        "source_manifest": evidence["source_manifest"],
+        "state": evidence["state"],
+        "artifacts": evidence["artifacts"],
+        "compatibility_fingerprint_schema": evidence[
+            "compatibility_fingerprint_schema"
+        ],
+        "compatibility_fingerprint": evidence[
+            "compatibility_fingerprint"
+        ],
+        "compatibility_fingerprint_sha256": evidence[
+            "compatibility_fingerprint_sha256"
+        ],
+        "audits": evidence["audits"],
+        "comparisons": {},
+        "pass": True,
+    }
+
+
+def _require_registered_pilot_verdict() -> dict:
+    path = _registered_pilot_verdict_path()
+    if not os.path.isfile(path):
+        raise ValueError("registered Q2 pilot verdict is missing")
+    evidence = _validate_pilot_artifact(REGISTERED_PILOT_TAG)
+    expected = _build_registered_pilot_verdict(evidence)
+    try:
+        with open(path, "rb") as handle:
+            encoded = handle.read()
+        actual = json.loads(encoded)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("registered Q2 pilot verdict is invalid") from exc
+    if actual != expected or encoded != _canonical_json_bytes(expected):
+        raise ValueError("registered Q2 pilot verdict is stale or tampered")
+    return expected
 
 
 @app.function(image=image, volumes=VOLUMES, timeout=14_400, memory=32_768)
@@ -624,10 +1047,21 @@ def validate_pilot() -> dict:
         f"{CAPTURE_ROOT}/pilot-{REGISTERED_PILOT_TAG}/state.json"
     )
     if os.path.exists(registered_state):
-        run_tags = [REGISTERED_PILOT_TAG]
-        validated = [_validate_pilot_artifact(REGISTERED_PILOT_TAG)]
-        validation_mode = "single-registered-run"
-        comparisons = {}
+        evidence = _validate_pilot_artifact(REGISTERED_PILOT_TAG)
+        output = _build_registered_pilot_verdict(evidence)
+        verdict_path = _registered_pilot_verdict_path()
+        encoded = _canonical_json_bytes(output)
+        if os.path.exists(verdict_path):
+            with open(verdict_path, "rb") as handle:
+                if handle.read() != encoded:
+                    raise ValueError(
+                        "registered Q2 pilot verdict is stale or tampered"
+                    )
+        else:
+            temporary = f"{verdict_path}.partial"
+            with open(temporary, "wb") as handle:
+                handle.write(encoded)
+            os.replace(temporary, verdict_path)
     else:
         run_tags = list(LEGACY_PILOT_TAGS)
         validated = [
@@ -651,22 +1085,27 @@ def validate_pilot() -> dict:
                 raise ValueError(
                     f"Q2 pilot is not bit-identical at {ratio:.2f}: {unequal}"
                 )
-    evidence = validated[0]
-    output = {
-        "items": PILOT_ITEMS,
-        "ratios": list(RATIOS),
-        "validation_mode": validation_mode,
-        "run_tags": run_tags,
-        "q1_trigger": evidence["q1_trigger"],
-        "q1_trigger_sha256": evidence["q1_trigger_sha256"],
-        "audits": evidence["audits"],
-        "comparisons": comparisons,
-        "pass": True,
-    }
-    with open(f"{CAPTURE_ROOT}/pilot-verdict.json", "w") as handle:
-        json.dump(output, handle, indent=1, allow_nan=False)
+        evidence = validated[0]
+        output = {
+            "items": PILOT_ITEMS,
+            "ratios": list(RATIOS),
+            "validation_mode": "repeated-run-bit-identical",
+            "run_tags": run_tags,
+            "q1_trigger": evidence["q1_trigger"],
+            "q1_trigger_sha256": evidence["q1_trigger_sha256"],
+            "audits": evidence["audits"],
+            "comparisons": comparisons,
+            "pass": True,
+        }
+        with open(f"{CAPTURE_ROOT}/pilot-verdict.json", "w") as handle:
+            json.dump(output, handle, indent=1, allow_nan=False)
     artifacts.commit()
     return output
+
+
+@app.function(image=image, volumes=VOLUMES, timeout=600, memory=1_024)
+def pilot_gate() -> dict:
+    return _require_registered_pilot_verdict()
 
 
 @app.function(image=image, volumes=VOLUMES, timeout=43_200, memory=65_536)
@@ -786,6 +1225,7 @@ def freeze_capture_summary() -> dict:
 
 @app.local_entrypoint()
 def fleet() -> None:
+    pilot_gate.remote()
     handles = [
         q2_capture_slice.spawn(slice_idx, Q2_SLICES)
         for slice_idx in range(Q2_SLICES)
