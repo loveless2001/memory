@@ -204,6 +204,53 @@ def _require_gate_and_capture() -> tuple[dict, dict, str]:
     return q1_trigger, summary, q1_trigger_sha256
 
 
+def _require_frozen_manifest(capture_summary: dict, path: str | None = None) -> list[dict]:
+    """Load the manifest only when it still matches the frozen capture input."""
+    manifest_path = path or MANIFEST_PATH
+    if _sha256_file(manifest_path) != capture_summary["source_manifest_sha256"]:
+        raise ValueError("Q2 probe manifest hash differs from frozen capture summary")
+    with open(manifest_path) as handle:
+        manifest = json.load(handle)
+    if not isinstance(manifest, list):
+        raise ValueError("Q2 probe manifest must be a list")
+    return manifest
+
+
+def _require_complete_fact_types(
+    capture_summary: dict, q1_trigger: dict, q1_trigger_sha256: str
+) -> dict:
+    """Reject stale fact-type state before it can enter amended Q2 probes."""
+    if not os.path.exists(FACT_TYPES_COMPLETE):
+        raise ValueError("run complete_fact_types before Q2 probes")
+    with open(FACT_TYPES_COMPLETE) as handle:
+        state = json.load(handle)
+    amendment = _require_q2_amendment()
+    required_fields = {
+        "source_path", "source_sha256", "manifest_sha256", "q1_trigger",
+        "q1_trigger_sha256", "q2_protocol_version", "q2_namespace_version",
+        "q2_context_mechanics_version", "q2_amendment_json",
+        "q2_amendment_sha256", "types", "completed_missing_item_ids",
+    }
+    if not isinstance(state, dict) or set(state) != required_fields:
+        raise ValueError("completed fact types use an incomplete state schema")
+    if (
+        state["source_path"] != FACT_TYPES_SOURCE
+        or state["source_sha256"] != _sha256_file(FACT_TYPES_SOURCE)
+        or state["manifest_sha256"] != capture_summary["source_manifest_sha256"]
+        or state["q1_trigger"] != q1_trigger
+        or state["q1_trigger_sha256"] != q1_trigger_sha256
+        or state["q2_protocol_version"] != Q2_PROTOCOL_VERSION
+        or state["q2_namespace_version"] != Q2_NAMESPACE_VERSION
+        or state["q2_context_mechanics_version"] != Q2_CONTEXT_MECHANICS_VERSION
+        or state["q2_amendment_json"] != amendment["q2_amendment_json"]
+        or state["q2_amendment_sha256"] != amendment["q2_amendment_sha256"]
+        or not isinstance(state["types"], dict)
+        or not isinstance(state["completed_missing_item_ids"], list)
+    ):
+        raise ValueError("completed fact types do not match amended Q2 inputs")
+    return state
+
+
 FACT_TYPES = {
     "A": "number",
     "B": "name/entity",
@@ -232,10 +279,9 @@ def complete_fact_types() -> dict:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    q1_trigger, _, q1_trigger_sha256 = _require_gate_and_capture()
+    q1_trigger, capture_summary, q1_trigger_sha256 = _require_gate_and_capture()
     amendment = _require_q2_amendment()
-    with open(MANIFEST_PATH) as handle:
-        manifest = json.load(handle)
+    manifest = _require_frozen_manifest(capture_summary)
     with open(FACT_TYPES_SOURCE) as handle:
         source = json.load(handle)
     source_types = source["types"]
@@ -555,6 +601,7 @@ def _empty_capture_target(count: int, *, residual_path: str | None = None):
             else np.empty((count, 37, 2560), dtype=np.float16)
         ),
         "seen": np.zeros(count, dtype=bool),
+        "chunk_accounting_audits": [],
     }
     for field in Q2_ACCOUNTING_ARRAY_FIELDS:
         if field == "item_id":
@@ -651,12 +698,13 @@ def _assemble_capture_chunks(
             }:
                 target[field][indices] = arrays[field]
         target["seen"][indices] = True
-        target["accounting_audit"] = accounting_audit
+        target["chunk_accounting_audits"].append(accounting_audit)
     for key, target in captured.items():
         if not target["seen"].all():
             raise ValueError(f"Q2 capture assembly has missing rows for ratio {key}")
-        if "accounting_audit" not in target:
-            raise ValueError(f"Q2 capture accounting audit is missing for ratio {key}")
+        target["accounting_audit"] = validate_q2_accounting_arrays(
+            target, manifest, float(key)
+        )
     return captured
 
 
@@ -683,10 +731,7 @@ def run_probes() -> dict:
     from memsub.gate.label_dataset_splits import GateDataset
 
     q1_trigger, capture_summary, q1_trigger_sha256 = _require_gate_and_capture()
-    if not os.path.exists(FACT_TYPES_COMPLETE):
-        raise ValueError("run complete_fact_types before Q2 probes")
-    with open(MANIFEST_PATH) as handle:
-        manifest = json.load(handle)
+    manifest = _require_frozen_manifest(capture_summary)
     manifest.sort(key=lambda row: (row["domain"], row["doc_id"], row["item_id"]))
     count = len(manifest)
     if count != 30_847:
@@ -711,8 +756,9 @@ def run_probes() -> dict:
 
     with open(SURFACE_PATH) as handle:
         surface = json.load(handle)
-    with open(FACT_TYPES_COMPLETE) as handle:
-        fact_type_payload = json.load(handle)
+    fact_type_payload = _require_complete_fact_types(
+        capture_summary, q1_trigger, q1_trigger_sha256
+    )
     fact_types = fact_type_payload["types"]
     if not set(item_ids) <= set(surface) or set(item_ids) != set(fact_types):
         raise ValueError("surface/fact-type joins do not cover Q2 manifest")

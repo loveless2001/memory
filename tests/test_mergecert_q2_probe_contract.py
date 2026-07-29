@@ -146,6 +146,70 @@ def _write_short_capture(tmp_path):
     return row, arrays, chunk_path, summary, summary_path, trigger_path
 
 
+def _write_two_chunk_capture(tmp_path):
+    first = _short_manifest_row()
+    second = {
+        **first,
+        "item_id": "mcq_code/00130_204_27",
+        "chunk_rel_start": 129,
+    }
+    rows = [first, second]
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(rows))
+    manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    chunks = []
+    for index, row in enumerate(rows):
+        arrays = _short_arrays(row)
+        arrays["source_manifest_sha256"] = np.asarray([manifest_sha256])
+        arrays["source_chunk_token_start"] = np.asarray(
+            [row["chunk_rel_start"]], dtype=np.int64
+        )
+        arrays["source_chunk_context_start"] = np.asarray(
+            [row["chunk_rel_start"]], dtype=np.int64
+        )
+        chunk_path = tmp_path / f"ratio-0.25-{index}.npz"
+        np.savez(chunk_path, **arrays)
+        chunks.append({
+            "ratio": 0.25,
+            "slice_idx": 0,
+            "path": str(chunk_path),
+            "sha256": hashlib.sha256(chunk_path.read_bytes()).hexdigest(),
+            "audit": {
+                **validate_capture_chunk(arrays, expected_ratio=0.25),
+                "context_accounting": validate_q2_accounting_arrays(
+                    arrays, [row], 0.25
+                ),
+            },
+        })
+    summary = {
+        "source_manifest_sha256": manifest_sha256,
+        "chunks": chunks,
+    }
+    return rows, summary
+
+
+def _write_fact_types_state(tmp_path, runner, summary, trigger, trigger_sha256):
+    source_path = tmp_path / "fact-types-source.json"
+    source_path.write_text(json.dumps({"types": {"item": "number"}}))
+    state = {
+        "source_path": str(source_path),
+        "source_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+        "manifest_sha256": summary["source_manifest_sha256"],
+        "q1_trigger": trigger,
+        "q1_trigger_sha256": trigger_sha256,
+        "q2_protocol_version": "mergecert-q2-amended-v2",
+        "q2_namespace_version": "mergecert-q2-amended-v2",
+        "q2_context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "q2_amendment_json": AMENDMENT_JSON,
+        "q2_amendment_sha256": AMENDMENT_SHA256,
+        "types": {"item": "number"},
+        "completed_missing_item_ids": [],
+    }
+    state_path = tmp_path / "fact-types-complete.json"
+    state_path.write_text(json.dumps(state))
+    return source_path, state_path, state
+
+
 def _configure_gate(monkeypatch, runner, summary_path, trigger_path):
     monkeypatch.setattr(runner, "CAPTURE_SUMMARY", str(summary_path))
     monkeypatch.setattr(runner, "Q1_TRIGGER_PATH", str(trigger_path))
@@ -247,3 +311,79 @@ def test_assembly_uses_per_item_short_context_distance(tmp_path):
     assert distance.tolist() == [arrays["merge_recent_start"][0] - (128 + 1024)]
     old_fixed = 4096 - ((4096 - int(4096 * 0.25) - 4) // 2) - (128 + 1024)
     assert distance.tolist() != [old_fixed]
+
+
+def test_assembly_aggregates_full_accounting_audit_across_chunks(tmp_path):
+    rows, summary = _write_two_chunk_capture(tmp_path)
+    runner = _load_runner("mergecert_q2_probe_multichunk_accounting")
+
+    assembled = runner._assemble_capture_chunks(summary, rows, ratios=(0.25,))
+    target = assembled["0.25"]
+    expected = validate_q2_accounting_arrays(target, rows, 0.25)
+
+    assert target["accounting_audit"] == expected
+    assert target["accounting_audit"]["rows"] == 2
+    assert target["accounting_audit"]["accounting_sha256"] != summary["chunks"][1]["audit"]["context_accounting"]["accounting_sha256"]
+
+
+def test_manifest_binding_rejects_same_id_content_drift(tmp_path):
+    row, _, _, summary, _, _ = _write_short_capture(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    drifted = {**row, "domain": "financial"}
+    manifest_path.write_text(json.dumps([drifted]))
+    runner = _load_runner("mergecert_q2_probe_manifest_drift")
+
+    with pytest.raises(ValueError, match="manifest hash"):
+        runner._require_frozen_manifest(summary, str(manifest_path))
+
+
+def test_fact_type_state_accepts_complete_amended_provenance(tmp_path, monkeypatch):
+    _, _, _, summary, _, trigger_path = _write_short_capture(tmp_path)
+    runner = _load_runner("mergecert_q2_probe_fact_state_valid")
+    trigger = _trigger()
+    trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
+    source_path, state_path, state = _write_fact_types_state(
+        tmp_path, runner, summary, trigger, trigger_sha256
+    )
+    monkeypatch.setattr(runner, "FACT_TYPES_SOURCE", str(source_path))
+    monkeypatch.setattr(runner, "FACT_TYPES_COMPLETE", str(state_path))
+    monkeypatch.setattr(runner, "Q2_AMENDMENT_IMAGE_PATH", str(AMENDMENT_PATH))
+
+    assert runner._require_complete_fact_types(
+        summary, trigger, trigger_sha256
+    ) == state
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "q2_amendment_sha256",
+        "q2_protocol_version",
+        "q2_namespace_version",
+        "q2_context_mechanics_version",
+        "manifest_sha256",
+    ],
+)
+def test_fact_type_state_rejects_stale_amended_provenance(
+    tmp_path, monkeypatch, mutation
+):
+    _, _, _, summary, _, trigger_path = _write_short_capture(tmp_path)
+    runner = _load_runner(f"mergecert_q2_probe_fact_state_{mutation}")
+    trigger = _trigger()
+    trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
+    source_path, state_path, state = _write_fact_types_state(
+        tmp_path, runner, summary, trigger, trigger_sha256
+    )
+    monkeypatch.setattr(runner, "FACT_TYPES_SOURCE", str(source_path))
+    monkeypatch.setattr(runner, "FACT_TYPES_COMPLETE", str(state_path))
+    monkeypatch.setattr(runner, "Q2_AMENDMENT_IMAGE_PATH", str(AMENDMENT_PATH))
+    if mutation == "manifest_sha256":
+        state[mutation] = "0" * 64
+    elif mutation == "q2_amendment_sha256":
+        state[mutation] = "0" * 64
+    else:
+        state[mutation] = "stale"
+    state_path.write_text(json.dumps(state))
+
+    with pytest.raises(ValueError, match="fact types"):
+        runner._require_complete_fact_types(summary, trigger, trigger_sha256)
