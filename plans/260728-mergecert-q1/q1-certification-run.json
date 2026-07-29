@@ -1,0 +1,73 @@
+{
+ "schema": "mergecert-q1-certification-run-v1",
+ "status": "completed-and-independently-validated",
+ "reviewed_runner_commit": "36475ded4264486b39d403943682ab0687bd2943",
+ "certification": {
+  "app_id": "ap-bnyT0P9ay00aSaBC0u4gyc",
+  "app_name": "memsub-mergecert-p0-q1",
+  "function": "q1_addendum_certify",
+  "registered_documents": 20,
+  "state": "stopped",
+  "tasks_after_stop": 0,
+  "created_at": "2026-07-29 14:54:12+07:00",
+  "stopped_at": "2026-07-29 14:56:45+07:00",
+  "app_lifetime_seconds": 153,
+  "gpu_request": "H100",
+  "cpu_core_estimate": 1,
+  "memory_request_mib": 65536
+ },
+ "terminal_inventory": {
+  "command": "modal app list --json",
+  "result": [
+   {
+    "app_id": "ap-bnyT0P9ay00aSaBC0u4gyc",
+    "description": "memsub-mergecert-p0-q1",
+    "state": "stopped",
+    "tasks": "0",
+    "created_at": "2026-07-29 14:54:12+07:00",
+    "stopped_at": "2026-07-29 14:56:45+07:00"
+   }
+  ]
+ },
+ "outputs": {
+  "q1_certification_artifact_retrieved": true,
+  "q1_certification_sha256": "82b214ba7881a26ad9aea4f8ba7911e9d028006db5b12c06154b08125917b748",
+  "independent_analyzer_run": true,
+  "q1_verdict_sha256": "4266eb66c5b0979da504b124dfa0ceb89d50e29348ea78d9ca7ac8c2614ee036",
+  "q1_trigger_sha256": "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1",
+  "q1_table_sha256": "2440fb16f86c770d67b0263a9321e5bc6fc6b044209566a037fd9541a23e6fbb",
+  "analyzer_pass": true,
+  "archived_replay_rows": 60,
+  "maximum_replay_mismatch_count": 0,
+  "run_q2_q3": true,
+  "favorable_intervals": [
+   "0.40:lost_prior"
+  ],
+  "q1_trigger_uploaded": false,
+  "q2_q3_launched": false
+ },
+ "cost_estimate": {
+  "usd": 0.19158354,
+  "calculation": "153 * (0.001097 + 1 * 0.0000131 + 64 * 0.00000222)",
+  "basis": "Conservative whole-app estimate charging one H100, one physical CPU core, and the full 64 GiB memory request for all 153 seconds.",
+  "rates_usd_per_second": {
+   "h100": 0.001097,
+   "physical_cpu_core": 0.0000131,
+   "memory_gib": 0.00000222
+  },
+  "pricing_source": "https://modal.com/pricing",
+  "pricing_checked_date": "2026-07-29",
+  "campaign_bound_usd": 15.0,
+  "not_billing_actual": true
+ },
+ "cumulative_conservative_campaign_estimate": {
+  "prior_q1_usd": 0.26981812,
+  "certification_usd": 0.19158354,
+  "calculation": "0.26981812 + 0.19158354",
+  "usd": 0.46140166,
+  "campaign_bound_usd": 15.0,
+  "within_bound": true,
+  "not_billing_actual": true
+ },
+ "stop_rule": "The local trigger is review evidence only. It was not uploaded, and no Q2 or Q3 action was launched pending controller review."
+}

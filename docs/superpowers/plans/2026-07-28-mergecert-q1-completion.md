@@ -771,7 +771,7 @@ created or copied, and no full Q1, Q2, or Q3 action is authorized by this
 evidence. Full Q1 remains pending a separate controller decision and
 independent review of this smoke-evidence commit.
 
-- [ ] **Step 4: Launch full Q1 detached only after a valid smoke**
+- [x] **Step 4: Launch full Q1 detached only after a valid smoke**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run --detach \
@@ -780,8 +780,12 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run --detach \
 
 Record the app ID, inspect logs, and poll `modal app list --json` until stopped.
 Do not start another full app while the registered output is resumable.
+Completed as app `ap-bnyT0P9ay00aSaBC0u4gyc`: all 20 documents completed,
+and the terminal inventory showed state `stopped`, zero tasks, and a
+153-second lifetime from 14:54:12 to 14:56:45 +07:00. The tracked operations
+record is `plans/260728-mergecert-q1/q1-certification-run.json`.
 
-- [ ] **Step 5: Retrieve and independently analyze full Q1**
+- [x] **Step 5: Retrieve and independently analyze full Q1**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
@@ -796,6 +800,14 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume get \
 
 Expected: 20 documents, five per domain, five arms, all archived replay checks
 passing, complete CIs, per-domain slices, and one deterministic trigger.
+Passed locally with the exact 20 registered documents, five in each domain,
+five arms, 60/60 auxiliary replay rows with zero recorded mismatches, exact
+authorization/registration/fingerprint/execution semantics, common
+partitions and full-prediction baselines, zero-change control, finite
+nondegenerate attention, matched per-document physical budgets, complete
+paired CIs, and all four domain slices. The deterministic registered result is
+`R1` / `aggregation-negative`, with favorable interval
+`0.40:lost_prior` and `run_q2_q3=true`.
 
 - [ ] **Step 6: Copy the trigger to the private volume**
 
@@ -807,7 +819,10 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
   /mergecert-q1/q1-trigger.json
 ```
 
-- [ ] **Step 7: Commit Q1 evidence**
+Not performed. Although the full trigger is positive, it remains local
+pending controller review. No Q2 or Q3 action was launched.
+
+- [x] **Step 7: Commit Q1 evidence**
 
 ```bash
 git add plans/260728-mergecert-q1/q1-smoke.json \
