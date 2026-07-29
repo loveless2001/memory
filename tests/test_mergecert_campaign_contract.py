@@ -2,6 +2,7 @@ import ast
 import hashlib
 import importlib.util
 import json
+import shutil
 import sys
 import types
 from pathlib import Path
@@ -279,7 +280,7 @@ def _configure_q2_pilot_fixture(runner, monkeypatch, fixture):
 
 
 def _rewrite_q2_pilot_array(fixture, ratio, key, value):
-    state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
+    state_path = fixture["capture_root"] / "pilot-amended-v2" / "state.json"
     state = json.loads(state_path.read_text())
     file_row = state["chunks"][0]["files"][f"{ratio:.2f}"]
     path = Path(file_row["path"])
@@ -295,6 +296,30 @@ def _rewrite_q2_pilot_array(fixture, ratio, key, value):
         ),
     }
     state_path.write_text(json.dumps(state))
+
+
+def _prepare_q2_amended_freeze_fixture(tmp_path, monkeypatch):
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_freeze_fixture")
+    fixture = _write_q2_pilot_fixture(tmp_path, runner, ("amended-v2",))
+    _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+    monkeypatch.setattr(runner, "Q2_SLICES", 1)
+    runner.validate_pilot.get_raw_f()()
+    pilot_dir = fixture["capture_root"] / "pilot-amended-v2"
+    slice_dir = fixture["capture_root"] / "full-amended-v2-slice-00"
+    shutil.copytree(pilot_dir, slice_dir, ignore=shutil.ignore_patterns("pilot-verdict.json"))
+    state_path = slice_dir / "state.json"
+    state = json.loads(state_path.read_text())
+    verdict_path = pilot_dir / "pilot-verdict.json"
+    state["required_pilot_verdict_sha256"] = hashlib.sha256(
+        verdict_path.read_bytes()
+    ).hexdigest()
+    for chunk in state["chunks"]:
+        for file_row in chunk["files"].values():
+            old_path = Path(file_row["path"])
+            new_path = slice_dir / old_path.name
+            file_row["path"] = str(new_path)
+    state_path.write_text(json.dumps(state))
+    return runner, fixture, state_path
 
 
 def _load_module(path, name):
@@ -2041,20 +2066,8 @@ def test_mergecert_q2_runner_has_no_training_or_publication_path():
         assert forbidden not in source
 
 
-@pytest.mark.parametrize(
-    ("run_tag", "output_name"),
-    (
-        ("q1-triggered", "pilot-q1-triggered"),
-        ("a", "pilot-a"),
-        ("b", "pilot-b"),
-    ),
-)
-def test_q2_pilot_maps_registered_and_legacy_tags_to_isolated_outputs(
-    monkeypatch, run_tag, output_name
-):
-    runner = _load_module(
-        Q2_RUNNER, f"mergecert_q2_pilot_contract_{run_tag}"
-    )
+def test_q2_pilot_uses_only_amended_registered_namespace(monkeypatch):
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_pilot_contract")
     calls = []
 
     def fake_run_capture(**kwargs):
@@ -2063,18 +2076,24 @@ def test_q2_pilot_maps_registered_and_legacy_tags_to_isolated_outputs(
 
     monkeypatch.setattr(runner, "_run_capture", fake_run_capture)
 
-    result = runner.q2_pilot.get_raw_f()(run_tag, 16)
+    result = runner.q2_pilot.get_raw_f()("amended-v2", 16)
 
-    assert result == {"output": output_name}
+    assert runner.REGISTERED_PILOT_TAG == "amended-v2"
+    assert result == {"output": "pilot-amended-v2"}
     assert calls == [
         {
             "slice_idx": 0,
             "n_slices": 1,
             "limit": 16,
-            "output_name": output_name,
+            "output_name": "pilot-amended-v2",
             "verify_mode_parity": True,
         }
     ]
+    for legacy_tag in ("q1-triggered", "a", "b"):
+        with pytest.raises(ValueError, match="amended-v2"):
+            runner.q2_pilot.get_raw_f()(legacy_tag, 16)
+    with pytest.raises(ValueError, match="exactly 16"):
+        runner.q2_pilot.get_raw_f()("amended-v2", 17)
 
 
 def test_q2_pilot_complete_resume_is_fully_validated_and_idempotent(
@@ -2086,7 +2105,7 @@ def test_q2_pilot_complete_resume_is_fully_validated_and_idempotent(
         Q2_RUNNER, "mergecert_q2_pilot_complete_resume"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
     runtime_calls = []
@@ -2096,7 +2115,7 @@ def test_q2_pilot_complete_resume_is_fully_validated_and_idempotent(
         lambda reference: runtime_calls.append(reference)
         or _q2_fake_runtime(),
     )
-    output_dir = fixture["capture_root"] / "pilot-q1-triggered"
+    output_dir = fixture["capture_root"] / "pilot-amended-v2"
     before = {
         path.name: hashlib.sha256(path.read_bytes()).hexdigest()
         for path in output_dir.iterdir()
@@ -2106,7 +2125,7 @@ def test_q2_pilot_complete_resume_is_fully_validated_and_idempotent(
         slice_idx=0,
         n_slices=1,
         limit=16,
-        output_name="pilot-q1-triggered",
+        output_name="pilot-amended-v2",
         verify_mode_parity=True,
     )
 
@@ -2129,7 +2148,7 @@ def test_q2_pilot_resume_rejects_semantic_tamper_before_runtime(
         Q2_RUNNER, "mergecert_q2_pilot_tampered_resume"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
     _rewrite_q2_pilot_array(fixture, 0.25, "doc_ids", "doc-wrong")
@@ -2146,7 +2165,7 @@ def test_q2_pilot_resume_rejects_semantic_tamper_before_runtime(
             slice_idx=0,
             n_slices=1,
             limit=16,
-            output_name="pilot-q1-triggered",
+            output_name="pilot-amended-v2",
             verify_mode_parity=True,
         )
     assert runtime_calls == []
@@ -2161,7 +2180,7 @@ def test_q2_pilot_resume_rejects_live_fingerprint_drift(
         Q2_RUNNER, "mergecert_q2_pilot_live_fingerprint_drift"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
     stale = _q2_fingerprint(
@@ -2178,7 +2197,7 @@ def test_q2_pilot_resume_rejects_live_fingerprint_drift(
             slice_idx=0,
             n_slices=1,
             limit=16,
-            output_name="pilot-q1-triggered",
+            output_name="pilot-amended-v2",
             verify_mode_parity=True,
         )
 
@@ -2190,7 +2209,7 @@ def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
         Q2_RUNNER, "mergecert_q2_registered_pilot_validation"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     commits = _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
 
@@ -2198,7 +2217,7 @@ def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
 
     assert result["pass"] is True
     assert result["validation_mode"] == "single-registered-run"
-    assert result["run_tags"] == ["q1-triggered"]
+    assert result["run_tags"] == ["amended-v2"]
     assert result["q1_trigger"] == fixture["trigger"]
     assert result["q1_trigger_sha256"] == fixture["trigger_sha256"]
     assert result["ratios"] == [0.25, 0.40]
@@ -2207,7 +2226,7 @@ def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
     assert commits == [1]
     verdict_path = (
         fixture["capture_root"]
-        / "pilot-q1-triggered"
+        / "pilot-amended-v2"
         / "pilot-verdict.json"
     )
     assert verdict_path.exists()
@@ -2219,11 +2238,11 @@ def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
     }
     assert result["validator_version"] == runner.PILOT_VALIDATOR_VERSION
     assert result["validation_mode"] == "single-registered-run"
-    assert result["run_tag"] == "q1-triggered"
+    assert result["run_tag"] == "amended-v2"
     assert result["state"]["sha256"] == hashlib.sha256(
         (
             fixture["capture_root"]
-            / "pilot-q1-triggered"
+            / "pilot-amended-v2"
             / "state.json"
         ).read_bytes()
     ).hexdigest()
@@ -2235,7 +2254,7 @@ def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
     assert verdict_path.read_bytes() == verdict_bytes
     assert commits == [1, 1]
 
-    state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
+    state_path = fixture["capture_root"] / "pilot-amended-v2" / "state.json"
     state = json.loads(state_path.read_text())
     state["q1_trigger_sha256"] = "0" * 64
     state_path.write_text(json.dumps(state))
@@ -2263,7 +2282,7 @@ def test_q2_registered_pilot_rejects_rehashed_manifest_row_tampering(
         Q2_RUNNER, f"mergecert_q2_pilot_tamper_{key}"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
     _rewrite_q2_pilot_array(fixture, 0.25, key, value)
@@ -2279,12 +2298,12 @@ def test_q2_registered_pilot_rejects_extra_namespace_files(
         Q2_RUNNER, "mergecert_q2_pilot_extra_namespace"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
     (
         fixture["capture_root"]
-        / "pilot-q1-triggered"
+        / "pilot-amended-v2"
         / "unexpected.json"
     ).write_text("{}")
 
@@ -2299,10 +2318,10 @@ def test_q2_registered_pilot_rejects_compatibility_fingerprint_tampering(
         Q2_RUNNER, "mergecert_q2_pilot_fingerprint_tamper"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
-    state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
+    state_path = fixture["capture_root"] / "pilot-amended-v2" / "state.json"
     state = json.loads(state_path.read_text())
     stale = _q2_fingerprint(runtime_version="stale")
     state["compatibility_fingerprint"] = stale.to_dict()
@@ -2313,7 +2332,7 @@ def test_q2_registered_pilot_rejects_compatibility_fingerprint_tampering(
         runner.validate_pilot.get_raw_f()()
 
 
-def test_q2_legacy_pilots_keep_repeated_run_bit_identity_validation(
+def test_q2_legacy_pilot_names_cannot_satisfy_amended_authorization(
     tmp_path, monkeypatch
 ):
     runner = _load_module(
@@ -2322,16 +2341,11 @@ def test_q2_legacy_pilots_keep_repeated_run_bit_identity_validation(
     fixture = _write_q2_pilot_fixture(tmp_path, runner, ("a", "b"))
     commits = _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
 
-    result = runner.validate_pilot.get_raw_f()()
-
-    assert result["pass"] is True
-    assert result["validation_mode"] == "repeated-run-bit-identical"
-    assert result["run_tags"] == ["a", "b"]
-    assert result["comparisons"] == {
-        "0.25": {"bit_identical": True, "unequal_arrays": []},
-        "0.40": {"bit_identical": True, "unequal_arrays": []},
-    }
-    assert commits == [1]
+    with pytest.raises(ValueError, match="missing"):
+        runner._require_registered_pilot_verdict()
+    with pytest.raises(ValueError, match="missing"):
+        runner.validate_pilot.get_raw_f()()
+    assert commits == []
 
 
 def test_q2_capture_slice_requires_registered_pilot_before_capture(monkeypatch):
@@ -2339,7 +2353,7 @@ def test_q2_capture_slice_requires_registered_pilot_before_capture(monkeypatch):
         Q2_RUNNER, "mergecert_q2_slice_pilot_gate"
     )
     events = []
-    verdict = {"pass": True, "run_tag": "q1-triggered"}
+    verdict = {"pass": True, "run_tag": "amended-v2"}
     monkeypatch.setattr(
         runner,
         "_require_registered_pilot_verdict",
@@ -2358,6 +2372,7 @@ def test_q2_capture_slice_requires_registered_pilot_before_capture(monkeypatch):
     assert events[0] == "gate"
     assert events[1][0] == "capture"
     assert events[1][1]["required_pilot_verdict"] == verdict
+    assert events[1][1]["output_name"] == "full-amended-v2-slice-03"
 
 
 def test_q2_capture_slice_stops_when_registered_pilot_is_missing(monkeypatch):
@@ -2437,21 +2452,84 @@ def test_q2_registered_pilot_gate_rejects_tampered_verdict(
         Q2_RUNNER, "mergecert_q2_tampered_pilot_verdict"
     )
     fixture = _write_q2_pilot_fixture(
-        tmp_path, runner, ("q1-triggered",)
+        tmp_path, runner, ("amended-v2",)
     )
     _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
     runner.validate_pilot.get_raw_f()()
     verdict_path = (
         fixture["capture_root"]
-        / "pilot-q1-triggered"
+        / "pilot-amended-v2"
         / "pilot-verdict.json"
     )
     verdict = json.loads(verdict_path.read_text())
-    verdict["pass"] = False
-    verdict_path.write_text(json.dumps(verdict))
+    verdict["schema"] = "mergecert-q2-pilot-verdict-v2"
+    verdict["validator_version"] = "mergecert-q2-pilot-validator-v2"
+    verdict_path.write_bytes(runner._canonical_json_bytes(verdict))
 
     with pytest.raises(ValueError, match="pilot verdict"):
         runner._require_registered_pilot_verdict()
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "missing-amendment-field",
+        "wrong-amendment-hash",
+        "wrong-namespace",
+        "wrong-pilot-verdict-hash",
+        "wrong-chunk-hash",
+        "wrong-accounting-audit",
+        "duplicate-completed-id",
+    ),
+)
+def test_q2_freeze_rejects_unvalidated_amended_slice_state(
+    tmp_path, monkeypatch, mutation
+):
+    runner, _, state_path = _prepare_q2_amended_freeze_fixture(
+        tmp_path, monkeypatch
+    )
+    state = json.loads(state_path.read_text())
+    if mutation == "missing-amendment-field":
+        del state["q2_amendment_json"]
+    elif mutation == "wrong-amendment-hash":
+        state["q2_amendment_sha256"] = "0" * 64
+    elif mutation == "wrong-namespace":
+        state["chunks"][0]["files"]["0.25"]["path"] = (
+            "/artifacts/mergecert/q2/full-slice-00/legacy.npz"
+        )
+    elif mutation == "wrong-pilot-verdict-hash":
+        state["required_pilot_verdict_sha256"] = "0" * 64
+    elif mutation == "wrong-chunk-hash":
+        state["chunks"][0]["files"]["0.25"]["sha256"] = "0" * 64
+    elif mutation == "wrong-accounting-audit":
+        state["chunks"][0]["files"]["0.25"]["audit"][
+            "context_accounting"
+        ]["rows"] = 999
+    elif mutation == "duplicate-completed-id":
+        state["completed_item_ids"][-1] = state["completed_item_ids"][0]
+    state_path.write_text(json.dumps(state))
+
+    with pytest.raises(ValueError):
+        runner.freeze_capture_summary.get_raw_f()()
+
+
+def test_q2_freeze_emits_frozen_amended_summary_with_accounting_bindings(
+    tmp_path, monkeypatch
+):
+    runner, fixture, _ = _prepare_q2_amended_freeze_fixture(tmp_path, monkeypatch)
+
+    result = runner.freeze_capture_summary.get_raw_f()()
+
+    summary_path = fixture["capture_root"] / "capture-summary.json"
+    summary = json.loads(summary_path.read_text())
+    assert result["pass"] is True
+    assert summary["schema"] == "mergecert-q2-capture-summary-v2"
+    assert summary["protocol_version"] == "mergecert-q2-amended-v2"
+    assert summary["namespace_version"] == "mergecert-q2-amended-v2"
+    assert summary["q2_amendment_sha256"] == Q2_AMENDMENT_SHA256
+    assert summary["items_per_ratio"] == 16
+    assert len(summary["chunks"]) == 2
+    assert all("audit" in chunk for chunk in summary["chunks"])
 
 
 @pytest.mark.parametrize(

@@ -35,12 +35,13 @@ Q2_ITEMS = 30_847
 Q2_SLICES = 8
 CHUNK_ITEMS = 100
 PILOT_ITEMS = 16
-REGISTERED_PILOT_TAG = "q1-triggered"
-LEGACY_PILOT_TAGS = ("a", "b")
+REGISTERED_PILOT_TAG = "amended-v2"
 ANSWER_LETTERS = ("A", "B", "C", "D")
 FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
-PILOT_VALIDATOR_VERSION = "mergecert-q2-pilot-validator-v2"
+PILOT_VERDICT_SCHEMA = "mergecert-q2-pilot-verdict-v3-amended"
+PILOT_VALIDATOR_VERSION = "mergecert-q2-pilot-validator-v3-amended"
 PILOT_VERDICT_FILENAME = "pilot-verdict.json"
+CAPTURE_SUMMARY_SCHEMA = "mergecert-q2-capture-summary-v2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
 Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
@@ -60,7 +61,7 @@ PINNED = (
     "hf_transfer",
 )
 
-app = modal.App("memsub-mergecert-q2-capture")
+app = modal.App("memsub-mergecert-q2-amended-v2-capture")
 image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install(*PINNED)
@@ -784,6 +785,9 @@ def _run_capture(
     state_path = f"{output_dir}/state.json"
     required_pilot_verdict_sha256 = None
     if required_pilot_verdict is not None:
+        canonical_pilot_verdict = _require_registered_pilot_verdict()
+        if required_pilot_verdict != canonical_pilot_verdict:
+            raise ValueError("Q2 slice pilot verdict does not match amended authority")
         required_pilot_verdict_sha256 = _sha256_file(
             _registered_pilot_verdict_path()
         )
@@ -1054,12 +1058,9 @@ def _run_capture(
     memory=65_536,
 )
 def q2_pilot(run_tag: str, limit: int = 16) -> dict:
-    if (
-        run_tag not in (REGISTERED_PILOT_TAG, *LEGACY_PILOT_TAGS)
-        or limit != PILOT_ITEMS
-    ):
+    if run_tag != REGISTERED_PILOT_TAG or limit != PILOT_ITEMS:
         raise ValueError(
-            "Q2 pilot requires run_tag q1-triggered/a/b and exactly 16 items"
+            "Q2 pilot requires run_tag amended-v2 and exactly 16 items"
         )
     return _run_capture(
         slice_idx=0,
@@ -1087,7 +1088,7 @@ def q2_capture_slice(
         slice_idx=slice_idx,
         n_slices=n_slices,
         limit=0,
-        output_name=f"full-slice-{slice_idx:02d}",
+        output_name=f"full-amended-v2-slice-{slice_idx:02d}",
         verify_mode_parity=False,
         required_pilot_verdict=pilot_verdict,
     )
@@ -1096,7 +1097,9 @@ def q2_capture_slice(
 def _validate_pilot_artifact(run_tag: str) -> dict:
     import numpy as np
 
-    _require_q2_amendment()
+    amendment = _require_q2_amendment()
+    if run_tag != REGISTERED_PILOT_TAG:
+        raise ValueError("legacy Q2 pilot namespaces cannot authorize amended Q2")
     q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_sha256 = _sorted_manifest()
@@ -1136,6 +1139,8 @@ def _validate_pilot_artifact(run_tag: str) -> dict:
             "audit": row["audit"],
         }
     return {
+        "q2_amendment": amendment["q2_amendment"],
+        "q2_amendment_sha256": amendment["q2_amendment_sha256"],
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
         "source_manifest": {
@@ -1160,13 +1165,19 @@ def _validate_pilot_artifact(run_tag: str) -> dict:
 
 def _build_registered_pilot_verdict(evidence: dict) -> dict:
     return {
+        "schema": PILOT_VERDICT_SCHEMA,
         "protocol": "MERGECERT-Q2",
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
         "validator_version": PILOT_VALIDATOR_VERSION,
         "validation_mode": "single-registered-run",
         "run_tag": REGISTERED_PILOT_TAG,
         "run_tags": [REGISTERED_PILOT_TAG],
         "items": PILOT_ITEMS,
         "ratios": list(RATIOS),
+        "q2_amendment": evidence["q2_amendment"],
+        "q2_amendment_sha256": evidence["q2_amendment_sha256"],
         "q1_trigger": evidence["q1_trigger"],
         "q1_trigger_sha256": evidence["q1_trigger_sha256"],
         "source_manifest": evidence["source_manifest"],
@@ -1232,42 +1243,7 @@ def validate_pilot() -> dict:
                 handle.write(encoded)
             os.replace(temporary, verdict_path)
     else:
-        run_tags = list(LEGACY_PILOT_TAGS)
-        validated = [
-            _validate_pilot_artifact(run_tag) for run_tag in run_tags
-        ]
-        validation_mode = "repeated-run-bit-identical"
-        comparisons = {}
-        for ratio in RATIOS:
-            key = f"{ratio:.2f}"
-            left = validated[0]["arrays"][key]
-            right = validated[1]["arrays"][key]
-            keys = sorted(set(left) | set(right))
-            unequal = [
-                name for name in keys if not np.array_equal(left[name], right[name])
-            ]
-            comparisons[key] = {
-                "bit_identical": not unequal,
-                "unequal_arrays": unequal,
-            }
-            if unequal:
-                raise ValueError(
-                    f"Q2 pilot is not bit-identical at {ratio:.2f}: {unequal}"
-                )
-        evidence = validated[0]
-        output = {
-            "items": PILOT_ITEMS,
-            "ratios": list(RATIOS),
-            "validation_mode": "repeated-run-bit-identical",
-            "run_tags": run_tags,
-            "q1_trigger": evidence["q1_trigger"],
-            "q1_trigger_sha256": evidence["q1_trigger_sha256"],
-            "audits": evidence["audits"],
-            "comparisons": comparisons,
-            "pass": True,
-        }
-        with open(f"{CAPTURE_ROOT}/pilot-verdict.json", "w") as handle:
-            json.dump(output, handle, indent=1, allow_nan=False)
+        raise ValueError("registered amended Q2 pilot is missing")
     artifacts.commit()
     return output
 
@@ -1283,12 +1259,11 @@ def freeze_capture_summary() -> dict:
     import sys
 
     sys.path.insert(0, "/root/repo")
-    import numpy as np
 
-    from memsub.compaction import validate_capture_chunk
-
-    _require_q2_amendment()
-    q1_trigger = _require_q1_trigger()
+    amendment = _require_q2_amendment()
+    pilot_verdict = _require_registered_pilot_verdict()
+    pilot_verdict_sha256 = _sha256_file(_registered_pilot_verdict_path())
+    q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_hash = _sorted_manifest()
     expected_ids = [row["item_id"] for row in manifest]
@@ -1298,56 +1273,67 @@ def freeze_capture_summary() -> dict:
     domains = {f"{ratio:.2f}": Counter() for ratio in RATIOS}
     chunk_manifest = []
     compute_seconds = 0.0
+    expected_fingerprint = {
+        key: pilot_verdict[key]
+        for key in (
+            "compatibility_fingerprint_schema",
+            "compatibility_fingerprint",
+            "compatibility_fingerprint_sha256",
+        )
+    }
     for slice_idx in range(Q2_SLICES):
-        state_path = f"{CAPTURE_ROOT}/full-slice-{slice_idx:02d}/state.json"
+        output_dir = f"{CAPTURE_ROOT}/full-amended-v2-slice-{slice_idx:02d}"
+        state_path = f"{output_dir}/state.json"
         with open(state_path) as handle:
             state = json.load(handle)
-        registered_ids = [
-            row["item_id"]
+        selected = [
+            row
             for row_index, row in enumerate(manifest)
             if row_index % Q2_SLICES == slice_idx
         ]
-        if (
-            state["source_manifest_sha256"] != manifest_hash
-            or state["completed_count"] != len(registered_ids)
-            or state["completed_item_ids"] != registered_ids
-            or state.get("q1_trigger") != q1_trigger
-            or state.get("q1_trigger_sha256") != q1_trigger_sha256
-        ):
+        evidence = _validate_capture_state(
+            state,
+            output_dir=output_dir,
+            selected=selected,
+            manifest_sha256=manifest_hash,
+            q1_trigger=q1_trigger,
+            q1_trigger_sha256=q1_trigger_sha256,
+            slice_idx=slice_idx,
+            n_slices=Q2_SLICES,
+            required_pilot_verdict_sha256=pilot_verdict_sha256,
+            expected_fingerprint=expected_fingerprint,
+            artifact_label=f"Q2 amended slice {slice_idx}",
+        )
+        if state["completed_count"] != len(selected):
             raise ValueError(f"Q2 slice {slice_idx} state coverage mismatch")
         compute_seconds += float(state["compute_seconds"])
-        for chunk in state["chunks"]:
-            for ratio in RATIOS:
-                key = f"{ratio:.2f}"
-                file_row = chunk["files"][key]
-                if _sha256_file(file_row["path"]) != file_row["sha256"]:
-                    raise ValueError(f"Q2 chunk hash mismatch: {file_row['path']}")
-                with np.load(file_row["path"], allow_pickle=False) as archive:
-                    arrays = {name: archive[name] for name in archive.files}
-                audit = validate_capture_chunk(
-                    arrays, expected_ratio=ratio
-                )
-                item_ids = arrays["item_ids"].astype(str).tolist()
-                expected_chunk_ids = registered_ids[
-                    int(chunk["start"]) : int(chunk["end"])
-                ]
-                if item_ids != expected_chunk_ids:
-                    raise ValueError("Q2 chunk differs from registered slice interval")
-                if _item_ids_sha256(item_ids) != chunk["item_ids_sha256"]:
-                    raise ValueError("Q2 chunk item order/hash mismatch")
-                coverage[key].extend(item_ids)
-                positive[key] += audit["positive_labels"]
-                locator[key] += audit["locator_found"]
-                domains[key].update(arrays["domain"].astype(str).tolist())
-                chunk_manifest.append(
-                    {
-                        "ratio": ratio,
-                        "slice_idx": slice_idx,
-                        "path": file_row["path"],
-                        "sha256": file_row["sha256"],
-                        "rows": audit["rows"],
-                    }
-                )
+        for chunk in evidence["chunks"]:
+            key = f"{float(chunk['ratio']):.2f}"
+            audit = chunk["audit"]
+            start = next(
+                state_chunk["start"]
+                for state_chunk in state["chunks"]
+                if state_chunk["files"][key]["path"] == chunk["path"]
+            )
+            end = next(
+                state_chunk["end"]
+                for state_chunk in state["chunks"]
+                if state_chunk["files"][key]["path"] == chunk["path"]
+            )
+            item_ids = [row["item_id"] for row in selected[start:end]]
+            coverage[key].extend(item_ids)
+            positive[key] += audit["positive_labels"]
+            locator[key] += audit["locator_found"]
+            domains[key].update(row["domain"] for row in selected[start:end])
+            chunk_manifest.append(
+                {
+                    "ratio": chunk["ratio"],
+                    "slice_idx": slice_idx,
+                    "path": chunk["path"],
+                    "sha256": chunk["sha256"],
+                    "audit": audit,
+                }
+            )
     for ratio in RATIOS:
         key = f"{ratio:.2f}"
         if (
@@ -1356,12 +1342,27 @@ def freeze_capture_summary() -> dict:
             or set(coverage[key]) != set(expected_ids)
         ):
             raise ValueError(f"Q2 ratio {key} does not cover the full manifest")
+    if set(coverage["0.25"]) != set(coverage["0.40"]):
+        raise ValueError("Q2 ratios do not cover the same registered IDs")
     output = {
+        "schema": CAPTURE_SUMMARY_SCHEMA,
+        "protocol": "MERGECERT-Q2",
+        "protocol_version": Q2_PROTOCOL_VERSION,
+        "namespace_version": Q2_NAMESPACE_VERSION,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "q2_amendment": amendment["q2_amendment"],
+        "q2_amendment_sha256": amendment["q2_amendment_sha256"],
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
         "model_id": MODEL_ID,
         "ratios": list(RATIOS),
+        "source_manifest": {"path": MANIFEST_PATH, "sha256": manifest_hash},
         "source_manifest_sha256": manifest_hash,
+        "pilot_verdict": {
+            "path": _registered_pilot_verdict_path(),
+            "sha256": pilot_verdict_sha256,
+            "schema": pilot_verdict["schema"],
+        },
         "items_per_ratio": Q2_ITEMS,
         "unique_items_per_ratio": {
             key: len(set(values)) for key, values in coverage.items()
@@ -1383,11 +1384,12 @@ def freeze_capture_summary() -> dict:
         "pass": True,
     }
     os.makedirs(CAPTURE_ROOT, exist_ok=True)
-    with open(f"{CAPTURE_ROOT}/capture-summary.json", "w") as handle:
-        json.dump(output, handle, indent=1, allow_nan=False)
+    summary_path = f"{CAPTURE_ROOT}/capture-summary.json"
+    with open(summary_path, "wb") as handle:
+        handle.write(_canonical_json_bytes(output))
     artifacts.commit()
     return {
-        "artifact": f"{CAPTURE_ROOT}/capture-summary.json",
+        "artifact": summary_path,
         "items_per_ratio": Q2_ITEMS,
         "chunks": len(chunk_manifest),
         "pass": True,
