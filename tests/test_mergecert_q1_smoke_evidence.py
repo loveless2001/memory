@@ -1,6 +1,7 @@
 import hashlib
 import json
 import math
+from decimal import Decimal
 from pathlib import Path
 
 from memsub.fingerprint import CompatibilityFingerprint
@@ -12,6 +13,7 @@ SMOKE = EVIDENCE_DIR / "q1-smoke.json"
 VERDICT = EVIDENCE_DIR / "q1-smoke-verdict.json"
 TABLE = EVIDENCE_DIR / "q1-smoke-table.md"
 TRIGGER = EVIDENCE_DIR / "q1-smoke-trigger.json"
+SUCCESS = EVIDENCE_DIR / "q1-smoke-success.json"
 
 DOCUMENTS = ["financial/00000", "financial/00008"]
 ARMS = {
@@ -69,6 +71,68 @@ def test_q1_smoke_evidence_is_immutable_and_non_authorizing():
     assert verdict["run_q2_q3"] is False
     assert verdict["favorable_intervals"] == []
     assert verdict["markdown_table"] == TABLE.read_text()
+
+
+def test_q1_smoke_success_record_closes_inventory_and_cost_audit():
+    evidence = json.loads(SUCCESS.read_text(), parse_float=Decimal)
+    assert evidence["status"] == "completed-and-independently-validated"
+    assert evidence["reviewed_runner_commit"] == (
+        "e83e0f29127ccdddd8b2d6a337feb44d737cc036"
+    )
+    assert evidence["scientific_evidence_commit"] == (
+        "181d906be40b45269764c315c864b14162071dcf"
+    )
+    assert evidence["terminal_inventory"] == {
+        "command": "modal app list --json",
+        "result": [
+            {
+                "app_id": "ap-f53tWxXjsQH95pN0uZzxQx",
+                "description": "memsub-mergecert-p0-q1",
+                "state": "stopped",
+                "tasks": "0",
+                "created_at": "2026-07-29 14:19:03+07:00",
+                "stopped_at": "2026-07-29 14:20:03+07:00",
+            }
+        ],
+    }
+    assert evidence["smoke"]["app_lifetime_seconds"] == 60
+    assert evidence["smoke"]["tasks_after_stop"] == 0
+    assert evidence["outputs"] == {
+        "q1_smoke_artifact_retrieved": True,
+        "q1_smoke_sha256": _sha256(SMOKE),
+        "independent_analyzer_run": True,
+        "q1_smoke_verdict_sha256": _sha256(VERDICT),
+        "q1_smoke_table_sha256": _sha256(TABLE),
+        "q1_smoke_trigger_produced": False,
+        "full_q1_launched": False,
+        "q2_q3_launched": False,
+    }
+
+    rates = evidence["cost_estimate"]["rates_usd_per_second"]
+    success_cost = Decimal(60) * (
+        rates["h100"]
+        + rates["physical_cpu_core"]
+        + Decimal(64) * rates["memory_gib"]
+    )
+    assert success_cost == Decimal("0.0751308")
+    assert evidence["cost_estimate"]["usd"] == success_cost
+    assert evidence["cost_estimate"]["not_billing_actual"] is True
+
+    cumulative = evidence["cumulative_conservative_campaign_estimate"]
+    recomputed_items = Decimal("0")
+    for item in cumulative["items"]:
+        recomputed = Decimal(item["lifetime_seconds"]) * (
+            Decimal(item["h100_count"]) * rates["h100"]
+            + Decimal(item["cpu_core_count"]) * rates["physical_cpu_core"]
+            + Decimal(item["memory_gib"]) * rates["memory_gib"]
+        )
+        assert item["usd"] == recomputed
+        recomputed_items += recomputed
+    assert recomputed_items == Decimal("0.26981812")
+    assert cumulative["usd"] == recomputed_items
+    assert cumulative["within_bound"] is True
+    assert cumulative["usd"] < cumulative["campaign_bound_usd"]
+    assert cumulative["not_billing_actual"] is True
 
 
 def test_q1_smoke_raw_contract_and_replay_matrix_pass():

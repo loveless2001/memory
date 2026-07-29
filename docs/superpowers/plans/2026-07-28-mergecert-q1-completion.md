@@ -755,6 +755,14 @@ matched eviction/merge retained counts of 3,072 at 0.25 and 2,458 at 0.40.
 The separate smoke verdict and table are
 `plans/260728-mergecert-q1/q1-smoke-verdict.json` and
 `plans/260728-mergecert-q1/q1-smoke-table.md`.
+The tracked operational record is
+`plans/260728-mergecert-q1/q1-smoke-success.json`: the terminal inventory
+shows the app stopped with zero tasks at 14:20:03 +07:00 after a 60-second
+lifetime. At the official Modal rates checked on 2026-07-29, charging the
+whole lifetime at one H100, one physical core, and 64 GiB gives a conservative
+`$0.0751308` smoke estimate. Applying the same rates to the extractor and all
+four recorded smoke attempts gives a transparent cumulative conservative
+estimate of `$0.26981812`, not an exact billing actual.
 
 The smoke preview had no favorable intervals and `run_q2_q3=false`, but it is
 not a registered campaign decision: the analyzer intentionally writes a

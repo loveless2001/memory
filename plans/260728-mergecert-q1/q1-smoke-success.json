@@ -1,0 +1,117 @@
+{
+ "schema": "mergecert-q1-smoke-success-v1",
+ "status": "completed-and-independently-validated",
+ "reviewed_runner_commit": "e83e0f29127ccdddd8b2d6a337feb44d737cc036",
+ "scientific_evidence_commit": "181d906be40b45269764c315c864b14162071dcf",
+ "smoke": {
+  "app_id": "ap-f53tWxXjsQH95pN0uZzxQx",
+  "app_name": "memsub-mergecert-p0-q1",
+  "function": "q1_addendum_smoke",
+  "registered_documents": 2,
+  "state": "stopped",
+  "tasks_after_stop": 0,
+  "created_at": "2026-07-29 14:19:03+07:00",
+  "stopped_at": "2026-07-29 14:20:03+07:00",
+  "app_lifetime_seconds": 60,
+  "gpu_request": "H100",
+  "cpu_core_estimate": 1,
+  "memory_request_mib": 65536
+ },
+ "terminal_inventory": {
+  "command": "modal app list --json",
+  "result": [
+   {
+    "app_id": "ap-f53tWxXjsQH95pN0uZzxQx",
+    "description": "memsub-mergecert-p0-q1",
+    "state": "stopped",
+    "tasks": "0",
+    "created_at": "2026-07-29 14:19:03+07:00",
+    "stopped_at": "2026-07-29 14:20:03+07:00"
+   }
+  ]
+ },
+ "outputs": {
+  "q1_smoke_artifact_retrieved": true,
+  "q1_smoke_sha256": "c3949b641e4ad0ed00596ec38194bed7a46084c58667750afb94bb7682e75564",
+  "independent_analyzer_run": true,
+  "q1_smoke_verdict_sha256": "add8f2314121057bdcffe1d54507045a4c7a14f6dcf85d148d5d06be1abdd6b7",
+  "q1_smoke_table_sha256": "57c1d2ef647fe82caa248fdde1050e75817cbcbe7f7b196d69181a36c7170bc2",
+  "q1_smoke_trigger_produced": false,
+  "full_q1_launched": false,
+  "q2_q3_launched": false
+ },
+ "cost_estimate": {
+  "usd": 0.0751308,
+  "calculation": "60 * (0.001097 + 1 * 0.0000131 + 64 * 0.00000222)",
+  "basis": "Conservative whole-app estimate charging one H100, one physical CPU core, and the full 64 GiB memory request for all 60 seconds.",
+  "rates_usd_per_second": {
+   "h100": 0.001097,
+   "physical_cpu_core": 0.0000131,
+   "memory_gib": 0.00000222
+  },
+  "pricing_source": "https://modal.com/pricing",
+  "pricing_checked_date": "2026-07-29",
+  "campaign_bound_usd": 15.0,
+  "not_billing_actual": true
+ },
+ "cumulative_conservative_campaign_estimate": {
+  "items": [
+   {
+    "purpose": "registration extraction",
+    "app_id": "ap-Bx0LRrGGZ0yUchiepNVrtV",
+    "lifetime_seconds": 60,
+    "h100_count": 0,
+    "cpu_core_count": 1,
+    "memory_gib": 8,
+    "usd": 0.0018516,
+    "source": "plans/260728-mergecert-q1/q1-registration-extraction.json"
+   },
+   {
+    "purpose": "pre-amendment smoke",
+    "app_id": "ap-IqcTqya9JbXUoI57uApnwU",
+    "lifetime_seconds": 55,
+    "h100_count": 1,
+    "cpu_core_count": 1,
+    "memory_gib": 64,
+    "usd": 0.0688699,
+    "source": ".superpowers/sdd/2026-07-28-mergecert-q1-completion/task-6-report.md"
+   },
+   {
+    "purpose": "packaging-failure smoke",
+    "app_id": "ap-amdd5k9Ybxoxv1d8c3vbon",
+    "lifetime_seconds": 55,
+    "h100_count": 1,
+    "cpu_core_count": 1,
+    "memory_gib": 64,
+    "usd": 0.0688699,
+    "source": "plans/260728-mergecert-q1/q1-smoke-attempt.json"
+   },
+   {
+    "purpose": "archive-replay-failure smoke",
+    "app_id": "ap-FS1Y8Y3bcazBqzMybadmyo",
+    "lifetime_seconds": 44,
+    "h100_count": 1,
+    "cpu_core_count": 1,
+    "memory_gib": 64,
+    "usd": 0.05509592,
+    "source": "plans/260728-mergecert-q1/q1-smoke-retry.json"
+   },
+   {
+    "purpose": "successful reviewed smoke",
+    "app_id": "ap-f53tWxXjsQH95pN0uZzxQx",
+    "lifetime_seconds": 60,
+    "h100_count": 1,
+    "cpu_core_count": 1,
+    "memory_gib": 64,
+    "usd": 0.0751308,
+    "source": "plans/260728-mergecert-q1/q1-smoke-success.json"
+   }
+  ],
+  "calculation": "0.0018516 + 0.0688699 + 0.0688699 + 0.05509592 + 0.0751308",
+  "usd": 0.26981812,
+  "campaign_bound_usd": 15.0,
+  "within_bound": true,
+  "not_billing_actual": true
+ },
+ "stop_rule": "The successful two-document smoke is diagnostic evidence only. The analyzer emitted no 20-document trigger, and no full Q1, Q2, or Q3 action followed."
+}
