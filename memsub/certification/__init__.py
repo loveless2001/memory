@@ -14,6 +14,21 @@ from .experiment_protocol import (
     paired_metric_cis,
     select_holdout_documents,
 )
+from .mergecert_q2_context import (
+    Q2_ACCOUNTING_ARRAY_FIELDS,
+    Q2_ACCOUNTING_INTEGER_FIELDS,
+    Q2_AMENDMENT_SCHEMA,
+    Q2_CONTEXT_MECHANICS_VERSION,
+    Q2_NAMESPACE_VERSION,
+    Q2_PROTOCOL_VERSION,
+    derive_q2_context_window,
+    expected_q2_plan_fields,
+    load_q2_amendment,
+    q2_accounting_sha256,
+    validate_q2_accounting_arrays,
+    validate_q2_accounting_row,
+    validate_q2_context_length,
+)
 
 __all__ = [
     "OfflineCertificationHarness", "CertificationReport",
@@ -22,4 +37,11 @@ __all__ = [
     "assert_train_eval_disjoint", "build_training_manifest",
     "canonical_sha256", "paired_bootstrap_ci", "select_holdout_documents",
     "paired_metric_cis", "max_contiguous_certified_depth",
+    "Q2_PROTOCOL_VERSION", "Q2_CONTEXT_MECHANICS_VERSION",
+    "Q2_NAMESPACE_VERSION", "Q2_AMENDMENT_SCHEMA",
+    "Q2_ACCOUNTING_INTEGER_FIELDS", "Q2_ACCOUNTING_ARRAY_FIELDS",
+    "load_q2_amendment", "derive_q2_context_window",
+    "validate_q2_context_length", "expected_q2_plan_fields",
+    "validate_q2_accounting_row", "validate_q2_accounting_arrays",
+    "q2_accounting_sha256",
 ]

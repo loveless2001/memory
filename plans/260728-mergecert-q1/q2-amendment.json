@@ -1,0 +1,46 @@
+{
+  "schema": "mergecert-q2-amendment-v1",
+  "protocol": "MERGECERT-Q2",
+  "protocol_version": "mergecert-q2-amended-v2",
+  "settled_date": "2026-07-29",
+  "status": "settled",
+  "authority": "user-selected-option-2",
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "population": {
+    "manifest_items": 30847,
+    "selection": "unchanged-standard-30847-manifest",
+    "item_ids_labels_and_order_rule_unchanged": true
+  },
+  "ratios": [
+    0.25,
+    0.4
+  ],
+  "sink_token_count": 4,
+  "reference_context_tokens": 4096,
+  "minimum_context_tokens": 9,
+  "budget_mode": "per-item-actual-context-matched-physical-v2",
+  "context_mechanics_version": "mergecert-q2-context-mechanics-v2",
+  "namespace_version": "mergecert-q2-amended-v2",
+  "remote_root": "/artifacts/mergecert/q2-amended-v2",
+  "context_rule": "canonical registered source window capped at 4096 pinned-tokenizer tokens",
+  "requested_eviction_rule": "floor(source_context_token_count * ratio) from logical position 4",
+  "physical_budget_rule": "measure removal on an independent full-cache clone and give merge the measured retained count",
+  "merge_plan_rule": "build_merge_plan(source_context_token_count, exact registered ratio, sink_token_count=4)",
+  "legacy_fixed_context_evidence_authorizes": false,
+  "forbidden": [
+    "padding",
+    "runtime-skip",
+    "replacement",
+    "population-filter",
+    "label-change",
+    "silent-budget-change",
+    "legacy-state-resume"
+  ],
+  "rerun_gate": {
+    "new_pilot_items": 16,
+    "pilot_review_required_before_fleet": true,
+    "new_fleet_slices": 8,
+    "fleet_items": 30847,
+    "fresh_authorization_required": true
+  }
+}
