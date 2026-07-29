@@ -1851,6 +1851,42 @@ def test_mergecert_q2_runner_pins_unified_capture_and_fixed_fleet_contract():
     assert {"q2_pilot", "q2_capture_slice", "freeze_capture_summary"} <= functions
 
 
+def test_mergecert_q2_image_packages_memsub_before_pilot_gate_and_slice_body():
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_image_contract")
+    image_impl = next(
+        value
+        for name, value in vars(runner.image).items()
+        if name.startswith("_sync_original_")
+    )
+    tree = ast.parse(Q2_RUNNER.read_text())
+
+    assert image_impl._added_python_source_set == {"memsub"}, (
+        "a raw /root/repo/memsub copy is not importable during Modal "
+        "hydration before the function body can modify sys.path"
+    )
+    for function_name in ("pilot_gate", "q2_capture_slice"):
+        function = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef)
+            and node.name == function_name
+        )
+        app_function = next(
+            decorator
+            for decorator in function.decorator_list
+            if isinstance(decorator, ast.Call)
+            and isinstance(decorator.func, ast.Attribute)
+            and decorator.func.attr == "function"
+        )
+        image_keyword = next(
+            keyword
+            for keyword in app_function.keywords
+            if keyword.arg == "image"
+        )
+        assert isinstance(image_keyword.value, ast.Name)
+        assert image_keyword.value.id == "image"
+
+
 def test_mergecert_q2_runner_has_no_training_or_publication_path():
     source = Q2_RUNNER.read_text()
 

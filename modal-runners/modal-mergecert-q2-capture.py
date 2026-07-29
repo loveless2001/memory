@@ -54,7 +54,7 @@ image = (
     .pip_install(*PINNED)
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "MEMSUB_REFERENCE": "1"})
     .add_local_file("pyproject.toml", "/root/repo/pyproject.toml")
-    .add_local_dir("memsub", "/root/repo/memsub")
+    .add_local_python_source("memsub")
 )
 hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
 artifacts = modal.Volume.from_name("memsub-artifacts", create_if_missing=True)
