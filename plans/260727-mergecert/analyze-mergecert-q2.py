@@ -16,8 +16,7 @@ from memsub.certification import (
     Q2_NAMESPACE_VERSION,
     Q2_PROTOCOL_VERSION,
     load_q2_amendment,
-    q2_accounting_sha256,
-    validate_q2_accounting_row,
+    validate_q2_accounting_arrays,
 )
 from memsub.certification.mergecert_statistics import (
     cluster_bootstrap_auc,
@@ -34,6 +33,7 @@ DEFAULT_TABLE = HERE / "q2-table.md"
 DEFAULT_F5_TABLE = HERE / "q2-f5-table.md"
 DEFAULT_TRIGGER = HERE / "q1-trigger.json"
 DEFAULT_AMENDMENT = HERE.parent / "260728-mergecert-q1" / "q2-amendment.json"
+DEFAULT_MANIFEST = Path("/artifacts/probe/capture-manifest.json")
 RATIOS = (0.25, 0.40)
 ARMS = (
     "c0_refit",
@@ -143,7 +143,42 @@ def _require_amended_provenance(payload: dict, arrays: dict, amendment_path: Pat
     return amendment, amendment_sha256
 
 
-def _validate_flattened_accounting(arrays, item_ids, documents, domains, ratios):
+def _require_frozen_manifest(payload: dict, arrays: dict, manifest_path: Path):
+    manifest_sha256 = _sha256_file(manifest_path)
+    source_hashes = payload["source_hashes"]
+    if (
+        payload.get("manifest_sha256") != manifest_sha256
+        or source_hashes.get("manifest") != manifest_sha256
+        or _singleton_array(arrays, "source_manifest_sha256")
+        != manifest_sha256
+    ):
+        raise ValueError("Q2 frozen manifest hash differs from source evidence")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ValueError("Q2 frozen manifest is not valid JSON") from error
+    if not isinstance(manifest, list):
+        raise ValueError("Q2 frozen manifest must be a list")
+    manifest_by_id = {}
+    for row in manifest:
+        if (
+            not isinstance(row, dict)
+            or not isinstance(row.get("item_id"), str)
+            or not isinstance(row.get("doc_id"), str)
+            or row.get("domain") not in DOMAINS
+            or isinstance(row.get("chunk_rel_start"), bool)
+            or not isinstance(row.get("chunk_rel_start"), int)
+        ):
+            raise ValueError("Q2 frozen manifest metadata is invalid")
+        if row["item_id"] in manifest_by_id:
+            raise ValueError("Q2 frozen manifest contains duplicate item IDs")
+        manifest_by_id[row["item_id"]] = row
+    return manifest_by_id
+
+
+def _validate_flattened_accounting(
+    arrays, item_ids, documents, domains, ratios, manifest_by_id
+):
     audits = {}
     flattened = {
         field: np.asarray(arrays[field]).reshape(-1)
@@ -152,32 +187,28 @@ def _validate_flattened_accounting(arrays, item_ids, documents, domains, ratios)
     for ratio in RATIOS:
         key = f"{ratio:.2f}"
         mask = np.isclose(ratios, ratio, rtol=0, atol=1e-6)
-        rows = []
-        for index in np.flatnonzero(mask):
-            if not item_ids[index] or not documents[index] or domains[index] not in DOMAINS:
-                raise ValueError("Q2 accounting item/document/manifest metadata is invalid")
-            row = {
-                field: flattened[field][index].item()
-                if hasattr(flattened[field][index], "item")
-                else flattened[field][index]
-                for field in Q2_ACCOUNTING_ARRAY_FIELDS
-            }
-            # Score archives flatten ratios as float32; the enclosing masked
-            # ratio is the exact registered arm after the tolerance check.
-            row["ratio"] = ratio
-            if row["item_id"] != item_ids[index]:
-                raise ValueError("Q2 accounting item ID differs from score metadata")
-            rows.append(validate_q2_accounting_row(row, expected_ratio=ratio))
-        contexts = [row["source_context_token_count"] for row in rows]
-        audits[key] = {
-            "schema": "mergecert-q2-accounting-audit-v1",
-            "rows": len(rows),
-            "ratio": ratio,
-            "short_context_rows": sum(value < 4096 for value in contexts),
-            "minimum_context_tokens": min(contexts) if contexts else 0,
-            "maximum_context_tokens": max(contexts) if contexts else 0,
-            "accounting_sha256": q2_accounting_sha256(rows),
-        }
+        indices = np.flatnonzero(mask)
+        expected_rows = []
+        for index in indices:
+            item_id = item_ids[index]
+            if item_id not in manifest_by_id:
+                raise ValueError("Q2 score item ID is outside the frozen manifest")
+            manifest_row = manifest_by_id[item_id]
+            if (
+                documents[index] != manifest_row["doc_id"]
+                or domains[index] != manifest_row["domain"]
+            ):
+                raise ValueError("Q2 score metadata differs from the frozen manifest")
+            expected_rows.append(manifest_row)
+        if len(set(item_ids[indices])) != len(indices):
+            raise ValueError("Q2 score ratio contains duplicate manifest item IDs")
+        segment = {field: flattened[field][indices] for field in Q2_ACCOUNTING_ARRAY_FIELDS}
+        # Score archives flatten ratios as float32; bind the selected arm to
+        # the exact registered value before the shared validator fingerprints.
+        segment["ratio"] = np.full(len(indices), ratio, dtype=np.float64)
+        audits[key] = validate_q2_accounting_arrays(
+            segment, expected_rows, ratio
+        )
     audit_sha256 = hashlib.sha256(
         json.dumps(audits, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
@@ -298,6 +329,7 @@ def analyze(
     n_resamples=2_000,
     trigger_path: Path = DEFAULT_TRIGGER,
     amendment_path: Path = DEFAULT_AMENDMENT,
+    manifest_path: Path = DEFAULT_MANIFEST,
 ):
     q1_trigger = _require_q1_trigger(str(trigger_path))
     q1_trigger_sha256 = _sha256_file(Path(trigger_path))
@@ -332,6 +364,9 @@ def analyze(
         or str(score_trigger_sha256[0]) != q1_trigger_sha256
     ):
         raise ValueError("Q2 score manifest Q1 trigger differs from result")
+    manifest_by_id = _require_frozen_manifest(
+        payload, arrays, Path(manifest_path)
+    )
 
     required = {
         "item_ids",
@@ -372,7 +407,7 @@ def analyze(
     if not np.isin(y, (0, 1)).all() or not np.isin(in_e1, (0, 1)).all():
         raise ValueError("Q2 labels and E1 membership must be binary")
     accounting_audit, accounting_audit_sha256 = _validate_flattened_accounting(
-        arrays, item_ids, documents, domains, ratios
+        arrays, item_ids, documents, domains, ratios, manifest_by_id
     )
     if (
         payload.get("accounting_audit") != accounting_audit
@@ -467,6 +502,7 @@ def analyze(
         "q2_amendment": amendment,
         "q2_amendment_sha256": amendment_sha256,
         "context_accounting_audit": accounting_audit,
+        "context_accounting_audit_sha256": accounting_audit_sha256,
         "items_per_ratio": expected_items_per_ratio,
         "e1_items_per_ratio": expected_e1_items,
         "ratios": ratio_metrics,
@@ -486,6 +522,7 @@ def main():
     parser.add_argument("--f5-table", type=Path, default=DEFAULT_F5_TABLE)
     parser.add_argument("--trigger", type=Path, default=DEFAULT_TRIGGER)
     parser.add_argument("--amendment", type=Path, default=DEFAULT_AMENDMENT)
+    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     args = parser.parse_args()
     with args.results.open() as handle:
         payload = json.load(handle)
@@ -498,6 +535,7 @@ def main():
     verdict = analyze(
         payload, arrays, trigger_path=args.trigger,
         amendment_path=args.amendment,
+        manifest_path=args.manifest,
     )
     with args.output.open("w") as handle:
         json.dump(verdict, handle, indent=1, allow_nan=False)

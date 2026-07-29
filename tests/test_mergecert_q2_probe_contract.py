@@ -226,6 +226,19 @@ def test_probe_runner_uses_only_amended_artifact_paths_and_app_source():
     assert runner.app.name == "memsub-mergecert-q2-amended-v2-probes"
 
 
+def test_probe_routability_provenance_hashes_the_settled_amendment(monkeypatch):
+    runner = _load_runner("mergecert_q2_probe_routability_provenance")
+    monkeypatch.setattr(runner, "_sha256_file", lambda path: f"hash:{path}")
+    monkeypatch.setattr(runner.glob, "glob", lambda pattern: [])
+
+    hashes = runner._routability_source_hashes(
+        "capture-summary-hash", {"q2_amendment_sha256": AMENDMENT_SHA256}
+    )
+
+    assert hashes["q2_amendment"] == AMENDMENT_SHA256
+    assert hashes["capture_summary"] == "capture-summary-hash"
+
+
 @pytest.mark.parametrize(
     ("mutation", "message"),
     [

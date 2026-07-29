@@ -98,6 +98,27 @@ def _sha256_file(path: str) -> str:
     return digest.hexdigest()
 
 
+def _routability_source_hashes(
+    capture_summary_sha256: str, amendment: dict
+) -> dict:
+    """Return every source digest consumed by the routability artifact."""
+    return {
+        "q1_trigger": _sha256_file(Q1_TRIGGER_PATH),
+        "q2_amendment": amendment["q2_amendment_sha256"],
+        "capture_summary": capture_summary_sha256,
+        "manifest": _sha256_file(MANIFEST_PATH),
+        "surface": _sha256_file(SURFACE_PATH),
+        "fact_types": _sha256_file(FACT_TYPES_COMPLETE),
+        "embeddings": _sha256_file(EMBEDDINGS_PATH),
+        "shadow_checkpoint": _sha256_file(SHADOW_CHECKPOINT),
+        "compactor_sink": _sha256_file(COMPACTOR_SINK_PATH),
+        "eviction_sink_files": {
+            path: _sha256_file(path)
+            for path in sorted(glob.glob(EVICTION_SINK_GLOB))
+        },
+    }
+
+
 def _require_q1_trigger(path: str | None = None) -> dict:
     path = path or Q1_TRIGGER_PATH
     if not os.path.exists(path):
@@ -1134,20 +1155,9 @@ def run_probes() -> dict:
             "validation": f"[{TRAIN_END}, {VALIDATION_END})",
             "test": f">= {VALIDATION_END}",
         },
-        "source_hashes": {
-            "q1_trigger": q1_trigger_sha256,
-            "capture_summary": capture_summary_sha256,
-            "manifest": _sha256_file(MANIFEST_PATH),
-            "surface": _sha256_file(SURFACE_PATH),
-            "fact_types": _sha256_file(FACT_TYPES_COMPLETE),
-            "embeddings": _sha256_file(EMBEDDINGS_PATH),
-            "shadow_checkpoint": _sha256_file(SHADOW_CHECKPOINT),
-            "compactor_sink": _sha256_file(COMPACTOR_SINK_PATH),
-            "eviction_sink_files": {
-                path: _sha256_file(path)
-                for path in sorted(glob.glob(EVICTION_SINK_GLOB))
-            },
-        },
+        "source_hashes": _routability_source_hashes(
+            capture_summary_sha256, amendment
+        ),
         "capture_summary_sha256": capture_summary_sha256,
         "manifest_sha256": _sha256_file(MANIFEST_PATH),
         "accounting_audit": accounting_audit,
@@ -1174,6 +1184,9 @@ def run_probes() -> dict:
             Q2_CONTEXT_MECHANICS_VERSION
         ]),
         "capture_summary_sha256": np.asarray([capture_summary_sha256]),
+        "source_manifest_sha256": np.asarray([
+            output["manifest_sha256"]
+        ]),
         "accounting_audit_sha256": np.asarray([accounting_audit_sha256]),
         "q1_trigger_json": np.asarray(
             [json.dumps(q1_trigger, sort_keys=True, separators=(",", ":"))]

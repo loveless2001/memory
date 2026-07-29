@@ -95,6 +95,24 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
     n = len(docs)
     y = np.array([0, 1] * (n // 2), dtype=np.int8)
     item_ids = np.array([f"item-{index}" for index in range(n)])
+    manifest_path = trigger_path.parent / "capture-manifest.json"
+    manifest = [
+        {
+            "item_id": item_id,
+            "doc_id": doc_id,
+            "domain": domain,
+            "chunk_rel_start": 100 + index,
+        }
+        for index, (item_id, doc_id, domain) in enumerate(
+            zip(
+                item_ids,
+                docs,
+                np.array(["financial", "legal", "code", "literature"] * 2),
+            )
+        )
+    ]
+    manifest_path.write_text(json.dumps(manifest))
+    manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     arrays = {
         "q1_trigger_json": np.array(
             [
@@ -187,6 +205,7 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
             amendment["context_mechanics_version"]
         ]),
         "capture_summary_sha256": np.array([capture_summary_sha256]),
+        "source_manifest_sha256": np.array([manifest_sha256]),
         "accounting_audit_sha256": np.array([accounting_audit_sha256]),
     })
     perfect = {
@@ -209,6 +228,7 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
             "q1_trigger": trigger_sha256,
             "q2_amendment": amendment_sha256,
             "capture_summary": capture_summary_sha256,
+            "manifest": manifest_sha256,
         },
         "protocol_version": amendment["protocol_version"],
         "namespace_version": amendment["namespace_version"],
@@ -216,6 +236,7 @@ def _fixture(trigger_path, amendment_path=AMENDMENT_PATH):
         "q2_amendment": amendment,
         "q2_amendment_sha256": amendment_sha256,
         "capture_summary_sha256": capture_summary_sha256,
+        "manifest_sha256": manifest_sha256,
         "accounting_audit": audits,
         "accounting_audit_sha256": accounting_audit_sha256,
         "ratios_results": {
@@ -247,6 +268,7 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
         payload, arrays, expected_items_per_ratio=8,
         expected_e1_items=4, n_resamples=100, trigger_path=trigger_path,
         amendment_path=amendment_path,
+        manifest_path=trigger_path.parent / "capture-manifest.json",
     )
 
     assert verdict["pass"] is True
@@ -263,6 +285,9 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
         amendment_path.read_bytes()
     ).hexdigest()
     assert verdict["context_accounting_audit"] == payload["accounting_audit"]
+    assert verdict["context_accounting_audit_sha256"] == payload[
+        "accounting_audit_sha256"
+    ]
 
 
 @pytest.mark.parametrize(
@@ -270,7 +295,9 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
     (
         "local-amendment-bytes",
         "payload-amendment",
+        "payload-amendment-hash",
         "score-amendment",
+        "score-amendment-json",
         "protocol-version",
         "namespace-version",
         "fixed-short-context",
@@ -280,6 +307,7 @@ def test_q2_analysis_recomputes_every_headline_auc_and_emits_f5_table(tmp_path):
         "accounting-audit-hash",
         "ratio-count",
         "ratio-id",
+        "manifest-association",
     ),
 )
 def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
@@ -294,8 +322,12 @@ def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
         amendment_path.write_bytes(amendment_path.read_bytes() + b"\n")
     elif mutation == "payload-amendment":
         payload["q2_amendment"] = {**payload["q2_amendment"], "status": "stale"}
+    elif mutation == "payload-amendment-hash":
+        payload["q2_amendment_sha256"] = "0" * 64
     elif mutation == "score-amendment":
         arrays["q2_amendment_sha256"] = np.asarray(["0" * 64])
+    elif mutation == "score-amendment-json":
+        arrays["q2_amendment_json"] = np.asarray(["{}"])
     elif mutation == "protocol-version":
         arrays["q2_protocol_version"] = np.asarray(["mergecert-q2-v1"])
     elif mutation == "namespace-version":
@@ -322,6 +354,8 @@ def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
         arrays["ratio"][0] = 0.40
     elif mutation == "ratio-id":
         arrays["item_ids"][0] = arrays["item_ids"][1]
+    elif mutation == "manifest-association":
+        arrays["doc_ids"][0] = arrays["doc_ids"][1]
 
     def no_metric_recomputation(*args, **kwargs):
         raise AssertionError("amendment/accounting drift reached metric recomputation")
@@ -332,6 +366,7 @@ def test_q2_analysis_rejects_amendment_and_accounting_drift_before_metrics(
             payload, arrays, expected_items_per_ratio=8,
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
             amendment_path=amendment_path,
+            manifest_path=trigger_path.parent / "capture-manifest.json",
         )
 
 
@@ -346,6 +381,7 @@ def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):
             payload, arrays, expected_items_per_ratio=8,
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
             amendment_path=amendment_path,
+            manifest_path=trigger_path.parent / "capture-manifest.json",
         )
 
     payload, arrays = _fixture(trigger_path, amendment_path)
@@ -355,6 +391,7 @@ def test_q2_analysis_rejects_remote_metric_drift_and_split_tampering(tmp_path):
             payload, arrays, expected_items_per_ratio=8,
             expected_e1_items=4, n_resamples=20, trigger_path=trigger_path,
             amendment_path=amendment_path,
+            manifest_path=trigger_path.parent / "capture-manifest.json",
         )
 
 
