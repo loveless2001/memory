@@ -54,17 +54,29 @@ def validate_capture_chunk(
     missing = REQUIRED_CAPTURE_KEYS - set(arrays)
     if missing:
         raise ValueError(f"capture chunk missing keys: {sorted(missing)}")
-    ratio = np.asarray(arrays["ratio"])
-    if ratio.shape != (1,) or not np.isclose(
-        float(ratio[0]), expected_ratio, rtol=0, atol=1e-6
-    ):
-        raise ValueError("capture chunk ratio does not match its registered arm")
     source_hash = np.asarray(arrays["source_manifest_sha256"])
     if source_hash.shape != (1,) or not str(source_hash[0]):
         raise ValueError("capture chunk source manifest hash is missing")
 
     item_ids = np.asarray(arrays["item_ids"]).astype(str)
     rows = len(item_ids)
+    ratio = np.asarray(arrays["ratio"])
+    if ratio.shape == (1,):
+        registered_ratio = ratio
+    elif rows and ratio.shape == (rows,):
+        registered_ratio = ratio
+    else:
+        raise ValueError(
+            "capture chunk ratio must be a legacy singleton or one value per row"
+        )
+    if (
+        not np.issubdtype(registered_ratio.dtype, np.number)
+        or not np.isfinite(registered_ratio).all()
+        or not np.isclose(
+            registered_ratio, expected_ratio, rtol=0, atol=1e-6
+        ).all()
+    ):
+        raise ValueError("capture chunk ratio does not match its registered arm")
     if len(set(item_ids.tolist())) != rows:
         raise ValueError("capture chunk item IDs must be unique")
     row_keys = REQUIRED_CAPTURE_KEYS - {"ratio", "source_manifest_sha256"}

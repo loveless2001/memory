@@ -12,6 +12,12 @@ import torch
 
 from memsub.fingerprint import CompatibilityFingerprint
 from memsub.runtime import CompactedPrefixCache
+from memsub.certification import (
+    Q2_CONTEXT_MECHANICS_VERSION,
+    expected_q2_plan_fields,
+    validate_q2_accounting_arrays,
+)
+from memsub.compaction import validate_capture_chunk
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,6 +85,9 @@ Q2_PROBE_RUNNER = ROOT / "modal-runners" / "modal-mergecert-q2-probes.py"
 Q2_FLEET_ATTEMPT = (
     ROOT / "plans" / "260728-mergecert-q1" / "q2-fleet-attempt.json"
 )
+Q2_AMENDMENT_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q2-amendment.json"
+Q2_AMENDMENT_JSON = Q2_AMENDMENT_PATH.read_text()
+Q2_AMENDMENT_SHA256 = hashlib.sha256(Q2_AMENDMENT_PATH.read_bytes()).hexdigest()
 
 
 def _q1_trigger(**overrides):
@@ -129,6 +138,7 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
         for ratio in (0.25, 0.40):
             mechanics = np.full((16, 4), 0.5, dtype=np.float32)
             mechanics[:, 0] = 4
+            plan_fields = expected_q2_plan_fields(4096, ratio)
             arrays = {
                 "item_ids": np.asarray(item_ids),
                 "doc_ids": np.asarray([row["doc_id"] for row in manifest]),
@@ -143,8 +153,51 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
                 "mechanics": mechanics,
                 "sink_features": np.zeros((16, 8), dtype=np.float32),
                 "residuals": np.zeros((16, 37, 2560), dtype=np.float16),
-                "ratio": np.asarray([ratio], dtype=np.float32),
+                "ratio": np.full(16, ratio, dtype=np.float64),
                 "source_manifest_sha256": np.asarray([manifest_sha256]),
+                "item_id": np.asarray(item_ids),
+                "context_mechanics_version": np.asarray(
+                    [Q2_CONTEXT_MECHANICS_VERSION] * 16
+                ),
+                "source_document_token_count": np.full(16, 4096, dtype=np.int64),
+                "source_context_start": np.zeros(16, dtype=np.int64),
+                "source_context_end": np.full(16, 4096, dtype=np.int64),
+                "source_context_token_count": np.full(16, 4096, dtype=np.int64),
+                "model_input_token_count": np.full(16, 4096, dtype=np.int64),
+                "source_chunk_token_start": np.arange(16, dtype=np.int64),
+                "source_chunk_context_start": np.arange(16, dtype=np.int64),
+                "requested_eviction_start": np.full(
+                    16, plan_fields["requested_eviction_start"], dtype=np.int64
+                ),
+                "requested_eviction_end": np.full(
+                    16, plan_fields["requested_eviction_end"], dtype=np.int64
+                ),
+                "requested_evicted_token_count": np.full(
+                    16, plan_fields["requested_evicted_token_count"], dtype=np.int64
+                ),
+                "physical_before_count": np.full(16, 4096, dtype=np.int64),
+                "physical_after_count": np.full(
+                    16, plan_fields["retained_token_count"], dtype=np.int64
+                ),
+                "physical_removed_count": np.full(
+                    16, plan_fields["requested_evicted_token_count"], dtype=np.int64
+                ),
+                "retained_token_count": np.full(
+                    16, plan_fields["retained_token_count"], dtype=np.int64
+                ),
+                "merge_target_retained": np.full(
+                    16, plan_fields["merge_target_retained"], dtype=np.int64
+                ),
+                "merge_recent_start": np.full(
+                    16, plan_fields["merge_recent_start"], dtype=np.int64
+                ),
+                "capture_chunk_schema": np.asarray(
+                    ["mergecert-q2-capture-chunk-v2"]
+                ),
+                "q2_protocol_version": np.asarray(["mergecert-q2-amended-v2"]),
+                "q2_namespace_version": np.asarray(["mergecert-q2-amended-v2"]),
+                "q2_amendment_json": np.asarray([Q2_AMENDMENT_JSON]),
+                "q2_amendment_sha256": np.asarray([Q2_AMENDMENT_SHA256]),
             }
             path = output_dir / f"ratio-{ratio:.2f}-rows-00000-00016.npz"
             np.savez(path, **arrays)
@@ -152,14 +205,21 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
                 "path": str(path),
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                 "audit": {
-                    "rows": 16,
-                    "unique_item_ids": 16,
-                    "locator_found": 16,
-                    "positive_labels": 8,
+                    **validate_capture_chunk(arrays, expected_ratio=ratio),
+                    "context_accounting": validate_q2_accounting_arrays(
+                        arrays, manifest, ratio
+                    ),
                 },
             }
         fingerprint = _q2_fingerprint()
         state = {
+            "capture_state_schema": "mergecert-q2-capture-state-v2",
+            "q2_protocol_version": "mergecert-q2-amended-v2",
+            "q2_namespace_version": "mergecert-q2-amended-v2",
+            "q2_context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+            "q2_amendment_json": Q2_AMENDMENT_JSON,
+            "q2_amendment_sha256": Q2_AMENDMENT_SHA256,
+            "q2_amendment_image_path": str(Q2_AMENDMENT_PATH),
             "q1_trigger": trigger,
             "q1_trigger_sha256": trigger_sha256,
             "model_id": runner.MODEL_ID,
@@ -195,6 +255,7 @@ def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
         "trigger": trigger,
         "trigger_sha256": trigger_sha256,
         "manifest_path": manifest_path,
+        "manifest": manifest,
     }
 
 
@@ -209,14 +270,15 @@ def _configure_q2_pilot_fixture(runner, monkeypatch, fixture):
     )
     monkeypatch.setattr(runner, "Q2_ITEMS", 16)
     monkeypatch.setattr(
+        runner, "Q2_AMENDMENT_IMAGE_PATH", str(Q2_AMENDMENT_PATH)
+    )
+    monkeypatch.setattr(
         runner, "artifacts", types.SimpleNamespace(commit=lambda: commits.append(1))
     )
     return commits
 
 
 def _rewrite_q2_pilot_array(fixture, ratio, key, value):
-    from memsub.compaction import validate_capture_chunk
-
     state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
     state = json.loads(state_path.read_text())
     file_row = state["chunks"][0]["files"][f"{ratio:.2f}"]
@@ -226,9 +288,12 @@ def _rewrite_q2_pilot_array(fixture, ratio, key, value):
     arrays[key][0] = value
     np.savez(path, **arrays)
     file_row["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
-    file_row["audit"] = validate_capture_chunk(
-        arrays, expected_ratio=ratio
-    )
+    file_row["audit"] = {
+        **validate_capture_chunk(arrays, expected_ratio=ratio),
+        "context_accounting": validate_q2_accounting_arrays(
+            arrays, fixture["manifest"], ratio
+        ),
+    }
     state_path.write_text(json.dumps(state))
 
 
@@ -1844,7 +1909,10 @@ def test_mergecert_q2_runner_pins_unified_capture_and_fixed_fleet_contract():
     assert constants["SINKS"] == 4
     assert constants["Q2_ITEMS"] == 30_847
     assert constants["Q2_SLICES"] == 8
-    assert constants["CAPTURE_ROOT"] == "/artifacts/mergecert/q2"
+    assert constants["CAPTURE_ROOT"] == "/artifacts/mergecert/q2-amended-v2"
+    assert constants["LEGACY_CAPTURE_ROOT"] == "/artifacts/mergecert/q2"
+    assert constants["CAPTURE_STATE_SCHEMA"] == "mergecert-q2-capture-state-v2"
+    assert constants["CAPTURE_CHUNK_SCHEMA"] == "mergecert-q2-capture-chunk-v2"
     assert constants["HEADS"] == (
         (25, 14),
         (26, 26),
@@ -1852,6 +1920,74 @@ def test_mergecert_q2_runner_pins_unified_capture_and_fixed_fleet_contract():
         (35, 15),
     )
     assert {"q2_pilot", "q2_capture_slice", "freeze_capture_summary"} <= functions
+
+
+class _Q2BudgetCache:
+    """Small detached-cache model that exposes accidental source mutation."""
+
+    def __init__(self, positions):
+        self.logical_positions = list(positions)
+        self.evict_calls = []
+        self.clones = []
+
+    @property
+    def physical_length(self):
+        return len(self.logical_positions)
+
+    def clone_detached(self):
+        clone = type(self)(self.logical_positions)
+        self.clones.append(clone)
+        return clone
+
+    def evict_logical_range(self, start, end):
+        self.evict_calls.append((start, end))
+        before = self.physical_length
+        self.logical_positions = [
+            position
+            for position in self.logical_positions
+            if not start <= position < end
+        ]
+        return before - self.physical_length
+
+
+def test_q2_measured_budget_uses_a_detached_clone_for_short_contexts():
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_short_budget")
+    full_cache = _Q2BudgetCache(range(4073))
+
+    accounting, plan = runner._measure_q2_budget(
+        full_cache, context_tokens=4073, ratio=0.40
+    )
+
+    assert full_cache.physical_length == 4073
+    assert full_cache.logical_positions == list(range(4073))
+    assert accounting["requested_evicted_token_count"] == 1629
+    assert accounting["physical_removed_count"] == 1629
+    assert accounting["retained_token_count"] == 2444
+    assert plan.sequence_length == 4073
+    assert plan.eviction_fraction == 0.40
+    assert plan.target_retained == 2444
+    assert full_cache.evict_calls == []
+    assert full_cache.clones[0].evict_calls == [(4, 1633)]
+
+
+def test_q2_measured_budget_preserves_exact_long_context_plan_and_source():
+    from memsub.compaction import build_merge_plan
+
+    runner = _load_module(Q2_RUNNER, "mergecert_q2_long_budget")
+    full_cache = _Q2BudgetCache(range(4096))
+
+    accounting, plan = runner._measure_q2_budget(
+        full_cache, context_tokens=4096, ratio=0.40
+    )
+
+    assert accounting["requested_evicted_token_count"] == 1638
+    assert accounting["retained_token_count"] == 2458
+    assert accounting["merge_recent_start"] == 2869
+    assert plan == build_merge_plan(4096, 0.40, sink_token_count=4)
+    assert full_cache.logical_positions == list(range(4096))
+    assert full_cache.clones[0].logical_positions == [
+        *range(4), *range(1642, 4096)
+    ]
 
 
 def test_mergecert_q2_image_packages_memsub_before_pilot_gate_and_slice_body():

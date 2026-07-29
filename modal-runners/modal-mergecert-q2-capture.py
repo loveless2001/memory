@@ -18,6 +18,19 @@ MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
 RATIOS = (0.25, 0.40)
 CTX = 4096
 SINKS = 4
+Q2_PROTOCOL_VERSION = "mergecert-q2-amended-v2"
+Q2_CONTEXT_MECHANICS_VERSION = "mergecert-q2-context-mechanics-v2"
+Q2_NAMESPACE_VERSION = "mergecert-q2-amended-v2"
+CAPTURE_STATE_SCHEMA = "mergecert-q2-capture-state-v2"
+CAPTURE_CHUNK_SCHEMA = "mergecert-q2-capture-chunk-v2"
+CAPTURE_ROOT = "/artifacts/mergecert/q2-amended-v2"
+LEGACY_CAPTURE_ROOT = "/artifacts/mergecert/q2"
+Q2_AMENDMENT_IMAGE_PATH = (
+    "/root/repo/plans/260728-mergecert-q1/q2-amendment.json"
+)
+Q2_AMENDMENT_SHA256 = (
+    "7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a"
+)
 Q2_ITEMS = 30_847
 Q2_SLICES = 8
 CHUNK_ITEMS = 100
@@ -28,7 +41,6 @@ ANSWER_LETTERS = ("A", "B", "C", "D")
 FINGERPRINT_SCHEMA = "memsub-compatibility-fingerprint-v1"
 PILOT_VALIDATOR_VERSION = "mergecert-q2-pilot-validator-v2"
 PILOT_VERDICT_FILENAME = "pilot-verdict.json"
-CAPTURE_ROOT = "/artifacts/mergecert/q2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
 Q1_BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
@@ -54,6 +66,10 @@ image = (
     .pip_install(*PINNED)
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "MEMSUB_REFERENCE": "1"})
     .add_local_file("pyproject.toml", "/root/repo/pyproject.toml")
+    .add_local_file(
+        "plans/260728-mergecert-q1/q2-amendment.json",
+        Q2_AMENDMENT_IMAGE_PATH,
+    )
     .add_local_python_source("memsub")
 )
 hf_cache = modal.Volume.from_name("memsub-hf-cache", create_if_missing=True)
@@ -67,6 +83,78 @@ def _sha256_file(path: str) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _require_q2_amendment(
+    path: str | None = None,
+) -> dict:
+    """Load the exact amendment before touching its artifact namespace."""
+    from memsub.certification import load_q2_amendment
+
+    path = path or Q2_AMENDMENT_IMAGE_PATH
+    amendment = load_q2_amendment(path, Q2_AMENDMENT_SHA256)
+    with open(path, encoding="utf-8") as handle:
+        encoded = handle.read()
+    if _sha256_file(path) != Q2_AMENDMENT_SHA256:
+        raise ValueError("Q2 amendment image bytes do not match the authority")
+    return {
+        "q2_amendment": amendment,
+        "q2_amendment_json": encoded,
+        "q2_amendment_sha256": Q2_AMENDMENT_SHA256,
+        "q2_amendment_image_path": path,
+    }
+
+
+def _measure_q2_budget(
+    full_cache, *, context_tokens: int, ratio: float
+):
+    """Measure the exact budget on a detached cache, never the source cache."""
+    from memsub.certification import (
+        expected_q2_plan_fields,
+        validate_q2_accounting_row,
+        validate_q2_context_length,
+    )
+    from memsub.compaction import build_merge_plan
+
+    validate_q2_context_length(context_tokens)
+    if full_cache.physical_length != context_tokens:
+        raise ValueError("full cache length does not match the Q2 context")
+    plan = build_merge_plan(context_tokens, ratio, sink_token_count=SINKS)
+    expected = expected_q2_plan_fields(context_tokens, ratio)
+    work = full_cache.clone_detached()
+    physical_before = work.physical_length
+    requested_start = expected["requested_eviction_start"]
+    requested_end = expected["requested_eviction_end"]
+    physical_removed = work.evict_logical_range(
+        requested_start, requested_end
+    )
+    physical_after = work.physical_length
+    accounting = {
+        **expected,
+        "physical_before_count": physical_before,
+        "physical_after_count": physical_after,
+        "physical_removed_count": physical_removed,
+    }
+    validation_row = {
+        "item_id": "runtime-budget",
+        "ratio": ratio,
+        "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "source_document_token_count": context_tokens,
+        "source_context_start": 0,
+        "source_context_end": context_tokens,
+        "source_context_token_count": context_tokens,
+        "model_input_token_count": context_tokens,
+        "source_chunk_token_start": 0,
+        "source_chunk_context_start": 0,
+        **accounting,
+    }
+    validate_q2_accounting_row(validation_row, expected_ratio=ratio)
+    if (
+        plan.target_retained != accounting["merge_target_retained"]
+        or plan.recent_start != accounting["merge_recent_start"]
+    ):
+        raise ValueError("measured Q2 budget differs from its merge plan")
+    return accounting, plan
 
 
 def _item_ids_sha256(item_ids: list[str]) -> str:
@@ -341,10 +429,14 @@ def _write_npz_atomic(path: str, arrays: dict) -> None:
     os.replace(temporary, path)
 
 
-def _stack_chunk(rows: list[dict], *, ratio: float, source_hash: str) -> dict:
+def _stack_chunk(
+    rows: list[dict], *, ratio: float, source_hash: str, amendment: dict
+) -> dict:
     import numpy as np
 
-    return {
+    from memsub.certification import Q2_ACCOUNTING_INTEGER_FIELDS
+
+    arrays = {
         "item_ids": np.asarray([row["item_id"] for row in rows]),
         "doc_ids": np.asarray([row["doc_id"] for row in rows]),
         "domain": np.asarray([row["domain"] for row in rows]),
@@ -370,9 +462,25 @@ def _stack_chunk(rows: list[dict], *, ratio: float, source_hash: str) -> dict:
         "residuals": np.stack([row["residuals"] for row in rows]).astype(
             np.float16
         ),
-        "ratio": np.asarray([ratio], dtype=np.float32),
+        "ratio": np.asarray([row["ratio"] for row in rows], dtype=np.float64),
         "source_manifest_sha256": np.asarray([source_hash]),
+        "item_id": np.asarray([row["item_id"] for row in rows]),
+        "context_mechanics_version": np.asarray(
+            [row["context_mechanics_version"] for row in rows]
+        ),
+        "capture_chunk_schema": np.asarray([CAPTURE_CHUNK_SCHEMA]),
+        "q2_protocol_version": np.asarray([Q2_PROTOCOL_VERSION]),
+        "q2_namespace_version": np.asarray([Q2_NAMESPACE_VERSION]),
+        "q2_amendment_json": np.asarray([amendment["q2_amendment_json"]]),
+        "q2_amendment_sha256": np.asarray(
+            [amendment["q2_amendment_sha256"]]
+        ),
     }
+    for field in Q2_ACCOUNTING_INTEGER_FIELDS:
+        arrays[field] = np.asarray(
+            [row[field] for row in rows], dtype=np.int64
+        )
+    return arrays
 
 
 def _validate_capture_arrays(
@@ -385,9 +493,24 @@ def _validate_capture_arrays(
 ) -> dict:
     import numpy as np
 
-    from memsub.certification import eq_policy_v1
+    from memsub.certification import (
+        eq_policy_v1,
+        validate_q2_accounting_arrays,
+    )
     from memsub.compaction import validate_capture_chunk
 
+    amendment = _require_q2_amendment()
+    singleton_provenance = {
+        "capture_chunk_schema": CAPTURE_CHUNK_SCHEMA,
+        "q2_protocol_version": Q2_PROTOCOL_VERSION,
+        "q2_namespace_version": Q2_NAMESPACE_VERSION,
+        "q2_amendment_json": amendment["q2_amendment_json"],
+        "q2_amendment_sha256": amendment["q2_amendment_sha256"],
+    }
+    for key, value in singleton_provenance.items():
+        actual = np.asarray(arrays.get(key, [])).reshape(-1)
+        if len(actual) != 1 or str(actual[0]) != value:
+            raise ValueError(f"{label} {key} provenance mismatch")
     audit = validate_capture_chunk(arrays, expected_ratio=expected_ratio)
     expected = {
         "item_ids": np.asarray([row["item_id"] for row in expected_rows]),
@@ -431,6 +554,9 @@ def _validate_capture_arrays(
         raise ValueError(f"{label} source manifest hash mismatch")
     if audit["rows"] != len(expected_rows):
         raise ValueError(f"{label} row count mismatch")
+    audit["context_accounting"] = validate_q2_accounting_arrays(
+        arrays, expected_rows, expected_ratio
+    )
     return audit
 
 
@@ -449,7 +575,15 @@ def _validate_capture_state(
     expected_fingerprint: dict | None = None,
     artifact_label: str = "Q2",
 ) -> dict:
+    amendment = _require_q2_amendment()
     fields = {
+        "capture_state_schema",
+        "q2_protocol_version",
+        "q2_namespace_version",
+        "q2_context_mechanics_version",
+        "q2_amendment_json",
+        "q2_amendment_sha256",
+        "q2_amendment_image_path",
         "q1_trigger",
         "q1_trigger_sha256",
         "model_id",
@@ -476,7 +610,20 @@ def _validate_capture_state(
     registered_item_ids = [row["item_id"] for row in selected]
     done = state.get("completed_count")
     if (
-        state.get("q1_trigger") != q1_trigger
+        output_dir == LEGACY_CAPTURE_ROOT
+        or not output_dir.startswith(f"{CAPTURE_ROOT}/")
+        or state.get("capture_state_schema") != CAPTURE_STATE_SCHEMA
+        or state.get("q2_protocol_version") != Q2_PROTOCOL_VERSION
+        or state.get("q2_namespace_version") != Q2_NAMESPACE_VERSION
+        or state.get("q2_context_mechanics_version")
+        != Q2_CONTEXT_MECHANICS_VERSION
+        or state.get("q2_amendment_json")
+        != amendment["q2_amendment_json"]
+        or state.get("q2_amendment_sha256")
+        != amendment["q2_amendment_sha256"]
+        or state.get("q2_amendment_image_path")
+        != amendment["q2_amendment_image_path"]
+        or state.get("q1_trigger") != q1_trigger
         or state.get("q1_trigger_sha256") != q1_trigger_sha256
         or state.get("model_id") != MODEL_ID
         or state.get("ratios") != list(RATIOS)
@@ -607,18 +754,21 @@ def _run_capture(
     import numpy as np
     import torch
 
-    from memsub.certification import eq_policy_v1
+    from memsub.certification import (
+        derive_q2_context_window,
+        eq_policy_v1,
+        validate_q2_context_length,
+    )
     from memsub.compaction import (
-        build_merge_plan,
         locate_token_subsequence,
         mechanics_features,
         merge_cache,
         prefill_with_real_attention,
-        validate_capture_chunk,
     )
     from memsub.reference_config import build_runtime
 
     q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
+    amendment = _require_q2_amendment()
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_sha256 = _sorted_manifest()
     selected = [
@@ -638,6 +788,13 @@ def _run_capture(
             _registered_pilot_verdict_path()
         )
     state = {
+        "capture_state_schema": CAPTURE_STATE_SCHEMA,
+        "q2_protocol_version": Q2_PROTOCOL_VERSION,
+        "q2_namespace_version": Q2_NAMESPACE_VERSION,
+        "q2_context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+        "q2_amendment_json": amendment["q2_amendment_json"],
+        "q2_amendment_sha256": amendment["q2_amendment_sha256"],
+        "q2_amendment_image_path": amendment["q2_amendment_image_path"],
         "q1_trigger": q1_trigger,
         "q1_trigger_sha256": q1_trigger_sha256,
         "model_id": MODEL_ID,
@@ -742,8 +899,15 @@ def _run_capture(
                 chunk_rows[ratio],
                 ratio=ratio,
                 source_hash=manifest_sha256,
+                amendment=amendment,
             )
-            audit = validate_capture_chunk(arrays, expected_ratio=ratio)
+            audit = _validate_capture_arrays(
+                arrays,
+                expected_rows=selected[chunk_start:end],
+                expected_ratio=ratio,
+                manifest_sha256=manifest_sha256,
+                label=f"Q2 {ratio:.2f} chunk",
+            )
             filename = (
                 f"ratio-{ratio:.2f}-rows-{chunk_start:05d}-{end:05d}.npz"
             )
@@ -779,17 +943,14 @@ def _run_capture(
             )
         document_ids = doc_cache[row["doc_id"]]
         chunk_absolute = int(row["item_id"].split("_")[-2])
-        context_start = max(
-            0,
-            min(
-                chunk_absolute - row["chunk_rel_start"],
-                len(document_ids) - CTX,
-            ),
+        window = derive_q2_context_window(
+            len(document_ids), chunk_absolute, row["chunk_rel_start"]
         )
-        context_ids = document_ids[context_start : context_start + CTX]
-        if len(context_ids) != CTX:
-            raise ValueError(f"{row['item_id']}: short Q2 context")
-        chunk_relative = chunk_absolute - context_start
+        validate_q2_context_length(window["source_context_token_count"])
+        context_ids = document_ids[
+            window["source_context_start"] : window["source_context_end"]
+        ]
+        chunk_relative = window["source_chunk_context_start"]
         source_chunk_ids = document_ids[
             chunk_absolute : chunk_absolute + 1024
         ]
@@ -805,7 +966,7 @@ def _run_capture(
                 chunk_relative + position for position in located
             ]
             locator_found = 1
-        if not all(0 <= position < CTX for position in needle_positions):
+        if not all(0 <= position < len(context_ids) for position in needle_positions):
             raise ValueError(f"{row['item_id']}: located needle leaves context")
 
         full_cache, _, attention_mass = prefill_with_real_attention(
@@ -818,7 +979,9 @@ def _run_capture(
         ):
             raise ValueError(f"{row['item_id']}: invalid real attention mass")
         for ratio in RATIOS:
-            plan = build_merge_plan(CTX, ratio, sink_token_count=SINKS)
+            accounting, plan = _measure_q2_budget(
+                full_cache, context_tokens=len(context_ids), ratio=ratio
+            )
             merged_cache = merge_cache(full_cache, attention_mass, plan).cache
             mechanics = mechanics_features(
                 plan, attention_mass, needle_positions
@@ -861,6 +1024,10 @@ def _run_capture(
                     ],
                     "sink_features": sink_features,
                     "residuals": residuals,
+                    "ratio": ratio,
+                    "context_mechanics_version": Q2_CONTEXT_MECHANICS_VERSION,
+                    **window,
+                    **accounting,
                 }
             )
             del merged_cache
@@ -929,6 +1096,7 @@ def q2_capture_slice(
 def _validate_pilot_artifact(run_tag: str) -> dict:
     import numpy as np
 
+    _require_q2_amendment()
     q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_sha256 = _sorted_manifest()
@@ -1043,6 +1211,7 @@ def validate_pilot() -> dict:
     sys.path.insert(0, "/root/repo")
     import numpy as np
 
+    _require_q2_amendment()
     registered_state = (
         f"{CAPTURE_ROOT}/pilot-{REGISTERED_PILOT_TAG}/state.json"
     )
@@ -1105,6 +1274,7 @@ def validate_pilot() -> dict:
 
 @app.function(image=image, volumes=VOLUMES, timeout=600, memory=1_024)
 def pilot_gate() -> dict:
+    _require_q2_amendment()
     return _require_registered_pilot_verdict()
 
 
@@ -1117,6 +1287,7 @@ def freeze_capture_summary() -> dict:
 
     from memsub.compaction import validate_capture_chunk
 
+    _require_q2_amendment()
     q1_trigger = _require_q1_trigger()
     q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
     manifest, manifest_hash = _sorted_manifest()
