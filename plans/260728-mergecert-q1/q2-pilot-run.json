@@ -1,0 +1,200 @@
+{
+  "schema": "mergecert-q2-pilot-run-v1",
+  "status": "completed-and-independently-validated",
+  "reviewed_runner_commit": "307e7641fa5ef55725fd0c5dd37ed193f000e298",
+  "scope": {
+    "privacy": "private",
+    "run_tag": "q1-triggered",
+    "items": 16,
+    "ratios": [
+      0.25,
+      0.4
+    ],
+    "fleet_launched": false,
+    "probes_launched": false
+  },
+  "trigger_upload": {
+    "remote_path": "/mergecert-q1/q1-trigger.json",
+    "round_trip_byte_comparison_passed": true,
+    "sha256": "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1"
+  },
+  "pilot": {
+    "app_id": "ap-Oxquib97yXgc1yG3xQ5UpQ",
+    "app_name": "memsub-mergecert-q2-capture",
+    "function": "q2_pilot",
+    "state": "stopped",
+    "tasks_after_stop": 0,
+    "created_at": "2026-07-29 16:39:01+07:00",
+    "stopped_at": "2026-07-29 16:40:51+07:00",
+    "app_lifetime_seconds": 110,
+    "completed_items": 16,
+    "registered_items": 16
+  },
+  "validator": {
+    "app_id": "ap-vl15qY3btFGWZEFMILacJU",
+    "app_name": "memsub-mergecert-q2-capture",
+    "function": "validate_pilot",
+    "validator_version": "mergecert-q2-pilot-validator-v2",
+    "state": "stopped",
+    "tasks_after_stop": 0,
+    "created_at": "2026-07-29 16:41:07+07:00",
+    "stopped_at": "2026-07-29 16:41:32+07:00",
+    "app_lifetime_seconds": 25
+  },
+  "terminal_inventory": {
+    "command": "modal app list --json",
+    "checked_read_only": true,
+    "result": [
+      {
+        "app_id": "ap-vl15qY3btFGWZEFMILacJU",
+        "description": "memsub-mergecert-q2-capture",
+        "state": "stopped",
+        "tasks": "0",
+        "created_at": "2026-07-29 16:41:07+07:00",
+        "stopped_at": "2026-07-29 16:41:32+07:00"
+      },
+      {
+        "app_id": "ap-Oxquib97yXgc1yG3xQ5UpQ",
+        "description": "memsub-mergecert-q2-capture",
+        "state": "stopped",
+        "tasks": "0",
+        "created_at": "2026-07-29 16:39:01+07:00",
+        "stopped_at": "2026-07-29 16:40:51+07:00"
+      }
+    ]
+  },
+  "remote_namespace": {
+    "path": "/mergecert/q2/pilot-q1-triggered",
+    "exact_inventory_passed": true,
+    "files": [
+      {
+        "name": "pilot-verdict.json",
+        "bytes": 2713,
+        "sha256": "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4"
+      },
+      {
+        "name": "ratio-0.25-rows-00000-00016.npz",
+        "bytes": 3038410,
+        "sha256": "07fb7df09bb3c885e46764aa13035d60e179ef4643a3215dd733e04927b7c304"
+      },
+      {
+        "name": "ratio-0.40-rows-00000-00016.npz",
+        "bytes": 3038410,
+        "sha256": "d1e1a4c6697a6abfe220a86ada78319434e312acc8f716a91f058d86c43761ea"
+      },
+      {
+        "name": "state.json",
+        "bytes": 3359,
+        "sha256": "3b4acbde18c224bbccc2f4a9b0788728c32a11e6d6ada19f04170adaed7f6cc3"
+      }
+    ]
+  },
+  "local_evidence": {
+    "canonical_verdict": {
+      "path": "plans/260728-mergecert-q1/q2-pilot-verdict.json",
+      "bytes": 2713,
+      "sha256": "2734732e64aa10263f67332ca99d7f486d948fff3ed98a686847f30d69b6faa4",
+      "remote_byte_comparison_passed": true
+    },
+    "state": {
+      "path": "plans/260728-mergecert-q1/q2-pilot-state.json",
+      "bytes": 3359,
+      "sha256": "3b4acbde18c224bbccc2f4a9b0788728c32a11e6d6ada19f04170adaed7f6cc3",
+      "remote_byte_comparison_passed": true
+    },
+    "raw_ratio_artifacts": {
+      "retrieved_to_isolated_temporary_directory": true,
+      "tracked": false,
+      "disposition": "Validated locally and retained only on the private Modal volume; exact hashes, schemas, and audit results are recorded here."
+    }
+  },
+  "independent_validation": {
+    "status": "pass",
+    "method": "Reviewed MergeCert Q2 runner helpers plus independent exact namespace, schema, hash, semantic, fingerprint, and canonical-byte checks.",
+    "source_manifest": {
+      "remote_path": "/artifacts/probe/capture-manifest.json",
+      "bytes": 12108675,
+      "sha256": "a017a7b0bb9c7b1747621136f71c65c34c573896a80d1f93a5f2aa07e0db049f",
+      "rows": 30847,
+      "unique_item_ids": 30847,
+      "registered_pilot_items": 16,
+      "registered_item_ids_sha256": "82e72114de490621979e3dd1d4e845e68a081629cd1d662e1fee63fdb9b4cb0e"
+    },
+    "state": {
+      "completed_count": 16,
+      "chunks": 1,
+      "compute_seconds": 12.093279998,
+      "exact_schema_passed": true,
+      "contiguous_coverage_passed": true,
+      "all_file_hashes_passed": true
+    },
+    "semantic_bindings": {
+      "item_ids": true,
+      "document_ids": true,
+      "domains": true,
+      "raw_predictions": true,
+      "raw_correctness": true,
+      "e1_membership": true,
+      "answer_alphabet": true,
+      "y_recomputed_with_not_eq_policy_v1": true,
+      "source_manifest_hash": true
+    },
+    "ratio_artifacts": {
+      "0.25": {
+        "rows": 16,
+        "unique_item_ids": 16,
+        "positive_labels": 6,
+        "locator_found": 10,
+        "tensor_schema": {
+          "mechanics": "float32[16,4]",
+          "merge_overlap": "float32[16]",
+          "sink_features": "float32[16,8]",
+          "residuals": "float16[16,37,2560]"
+        },
+        "all_registered_tensors_finite": true
+      },
+      "0.40": {
+        "rows": 16,
+        "unique_item_ids": 16,
+        "positive_labels": 8,
+        "locator_found": 10,
+        "tensor_schema": {
+          "mechanics": "float32[16,4]",
+          "merge_overlap": "float32[16]",
+          "sink_features": "float32[16,8]",
+          "residuals": "float16[16,37,2560]"
+        },
+        "all_registered_tensors_finite": true
+      }
+    },
+    "compatibility_fingerprint": {
+      "schema": "memsub-compatibility-fingerprint-v1",
+      "sha256": "sha256:165f6245e7aef69788ffb7d888b7384b4cf03a07d2411053b5db186df8f99f41",
+      "canonical_and_pinned": true,
+      "verdict_binding_passed": true
+    },
+    "canonical_verdict": {
+      "protocol": "MERGECERT-Q2",
+      "validation_mode": "single-registered-run",
+      "run_tag": "q1-triggered",
+      "pass": true,
+      "canonical_bytes_passed": true,
+      "all_bindings_match": true
+    }
+  },
+  "billing_actual_usd": {
+    "pilot_phase": {
+      "h100": 0.08681040,
+      "memory": 0.01125239,
+      "cpu": 0.00069292,
+      "total": 0.09875571
+    },
+    "campaign_before_pilot": 0.32849690,
+    "campaign_total": 0.42725261,
+    "campaign_bound": 45.0,
+    "remaining": 44.57274739,
+    "within_bound": true,
+    "exact_billing_actual": true
+  },
+  "stop_rule": "Pilot evidence is valid and budget remains below the campaign ceiling, but fleet and probes were not authorized or launched in this read-only evidence phase."
+}

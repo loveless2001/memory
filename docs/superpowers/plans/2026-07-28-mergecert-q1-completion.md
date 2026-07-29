@@ -809,7 +809,7 @@ paired CIs, and all four domain slices. The deterministic registered result is
 `R1` / `aggregation-negative`, with favorable interval
 `0.40:lost_prior` and `run_q2_q3=true`.
 
-- [ ] **Step 6: Copy the trigger to the private volume**
+- [x] **Step 6: Copy the trigger to the private volume**
 
 Only if `run_q2_q3` is true:
 
@@ -819,8 +819,13 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal volume put \
   /mergecert-q1/q1-trigger.json
 ```
 
-Not performed. Although the full trigger is positive, it remains local
-pending controller review. No Q2 or Q3 action was launched.
+Completed after controller review at runner commit `307e764`: the exact
+433-byte trigger was uploaded to `/mergecert-q1/q1-trigger.json`, retrieved
+again, and compared byte-for-byte with the tracked source. Both copies have
+SHA-256
+`009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1`.
+This upload authorized only the separately approved registered pilot; it did
+not launch the Q2 fleet or Q3.
 
 - [x] **Step 7: Commit Q1 evidence**
 
@@ -840,6 +845,9 @@ git commit -m "docs: record moderate-ratio MergeCert placement"
 
 **Files:**
 - Create: `plans/260728-mergecert-q1/conditional-work.json`
+- Conditional create: `plans/260728-mergecert-q1/q2-pilot-run.json`
+- Conditional create: `plans/260728-mergecert-q1/q2-pilot-state.json`
+- Conditional create: `plans/260728-mergecert-q1/q2-pilot-verdict.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-capture-summary.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-routability-remote.json`
 - Conditional create: `plans/260728-mergecert-q1/q2-scores.npz`
@@ -872,12 +880,18 @@ sha256sum plans/260728-mergecert-q1/q1-trigger.json
 
 Then skip Steps 2-7 and continue to Step 8.
 
-- [ ] **Step 2: Confirm remaining budget before conditional launch**
+- [x] **Step 2: Confirm remaining budget before conditional launch**
 
 Obtain current Q1 billing actuals. Run conditional work only if projected total
 remains at or below `$45`; otherwise stop and report the budget ceiling.
 
-- [ ] **Step 3: Run and validate the Q2 pilot**
+Confirmed before the bounded trigger/pilot phase. Exact billing after the
+pilot is `$0.42725261`, consisting of `$0.32849690` before the pilot plus
+pilot rows of H100 `$0.08681040`, memory `$0.01125239`, and CPU
+`$0.00069292` (`$0.09875571` pilot total). This leaves `$44.57274739`
+under the `$45` ceiling. These are billing actuals, not lifetime estimates.
+
+- [x] **Step 3: Run and validate the Q2 pilot**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
@@ -904,6 +918,24 @@ exact Q1 trigger payload/hash, manifest path/hash, state path/hash, both ratio
 artifact paths/hashes/audits, and compatibility fingerprint. The older
 `pilot-a` / `pilot-b` namespaces remain available as a legacy repeated-run
 bit-identity check, but they cannot authorize the conditional fleet.
+
+Completed at reviewed runner commit `307e764`. Pilot app
+`ap-Oxquib97yXgc1yG3xQ5UpQ` captured all 16 registered items and stopped with
+zero tasks after 110 seconds. Validator app
+`ap-vl15qY3btFGWZEFMILacJU` wrote the canonical verdict and stopped with zero
+tasks after 25 seconds. The remote namespace contains exactly the verdict,
+state, and one NPZ for each registered ratio.
+
+All four namespace files, the bound 30,847-row source manifest, and the exact
+remote trigger were retrieved read-only into an isolated local directory.
+Independent local validation passed exact hashes, schemas, item/document/domain
+and raw-label bindings, recomputed `y`, binary fields, both complete finite
+tensor sets, locator evidence (`10/16` for each ratio), state/chunk coverage,
+the pinned compatibility fingerprint, and the canonical verdict bytes. The
+tracked evidence is `q2-pilot-run.json`, `q2-pilot-state.json`, and
+`q2-pilot-verdict.json`. The raw ratio tensors remain on the private volume;
+their exact hashes and audited schemas are recorded in the run evidence. The
+fleet and probes were not launched.
 
 - [ ] **Step 4: Launch the eight-slice Q2 fleet**
 
