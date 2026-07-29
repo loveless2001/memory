@@ -959,8 +959,11 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
 ```
 
 One fleet app, `ap-94yLmlHzYzxS6y44wZocc8`, spawned the registered eight
-slices and showed nine tasks. Logs then reported registered items failing
-with `ValueError: short Q2 context`, including
+slices from local launch entrypoint `fleet` and showed nine tasks. The remote
+slice function was `q2_capture_slice`, function ID
+`fu-SN6sadtSpowHTq1pdAgS8j`; that ID does not identify the local entrypoint.
+Logs then reported registered items failing with
+`ValueError: short Q2 context`, including
 `mcq_code/00130_1230_28`, `mcq_code/00130_204_27`, and
 `mcq_code/00130_239_29`. The app was stopped immediately and terminal
 inventory showed `stopped` with zero tasks at 18:20:59 +07:00 after a
