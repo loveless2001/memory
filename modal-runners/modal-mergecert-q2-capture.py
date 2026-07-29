@@ -20,6 +20,9 @@ SINKS = 4
 Q2_ITEMS = 30_847
 Q2_SLICES = 8
 CHUNK_ITEMS = 100
+PILOT_ITEMS = 16
+REGISTERED_PILOT_TAG = "q1-triggered"
+LEGACY_PILOT_TAGS = ("a", "b")
 CAPTURE_ROOT = "/artifacts/mergecert/q2"
 MANIFEST_PATH = "/artifacts/probe/capture-manifest.json"
 Q1_TRIGGER_PATH = "/artifacts/mergecert-q1/q1-trigger.json"
@@ -492,8 +495,13 @@ def _run_capture(
     memory=65_536,
 )
 def q2_pilot(run_tag: str, limit: int = 16) -> dict:
-    if run_tag not in ("a", "b") or limit != 16:
-        raise ValueError("Q2 pilot requires run_tag a/b and exactly 16 items")
+    if (
+        run_tag not in (REGISTERED_PILOT_TAG, *LEGACY_PILOT_TAGS)
+        or limit != PILOT_ITEMS
+    ):
+        raise ValueError(
+            "Q2 pilot requires run_tag q1-triggered/a/b and exactly 16 items"
+        )
     return _run_capture(
         slice_idx=0,
         n_slices=1,
@@ -524,6 +532,87 @@ def q2_capture_slice(
     )
 
 
+def _validate_pilot_artifact(run_tag: str) -> dict:
+    import numpy as np
+
+    from memsub.compaction import validate_capture_chunk
+
+    q1_trigger = _require_q1_trigger(Q1_TRIGGER_PATH)
+    q1_trigger_sha256 = _sha256_file(Q1_TRIGGER_PATH)
+    manifest, manifest_sha256 = _sorted_manifest()
+    registered_item_ids = [row["item_id"] for row in manifest[:PILOT_ITEMS]]
+    output_dir = f"{CAPTURE_ROOT}/pilot-{run_tag}"
+    state_path = f"{output_dir}/state.json"
+    if not os.path.exists(state_path):
+        raise ValueError(f"missing Q2 pilot {run_tag}")
+    with open(state_path) as handle:
+        state = json.load(handle)
+    if (
+        state.get("q1_trigger") != q1_trigger
+        or state.get("q1_trigger_sha256") != q1_trigger_sha256
+        or state.get("model_id") != MODEL_ID
+        or state.get("ratios") != list(RATIOS)
+        or state.get("sink_token_count") != SINKS
+        or state.get("source_manifest_path") != MANIFEST_PATH
+        or state.get("source_manifest_sha256") != manifest_sha256
+        or state.get("slice_idx") != 0
+        or state.get("n_slices") != 1
+        or state.get("registered_item_count") != PILOT_ITEMS
+        or state.get("registered_item_ids_sha256")
+        != _item_ids_sha256(registered_item_ids)
+        or state.get("completed_count") != PILOT_ITEMS
+        or state.get("completed_item_ids") != registered_item_ids
+    ):
+        raise ValueError(f"Q2 pilot {run_tag} state/provenance mismatch")
+    chunks = state.get("chunks")
+    if not isinstance(chunks, list) or len(chunks) != 1:
+        raise ValueError(f"Q2 pilot {run_tag} must contain one complete chunk")
+    chunk = chunks[0]
+    if (
+        chunk.get("start") != 0
+        or chunk.get("end") != PILOT_ITEMS
+        or chunk.get("item_ids_sha256")
+        != _item_ids_sha256(registered_item_ids)
+        or set(chunk.get("files", {})) != {
+            f"{ratio:.2f}" for ratio in RATIOS
+        }
+    ):
+        raise ValueError(f"Q2 pilot {run_tag} chunk coverage mismatch")
+
+    arrays_by_ratio = {}
+    audits = {}
+    for ratio in RATIOS:
+        key = f"{ratio:.2f}"
+        expected_path = (
+            f"{output_dir}/ratio-{ratio:.2f}-rows-00000-"
+            f"{PILOT_ITEMS:05d}.npz"
+        )
+        file_row = chunk["files"][key]
+        if (
+            file_row.get("path") != expected_path
+            or _sha256_file(expected_path) != file_row.get("sha256")
+        ):
+            raise ValueError(f"Q2 pilot {run_tag} {key} artifact mismatch")
+        with np.load(expected_path, allow_pickle=False) as archive:
+            arrays = {name: archive[name] for name in archive.files}
+        audit = validate_capture_chunk(arrays, expected_ratio=ratio)
+        if (
+            arrays["item_ids"].astype(str).tolist() != registered_item_ids
+            or str(np.asarray(arrays["source_manifest_sha256"])[0])
+            != manifest_sha256
+            or audit["rows"] != PILOT_ITEMS
+        ):
+            raise ValueError(f"Q2 pilot {run_tag} {key} row coverage mismatch")
+        arrays_by_ratio[key] = arrays
+        audits[key] = audit
+    return {
+        "q1_trigger": q1_trigger,
+        "q1_trigger_sha256": q1_trigger_sha256,
+        "arrays": arrays_by_ratio,
+        "audits": audits,
+    }
+
+
 @app.function(image=image, volumes=VOLUMES, timeout=14_400, memory=32_768)
 def validate_pilot() -> dict:
     import sys
@@ -531,34 +620,46 @@ def validate_pilot() -> dict:
     sys.path.insert(0, "/root/repo")
     import numpy as np
 
-    for run_tag in ("a", "b"):
-        state_path = f"{CAPTURE_ROOT}/pilot-{run_tag}/state.json"
-        if not os.path.exists(state_path):
-            raise ValueError(f"missing Q2 pilot {run_tag}")
-    comparisons = {}
-    for ratio in RATIOS:
-        loaded = []
-        for run_tag in ("a", "b"):
-            with open(f"{CAPTURE_ROOT}/pilot-{run_tag}/state.json") as handle:
-                state = json.load(handle)
-            file_row = state["chunks"][0]["files"][f"{ratio:.2f}"]
-            with np.load(file_row["path"], allow_pickle=False) as archive:
-                loaded.append({key: archive[key] for key in archive.files})
-        keys = sorted(set(loaded[0]) | set(loaded[1]))
-        unequal = [
-            key for key in keys if not np.array_equal(loaded[0][key], loaded[1][key])
+    registered_state = (
+        f"{CAPTURE_ROOT}/pilot-{REGISTERED_PILOT_TAG}/state.json"
+    )
+    if os.path.exists(registered_state):
+        run_tags = [REGISTERED_PILOT_TAG]
+        validated = [_validate_pilot_artifact(REGISTERED_PILOT_TAG)]
+        validation_mode = "single-registered-run"
+        comparisons = {}
+    else:
+        run_tags = list(LEGACY_PILOT_TAGS)
+        validated = [
+            _validate_pilot_artifact(run_tag) for run_tag in run_tags
         ]
-        comparisons[f"{ratio:.2f}"] = {
-            "bit_identical": not unequal,
-            "unequal_arrays": unequal,
-        }
-        if unequal:
-            raise ValueError(
-                f"Q2 pilot is not bit-identical at {ratio:.2f}: {unequal}"
-            )
+        validation_mode = "repeated-run-bit-identical"
+        comparisons = {}
+        for ratio in RATIOS:
+            key = f"{ratio:.2f}"
+            left = validated[0]["arrays"][key]
+            right = validated[1]["arrays"][key]
+            keys = sorted(set(left) | set(right))
+            unequal = [
+                name for name in keys if not np.array_equal(left[name], right[name])
+            ]
+            comparisons[key] = {
+                "bit_identical": not unequal,
+                "unequal_arrays": unequal,
+            }
+            if unequal:
+                raise ValueError(
+                    f"Q2 pilot is not bit-identical at {ratio:.2f}: {unequal}"
+                )
+    evidence = validated[0]
     output = {
-        "items": 16,
+        "items": PILOT_ITEMS,
         "ratios": list(RATIOS),
+        "validation_mode": validation_mode,
+        "run_tags": run_tags,
+        "q1_trigger": evidence["q1_trigger"],
+        "q1_trigger_sha256": evidence["q1_trigger_sha256"],
+        "audits": evidence["audits"],
         "comparisons": comparisons,
         "pass": True,
     }

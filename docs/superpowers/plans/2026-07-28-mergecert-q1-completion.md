@@ -890,6 +890,15 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal run \
 Require both ratios, all registered capture tensors, finite values, binary
 labels, locator evidence, and exact trigger provenance.
 
+The conditional interface uses the isolated `pilot-q1-triggered` namespace.
+One invocation writes separate 0.25 and 0.40 NPZ artifacts from the same
+registered 16 items. `validate_pilot` independently verifies the live trigger
+and hash, sorted-manifest provenance and item order, state/chunk/file hashes,
+and the complete capture schema for both ratios. The older `pilot-a` /
+`pilot-b` namespaces remain available as a legacy repeated-run
+bit-identity check, but they are not required by this single-run conditional
+command.
+
 - [ ] **Step 4: Launch the eight-slice Q2 fleet**
 
 ```bash

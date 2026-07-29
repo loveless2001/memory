@@ -6,6 +6,7 @@ import sys
 import types
 from pathlib import Path
 
+import numpy as np
 import pytest
 import torch
 
@@ -89,6 +90,105 @@ def _q1_trigger(**overrides):
     }
     trigger.update(overrides)
     return trigger
+
+
+def _write_q2_pilot_fixture(tmp_path, runner, run_tags):
+    capture_root = tmp_path / "q2"
+    trigger_path = tmp_path / "q1-trigger.json"
+    trigger = _q1_trigger()
+    trigger_path.write_text(json.dumps(trigger))
+    manifest_path = tmp_path / "capture-manifest.json"
+    manifest = [
+        {
+            "item_id": f"item-{index:02d}",
+            "doc_id": f"doc-{index // 2:02d}",
+            "domain": "financial",
+        }
+        for index in range(16)
+    ]
+    manifest_path.write_text(json.dumps(manifest))
+    manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    trigger_sha256 = hashlib.sha256(trigger_path.read_bytes()).hexdigest()
+    item_ids = [row["item_id"] for row in manifest]
+    for run_tag in run_tags:
+        output_dir = capture_root / f"pilot-{run_tag}"
+        output_dir.mkdir(parents=True)
+        files = {}
+        for ratio in (0.25, 0.40):
+            mechanics = np.full((16, 4), 0.5, dtype=np.float32)
+            mechanics[:, 0] = 4
+            arrays = {
+                "item_ids": np.asarray(item_ids),
+                "doc_ids": np.asarray([row["doc_id"] for row in manifest]),
+                "domain": np.asarray([row["domain"] for row in manifest]),
+                "pred_raw": np.asarray(["A"] * 16),
+                "pred_merge": np.asarray(["A"] * 16),
+                "y": np.asarray([0, 1] * 8, dtype=np.int8),
+                "raw_correct": np.ones(16, dtype=np.int8),
+                "in_e1": np.asarray([0, 1] * 8, dtype=np.int8),
+                "locator_found": np.ones(16, dtype=np.int8),
+                "merge_overlap": np.zeros(16, dtype=np.float32),
+                "mechanics": mechanics,
+                "sink_features": np.zeros((16, 8), dtype=np.float32),
+                "residuals": np.zeros((16, 37, 2560), dtype=np.float16),
+                "ratio": np.asarray([ratio], dtype=np.float32),
+                "source_manifest_sha256": np.asarray([manifest_sha256]),
+            }
+            path = output_dir / f"ratio-{ratio:.2f}-rows-00000-00016.npz"
+            np.savez(path, **arrays)
+            files[f"{ratio:.2f}"] = {
+                "path": str(path),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "audit": {},
+            }
+        state = {
+            "q1_trigger": trigger,
+            "q1_trigger_sha256": trigger_sha256,
+            "model_id": runner.MODEL_ID,
+            "ratios": [0.25, 0.40],
+            "sink_token_count": runner.SINKS,
+            "source_manifest_path": str(manifest_path),
+            "source_manifest_sha256": manifest_sha256,
+            "slice_idx": 0,
+            "n_slices": 1,
+            "registered_item_count": 16,
+            "registered_item_ids_sha256": runner._item_ids_sha256(item_ids),
+            "completed_count": 16,
+            "completed_item_ids": item_ids,
+            "chunks": [
+                {
+                    "start": 0,
+                    "end": 16,
+                    "item_ids_sha256": runner._item_ids_sha256(item_ids),
+                    "files": files,
+                }
+            ],
+            "compute_seconds": 1.0,
+        }
+        (output_dir / "state.json").write_text(json.dumps(state))
+    return {
+        "capture_root": capture_root,
+        "trigger_path": trigger_path,
+        "trigger": trigger,
+        "trigger_sha256": trigger_sha256,
+        "manifest_path": manifest_path,
+    }
+
+
+def _configure_q2_pilot_fixture(runner, monkeypatch, fixture):
+    commits = []
+    monkeypatch.setattr(runner, "CAPTURE_ROOT", str(fixture["capture_root"]))
+    monkeypatch.setattr(
+        runner, "Q1_TRIGGER_PATH", str(fixture["trigger_path"])
+    )
+    monkeypatch.setattr(
+        runner, "MANIFEST_PATH", str(fixture["manifest_path"])
+    )
+    monkeypatch.setattr(runner, "Q2_ITEMS", 16)
+    monkeypatch.setattr(
+        runner, "artifacts", types.SimpleNamespace(commit=lambda: commits.append(1))
+    )
+    return commits
 
 
 def _load_module(path, name):
@@ -1698,6 +1798,94 @@ def test_mergecert_q2_runner_has_no_training_or_publication_path():
         "git push",
     ):
         assert forbidden not in source
+
+
+@pytest.mark.parametrize(
+    ("run_tag", "output_name"),
+    (
+        ("q1-triggered", "pilot-q1-triggered"),
+        ("a", "pilot-a"),
+        ("b", "pilot-b"),
+    ),
+)
+def test_q2_pilot_maps_registered_and_legacy_tags_to_isolated_outputs(
+    monkeypatch, run_tag, output_name
+):
+    runner = _load_module(
+        Q2_RUNNER, f"mergecert_q2_pilot_contract_{run_tag}"
+    )
+    calls = []
+
+    def fake_run_capture(**kwargs):
+        calls.append(kwargs)
+        return {"output": kwargs["output_name"]}
+
+    monkeypatch.setattr(runner, "_run_capture", fake_run_capture)
+
+    result = runner.q2_pilot.get_raw_f()(run_tag, 16)
+
+    assert result == {"output": output_name}
+    assert calls == [
+        {
+            "slice_idx": 0,
+            "n_slices": 1,
+            "limit": 16,
+            "output_name": output_name,
+            "verify_mode_parity": True,
+        }
+    ]
+
+
+def test_q2_registered_pilot_validates_both_ratios_and_trigger_provenance(
+    tmp_path, monkeypatch
+):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_registered_pilot_validation"
+    )
+    fixture = _write_q2_pilot_fixture(
+        tmp_path, runner, ("q1-triggered",)
+    )
+    commits = _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+
+    result = runner.validate_pilot.get_raw_f()()
+
+    assert result["pass"] is True
+    assert result["validation_mode"] == "single-registered-run"
+    assert result["run_tags"] == ["q1-triggered"]
+    assert result["q1_trigger"] == fixture["trigger"]
+    assert result["q1_trigger_sha256"] == fixture["trigger_sha256"]
+    assert result["ratios"] == [0.25, 0.40]
+    assert result["audits"]["0.25"]["rows"] == 16
+    assert result["audits"]["0.40"]["rows"] == 16
+    assert commits == [1]
+
+    state_path = fixture["capture_root"] / "pilot-q1-triggered" / "state.json"
+    state = json.loads(state_path.read_text())
+    state["q1_trigger_sha256"] = "0" * 64
+    state_path.write_text(json.dumps(state))
+    with pytest.raises(ValueError, match="state/provenance mismatch"):
+        runner.validate_pilot.get_raw_f()()
+
+
+def test_q2_legacy_pilots_keep_repeated_run_bit_identity_validation(
+    tmp_path, monkeypatch
+):
+    runner = _load_module(
+        Q2_RUNNER, "mergecert_q2_legacy_pilot_validation"
+    )
+    fixture = _write_q2_pilot_fixture(tmp_path, runner, ("a", "b"))
+    commits = _configure_q2_pilot_fixture(runner, monkeypatch, fixture)
+
+    result = runner.validate_pilot.get_raw_f()()
+
+    assert result["pass"] is True
+    assert result["validation_mode"] == "repeated-run-bit-identical"
+    assert result["run_tags"] == ["a", "b"]
+    assert result["comparisons"] == {
+        "0.25": {"bit_identical": True, "unequal_arrays": []},
+        "0.40": {"bit_identical": True, "unequal_arrays": []},
+    }
+    assert commits == [1]
 
 
 @pytest.mark.parametrize(
