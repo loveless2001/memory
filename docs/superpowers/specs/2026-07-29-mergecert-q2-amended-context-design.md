@@ -82,8 +82,21 @@ source_chunk_context_start = chunk_absolute - source_context_start
 
 The tokenizer is the compatibility-fingerprint-pinned tokenizer. The model
 receives those token IDs directly, so source-context and model-input counts
-are deterministically comparable. Every count must be a non-boolean integer,
-and every context must contain more than the four pinned sink tokens.
+are deterministically comparable. Every count must be a non-boolean integer.
+For every registered ratio, the window must also satisfy the complete merge
+plan invariant:
+
+```text
+target_retained =
+    source_context_token_count
+    - floor(source_context_token_count * ratio)
+target_retained - 4 >= 2
+```
+
+For ratios `{0.25, 0.40}`, this requires at least nine context tokens. A
+context of length eight fails closed; a context of length nine is admissible.
+The proven short documents have 4,073 and 4,067 tokens and remain far above
+this boundary.
 
 For documents with at least 4,096 tokens, this is byte-for-byte the previous
 Q2 context selection and yields exactly 4,096 model-input tokens. For shorter
@@ -100,6 +113,7 @@ eviction_source_start = 4
 eviction_source_end =
     eviction_source_start + requested_evicted_token_count
 physical_before_count = full_cache.physical_length
+eviction_cache = full_cache.clone_detached()
 physical_removed_count =
     eviction_cache.evict_logical_range(eviction_source_start,
                                        eviction_source_end)
@@ -107,6 +121,10 @@ physical_after_count = eviction_cache.physical_length
 retained_token_count = physical_after_count
 merge_target_retained = retained_token_count
 ```
+
+`eviction_cache` is an independent clone of the untouched `full_cache`.
+Measurement mutation may not change `full_cache`; `merge_cache` receives that
+untouched full cache, its real attention mass, and the amended merge plan.
 
 The runner rejects any mismatch among:
 
@@ -119,11 +137,17 @@ physical_before_count - physical_after_count
 physical_removed_count == requested_evicted_token_count
 retained_token_count == physical_after_count
 merge_target_retained == retained_token_count
+merge_target_retained
+    == source_context_token_count
+       - floor(source_context_token_count * ratio)
+merge_target_retained - 4 >= 2
 ```
 
-Merge is built from the actual model-input length with the smallest effective
-fraction that reproduces `merge_target_retained` exactly. The resulting plan
-must report that exact retained target.
+Merge is built as
+`build_merge_plan(source_context_token_count, ratio, sink_token_count=4)`
+with the exact unchanged registered ratio. The plan's floor equation must
+reproduce `merge_target_retained` exactly, and the recorded ratio remains
+exactly 0.25 or 0.40.
 
 At 4,096 tokens, the amended 0.25 and 0.40 plans reproduce respectively:
 
@@ -215,7 +239,8 @@ Fail before checkpoint or downstream use on any of:
 - missing or altered Q1 trigger/hash;
 - source document, manifest, item-order, or compatibility drift;
 - nondeterministic or invalid context anchor/window;
-- context length at or below the sink prefix;
+- any registered-ratio merge plan with
+  `target_retained - sink_token_count < 2`;
 - shifted eviction range or physical accounting mismatch;
 - merge retained target or recent-start mismatch;
 - old namespace, pilot verdict, state, summary, probe output, or score input;
@@ -233,6 +258,9 @@ tokens, a long 4,096-token context, and mutations for:
 - shifted context and eviction ranges;
 - booleans and impossible counts;
 - wrong physical removal or merge target;
+- aggregate length-eight rejection because 0.40 violates the invariant, and
+  length-nine acceptance under both registered ratios;
+- independent eviction measurement clone and unchanged full-cache merge input;
 - fixed-4,096 recent-start assumptions on short rows;
 - old pilot/state/namespace acceptance;
 - amendment payload/hash drift at capture, probe, Q2, Q3, and report layers;
