@@ -208,6 +208,14 @@ def _require_amended_pilot_verdict(
     source_manifest = verdict.get("source_manifest")
     state = verdict.get("state")
     artifacts_by_ratio = verdict.get("artifacts")
+    from memsub.fingerprint import CompatibilityFingerprint
+
+    try:
+        fingerprint = CompatibilityFingerprint.from_dict(
+            verdict.get("compatibility_fingerprint")
+        )
+    except (TypeError, ValueError):
+        fingerprint = None
     if (
         set(verdict) != required
         or encoded != _canonical_json_bytes(verdict)
@@ -243,8 +251,9 @@ def _require_amended_pilot_verdict(
         )
         or verdict["compatibility_fingerprint_schema"]
         != "memsub-compatibility-fingerprint-v1"
-        or not isinstance(verdict["compatibility_fingerprint"], dict)
-        or not _is_sha256(verdict["compatibility_fingerprint_sha256"])
+        or fingerprint is None
+        or verdict["compatibility_fingerprint_sha256"]
+        != fingerprint.digest()
         or not isinstance(verdict["audits"], dict)
         or set(verdict["audits"]) != {"0.25", "0.40"}
         or verdict["comparisons"] != {}

@@ -22,6 +22,35 @@ AMENDMENT = json.loads(AMENDMENT_JSON)
 AMENDMENT_SHA256 = hashlib.sha256(AMENDMENT_PATH.read_bytes()).hexdigest()
 TRIGGER_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q1-trigger.json"
 TRIGGER = json.loads(TRIGGER_PATH.read_text())
+CANONICAL_CAPTURE_FINGERPRINT = {
+    "adapter_hash": None,
+    "attention_impl": "sdpa",
+    "channel_registry_version": "memchan-v1",
+    "chat_template_hash": (
+        "sha256:64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326"
+    ),
+    "compaction_policy_version": "evict-oldest-nonsink-v1",
+    "kernel_numeric_profile_hash": (
+        "sha256:17254c1986f6eb9665e28d71593bee4c73fde685189bf6d92ad3ddbb1bafd166"
+    ),
+    "kv_layout": "gqa",
+    "model_id": (
+        "Qwen/Qwen3-4B-Instruct-2507#cfg=sha256:48a2eb73475580b0"
+    ),
+    "position_policy_version": "pos-v1-preserve-logical-rope",
+    "quantization": "bfloat16",
+    "rope_config_hash": (
+        "sha256:0e8d82a4c5ec54ef6157554beb56ca495288032dab9e564a35215aa6f52d6fb0"
+    ),
+    "runtime_version": "hf-transformers-4.55.2+torch-2.7.1+cu126",
+    "sliding_window_config": "none",
+    "tokenizer_hash": (
+        "sha256:a63080b4b30dc861fe1b0e420c53a241304dc81aff3d9bb315e6e33e2a1ab794"
+    ),
+}
+CANONICAL_CAPTURE_FINGERPRINT_SHA256 = (
+    "sha256:165f6245e7aef69788ffb7d888b7384b4cf03a07d2411053b5db186df8f99f41"
+)
 
 
 def _load_runner(name: str):
@@ -173,8 +202,10 @@ def _write_short_capture(tmp_path):
         "compatibility_fingerprint_schema": (
             "memsub-compatibility-fingerprint-v1"
         ),
-        "compatibility_fingerprint": {"model": "fixture"},
-        "compatibility_fingerprint_sha256": "d" * 64,
+        "compatibility_fingerprint": CANONICAL_CAPTURE_FINGERPRINT,
+        "compatibility_fingerprint_sha256": (
+            CANONICAL_CAPTURE_FINGERPRINT_SHA256
+        ),
         "audits": {
             "0.25": {"context_accounting": {"rows": 16}},
             "0.40": {"context_accounting": {"rows": 16}},
@@ -351,6 +382,34 @@ def test_probe_gate_accepts_real_canonical_amended_pilot_verdict(
     _configure_gate(monkeypatch, runner, summary_path, trigger_path)
 
     assert runner._require_gate_and_capture()[1] == summary
+
+
+def test_probe_gate_rejects_canonical_fingerprint_digest_mismatch(
+    tmp_path, monkeypatch
+):
+    _, _, _, summary, summary_path, trigger_path = _write_short_capture(
+        tmp_path
+    )
+    runner = _load_runner("mergecert_q2_probe_pilot_fingerprint_mismatch")
+    _configure_gate(monkeypatch, runner, summary_path, trigger_path)
+    pilot_path = Path(summary["pilot_verdict"]["path"])
+    pilot = json.loads(pilot_path.read_text())
+    pilot["compatibility_fingerprint_sha256"] = "sha256:" + "0" * 64
+    pilot_path.write_bytes(
+        (
+            json.dumps(
+                pilot, sort_keys=True, separators=(",", ":"), allow_nan=False
+            )
+            + "\n"
+        ).encode()
+    )
+    summary["pilot_verdict"]["sha256"] = hashlib.sha256(
+        pilot_path.read_bytes()
+    ).hexdigest()
+    summary_path.write_text(json.dumps(summary))
+
+    with pytest.raises(ValueError, match="pilot verdict contract"):
+        runner._require_gate_and_capture()
 
 
 @pytest.mark.parametrize(
