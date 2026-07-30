@@ -1,0 +1,191 @@
+{
+ "ceiling_usd": 45.0,
+ "total_cost_usd": 31.13857475,
+ "billing_report": {
+  "retrieved_date": "2026-07-30",
+  "interval_start_utc": "2026-07-28T00:00:00Z",
+  "interval_end_utc_exclusive": "2026-07-30T00:00:00Z",
+  "resolution": "daily",
+  "exact_billing_actual": true
+ },
+ "phases": {
+  "q1": {
+   "phase": "Q1",
+   "gpu": "H100",
+   "gpu_seconds": 262.0543846855059,
+   "gpu_seconds_basis": "Exact H100 billing cost divided by the registered 0.001097 USD/GPU-second rate; the registration app requested no GPU.",
+   "cost_usd": 0.3284969,
+   "source": "Modal billing report 2026-07-30 for apps ap-Bx0LRrGGZ0yUchiepNVrtV, ap-IqcTqya9JbXUoI57uApnwU, ap-amdd5k9Ybxoxv1d8c3vbon, ap-FS1Y8Y3bcazBqzMybadmyo, ap-f53tWxXjsQH95pN0uZzxQx and ap-bnyT0P9ay00aSaBC0u4gyc",
+   "resource_cost_usd": {
+    "H100": 0.28747366,
+    "A10G": 0.0,
+    "CPU": 0.00339361,
+    "Memory": 0.03762963
+   },
+   "runs": [
+    {
+     "app_id": "ap-Bx0LRrGGZ0yUchiepNVrtV",
+     "purpose": "Q1 registration extraction",
+     "created_at": "2026-07-29 02:41:10+07:00",
+     "stopped_at": "2026-07-29 02:42:10+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.00122847
+    },
+    {
+     "app_id": "ap-IqcTqya9JbXUoI57uApnwU",
+     "purpose": "pre-amendment Q1 smoke",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.05494253
+    },
+    {
+     "app_id": "ap-amdd5k9Ybxoxv1d8c3vbon",
+     "purpose": "packaging-failure Q1 smoke",
+     "created_at": "2026-07-29 02:56:35+07:00",
+     "stopped_at": "2026-07-29 02:57:30+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.0,
+     "billing_note": "No billing row; failure occurred during container hydration before user code."
+    },
+    {
+     "app_id": "ap-FS1Y8Y3bcazBqzMybadmyo",
+     "purpose": "archive-replay-failure Q1 smoke",
+     "created_at": "2026-07-29 03:12:25+07:00",
+     "stopped_at": "2026-07-29 03:13:09+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.04013642
+    },
+    {
+     "app_id": "ap-f53tWxXjsQH95pN0uZzxQx",
+     "purpose": "successful reviewed Q1 smoke",
+     "created_at": "2026-07-29 14:19:03+07:00",
+     "stopped_at": "2026-07-29 14:20:03+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.06248498
+    },
+    {
+     "app_id": "ap-bnyT0P9ay00aSaBC0u4gyc",
+     "purpose": "registered 20-document Q1 certification",
+     "created_at": "2026-07-29 14:54:12+07:00",
+     "stopped_at": "2026-07-29 14:56:45+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.1697045
+    }
+   ]
+  },
+  "q2_q3": {
+   "phase": "Q2/Q3",
+   "gpu": "H100 + L4",
+   "gpu_seconds": 25302.18360943441,
+   "gpu_seconds_basis": "Exact H100 and L4 billing costs divided by their registered 0.001097 and 0.000222 USD/GPU-second rates; Q3 analysis was local.",
+   "cost_usd": 30.81007785,
+   "source": "Modal billing report 2026-07-30 for apps ap-Oxquib97yXgc1yG3xQ5UpQ, ap-vl15qY3btFGWZEFMILacJU, ap-94yLmlHzYzxS6y44wZocc8, ap-OxxQC7S1tcsRvxqu9DunXo, ap-YD3QbLT86MgEHO6pvmZOvA, ap-pXurmOrK1qTY1XcwqIHqtm, ap-kfNyO5Unf3vtZsQGhhvKXL, ap-ViyPfkrIVHuefF33mxvIVD, ap-1onFbAA3F2jlnhXdQKiSQU, ap-fPaPltzBmeC1WEATZ4j6a4 and ap-Jd8Jv9M9ENsX1Sbwy5IVJ7",
+   "resource_cost_usd": {
+    "H100": 26.46627824,
+    "L4": 0.26110138,
+    "CPU": 0.40889902,
+    "Memory": 3.67379921
+   },
+   "runs": [
+    {
+     "app_id": "ap-Oxquib97yXgc1yG3xQ5UpQ",
+     "purpose": "original fixed-context Q2 pilot capture",
+     "created_at": "2026-07-29 16:39:01+07:00",
+     "stopped_at": "2026-07-29 16:40:51+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.09875571
+    },
+    {
+     "app_id": "ap-vl15qY3btFGWZEFMILacJU",
+     "purpose": "original fixed-context Q2 pilot validator",
+     "created_at": "2026-07-29 16:41:07+07:00",
+     "stopped_at": "2026-07-29 16:41:32+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.0013966
+    },
+    {
+     "app_id": "ap-94yLmlHzYzxS6y44wZocc8",
+     "purpose": "stopped fixed-context Q2 fleet",
+     "created_at": "2026-07-29 18:18:43+07:00",
+     "stopped_at": "2026-07-29 18:20:59+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 1.09139527
+    },
+    {
+     "app_id": "ap-OxxQC7S1tcsRvxqu9DunXo",
+     "purpose": "amended variable-context Q2 pilot capture",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.06263389
+    },
+    {
+     "app_id": "ap-YD3QbLT86MgEHO6pvmZOvA",
+     "purpose": "amended variable-context Q2 pilot validator",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.00063688
+    },
+    {
+     "app_id": "ap-pXurmOrK1qTY1XcwqIHqtm",
+     "purpose": "verified no-op non-detached amended fleet attempt",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.00014111
+    },
+    {
+     "app_id": "ap-kfNyO5Unf3vtZsQGhhvKXL",
+     "purpose": "effective eight-slice amended Q2 fleet",
+     "created_at": "2026-07-29 23:54:41+07:00",
+     "stopped_at": "2026-07-30 01:00:38+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 28.93089884
+    },
+    {
+     "app_id": "ap-ViyPfkrIVHuefF33mxvIVD",
+     "purpose": "amended Q2 capture freeze and validation",
+     "created_at": "2026-07-30 01:02:14+07:00",
+     "stopped_at": "2026-07-30 01:12:42+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.0924123
+    },
+    {
+     "app_id": "ap-1onFbAA3F2jlnhXdQKiSQU",
+     "purpose": "fact-type attempt stopped by pilot fingerprint gate",
+     "created_at": "2026-07-30 02:10:19+07:00",
+     "stopped_at": "2026-07-30 02:12:43+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.00887829
+    },
+    {
+     "app_id": "ap-fPaPltzBmeC1WEATZ4j6a4",
+     "purpose": "reviewed fact-type completion retry",
+     "created_at": "2026-07-30 02:22:40+07:00",
+     "stopped_at": "2026-07-30 02:24:10+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.01929723
+    },
+    {
+     "app_id": "ap-Jd8Jv9M9ENsX1Sbwy5IVJ7",
+     "purpose": "amended Q2 registered probe and score run",
+     "created_at": "2026-07-30 02:24:56+07:00",
+     "stopped_at": "2026-07-30 02:43:15+07:00",
+     "state": "stopped",
+     "tasks": 0,
+     "billing_cost_usd": 0.50363173
+    }
+   ]
+  }
+ }
+}

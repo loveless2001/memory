@@ -1,0 +1,579 @@
+{
+ "schema": "mergecert-q2-verdict-amended-v2",
+ "pass": true,
+ "q1_trigger": {
+  "protocol": "MERGECERT-Q1",
+  "budget_mode": "archived-m1-per-document-matched-physical-v1",
+  "run_q2_q3": true,
+  "favorable_intervals": [
+   "0.40:lost_prior"
+  ],
+  "q1_verdict_sha256": "4266eb66c5b0979da504b124dfa0ceb89d50e29348ea78d9ca7ac8c2614ee036",
+  "addendum_sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
+  "p0_verdict_sha256": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+ },
+ "q1_trigger_sha256": "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1",
+ "protocol_version": "mergecert-q2-amended-v2",
+ "namespace_version": "mergecert-q2-amended-v2",
+ "context_mechanics_version": "mergecert-q2-context-mechanics-v2",
+ "q2_amendment": {
+  "schema": "mergecert-q2-amendment-v1",
+  "protocol": "MERGECERT-Q2",
+  "protocol_version": "mergecert-q2-amended-v2",
+  "settled_date": "2026-07-29",
+  "status": "settled",
+  "authority": "user-selected-option-2",
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "population": {
+   "manifest_items": 30847,
+   "selection": "unchanged-standard-30847-manifest",
+   "item_ids_labels_and_order_rule_unchanged": true
+  },
+  "ratios": [
+   0.25,
+   0.4
+  ],
+  "sink_token_count": 4,
+  "reference_context_tokens": 4096,
+  "minimum_context_tokens": 9,
+  "budget_mode": "per-item-actual-context-matched-physical-v2",
+  "context_mechanics_version": "mergecert-q2-context-mechanics-v2",
+  "namespace_version": "mergecert-q2-amended-v2",
+  "remote_root": "/artifacts/mergecert/q2-amended-v2",
+  "context_rule": "canonical registered source window capped at 4096 pinned-tokenizer tokens",
+  "requested_eviction_rule": "floor(source_context_token_count * ratio) from logical position 4",
+  "physical_budget_rule": "measure removal on an independent full-cache clone and give merge the measured retained count",
+  "merge_plan_rule": "build_merge_plan(source_context_token_count, exact registered ratio, sink_token_count=4)",
+  "legacy_fixed_context_evidence_authorizes": false,
+  "forbidden": [
+   "padding",
+   "runtime-skip",
+   "replacement",
+   "population-filter",
+   "label-change",
+   "silent-budget-change",
+   "legacy-state-resume"
+  ],
+  "rerun_gate": {
+   "new_pilot_items": 16,
+   "pilot_review_required_before_fleet": true,
+   "new_fleet_slices": 8,
+   "fleet_items": 30847,
+   "fresh_authorization_required": true
+  }
+ },
+ "q2_amendment_sha256": "7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a",
+ "context_accounting_audit": {
+  "0.25": {
+   "schema": "mergecert-q2-accounting-audit-v1",
+   "rows": 30847,
+   "ratio": 0.25,
+   "short_context_rows": 7,
+   "minimum_context_tokens": 4067,
+   "maximum_context_tokens": 4096,
+   "accounting_sha256": "bc5132debdfc95fd78472aa9866a4fa0b963e5a0758e528a03705679bc94d7c3"
+  },
+  "0.40": {
+   "schema": "mergecert-q2-accounting-audit-v1",
+   "rows": 30847,
+   "ratio": 0.4,
+   "short_context_rows": 7,
+   "minimum_context_tokens": 4067,
+   "maximum_context_tokens": 4096,
+   "accounting_sha256": "ac5ad94166fc75c4bcfe3ce6b7263af57d2cfd4116a5f02054b32ec8d4bcda67"
+  }
+ },
+ "context_accounting_audit_sha256": "cdf35e69d0202cd57b6a701d5596a97055a02a23146e291acfb36eaf61c44c35",
+ "accounting_audit_sha256": "cdf35e69d0202cd57b6a701d5596a97055a02a23146e291acfb36eaf61c44c35",
+ "source_hashes": {
+  "q1_trigger": "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1",
+  "q2_amendment": "7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a",
+  "capture_summary": "d3cff0cbe7b8b54792d777b1f1639abb4128ad92e09bb83980c0297b00184d2c",
+  "manifest": "a017a7b0bb9c7b1747621136f71c65c34c573896a80d1f93a5f2aa07e0db049f",
+  "surface": "82ca74ffbf82c762aa55ec38e43466fe279eb1ac1b8710f9f5dcbfdedf9e7461",
+  "fact_types": "f78e9c28cf256ab5db3032e4dee8e2c632841f617e6691bd0414495d5223a63d",
+  "embeddings": "0bbf58bf3733a9ea2e14f410faaa0f574b4ec628ac43cd00569d9c3920c9c929",
+  "shadow_checkpoint": "8b0f706f126e3e1029ffae6673b92473acf6d9f95e793c2891961637e7d6bf59",
+  "compactor_sink": "536a4cc6b6f052b6af9a1de2a8d422238136babf8139c47886d3ac1061fd7199",
+  "eviction_sink_files": {
+   "/artifacts/probe/followup2-f5-eviction-slice-00.npz": "1db3471f11690edeabb737a057eb69fa46224dd67c020ea6cdfcb8ae8e49d3ee",
+   "/artifacts/probe/followup2-f5-eviction-slice-01.npz": "4836516f52a4dd9d5e1464c1f9f5aabdd8717896cb3c98a016ebbcc978df73ea",
+   "/artifacts/probe/followup2-f5-eviction-slice-02.npz": "2be314d12478478a46d3240cf9a20f64eac6e5e1e36387ca555561255aab0655",
+   "/artifacts/probe/followup2-f5-eviction-slice-03.npz": "f74960afd6210184ceffabe2abaa566a5253e4c2709a92e57abc85c37051f292"
+  }
+ },
+ "score_schema": "mergecert-q2-scores-amended-v2",
+ "scores_sha256": "b646c20e04ad88e532fd17364b8b39fdaf2eb44816b3e9f973ccc5acac826bb5",
+ "items_per_ratio": 30847,
+ "e1_items_per_ratio": 2000,
+ "ratios": {
+  "0.25": {
+   "c0_refit": {
+    "auc": 0.5537476613339246,
+    "ci95": [
+     0.541561571312242,
+     0.5654808234105604
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5830334786237596,
+     "legal": 0.5878311783251875,
+     "code": 0.5620927342094824,
+     "literature": 0.5389203766696571
+    }
+   },
+   "mechanics_refit": {
+    "auc": 0.6551920526195005,
+    "ci95": [
+     0.6449239757013058,
+     0.6663710635428172
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.6949880599091162,
+     "legal": 0.6446624546479578,
+     "code": 0.6619287728005537,
+     "literature": 0.6319780608303429
+    }
+   },
+   "shadow_zero_shot": {
+    "auc": 0.6779439705525799,
+    "ci95": [
+     0.6674581985645472,
+     0.6896603694088715
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.6782759899842344,
+     "legal": 0.6785251251158794,
+     "code": 0.6925728858052046,
+     "literature": 0.6688884631678629
+    }
+   },
+   "shadow_refit": {
+    "auc": 0.5314675867040594,
+    "ci95": [
+     0.5178326605570114,
+     0.5440036589152613
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5261030093665956,
+     "legal": 0.4969570060949991,
+     "code": 0.5641153469566905,
+     "literature": 0.44211920292563794
+    }
+   },
+   "sink_compactor_zero_shot": {
+    "auc": 0.6472379559507464,
+    "ci95": [
+     0.634720783745503,
+     0.6593070483378838
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.7043053881109154,
+     "legal": 0.6601139700623017,
+     "code": 0.6294145079469584,
+     "literature": 0.6090175500897129
+    }
+   },
+   "sink_eviction_zero_shot": {
+    "auc": 0.5514313868111551,
+    "ci95": [
+     0.5391191336581822,
+     0.5635365207821976
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.6023022349995363,
+     "legal": 0.5676752157354831,
+     "code": 0.51662667865252,
+     "literature": 0.5348809590560207
+    }
+   },
+   "sink_refit": {
+    "auc": 0.6258360917599864,
+    "ci95": [
+     0.61296921924596,
+     0.6381724964134585
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.6846343781878883,
+     "legal": 0.6352180784138359,
+     "code": 0.6000254277345893,
+     "literature": 0.5964320424641149
+    }
+   },
+   "residual_linear": {
+    "auc": 0.8373375445529664,
+    "ci95": [
+     0.8287793508035296,
+     0.845422311842546
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.8579789947139015,
+     "legal": 0.8301296384114479,
+     "code": 0.8273382964894955,
+     "literature": 0.8344251520135566
+    }
+   },
+   "residual_mlp": {
+    "auc": 0.855766920403022,
+    "ci95": [
+     0.8482508429538982,
+     0.8629411721421938
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.34615384615384615,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.8851826949828434,
+     "legal": 0.8543665807967541,
+     "code": 0.8410555569623458,
+     "literature": 0.8456486119417863
+    }
+   }
+  },
+  "0.40": {
+   "c0_refit": {
+    "auc": 0.5424263049637816,
+    "ci95": [
+     0.5299195785095734,
+     0.5547298590583226
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5458294537873981,
+     "legal": 0.5671482984475991,
+     "code": 0.5584603546638824,
+     "literature": 0.543011016735346
+    }
+   },
+   "mechanics_refit": {
+    "auc": 0.5889502524234758,
+    "ci95": [
+     0.5773487124895962,
+     0.6008736511647291
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5911938770465464,
+     "legal": 0.5598655476706953,
+     "code": 0.5950516863114689,
+     "literature": 0.6031391808931125
+    }
+   },
+   "shadow_zero_shot": {
+    "auc": 0.6179942607259327,
+    "ci95": [
+     0.6075903242564293,
+     0.629206814575889
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.6052462447368638,
+     "legal": 0.6036740791944515,
+     "code": 0.6403030032370035,
+     "literature": 0.6282687747035574
+    }
+   },
+   "shadow_refit": {
+    "auc": 0.5932402818926887,
+    "ci95": [
+     0.5822189404996002,
+     0.6044230983290456
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5827795539002826,
+     "legal": 0.6017239075371472,
+     "code": 0.6040466136713861,
+     "literature": 0.5957628458498023
+    }
+   },
+   "sink_compactor_zero_shot": {
+    "auc": 0.5844514330793856,
+    "ci95": [
+     0.573073322174132,
+     0.5966062952452008
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.6123931923238549,
+     "legal": 0.6165215006174036,
+     "code": 0.5840876588344118,
+     "literature": 0.5087074257842066
+    }
+   },
+   "sink_eviction_zero_shot": {
+    "auc": 0.5104066879407044,
+    "ci95": [
+     0.49848959541362153,
+     0.522701688642835
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5338849155014296,
+     "legal": 0.5377831943630896,
+     "code": 0.5031964511025626,
+     "literature": 0.47103792784458837
+    }
+   },
+   "sink_refit": {
+    "auc": 0.553448560618323,
+    "ci95": [
+     0.5413108473056901,
+     0.5656900625400201
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.5817938745746233,
+     "legal": 0.5795064186870854,
+     "code": 0.5453888870067112,
+     "literature": 0.4983950887225633
+    }
+   },
+   "residual_linear": {
+    "auc": 0.7681661428955833,
+    "ci95": [
+     0.7581321064726728,
+     0.7775792662813439
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.7882293203035522,
+     "legal": 0.751837893613665,
+     "code": 0.7492836602676046,
+     "literature": 0.7819984862501052
+    }
+   },
+   "residual_mlp": {
+    "auc": 0.7934039720249808,
+    "ci95": [
+     0.7844356292245472,
+     0.8026693039126759
+    ],
+    "n_items": 9230,
+    "n_documents": 4772,
+    "positive_rate": 0.5247020585048754,
+    "n_resamples": 2000,
+    "per_domain_auc": {
+     "financial": 0.8151186935062581,
+     "legal": 0.7882149750275546,
+     "code": 0.7684633935253771,
+     "literature": 0.8032771003279792
+    }
+   }
+  }
+ },
+ "pooled": {
+  "c0_refit": {
+   "auc": 0.6179217549397987,
+   "ci95": [
+    0.6085453123801132,
+    0.6275742968680392
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.6411034781017648,
+    "legal": 0.6360252595817053,
+    "code": 0.6242898334959016,
+    "literature": 0.5998881819285805
+   }
+  },
+  "mechanics_refit": {
+   "auc": 0.655543802230138,
+   "ci95": [
+    0.6468219725480074,
+    0.6644563069329227
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.6847416644818465,
+    "legal": 0.6339859628107494,
+    "code": 0.6607261314094918,
+    "literature": 0.6494340491547406
+   }
+  },
+  "shadow_zero_shot": {
+   "auc": 0.6480962692610217,
+   "ci95": [
+    0.638916503899967,
+    0.6572113264508368
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.6331672341918687,
+    "legal": 0.6422857294708407,
+    "code": 0.6672145165885031,
+    "literature": 0.6473192138704176
+   }
+  },
+  "shadow_refit": {
+   "auc": 0.6264711532139436,
+   "ci95": [
+    0.616889368295507,
+    0.6359025266811886
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.6247174585220794,
+    "legal": 0.6217184978347324,
+    "code": 0.6278740101205018,
+    "literature": 0.61204298678493
+   }
+  },
+  "sink_compactor_zero_shot": {
+   "auc": 0.6182686726152865,
+   "ci95": [
+    0.6081348583552945,
+    0.628061199040964
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.667101782522864,
+    "legal": 0.6450054732159922,
+    "code": 0.6101801185590515,
+    "literature": 0.5549204419941783
+   }
+  },
+  "sink_eviction_zero_shot": {
+   "auc": 0.531762060790787,
+   "ci95": [
+    0.5214924623767965,
+    0.5418476732296256
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.5719493639202883,
+    "legal": 0.5545011707878467,
+    "code": 0.5091764232773555,
+    "literature": 0.5026122425805529
+   }
+  },
+  "sink_refit": {
+   "auc": 0.6893748469954819,
+   "ci95": [
+    0.6804052128412972,
+    0.6979958287392568
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.725522950909268,
+    "legal": 0.6932839909198785,
+    "code": 0.6772254232562166,
+    "literature": 0.6725255060332868
+   }
+  },
+  "residual_linear": {
+   "auc": 0.8153124987913628,
+   "ci95": [
+    0.8086639658527496,
+    0.8222797017249649
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.8343283176197895,
+    "legal": 0.8058919604538426,
+    "code": 0.8016793349096916,
+    "literature": 0.8198313143521238
+   }
+  },
+  "residual_mlp": {
+   "auc": 0.835211668963137,
+   "ci95": [
+    0.8284242596518666,
+    0.8415788643632904
+   ],
+   "n_items": 18460,
+   "n_documents": 4772,
+   "positive_rate": 0.43542795232936077,
+   "n_resamples": 2000,
+   "per_domain_auc": {
+    "financial": 0.8606417378020366,
+    "legal": 0.8327858413881425,
+    "code": 0.8150298108873407,
+    "literature": 0.836059742147282
+   }
+  }
+ },
+ "registered_reading": "Merged-loss routability falls between the two registered anchor readings (mechanics 0.622, residual 0.825); retain the measured placement.",
+ "markdown_table": "| arm | merge 0.25 test AUC [95% CI] | merge 0.40 test AUC [95% CI] | pooled test AUC [95% CI] |\n|---|---:|---:|---:|\n| surface / c0 refit | 0.5537 [0.5416, 0.5655] | 0.5424 [0.5299, 0.5547] | 0.6179 [0.6085, 0.6276] |\n| merge mechanics refit | 0.6552 [0.6449, 0.6664] | 0.5890 [0.5773, 0.6009] | 0.6555 [0.6468, 0.6645] |\n| shadow gate zero-shot | 0.6779 [0.6675, 0.6897] | 0.6180 [0.6076, 0.6292] | 0.6481 [0.6389, 0.6572] |\n| shadow gate refit | 0.5315 [0.5178, 0.5440] | 0.5932 [0.5822, 0.6044] | 0.6265 [0.6169, 0.6359] |\n| sink monitor compactor to merge | 0.6472 [0.6347, 0.6593] | 0.5845 [0.5731, 0.5966] | 0.6183 [0.6081, 0.6281] |\n| sink monitor eviction to merge | 0.5514 [0.5391, 0.5635] | 0.5104 [0.4985, 0.5227] | 0.5318 [0.5215, 0.5418] |\n| sink monitor merge refit | 0.6258 [0.6130, 0.6382] | 0.5534 [0.5413, 0.5657] | 0.6894 [0.6804, 0.6980] |\n| residual best-layer linear | 0.8373 [0.8288, 0.8454] | 0.7682 [0.7581, 0.7776] | 0.8153 [0.8087, 0.8223] |\n| residual best-layer MLP | 0.8558 [0.8483, 0.8629] | 0.7934 [0.7844, 0.8027] | 0.8352 [0.8284, 0.8416] |\n",
+ "f5_markdown_table": "| F5 fifth-regime row | merge 0.25 AUC [95% CI] | merge 0.40 AUC [95% CI] |\n|---|---:|---:|\n| compactor to merge zero-shot | 0.6472 [0.6347, 0.6593] | 0.5845 [0.5731, 0.5966] |\n| eviction to merge zero-shot | 0.5514 [0.5391, 0.5635] | 0.5104 [0.4985, 0.5227] |\n| merge refit | 0.6258 [0.6130, 0.6382] | 0.5534 [0.5413, 0.5657] |\n"
+}

@@ -1080,14 +1080,14 @@ Option 2 is selected and settled by the dated 2026-07-29 amendment
 `7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a`.
 The amended protocol is `mergecert-q2-amended-v2`: it retains the original
 30,847-item standard manifest and uses per-item actual-context matched physical
-budgets. This is the pending amended variable-context Q2/Q3 protocol, not
-evidence under the failed fixed-context protocol.
+budgets. The amended Q2/Q3 campaign completed on 2026-07-30; its evidence is
+separate from the failed fixed-context protocol.
 
 `plans/260728-mergecert-q1/q2-fleet-attempt.json` remains immutable failed
 fixed-context evidence. It does not authorize amendment-state reuse, a result
 claim, a fleet retry, probes, or Q3.
 
-- [ ] **Step A: Run one new amended-v2 pilot only after fresh authorization**
+- [x] **Step A: Run one new amended-v2 pilot only after fresh authorization**
 
 The pilot path is
 `/artifacts/mergecert/q2-amended-v2/pilot-amended-v2/`. Run exactly 16
@@ -1097,7 +1097,14 @@ define the pilot. Validate and review the new canonical pilot verdict at
 `/artifacts/mergecert/q2-amended-v2/pilot-amended-v2/pilot-verdict.json`
 before authorizing any fleet work.
 
-- [ ] **Step B: Run one new amended-v2 fleet only after pilot-verdict review and fresh authorization**
+Completed after direct authorization. Capture app
+`ap-OxxQC7S1tcsRvxqu9DunXo` and validator app
+`ap-YD3QbLT86MgEHO6pvmZOvA` both stopped with zero tasks. The canonical
+16-item pilot verdict passed at SHA-256
+`4abbc519cf5c62a8c0fb9b01929aa073100d906d8fa2def45d75b30c26fdc2cf`;
+both ratios contained all 16 registered rows with exact amended accounting.
+
+- [x] **Step B: Run one new amended-v2 fleet only after pilot-verdict review and fresh authorization**
 
 Run one eight-slice fleet, retaining exactly 30,847 items per registered ratio,
 under these amended-v2 paths:
@@ -1111,9 +1118,30 @@ under these amended-v2 paths:
 - `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-06/`
 - `/artifacts/mergecert/q2-amended-v2/full-amended-v2-slice-07/`
 
-No remote action occurred while implementing this amendment/report provenance
-binding. The pilot, fleet, capture summary, probes, and Q3 remain pending their
-separate authorization gates.
+Completed after independent pilot review and separate direct authorization.
+The non-detached app `ap-pXurmOrK1qTY1XcwqIHqtm` was verified as a no-op.
+Effective fleet app `ap-kfNyO5Unf3vtZsQGhhvKXL` completed all eight slices:
+30,847 unique registered items per ratio, 624 ratio-chunk archives, and exactly
+seven short-context rows per ratio (minimum 4,067; maximum 4,096 tokens).
+Freeze app `ap-ViyPfkrIVHuefF33mxvIVD` produced canonical capture-summary
+SHA-256
+`d3cff0cbe7b8b54792d777b1f1639abb4128ad92e09bb83980c0297b00184d2c`.
+
+- [x] **Step C: Complete amended probes and Q3 after separate authorization**
+
+The first fact-type app `ap-1onFbAA3F2jlnhXdQKiSQU` stopped safely at the
+pilot-fingerprint gate before output. The independently reviewed digest fix at
+`4baf1a1` was followed by successful fact-type app
+`ap-fPaPltzBmeC1WEATZ4j6a4` and registered probe app
+`ap-Jd8Jv9M9ENsX1Sbwy5IVJ7`; all stopped with zero tasks. Independent local
+analysis produced:
+
+- Q2 verdict SHA-256
+  `cb3eb9eac70a0ebbb288eb6da90b66966a7a7a13c743ef44edcb9deb4687f654`;
+- Q3 verdict SHA-256
+  `d291da52ecdc905386ba207d4a66d5626e926815367028511ddea7c9f16927bf`;
+- accounting-audit SHA-256
+  `cdf35e69d0202cd57b6a701d5596a97055a02a23146e291acfb36eaf61c44c35`.
 
 ---
 
@@ -1129,13 +1157,17 @@ separate authorization gates.
 - Consumes: all immutable experiment evidence and Modal billing report.
 - Produces: validated private report and final clean local commit.
 
-- [ ] **Step 1: Retrieve exact billing records**
+- [x] **Step 1: Retrieve exact billing records**
 
 Use Modal's billing report for the exact campaign interval. Record per-resource
 charges, total cost, app IDs, created/stopped times, purpose, state, and task
 count. Compute no cost from wall time when an exact billing row is available.
 
-- [ ] **Step 2: Stop and audit every campaign app**
+Retrieved the exact 2026-07-28 through 2026-07-29 UTC Modal billing rows on
+2026-07-30. Q1 cost `$0.32849690`; conditional Q2/Q3 cost `$30.81007785`;
+campaign total `$31.13857475`.
+
+- [x] **Step 2: Stop and audit every campaign app**
 
 ```bash
 UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal app list --json
@@ -1143,7 +1175,12 @@ UV_CACHE_DIR=/tmp/mergecert-uv-cache uv run modal app list --json
 
 Expected: no live campaign app and zero tasks for every recorded run.
 
-- [ ] **Step 3: Render and validate the report**
+The final live inventory contained only the four most recent campaign apps;
+all were stopped with zero tasks. Earlier run records retain their terminal
+stopped/zero-task inventories. `compute-actuals.json` lists every campaign app,
+including zero-cost and verified no-op attempts.
+
+- [x] **Step 3: Render and validate the report**
 
 ```bash
 ./.venv/bin/python plans/260728-mergecert-q1/render-report.py
@@ -1153,7 +1190,11 @@ Expected: no live campaign app and zero tasks for every recorded run.
 Expected: validation pass, branch equal to `conditional-complete` or
 `conditional-skip`, total cost no greater than `$45`, and complete file hashes.
 
-- [ ] **Step 4: Run the complete verification suite**
+Validation passed with conditional status `completed`, privacy status
+`local-private`, and total cost `$31.13857475`. Report SHA-256:
+`5ffcedb9324945507988263c514fc48d5a16615ce38dcedb85d401d5590bbaf9`.
+
+- [x] **Step 4: Run the complete verification suite**
 
 ```bash
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
@@ -1165,7 +1206,10 @@ git status --short
 Expected: zero failures and only the intentionally preserved parent-report
 modification plus final campaign files staged for commit.
 
-- [ ] **Step 5: Audit every `MERGECERT-Q1.md` requirement**
+Fresh result: `504 passed, 2 skipped` in 33.83 seconds. `git diff --check`
+passed. No files were staged because commit authorization remains separate.
+
+- [x] **Step 5: Audit every `MERGECERT-Q1.md` requirement**
 
 Check and record evidence for:
 
@@ -1182,7 +1226,11 @@ Check and record evidence for:
 - total spend at or below `$45`;
 - stopped external jobs.
 
-- [ ] **Step 6: Commit the final private bundle**
+The deterministic renderer and validator bind all listed requirements to the
+source addendum, finalized registration, Q1 trigger, Q1/Q2/Q3 verdicts,
+amendment, exact billing record, and private/no-transmission disposition.
+
+- [x] **Step 6: Commit the final private bundle**
 
 ```bash
 git add MERGECERT-Q1-REPORT.md \
@@ -1193,3 +1241,6 @@ git commit -m "docs: complete MergeCert Q1 placement"
 ```
 
 Do not stage or rewrite `MERGECERT-REPORT.md`. Do not push or publish.
+
+Completed locally on branch `mergecert-q1-completion`. The branch remains
+unpublished and the private worktree is preserved.

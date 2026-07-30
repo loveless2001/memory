@@ -321,6 +321,55 @@ def _favorable_lines(q1: dict) -> list[str]:
     ]
 
 
+def _readme_moderate_story(q1: dict) -> str:
+    reading = q1["registered_readings"]
+    pointwise_ratios = [
+        interval.split(":", 1)[0]
+        for interval in reading["pointwise_favorable"]
+    ]
+    remaining_ratios = [
+        ratio for ratio in ("0.25", "0.40") if ratio not in pointwise_ratios
+    ]
+    if pointwise_ratios:
+        pointwise = (
+            "At moderate compression, merge earns a scoped pointwise row at "
+            f"{' and '.join(pointwise_ratios)}"
+        )
+        if remaining_ratios:
+            pointwise += (
+                f"; the {' and '.join(remaining_ratios)} pointwise "
+                f"{'interval does' if len(remaining_ratios) == 1 else 'intervals do'} "
+                "not separate."
+            )
+        else:
+            pointwise += " across both registered ratios."
+    else:
+        pointwise = (
+            "At moderate compression, merge does not earn the pointwise axis "
+            "at either registered ratio."
+        )
+
+    aggregation_labels = {
+        "mean_kl": "mean-KL",
+        "acc_delta": "accuracy-delta",
+    }
+    aggregation = [
+        (
+            f"{interval.split(':', 1)[0]} "
+            f"{aggregation_labels[interval.split(':', 1)[1]]}"
+        )
+        for interval in reading["aggregation_favorable"]
+    ]
+    if aggregation:
+        aggregation_story = (
+            "It earns a scoped aggregation row at "
+            f"{' and '.join(aggregation)}."
+        )
+    else:
+        aggregation_story = "It also does not earn the aggregation axis."
+    return f"{pointwise} {aggregation_story}"
+
+
 def render_report(evidence: dict) -> str:
     """Return the canonical report; all measurements come from evidence."""
 
@@ -380,6 +429,8 @@ def render_report(evidence: dict) -> str:
             "The registered 0.90 result remains negative for this exact port "
             "and house fingerprint."
         ),
+        "",
+        _readme_moderate_story(q1),
         "",
     ]
     if reading["r1"] == "R2":

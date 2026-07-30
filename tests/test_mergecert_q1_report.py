@@ -692,6 +692,10 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
     assert "Shorter archived contexts use their measured matched budgets." in report
     assert Q1_APP_IDS[0] in report
     assert Q1_APP_IDS[1] in report
+    assert (
+        "At moderate compression, merge does not earn the pointwise axis at "
+        "either registered ratio. It also does not earn the aggregation axis."
+    ) in report
     assert report.count("merge-plus-anchor") == 1
     assert "theoretically motivated future direction" in report
     assert "was not tested" in report
@@ -722,6 +726,11 @@ def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
     assert "| A | 0.4000 | 0.8000 |" in report
     assert "Measured favorable axis: 0.25 lost-prior." in report
     assert "Measured favorable axis: 0.40 accuracy-delta." in report
+    assert (
+        "At moderate compression, merge earns a scoped pointwise row at "
+        "0.25; the 0.40 pointwise interval does not separate."
+    ) in report
+    assert "It earns a scoped aggregation row at 0.40 accuracy-delta." in report
     assert "all moderate ratios" not in report
     assert "merge-plus-anchor" not in report
     assert Q2_APP_ID in report
@@ -813,6 +822,19 @@ def test_report_validation_rejects_duplicate_archive_replay_rows(tmp_path):
 
     with pytest.raises(ValueError, match="replay"):
         validator._validate_q1(evidence)
+
+
+def test_report_validation_accepts_registered_auxiliary_lost_fact_interval(
+    tmp_path,
+):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_lost_fact_interval")
+    validator = _load(VALIDATOR, "mergecert_q1_validator_lost_fact_interval")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    evidence = renderer.load_evidence(plan, root=root)
+    for row in evidence["q1"]["paired_merge_minus_eviction"].values():
+        row["lost_fact"] = dict(row["lost_prior"])
+
+    validator._validate_q1(evidence)
 
 
 def test_validator_requires_f5_evidence_for_completed_q2(tmp_path):

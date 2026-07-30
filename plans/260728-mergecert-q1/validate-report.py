@@ -739,8 +739,12 @@ def _validate_q1(evidence: dict) -> None:
     intervals = q1.get("paired_merge_minus_eviction", {})
     if set(intervals) != {"0.25", "0.40"}:
         raise ValueError("Q1 paired intervals are incomplete")
+    required_metrics = {"lost_prior", "mean_kl", "acc_delta"}
+    allowed_metrics = required_metrics | {"lost_fact"}
     for ratio, row in intervals.items():
-        if set(row) != {"lost_prior", "mean_kl", "acc_delta"}:
+        if not required_metrics.issubset(row) or not set(row).issubset(
+            allowed_metrics
+        ):
             raise ValueError(f"Q1 paired metrics are incomplete for {ratio}")
         for metric, interval in row.items():
             _validate_interval(interval, f"{ratio}:{metric}")

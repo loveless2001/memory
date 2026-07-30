@@ -1,0 +1,344 @@
+{
+ "schema": "mergecert-q3-fragility-amended-v2",
+ "q2_verdict_schema": "mergecert-q2-verdict-amended-v2",
+ "pass": true,
+ "q1_trigger": {
+  "protocol": "MERGECERT-Q1",
+  "budget_mode": "archived-m1-per-document-matched-physical-v1",
+  "run_q2_q3": true,
+  "favorable_intervals": [
+   "0.40:lost_prior"
+  ],
+  "q1_verdict_sha256": "4266eb66c5b0979da504b124dfa0ceb89d50e29348ea78d9ca7ac8c2614ee036",
+  "addendum_sha256": "35869e386bb64242ad0067ab51d680779eed65d4a88bbb4ba7180aec634fd509",
+  "p0_verdict_sha256": "4dff3d8806a12fd751d352bbbac94b1bef3b9a5b8db20bbea9da221df06ccb2a"
+ },
+ "q1_trigger_sha256": "009d1ba2879b76174c13dffbea27a458b10d9a859cdb69046f3afac31a2af5a1",
+ "protocol_version": "mergecert-q2-amended-v2",
+ "namespace_version": "mergecert-q2-amended-v2",
+ "context_mechanics_version": "mergecert-q2-context-mechanics-v2",
+ "q2_amendment": {
+  "schema": "mergecert-q2-amendment-v1",
+  "protocol": "MERGECERT-Q2",
+  "protocol_version": "mergecert-q2-amended-v2",
+  "settled_date": "2026-07-29",
+  "status": "settled",
+  "authority": "user-selected-option-2",
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "population": {
+   "manifest_items": 30847,
+   "selection": "unchanged-standard-30847-manifest",
+   "item_ids_labels_and_order_rule_unchanged": true
+  },
+  "ratios": [
+   0.25,
+   0.4
+  ],
+  "sink_token_count": 4,
+  "reference_context_tokens": 4096,
+  "minimum_context_tokens": 9,
+  "budget_mode": "per-item-actual-context-matched-physical-v2",
+  "context_mechanics_version": "mergecert-q2-context-mechanics-v2",
+  "namespace_version": "mergecert-q2-amended-v2",
+  "remote_root": "/artifacts/mergecert/q2-amended-v2",
+  "context_rule": "canonical registered source window capped at 4096 pinned-tokenizer tokens",
+  "requested_eviction_rule": "floor(source_context_token_count * ratio) from logical position 4",
+  "physical_budget_rule": "measure removal on an independent full-cache clone and give merge the measured retained count",
+  "merge_plan_rule": "build_merge_plan(source_context_token_count, exact registered ratio, sink_token_count=4)",
+  "legacy_fixed_context_evidence_authorizes": false,
+  "forbidden": [
+   "padding",
+   "runtime-skip",
+   "replacement",
+   "population-filter",
+   "label-change",
+   "silent-budget-change",
+   "legacy-state-resume"
+  ],
+  "rerun_gate": {
+   "new_pilot_items": 16,
+   "pilot_review_required_before_fleet": true,
+   "new_fleet_slices": 8,
+   "fleet_items": 30847,
+   "fresh_authorization_required": true
+  }
+ },
+ "q2_amendment_sha256": "7b510a5b0af827516894fe806281cfa877e2234135dccc297c8d8bd823a87b0a",
+ "context_accounting_audit_sha256": "cdf35e69d0202cd57b6a701d5596a97055a02a23146e291acfb36eaf61c44c35",
+ "protocol": {
+  "ratio": 0.4,
+  "items": 2000,
+  "headline_references": [
+   "A",
+   "FR",
+   "E1F"
+  ],
+  "context_reference": "B",
+  "nesting_direction": "|failure_merge intersect failure_ref| / |failure_merge|"
+ },
+ "merge": {
+  "failures": 1087,
+  "failure_rate": 0.5435,
+  "domain_counts": {
+   "financial": 500,
+   "legal": 498,
+   "code": 504,
+   "literature": 498
+  }
+ },
+ "comparisons": {
+  "A": {
+   "n": 2000,
+   "kappa": 0.31605950282325446,
+   "raw_agreement": 0.658,
+   "expected_agreement": 0.49995649999999997,
+   "merge_failure_rate": 0.5435,
+   "reference_failure_rate": 0.4995,
+   "merge_failure_denominator": 1087,
+   "intersection": 701,
+   "novel_merge_failures": 386,
+   "nesting_fraction": 0.6448942042318307
+  },
+  "B": {
+   "n": 2000,
+   "kappa": 0.25562080239147844,
+   "raw_agreement": 0.6225,
+   "expected_agreement": 0.492866,
+   "merge_failure_rate": 0.5435,
+   "reference_failure_rate": 0.418,
+   "merge_failure_denominator": 1087,
+   "intersection": 584,
+   "novel_merge_failures": 503,
+   "nesting_fraction": 0.5372585096596136
+  },
+  "FR": {
+   "n": 2000,
+   "kappa": 0.22319438760369528,
+   "raw_agreement": 0.5995,
+   "expected_agreement": 0.48442700000000005,
+   "merge_failure_rate": 0.5435,
+   "reference_failure_rate": 0.321,
+   "merge_failure_denominator": 1087,
+   "intersection": 464,
+   "novel_merge_failures": 623,
+   "nesting_fraction": 0.42686292548298066
+  },
+  "E1F": {
+   "n": 2000,
+   "kappa": 0.16088970287738197,
+   "raw_agreement": 0.5565,
+   "expected_agreement": 0.47146400000000005,
+   "merge_failure_rate": 0.5435,
+   "reference_failure_rate": 0.172,
+   "merge_failure_denominator": 1087,
+   "intersection": 272,
+   "novel_merge_failures": 815,
+   "nesting_fraction": 0.250229990800368
+  }
+ },
+ "per_domain": {
+  "financial": {
+   "A": {
+    "n": 500,
+    "kappa": 0.31229708765813174,
+    "raw_agreement": 0.656,
+    "merge_failure_rate": 0.554,
+    "reference_failure_rate": 0.498,
+    "merge_failure_denominator": 277,
+    "intersection": 177,
+    "novel_merge_failures": 100,
+    "nesting_fraction": 0.6389891696750902
+   },
+   "B": {
+    "n": 500,
+    "kappa": 0.26708172432815824,
+    "raw_agreement": 0.628,
+    "merge_failure_rate": 0.554,
+    "reference_failure_rate": 0.43,
+    "merge_failure_denominator": 277,
+    "intersection": 153,
+    "novel_merge_failures": 124,
+    "nesting_fraction": 0.5523465703971119
+   },
+   "FR": {
+    "n": 500,
+    "kappa": 0.22291296625222026,
+    "raw_agreement": 0.594,
+    "merge_failure_rate": 0.554,
+    "reference_failure_rate": 0.292,
+    "merge_failure_denominator": 277,
+    "intersection": 110,
+    "novel_merge_failures": 167,
+    "nesting_fraction": 0.3971119133574007
+   },
+   "E1F": {
+    "n": 500,
+    "kappa": 0.10649672874422189,
+    "raw_agreement": 0.516,
+    "merge_failure_rate": 0.554,
+    "reference_failure_rate": 0.114,
+    "merge_failure_denominator": 277,
+    "intersection": 46,
+    "novel_merge_failures": 231,
+    "nesting_fraction": 0.16606498194945848
+   }
+  },
+  "legal": {
+   "A": {
+    "n": 498,
+    "kappa": 0.3614457831325302,
+    "raw_agreement": 0.6807228915662651,
+    "merge_failure_rate": 0.5542168674698795,
+    "reference_failure_rate": 0.5,
+    "merge_failure_denominator": 276,
+    "intersection": 183,
+    "novel_merge_failures": 93,
+    "nesting_fraction": 0.6630434782608695
+   },
+   "B": {
+    "n": 498,
+    "kappa": 0.23322021116138766,
+    "raw_agreement": 0.606425702811245,
+    "merge_failure_rate": 0.5542168674698795,
+    "reference_failure_rate": 0.37751004016064255,
+    "merge_failure_denominator": 276,
+    "intersection": 134,
+    "novel_merge_failures": 142,
+    "nesting_fraction": 0.4855072463768116
+   },
+   "FR": {
+    "n": 498,
+    "kappa": 0.19784406653656733,
+    "raw_agreement": 0.5823293172690763,
+    "merge_failure_rate": 0.5542168674698795,
+    "reference_failure_rate": 0.3092369477911647,
+    "merge_failure_denominator": 276,
+    "intersection": 111,
+    "novel_merge_failures": 165,
+    "nesting_fraction": 0.40217391304347827
+   },
+   "E1F": {
+    "n": 498,
+    "kappa": 0.14153511159499177,
+    "raw_agreement": 0.5421686746987951,
+    "merge_failure_rate": 0.5542168674698795,
+    "reference_failure_rate": 0.1927710843373494,
+    "merge_failure_denominator": 276,
+    "intersection": 72,
+    "novel_merge_failures": 204,
+    "nesting_fraction": 0.2608695652173913
+   }
+  },
+  "code": {
+   "A": {
+    "n": 504,
+    "kappa": 0.2579365079365079,
+    "raw_agreement": 0.628968253968254,
+    "merge_failure_rate": 0.5813492063492064,
+    "reference_failure_rate": 0.5,
+    "merge_failure_denominator": 293,
+    "intersection": 179,
+    "novel_merge_failures": 114,
+    "nesting_fraction": 0.6109215017064846
+   },
+   "B": {
+    "n": 504,
+    "kappa": 0.23651708840214558,
+    "raw_agreement": 0.6111111111111112,
+    "merge_failure_rate": 0.5813492063492064,
+    "reference_failure_rate": 0.44246031746031744,
+    "merge_failure_denominator": 293,
+    "intersection": 160,
+    "novel_merge_failures": 133,
+    "nesting_fraction": 0.5460750853242321
+   },
+   "FR": {
+    "n": 504,
+    "kappa": 0.22976192259862455,
+    "raw_agreement": 0.5952380952380952,
+    "merge_failure_rate": 0.5813492063492064,
+    "reference_failure_rate": 0.34325396825396826,
+    "merge_failure_denominator": 293,
+    "intersection": 131,
+    "novel_merge_failures": 162,
+    "nesting_fraction": 0.447098976109215
+   },
+   "E1F": {
+    "n": 504,
+    "kappa": 0.18187694827115639,
+    "raw_agreement": 0.5515873015873016,
+    "merge_failure_rate": 0.5813492063492064,
+    "reference_failure_rate": 0.20436507936507936,
+    "merge_failure_denominator": 293,
+    "intersection": 85,
+    "novel_merge_failures": 208,
+    "nesting_fraction": 0.2901023890784983
+   }
+  },
+  "literature": {
+   "A": {
+    "n": 498,
+    "kappa": 0.33333333333333326,
+    "raw_agreement": 0.6666666666666666,
+    "merge_failure_rate": 0.4839357429718876,
+    "reference_failure_rate": 0.5,
+    "merge_failure_denominator": 241,
+    "intersection": 162,
+    "novel_merge_failures": 79,
+    "nesting_fraction": 0.6721991701244814
+   },
+   "B": {
+    "n": 498,
+    "kappa": 0.28556144531439975,
+    "raw_agreement": 0.6445783132530121,
+    "merge_failure_rate": 0.4839357429718876,
+    "reference_failure_rate": 0.42168674698795183,
+    "merge_failure_denominator": 241,
+    "intersection": 137,
+    "novel_merge_failures": 104,
+    "nesting_fraction": 0.5684647302904564
+   },
+   "FR": {
+    "n": 498,
+    "kappa": 0.24522090578706354,
+    "raw_agreement": 0.6265060240963856,
+    "merge_failure_rate": 0.4839357429718876,
+    "reference_failure_rate": 0.3393574297188755,
+    "merge_failure_denominator": 241,
+    "intersection": 112,
+    "novel_merge_failures": 129,
+    "nesting_fraction": 0.46473029045643155
+   },
+   "E1F": {
+    "n": 498,
+    "kappa": 0.21665870571376808,
+    "raw_agreement": 0.6164658634538153,
+    "merge_failure_rate": 0.4839357429718876,
+    "reference_failure_rate": 0.17670682730923695,
+    "merge_failure_denominator": 241,
+    "intersection": 69,
+    "novel_merge_failures": 172,
+    "nesting_fraction": 0.2863070539419087
+   }
+  }
+ },
+ "headline_references": [
+  "A",
+  "FR",
+  "E1F"
+ ],
+ "context_reference": "B",
+ "headline_nesting": {
+  "A": 0.6448942042318307,
+  "FR": 0.42686292548298066,
+  "E1F": 0.250229990800368
+ },
+ "reference_hashes": {
+  "A": "11a7b473327344a2e99fbe0d0ac4f737b6a5dd0224d0388b24f8e31202d86955",
+  "B": "33884d6a0f2218f7ab6be7b1db62fe0538709c37e72ee4e1eb65f558073d3122",
+  "FR": "293368bc09e140b12283e87d2d5d456c08594b35a1baf6f9ccfff4db82a1d054",
+  "E1F": "e92842dfdd5be9d2cf3b84e5cb662e6e26f5bdbc396438c789412236c0d1f045"
+ },
+ "interpretation": "Fragility is reported marginal-aware: kappa measures agreement beyond the two observed base rates, while nesting conditions only on merge failures. The novel-merge count therefore identifies the mechanism-specific minority without treating prevalence shrinkage as disagreement.",
+ "markdown_table": "| reference regime | merge failure rate | reference failure rate | raw agreement | Cohen kappa | merge-conditioned nesting | intersection / merge failures | novel merge failures |\n|---|---:|---:|---:|---:|---:|---:|---:|\n| A | 0.5435 | 0.4995 | 0.6580 | 0.3161 | 0.6449 | 701 / 1087 | 386 |\n| B | 0.5435 | 0.4180 | 0.6225 | 0.2556 | 0.5373 | 584 / 1087 | 503 |\n| FR | 0.5435 | 0.3210 | 0.5995 | 0.2232 | 0.4269 | 464 / 1087 | 623 |\n| E1F | 0.5435 | 0.1720 | 0.5565 | 0.1609 | 0.2502 | 272 / 1087 | 815 |\n"
+}
