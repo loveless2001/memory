@@ -17,17 +17,24 @@ The parent P0 result remains settled and was not rerun by this addendum.
 
 ## Q1 — Moderate-ratio placement
 
-| arm (matched retained budget) | agg KL | agg accΔ | pointwise lost|prior |
+| matched Q1 arm | agg KL | agg accΔ | pointwise lost|prior |
 |---|---:|---:|---:|
 | eviction 0.25 | 0.0303 | -0.029 | 0.550 |
-| eviction 0.40 | 0.0335 | -0.071 | 0.650 |
-| frozen subsample (reference) | 0.2566 | +0.063 | 0.188 |
-| unfrozen compactor (reference) | 0.1385 | +0.042 | 0.083 |
 | MERGE 0.25 | 0.0360 | -0.075 | 0.400 |
+| eviction 0.40 | 0.0335 | -0.071 | 0.650 |
 | MERGE 0.40 | 0.0591 | -0.133 | 0.425 |
 | zero-compression control | 0.0000 | +0.000 | 0.000 |
 
 Per-document matched physical budgets preserve the exact archived M1 population. 4,096-token source/model inputs retain 3,072 tokens at 0.25 and 2,458 tokens at 0.40. Shorter archived contexts use their measured matched budgets.
+
+### Historical context — not directly budget/population matched
+
+These latest n=60 reference rows use different populations and approximately 50% compression. They are historical context, not Q1-matched comparators.
+
+| reference regime | population / budget note | n | agg KL | agg accΔ | pointwise lost|prior |
+|---|---|---:|---:|---:|---:|
+| frozen full-recipe d1 (n=60) | different n=60 population; ~50% compression | 60 | 0.2820 | +0.1019 | 0.210 |
+| clean unfrozen d1 (n=60) | clean held-out n=60 population; 49.9% compression | 60 | 0.1281 | +0.0536 | 0.050 |
 
 | ratio | merge - eviction metric | paired estimate and 95% CI |
 |---:|---|---:|

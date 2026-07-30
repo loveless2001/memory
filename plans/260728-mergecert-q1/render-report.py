@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from memsub.mergecert_q1_registration import (
@@ -55,6 +56,24 @@ ARM_LABELS = {
     "merge-0.40": "MERGE 0.40",
 }
 BUDGET_MODE = "archived-m1-per-document-matched-physical-v1"
+FROZEN_REFERENCE_RELATIVE = "FULLRECIPE-REPORT.md"
+CLEAN_UNFROZEN_REFERENCE_RELATIVE = (
+    "plans/260719-2328-e1full-unfrozen-full-recipe/"
+    "summary-e1full-clean-v1-n60.json"
+)
+FROZEN_REFERENCE_SHA256 = (
+    "58b95e104c0c1ab2e2bb47a222a3672bb5dbc58dee815de4ea02c3abcef5969d"
+)
+CLEAN_UNFROZEN_REFERENCE_SHA256 = (
+    "a7636b54148e7133237af68bf63fbc23811d5ce80417f8447711a89a559dc2a8"
+)
+FROZEN_N60_PATTERN = re.compile(
+    r"All arms were re-certified at n = 60 with paired CIs; the frozen"
+    r".*?full-recipe row becomes KL (?P<mean_kl>\d+\.\d+)"
+    r" / accΔ (?P<accuracy_delta>[+-]\d+\.\d+)"
+    r" / pointwise (?P<lost_prior>\d+\.\d+)",
+    re.DOTALL,
+)
 
 
 def _sha256(path: Path) -> str:
@@ -77,6 +96,61 @@ def _record(files: dict, name: str, path: Path, root: Path) -> None:
         "sha256": _sha256(path),
         "bytes": path.stat().st_size,
     }
+
+
+def _load_reference_context(
+    frozen_path: Path,
+    clean_unfrozen_path: Path,
+) -> list[dict]:
+    if _sha256(frozen_path) != FROZEN_REFERENCE_SHA256:
+        raise ValueError("frozen reference source hash differs")
+    if _sha256(clean_unfrozen_path) != CLEAN_UNFROZEN_REFERENCE_SHA256:
+        raise ValueError("clean unfrozen reference source hash differs")
+
+    frozen_match = FROZEN_N60_PATTERN.search(frozen_path.read_text())
+    if frozen_match is None:
+        raise ValueError("frozen n=60 reference statement is missing")
+
+    clean = _read_json(clean_unfrozen_path)
+    provenance = clean.get("provenance", {})
+    overlap = provenance.get("overlap_audit", {})
+    reports = clean.get("reports", {}).get("eviction-matched", [])
+    if (
+        overlap.get("certification_documents") != 60
+        or overlap.get("document_overlap") != []
+        or overlap.get("item_overlap") != []
+        or len(reports) != 60
+        or any(row.get("eviction_fraction") != 0.499 for row in reports)
+    ):
+        raise ValueError(
+            "clean unfrozen n=60 reference provenance is invalid"
+        )
+    clean_row = clean.get("summary", {}).get("compactor-d1")
+    if not isinstance(clean_row, dict):
+        raise ValueError("clean unfrozen d1 reference summary is missing")
+
+    return [
+        {
+            "label": "frozen full-recipe d1 (n=60)",
+            "budget_note": "different n=60 population; ~50% compression",
+            "n": 60,
+            "mean_kl": float(frozen_match.group("mean_kl")),
+            "accuracy_delta": float(
+                frozen_match.group("accuracy_delta")
+            ),
+            "lost_prior": float(frozen_match.group("lost_prior")),
+        },
+        {
+            "label": "clean unfrozen d1 (n=60)",
+            "budget_note": (
+                "clean held-out n=60 population; 49.9% compression"
+            ),
+            "n": 60,
+            "mean_kl": clean_row["mean_kl"],
+            "accuracy_delta": clean_row["acc_delta"],
+            "lost_prior": clean_row["lost_prior"],
+        },
+    ]
 
 
 def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
@@ -120,6 +194,10 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
         ),
         "p0": root / source["settled_p0"]["verdict_path"],
         "p0_raw": root / source["settled_p0"]["raw_path"],
+        "frozen_reference": root / FROZEN_REFERENCE_RELATIVE,
+        "clean_unfrozen_reference": (
+            root / CLEAN_UNFROZEN_REFERENCE_RELATIVE
+        ),
     }
     for name, path in referenced.items():
         _record(files, name, path, root)
@@ -128,6 +206,10 @@ def load_evidence(plan_dir: Path = HERE, *, root: Path = ROOT) -> dict:
         source_registration=_read_json(referenced["registration_source"]),
     )
     evidence["p0"] = _read_json(referenced["p0"])
+    evidence["reference_context"] = _load_reference_context(
+        referenced["frozen_reference"],
+        referenced["clean_unfrozen_reference"],
+    )
 
     conditional = evidence["conditional"]
     if conditional.get("status") == "completed":
@@ -188,30 +270,36 @@ def _settled_table(p0: dict) -> str:
 
 def _placement_table(q1: dict) -> str:
     lines = [
-        "| arm (matched retained budget) | agg KL | agg accΔ | "
+        "| matched Q1 arm | agg KL | agg accΔ | "
         "pointwise lost|prior |",
         "|---|---:|---:|---:|",
     ]
-    for arm in ("eviction-0.25", "eviction-0.40"):
-        row = q1["summaries"][arm]
-        lines.append(
-            f"| {ARM_LABELS[arm]} | {row['mean_kl']:.4f} | "
-            f"{row['accuracy_delta']:+.3f} | {row['lost_prior']:.3f} |"
-        )
-    for key, label in (
-        ("frozen_subsample", "frozen subsample (reference)"),
-        ("unfrozen_compactor", "unfrozen compactor (reference)"),
+    for arm in (
+        "eviction-0.25",
+        "merge-0.25",
+        "eviction-0.40",
+        "merge-0.40",
+        "control-0.00",
     ):
-        row = q1["references"][key]
-        lines.append(
-            f"| {label} | {row['mean_kl']:.4f} | "
-            f"{row['accuracy_delta']:+.3f} | {row['lost_prior']:.3f} |"
-        )
-    for arm in ("merge-0.25", "merge-0.40", "control-0.00"):
         row = q1["summaries"][arm]
         lines.append(
             f"| {ARM_LABELS[arm]} | {row['mean_kl']:.4f} | "
             f"{row['accuracy_delta']:+.3f} | {row['lost_prior']:.3f} |"
+        )
+    return "\n".join(lines)
+
+
+def _reference_context_table(rows: list[dict]) -> str:
+    lines = [
+        "| reference regime | population / budget note | n | agg KL | "
+        "agg accΔ | pointwise lost|prior |",
+        "|---|---|---:|---:|---:|---:|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row['label']} | {row['budget_note']} | {row['n']} | "
+            f"{row['mean_kl']:.4f} | {row['accuracy_delta']:+.4f} | "
+            f"{row['lost_prior']:.3f} |"
         )
     return "\n".join(lines)
 
@@ -404,6 +492,16 @@ def render_report(evidence: dict) -> str:
             "3,072 tokens at 0.25 and 2,458 tokens at 0.40. Shorter archived "
             "contexts use their measured matched budgets."
         ),
+        "",
+        "### Historical context — not directly budget/population matched",
+        "",
+        (
+            "These latest n=60 reference rows use different populations and "
+            "approximately 50% compression. They are historical context, "
+            "not Q1-matched comparators."
+        ),
+        "",
+        _reference_context_table(evidence["reference_context"]),
         "",
         _interval_table(q1),
         "",

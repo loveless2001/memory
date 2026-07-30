@@ -89,6 +89,41 @@ EXPECTED_SETTLED_P0 = {
 EXPECTED_PARENT_SOURCE_SHA256 = (
     "cbaaec6a20cb4e53ab36a56f377c91c6bd97b8028f1fd60e2c63bdb759576930"
 )
+EXPECTED_REFERENCE_SOURCES = {
+    "frozen_reference": {
+        "relative_path": "FULLRECIPE-REPORT.md",
+        "sha256": (
+            "58b95e104c0c1ab2e2bb47a222a3672bb5dbc58dee815de4ea02c3abcef5969d"
+        ),
+    },
+    "clean_unfrozen_reference": {
+        "relative_path": (
+            "plans/260719-2328-e1full-unfrozen-full-recipe/"
+            "summary-e1full-clean-v1-n60.json"
+        ),
+        "sha256": (
+            "a7636b54148e7133237af68bf63fbc23811d5ce80417f8447711a89a559dc2a8"
+        ),
+    },
+}
+EXPECTED_REFERENCE_CONTEXT = [
+    {
+        "label": "frozen full-recipe d1 (n=60)",
+        "budget_note": "different n=60 population; ~50% compression",
+        "n": 60,
+        "mean_kl": 0.282,
+        "accuracy_delta": 0.1019,
+        "lost_prior": 0.21,
+    },
+    {
+        "label": "clean unfrozen d1 (n=60)",
+        "budget_note": "clean held-out n=60 population; 49.9% compression",
+        "n": 60,
+        "mean_kl": 0.12813806666666666,
+        "accuracy_delta": 0.05361333333333333,
+        "lost_prior": 0.05,
+    },
+]
 EXPECTED_Q2_AMENDMENT = {
     "schema": "mergecert-q2-amendment-v1",
     "protocol": "MERGECERT-Q2",
@@ -468,6 +503,32 @@ def _validate_source(evidence: dict) -> None:
         or p0.get("stop_q1_q3") is not True
     ):
         raise ValueError("settled P0 verdict is not the registered negative")
+
+
+def _validate_reference_context(evidence: dict) -> None:
+    files = evidence["_files"]
+    for name, expected in EXPECTED_REFERENCE_SOURCES.items():
+        metadata = files.get(name, {})
+        if (
+            metadata.get("relative_path") != expected["relative_path"]
+            or metadata.get("sha256") != expected["sha256"]
+        ):
+            raise ValueError(f"{name.replace('_', ' ')} provenance drift")
+
+    context = evidence.get("reference_context")
+    if context != EXPECTED_REFERENCE_CONTEXT:
+        raise ValueError("current n=60 reference context drift")
+    numeric_fields = ("mean_kl", "accuracy_delta", "lost_prior")
+    for row in context:
+        if (
+            not _is_strict_int(row.get("n"))
+            or row["n"] != 60
+            or any(
+                not _is_number(row.get(field))
+                for field in numeric_fields
+            )
+        ):
+            raise ValueError("current n=60 reference context is malformed")
 
 
 def _expected_favorable(intervals: dict) -> tuple[list[str], list[str]]:
@@ -997,6 +1058,7 @@ def validate_report_text(report: str, evidence: dict) -> dict:
     _require_q1_registration_binding()
     _validate_file_hashes(evidence)
     _validate_source(evidence)
+    _validate_reference_context(evidence)
     _validate_q1(evidence)
     _validate_trigger(evidence)
     conditional_status = _validate_conditional(evidence)

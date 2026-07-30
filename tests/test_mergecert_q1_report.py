@@ -14,6 +14,12 @@ VALIDATOR = PLAN / "validate-report.py"
 Q1_REGISTRATION_SOURCE = json.loads(
     (PLAN / "q1-registration-source.json").read_text()
 )
+FROZEN_REFERENCE = ROOT / "FULLRECIPE-REPORT.md"
+CLEAN_UNFROZEN_REFERENCE_RELATIVE = (
+    "plans/260719-2328-e1full-unfrozen-full-recipe/"
+    "summary-e1full-clean-v1-n60.json"
+)
+CLEAN_UNFROZEN_REFERENCE = ROOT / CLEAN_UNFROZEN_REFERENCE_RELATIVE
 REQUIRED_HEADINGS = {
     "## Settled 0.90 result",
     "## Q1 — Moderate-ratio placement",
@@ -414,6 +420,13 @@ def _build_bundle(tmp_path, *, positive, aggregation_only=False):
     addendum = root / "MERGECERT-Q1.md"
     addendum.parent.mkdir(parents=True)
     addendum.write_bytes((ROOT / "MERGECERT-Q1.md").read_bytes())
+    frozen_reference = root / FROZEN_REFERENCE.name
+    frozen_reference.write_bytes(FROZEN_REFERENCE.read_bytes())
+    clean_unfrozen_reference = root / CLEAN_UNFROZEN_REFERENCE_RELATIVE
+    clean_unfrozen_reference.parent.mkdir(parents=True, exist_ok=True)
+    clean_unfrozen_reference.write_bytes(
+        CLEAN_UNFROZEN_REFERENCE.read_bytes()
+    )
     registration_source = plan / "q1-registration-source.json"
     registration_source.parent.mkdir(parents=True, exist_ok=True)
     registration_source.write_bytes(
@@ -654,8 +667,8 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
     for row in (
         "eviction 0.25",
         "eviction 0.40",
-        "frozen subsample (reference)",
-        "unfrozen compactor (reference)",
+        "frozen full-recipe d1 (n=60)",
+        "clean unfrozen d1 (n=60)",
         "MERGE 0.25",
         "MERGE 0.40",
         "zero-compression control",
@@ -708,6 +721,78 @@ def test_negative_report_is_complete_private_and_evidence_only(tmp_path):
         "transmission confirmed",
     ):
         assert forbidden not in report
+
+
+def test_q1_placement_pairs_matched_arms_and_separates_current_context(
+    tmp_path,
+):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_split_tables")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    report = renderer.render_report(
+        renderer.load_evidence(plan, root=root)
+    )
+
+    matched_start = report.index("| matched Q1 arm |")
+    matched_end = report.index("\n\n", matched_start)
+    matched_table = report[matched_start:matched_end]
+    matched_rows = [
+        line.split("|")[1].strip()
+        for line in matched_table.splitlines()[2:]
+    ]
+    assert matched_rows == [
+        "eviction 0.25",
+        "MERGE 0.25",
+        "eviction 0.40",
+        "MERGE 0.40",
+        "zero-compression control",
+    ]
+    assert "reference" not in matched_table
+
+    context_heading = (
+        "### Historical context — not directly budget/population matched"
+    )
+    assert context_heading in report
+    context_start = report.index(context_heading)
+    context_end = report.index(
+        "\n\n", report.index("| reference regime |", context_start)
+    )
+    context = report[context_start:context_end]
+    for value in (
+        "frozen full-recipe d1 (n=60)",
+        "0.2820",
+        "+0.1019",
+        "0.210",
+        "clean unfrozen d1 (n=60)",
+        "0.1281",
+        "+0.0536",
+        "0.050",
+    ):
+        assert value in context
+    assert "not Q1-matched comparators" in context
+
+
+@pytest.mark.parametrize(
+    ("relative_path", "message"),
+    (
+        ("FULLRECIPE-REPORT.md", "frozen reference source hash"),
+        (
+            CLEAN_UNFROZEN_REFERENCE_RELATIVE,
+            "clean unfrozen reference source hash",
+        ),
+    ),
+)
+def test_reference_context_sources_are_hash_bound(
+    tmp_path,
+    relative_path,
+    message,
+):
+    renderer = _load(RENDERER, "mergecert_q1_renderer_reference_hash")
+    root, plan = _build_bundle(tmp_path, positive=False)
+    source = root / relative_path
+    source.write_text(source.read_text() + "\nsemantic drift\n")
+
+    with pytest.raises(ValueError, match=message):
+        renderer.load_evidence(plan, root=root)
 
 
 def test_positive_report_renders_conditional_evidence_and_scoped_axes(tmp_path):
@@ -1274,8 +1359,10 @@ def test_manifest_records_report_and_every_loaded_evidence_file(tmp_path):
     )
     assert manifest["validation"] == result
     assert set(manifest["files"]) == {
+        "FULLRECIPE-REPORT.md",
         "MERGECERT-Q1-REPORT.md",
         "MERGECERT-Q1.md",
+        CLEAN_UNFROZEN_REFERENCE_RELATIVE,
         "plans/260727-mergecert/source-provenance.json",
         "plans/260727-mergecert/p0-direction-200.json",
         "plans/260727-mergecert/p0-verdict.json",
