@@ -10,34 +10,6 @@ brief on scope, spec v0.3.7 on semantics. The P0 port is reused
 unchanged (real accumulated attention, sink pinning, exact budget
 matching); no re-porting, no tuning.
 
-## Settled protocol amendment — 2026-07-29
-
-The first Q1 smoke exposed that the exact archived M1 population contains
-source windows shorter than 4,096 tokens. The settled choice is to preserve
-the registered 20-document population and exact archived replay. This section
-supersedes only the assumption that every document has one universal retained
-KV length.
-
-For each archived document, reconstruct the M1 context exactly as the original
-harness did: tokenize the source, take up to 4,096 tokens from the registered
-window, decode that source window, and re-encode the decoded text as the model
-input. At requested ratio `r`, the contiguous comparator evicts exactly
-`int(source_window_tokens * r)` physical KV entries. The merge arm must retain
-exactly the comparator's measured physical count:
-`model_input_tokens - evicted_tokens`. Sinks `0..3`, partitions, requested
-ratios `(0.25, 0.40)`, real attention, control, model, and all other gates stay
-unchanged.
-
-The familiar retained counts 3,072 at 0.25 and 2,458 at 0.40 remain the
-expected values for a 4,096-token source/model input. Short archived contexts
-use their per-document matched physical budgets; they are not padded,
-concatenated, dropped, or replaced. Evidence and the private report must record
-the source-window token count, model-input token count, evicted token count,
-eviction retained count, and matched merge target for every document and
-ratio. Authorization, analysis, triggers, and downstream conditional work are
-hash-bound to budget mode
-`archived-m1-per-document-matched-physical-v1`.
-
 **Registered framing:** the 90% verdict stands and is not re-litigated.
 The open question is whether attention-weighted merging beats matched
 eviction at the operating ratios anyone would actually deploy (0.25 /

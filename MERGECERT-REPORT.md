@@ -1,9 +1,5 @@
 # MergeCert — Attention-Weighted KV Merge Placement
 
-Private to Tyler and Kevin.
-
-Private delivery: waived by the user at 2026-07-27T16:00:05+07:00; the local report is sufficient and no Tyler/Kevin transmission is required.
-
 This scientific placement run evaluates the method at its best: the house Qwen3-4B-Instruct-2507 fingerprint, real accumulated attention, proper paired statistics, and exactly matched retained-vector budgets. It evaluates the method rather than reproducing the source repository's evaluation, and every pre-registered outcome is reportable.
 
 ## P0 — Port and verification

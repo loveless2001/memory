@@ -1,7 +1,5 @@
 # MergeCert Q1 — Moderate-Ratio Placement
 
-Private to Tyler and Kevin.
-
 Local/private report only. Transmission is not recorded. No public artifact is authorized.
 
 ## Settled 0.90 result
@@ -17,7 +15,7 @@ The parent P0 result remains settled and was not rerun by this addendum.
 
 ## Q1 — Moderate-ratio placement
 
-| matched Q1 arm | agg KL | agg accΔ | pointwise lost|prior |
+| matched Q1 arm | agg KL | agg accΔ | pointwise lost/prior |
 |---|---:|---:|---:|
 | eviction 0.25 | 0.0303 | -0.029 | 0.550 |
 | MERGE 0.25 | 0.0360 | -0.075 | 0.400 |
@@ -31,7 +29,7 @@ Per-document matched physical budgets preserve the exact archived M1 population.
 
 These latest n=60 reference rows use different populations and approximately 50% compression. They are historical context, not Q1-matched comparators.
 
-| reference regime | population / budget note | n | agg KL | agg accΔ | pointwise lost|prior |
+| reference regime | population / budget note | n | agg KL | agg accΔ | pointwise lost/prior |
 |---|---|---:|---:|---:|---:|
 | frozen full-recipe d1 (n=60) | different n=60 population; ~50% compression | 60 | 0.2820 | +0.1019 | 0.210 |
 | clean unfrozen d1 (n=60) | clean held-out n=60 population; 49.9% compression | 60 | 0.1281 | +0.0536 | 0.050 |
@@ -47,7 +45,7 @@ These latest n=60 reference rows use different populations and approximately 50%
 
 ## Per-domain slices
 
-| domain | arm | documents | agg probes | needle probes | agg KL | agg accΔ | lost|prior |
+| domain | arm | documents | agg probes | needle probes | agg KL | agg accΔ | lost/prior |
 |---|---|---:|---:|---:|---:|---:|---:|
 | financial | zero-compression control | 5 | 15 | 7 | 0.0000 | +0.000 | 0.000 |
 | financial | eviction 0.25 | 5 | 15 | 7 | 0.0276 | +0.000 | 0.900 |
