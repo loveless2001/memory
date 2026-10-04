@@ -1,0 +1,384 @@
+{
+ "reviewer": "Claude Code independent judge (single model session)",
+ "reviewer_model": "claude-opus-5[1m] (Opus 5, 1M context) via Claude Code",
+ "reviewed_at": "2026-09-10",
+ "pass": "1 of 2 - reference review only, saved before opening any answer file",
+ "prior_verdicts_seen": false,
+ "blinding_notes": "First pass written before opening packet/answers/*, sealed-map.json, any REPORT.md, CONTEXT-POLICY.md, manual-judgments.json, judgments.json, judgment-summary.json or author_judgments.py. No repository search for prior verdicts was performed. Label/score blinding only: the packet still exposes the full prompt text, and the small hand-authored control histories are trivially recognisable as constructed probes.",
+ "method": "For each case the full sanitized history was inspected. For every withdrawal case, all turns of the history were keyword-scanned for the withdrawn topic and every post-withdrawal hit was read in context to check whether a later USER statement re-established a value; assistant acknowledgments, assistant suggestions and later user questions were treated as non-establishing per the frozen rules. All 21 reference evidence spans were also re-derived from the histories and their text_sha256 digests recomputed; all 21 matched.",
+ "cases": [
+  {
+   "case_id": "C001",
+   "reference_verdict": "accept",
+   "reference_reason": "Withdrawal at turn 2 makes the coffee/tea topic unknown, but turn 4 is an explicit later user statement re-establishing a value ('tea'). Reference reports the post-withdrawal value only, which the frozen withdrawal rule permits.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget my preference for coffee over tea."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "My current drink preference is tea."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C002",
+   "reference_verdict": "accept",
+   "reference_reason": "User withdraws the AR-mobile-games preference at turn 104. Inspected every later user turn in H011 (turns 105-205) for any restatement of interest in AR/mobile games; only the assistant acknowledges the withdrawal at 105, and an assistant acknowledgment does not re-establish a user fact. Abstain-and-ask is therefore the correct reference.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 104,
+     "quote": "Please forget that I enjoy augmented reality mobile games."
+    },
+    {
+     "where": "history",
+     "index": 105,
+     "quote": "I’ll disregard the fact that you enjoy augmented reality mobile games going forward."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C003",
+   "reference_verdict": "accept",
+   "reference_reason": "Withdrawal at turn 64 covers exactly the asked topic (learning blockchain/cryptocurrency). Scanned all later turns for blockchain/crypto: no later user statement re-establishes an interest. Abstention is correct. Caveat noted in REVIEW.md: the question is phrased 'based on my remembered interests', so an answer that reasons from other, non-withdrawn interests without restating the withdrawn preference should not be auto-failed.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 64,
+     "quote": "Please forget my preference about learning blockchain and cryptocurrency."
+    },
+    {
+     "where": "history",
+     "index": 65,
+     "quote": "I’ll set aside your preference for blockchain and cryptocurrency for future answers."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C004",
+   "reference_verdict": "accept",
+   "reference_reason": "Withdrawal at turn 2, then turn 4 is an explicit user re-decision restating the same value. The frozen rule allows a later explicit user statement to establish the same or a different value, so the reference correctly reports paper books.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget my preference for paper books over e-readers."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "I have decided again: my current preference is paper books over e-readers."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C005",
+   "reference_verdict": "accept",
+   "reference_reason": "Writing-instrument preference stated at turn 0 and never withdrawn; the only withdrawal (turn 4) concerns coffee/tea and is an unrelated distractor that must not erase the pen fact.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "My preferred writing instrument is a fountain pen."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "Please forget my preference for coffee over tea."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C006",
+   "reference_verdict": "accept",
+   "reference_reason": "Reading-format preference withdrawn at turn 150. Scanned all turns for paper book / e-reader / reading format: the only post-withdrawal mention is the assistant's acknowledgment at 151. No later user re-establishment, so abstain-and-ask is correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 150,
+     "quote": "Please forget that I prefer paper books over e-readers."
+    },
+    {
+     "where": "history",
+     "index": 151,
+     "quote": "I’ll forget that you prefer paper books over e-readers."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C007",
+   "reference_verdict": "accept",
+   "reference_reason": "Fabric preference withdrawn at turn 132. Scanned all turns for fabric/cotton/linen/wool/synthetic: post-withdrawal hits are assistant turns only (133, 177, 197, 211, 221), none a user statement of preference. Abstention correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 132,
+     "quote": "Please forget that I prefer natural fabrics like cotton and linen."
+    },
+    {
+     "where": "history",
+     "index": 131,
+     "quote": "Since you prefer natural fabrics like cotton and linen"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C008",
+   "reference_verdict": "accept",
+   "reference_reason": "Nordic vacation preference withdrawn at turn 164. Later user turns 166 and 168 mention the Nordic region, but they are questions about Nordic Noir television, not statements of vacation preference; under the frozen rule a later question does not re-establish a value. Abstention correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 164,
+     "quote": "Please forget that I enjoy vacations in Nordic countries."
+    },
+    {
+     "where": "history",
+     "index": 166,
+     "quote": "I’ve noticed that some crime series from the Nordic region place a big emphasis on mood, landscape, and slow-building tension"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C009",
+   "reference_verdict": "accept",
+   "reference_reason": "Meeting day withdrawn at turn 2 and explicitly re-established by the user at turn 4 as Thursday. Reference reports only the post-withdrawal value.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget the meeting day I told you."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "The planning meeting is now on Thursday."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C010",
+   "reference_verdict": "accept",
+   "reference_reason": "The only turn is a request to polish a fictional first-person monologue; supplied fictional text does not establish user biography, so the user's own drink preference is not established. Minor label mismatch: mode is 'clarify' but the reference answer contains no clarifying question; the semantic content is nonetheless correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "Please polish a fictional first-person monologue: \"I prefer tea.\""
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C011",
+   "reference_verdict": "accept",
+   "reference_reason": "The Lantern Stage paragraph is supplied at turn 0 and names exactly two tasks. Turn 2 supplies a different (River Hall) paragraph with different tasks, which is the intended distractor; the reference answers from the requested passage.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "Please translate my Lantern Stage paragraph: I helped carry props and adjust lights backstage."
+    },
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please polish a different paragraph about River Hall: I helped actors run lines and set up chairs."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C012",
+   "reference_verdict": "accept",
+   "reference_reason": "Turn 8 is the Korean-translation request containing the local-stage reflection; it names helping carry props and adjusting lights. The competing backstage passage in this history (assistant turn 57, 'helping actors run lines ... setting up chairs') belongs to a different piece, so the reference correctly scopes to the requested passage. Note the passage also mentions taking a breather, but that is not a backstage task helped with.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 8,
+     "quote": "helping carry props, adjusting lights"
+    },
+    {
+     "where": "history",
+     "index": 8,
+     "quote": "Could you translate the following piece I wrote into Korean"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C013",
+   "reference_verdict": "accept",
+   "reference_reason": "Both requested components are present verbatim in the supplied production notes at turn 72. H004 contains many unrelated withdrawals but none touches rehearsal scheduling or the supplied passage, so they must not erase it.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 72,
+     "quote": "aiming to wrap by 8 p.m. most evenings"
+    },
+    {
+     "where": "history",
+     "index": 72,
+     "quote": "The set design team will have a late-afternoon slot to present concepts"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C014",
+   "reference_verdict": "accept",
+   "reference_reason": "Absence claim verified by scanning all 271 turns of H004 for 'ticket', 'opening night', 'price', 'pricing', 'cost' and any dollar amount. Opening night is discussed repeatedly (e.g. user turn 36) and one unrelated dollar figure appears in an assistant turn about costumes, but no opening-night ticket price is ever supplied by the user. Abstain-and-ask is correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 36,
+     "quote": "As we move toward opening night, my focus remains on ensuring every note, every light cue, and every step on stage builds that same magic"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C015",
+   "reference_verdict": "accept",
+   "reference_reason": "Snowboarding preference withdrawn at turn 116. Scanned all turns for snowboard/ski: the only post-withdrawal hit is the assistant acknowledgment at 117. No later user re-establishment.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 116,
+     "quote": "Please forget that I enjoy snowboarding trips."
+    },
+    {
+     "where": "history",
+     "index": 117,
+     "quote": "I’ll forget that you enjoy snowboarding trips"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C016",
+   "reference_verdict": "accept",
+   "reference_reason": "Pen preference withdrawn at turn 26. The user's earlier turns 22 and 24 discuss hotel pens but precede the withdrawal; all later pen mentions are assistant turns. No later user statement establishes a pen preference, so abstention is correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 26,
+     "quote": "Please forget that I use ballpoint pens from hotel stays."
+    },
+    {
+     "where": "history",
+     "index": 25,
+     "quote": "Since you enjoy collecting ballpoint pens from hotel stays"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C017",
+   "reference_verdict": "accept",
+   "reference_reason": "Coffee-over-tea preference withdrawn at turn 80. Later coffee/tea mentions (assistant turns 87 and 99) are assistant suggestions, which are not new user facts. Abstention correct. Note the assistant's turn 81 both denies memory persistence and restates the withdrawn value, which is a source-side flaw, not a reference flaw.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 80,
+     "quote": "Please forget my preference for specialty single-origin coffee over tea from your memory."
+    },
+    {
+     "where": "history",
+     "index": 81,
+     "quote": "your stated preference for single‑origin coffee won’t carry over beyond this thread"
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C018",
+   "reference_verdict": "accept",
+   "reference_reason": "Aquarium preference withdrawn at turn 48. The earlier user turn 44 mentions an aquarium visit inside a supplied narrative passage and precedes the withdrawal; nothing after turn 48 re-establishes the preference.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 48,
+     "quote": "Please forget that I like visiting aquariums."
+    },
+    {
+     "where": "history",
+     "index": 49,
+     "quote": "I’ll forget that you like visiting aquariums."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C019",
+   "reference_verdict": "accept",
+   "reference_reason": "Jigsaw-puzzle preference withdrawn at turn 60; scanned all turns for jigsaw/puzzle and found no later user re-establishment. Reference abstains without asserting a dislike.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 60,
+     "quote": "Please forget that I like solving jigsaw puzzles."
+    },
+    {
+     "where": "history",
+     "index": 61,
+     "quote": "I’ll forget that you like solving jigsaw puzzles."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C020",
+   "reference_verdict": "accept",
+   "reference_reason": "Spiciness enjoyment withdrawn at turn 2. The final assistant turn restates the withdrawn value, which is precisely the trap: an assistant restatement does not re-establish a user fact. Reference correctly reports unknown and asks. Minor: the source only ever established 'enjoys spicy food', not a spiciness level, which the abstention makes moot.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget that I enjoy spicy food."
+    },
+    {
+     "where": "history",
+     "index": 3,
+     "quote": "You enjoy spicy food, so spicy dishes should suit you."
+    }
+   ],
+   "reference_revision_if_needed": null
+  },
+  {
+   "case_id": "C021",
+   "reference_verdict": "accept",
+   "reference_reason": "The question explicitly asks about the supplied fictional scene, whose text at turn 0 gives Ari's preference as coffee. The withdrawal at turn 4 targets the user's own drink preference (stated as tea at turn 2) and must not erase a named character's attribute in a passage the question explicitly asks about.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "Please polish this fictional scene: Ari prefers coffee to tea."
+    },
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "My own drink preference is tea."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "Please forget my drink preference."
+    }
+   ],
+   "reference_revision_if_needed": null
+  }
+ ]
+}

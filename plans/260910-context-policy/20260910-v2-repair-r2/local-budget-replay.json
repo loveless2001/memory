@@ -1,0 +1,86 @@
+[
+  {
+    "batch": 0,
+    "original_result": "accepted",
+    "selected_quotes": 5,
+    "rendered_tokens": 636
+  },
+  {
+    "batch": 1,
+    "original_result": "rejected_over_budget",
+    "original_rendered_tokens": 1359,
+    "original_proposed_quotes": 14,
+    "local_prospective_pack": {
+      "mode": "ranked_whole_quote_admission",
+      "ranked_ids": [
+        "T2:0-402",
+        "T10:0-462",
+        "T16:0-464",
+        "T28:0-463",
+        "T36:0-489",
+        "T36:489-767",
+        "T42:0-488",
+        "T42:488-576",
+        "T52:0-505",
+        "T52:505-694",
+        "T56:0-352",
+        "T62:0-128",
+        "T68:0-226",
+        "T72:0-492"
+      ],
+      "admitted_ids": [
+        "T2:0-402",
+        "T10:0-462",
+        "T16:0-464",
+        "T28:0-463",
+        "T36:0-489",
+        "T42:488-576"
+      ],
+      "omitted": [
+        {
+          "id": "T36:489-767",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 778
+        },
+        {
+          "id": "T42:0-488",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 818
+        },
+        {
+          "id": "T52:0-505",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 852
+        },
+        {
+          "id": "T52:505-694",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 789
+        },
+        {
+          "id": "T56:0-352",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 824
+        },
+        {
+          "id": "T62:0-128",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 779
+        },
+        {
+          "id": "T68:0-226",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 803
+        },
+        {
+          "id": "T72:0-492",
+          "reason": "whole_quote_exceeds_remaining_budget",
+          "proposed_note_tokens": 849
+        }
+      ],
+      "note_tokens": 743
+    },
+    "withdrawals_preserved": 8,
+    "interpretation": "Captured selection order treated as proposed rank for a CPU feasibility replay only. Original run remains failed; no generated ranking or semantic improvement is claimed."
+  }
+]

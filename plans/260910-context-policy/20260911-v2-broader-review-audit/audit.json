@@ -1,0 +1,1777 @@
+{
+  "status": "structural_review_valid_semantic_reconciliation_pending",
+  "validator": {
+    "status": "PASS",
+    "cases": 88,
+    "answers": 262,
+    "collection_complete": false,
+    "semantic_truth_certified": false,
+    "review_status": "complete",
+    "verdict_counts": {
+      "pass": 106,
+      "fail": 155,
+      "ambiguous": 1
+    }
+  },
+  "review_provenance": {
+    "blinding_notes": "Judged from packet/, packet-manifest.json and review-template.json only. Did not open sealed-map.json, run reports, CONTEXT-POLICY.md, other experiments' judgments or scores before saving this first pass. Opaque C###/-A/-B/-C ids hide condition labels and collection order, but retrieval depth is visible from each answer's actual_messages (count of tool messages), so zero/one/two-retrieval views are distinguishable; masking of order within a case is not masking of condition. Prior exposure: this reviewer performed the v1 120-reference review and the v2 twelve-case delta review of the same families, so the source passages, withdrawal turns and the corrected neutral references were already familiar. That is prior exposure to references and sources, not to these answers or to any score.",
+    "model_version": "answers under review: producing model/version unknown to this reviewer (not stated in packet)",
+    "process_notes": "Every one of the 262 included answers was read individually. Structural criteria were recomputed independently from each answer's text rather than trusting the stored flags (word counts, EOS, stray ANSWER/RETRIEVE markers, empty bodies): all 262 agree with the stored metadata. Evidence visibility per answer was computed by parsing turn references out of that answer's own actual_messages and comparing them with the reference's cited spans. Rubric reading applied uniformly: (a) abstention on an answerable historical-recall question fails task_complete only, with support left true when the passage genuinely was not visible; (b) deriving a definite current value from a withdrawal fails withdrawal_compliant and source_consistent; (c) repeating the withdrawn value while explaining uncertainty fails withdrawal_compliant; (d) ignoring or inverting a later explicit re-establishment fails both; (e) gender inferred from a name fails source_consistent, while source-supported pronouns (Ruth, Karen, Margaret) are permitted; (f) first-person echo ('I do not currently...') for the user's own preference was recorded as a recurring style defect but not scored as an ownership_correct failure, since the referent is still the user - this is a rubric-interpretation call, documented in REVIEW.md.",
+    "reviewed_at": "2026-09-10T19:37:37.589424+00:00",
+    "reviewer": "Claude Opus 5 (claude-opus-5) via Claude Code, user-controlled session",
+    "status": "complete"
+  },
+  "source_hashes": {
+    "plans/260910-context-policy/20260911-v2-broader-answer-review/packet-manifest.json": "49b098b61129b101849861a5c442b784f6a47c02ad2f015eb341e072f8985922",
+    "plans/260910-context-policy/20260911-v2-broader-answer-review/sealed-map.json": "a79d89b62e9bc387272a3635e5d2f0961ab5b13dc211b0ee7244f8d8f50b53d3",
+    "plans/260910-context-policy/20260911-v2-broader-answer-review/claude-review/review.json": "151c70c6767c4a156d04b30278fec945326d7806f3d573533b42a0e9850db590",
+    "plans/260910-context-policy/20260911-v2-broader-answer-review/claude-review/REVIEW.md": "19f6aacc1d022da83ecfd31b261e7c76090723530a958d49de5ca71b00137009",
+    "CLAUDE-BROADER-ANSWERS.md": "99698077bf01ceaadedadab960f1cef63ae34edb9039243a1cd45db333d7bfb4",
+    "plans/260910-context-policy/20260911-v2-broader-review-audit/audit.py": "fbe011728c1cbb92fb82a30dd742062c851bbbc5c7e788f69f8bcb5b3f29b373"
+  },
+  "raw_reviewer_counts": {
+    "pass": 106,
+    "fail": 155,
+    "ambiguous": 1
+  },
+  "raw_counts_by_retrieval": {
+    "2": {
+      "pass": 47,
+      "fail": 41
+    },
+    "1": {
+      "pass": 50,
+      "fail": 36,
+      "ambiguous": 1
+    },
+    "0": {
+      "fail": 78,
+      "pass": 9
+    }
+  },
+  "raw_counts_by_frozen_class_and_retrieval": {
+    "historical_recall": {
+      "2": {
+        "pass": 28,
+        "fail": 2
+      },
+      "1": {
+        "pass": 27,
+        "fail": 2,
+        "ambiguous": 1
+      },
+      "0": {
+        "fail": 30
+      }
+    },
+    "withdrawal": {
+      "2": {
+        "fail": 15
+      },
+      "1": {
+        "fail": 15
+      },
+      "0": {
+        "fail": 14,
+        "pass": 1
+      }
+    },
+    "attribution": {
+      "1": {
+        "pass": 9,
+        "fail": 5
+      },
+      "2": {
+        "pass": 9,
+        "fail": 6
+      },
+      "0": {
+        "fail": 14
+      }
+    },
+    "same_value": {
+      "0": {
+        "fail": 12,
+        "pass": 2
+      },
+      "2": {
+        "fail": 14
+      },
+      "1": {
+        "fail": 11,
+        "pass": 3
+      }
+    },
+    "different_value": {
+      "1": {
+        "pass": 11,
+        "fail": 3
+      },
+      "0": {
+        "fail": 8,
+        "pass": 6
+      },
+      "2": {
+        "pass": 10,
+        "fail": 4
+      }
+    }
+  },
+  "raw_counts_by_family_and_retrieval": {
+    "F004": {
+      "2": {
+        "pass": 4,
+        "fail": 2
+      },
+      "1": {
+        "pass": 5,
+        "fail": 1
+      },
+      "0": {
+        "fail": 4,
+        "pass": 2
+      }
+    },
+    "F001": {
+      "2": {
+        "fail": 3,
+        "pass": 3
+      },
+      "1": {
+        "fail": 3,
+        "pass": 2,
+        "ambiguous": 1
+      },
+      "0": {
+        "fail": 4,
+        "pass": 2
+      }
+    },
+    "F013": {
+      "1": {
+        "pass": 4,
+        "fail": 2
+      },
+      "2": {
+        "pass": 4,
+        "fail": 2
+      },
+      "0": {
+        "fail": 6
+      }
+    },
+    "F014": {
+      "0": {
+        "fail": 4,
+        "pass": 2
+      },
+      "2": {
+        "pass": 3,
+        "fail": 3
+      },
+      "1": {
+        "pass": 3,
+        "fail": 3
+      }
+    },
+    "F005": {
+      "2": {
+        "pass": 4,
+        "fail": 2
+      },
+      "0": {
+        "fail": 5,
+        "pass": 1
+      },
+      "1": {
+        "pass": 5,
+        "fail": 1
+      }
+    },
+    "F006": {
+      "0": {
+        "fail": 6
+      },
+      "1": {
+        "fail": 4,
+        "pass": 2
+      },
+      "2": {
+        "fail": 3,
+        "pass": 3
+      }
+    },
+    "F009": {
+      "2": {
+        "pass": 3,
+        "fail": 3
+      },
+      "0": {
+        "fail": 6
+      },
+      "1": {
+        "pass": 3,
+        "fail": 3
+      }
+    },
+    "F015": {
+      "2": {
+        "fail": 1,
+        "pass": 3
+      },
+      "1": {
+        "fail": 1,
+        "pass": 2
+      },
+      "0": {
+        "fail": 3
+      }
+    },
+    "F003": {
+      "2": {
+        "pass": 3,
+        "fail": 3
+      },
+      "1": {
+        "pass": 5,
+        "fail": 1
+      },
+      "0": {
+        "fail": 6
+      }
+    },
+    "F010": {
+      "1": {
+        "pass": 4,
+        "fail": 2
+      },
+      "0": {
+        "fail": 6
+      },
+      "2": {
+        "pass": 3,
+        "fail": 3
+      }
+    },
+    "F008": {
+      "2": {
+        "fail": 2,
+        "pass": 4
+      },
+      "1": {
+        "fail": 2,
+        "pass": 4
+      },
+      "0": {
+        "fail": 5,
+        "pass": 1
+      }
+    },
+    "F007": {
+      "1": {
+        "fail": 4,
+        "pass": 2
+      },
+      "0": {
+        "fail": 6
+      },
+      "2": {
+        "fail": 4,
+        "pass": 2
+      }
+    },
+    "F011": {
+      "0": {
+        "fail": 6
+      },
+      "2": {
+        "fail": 3,
+        "pass": 3
+      },
+      "1": {
+        "fail": 3,
+        "pass": 3
+      }
+    },
+    "F012": {
+      "2": {
+        "pass": 3,
+        "fail": 3
+      },
+      "1": {
+        "pass": 4,
+        "fail": 2
+      },
+      "0": {
+        "pass": 1,
+        "fail": 5
+      }
+    },
+    "F002": {
+      "0": {
+        "fail": 6
+      },
+      "1": {
+        "fail": 4,
+        "pass": 2
+      },
+      "2": {
+        "fail": 4,
+        "pass": 2
+      }
+    }
+  },
+  "raw_criterion_counts": {
+    "task_complete": {
+      "true": 223,
+      "false": 38,
+      "none": 1
+    },
+    "source_consistent": {
+      "true": 149,
+      "false": 113
+    },
+    "supported_in_visible_state": {
+      "true": 256,
+      "false": 6
+    },
+    "withdrawal_compliant": {
+      "true": 168,
+      "false": 94
+    },
+    "ownership_correct": {
+      "true": 261,
+      "false": 1
+    },
+    "body_valid": {
+      "true": 262
+    },
+    "within_90_words": {
+      "true": 262
+    }
+  },
+  "paired_complete_questions": {
+    "count": 87,
+    "transitions_from_zero": {
+      "1": {
+        "fail -> pass": 43,
+        "fail -> fail": 34,
+        "pass -> pass": 7,
+        "pass -> fail": 2,
+        "fail -> ambiguous": 1
+      },
+      "2": {
+        "fail -> pass": 40,
+        "fail -> fail": 38,
+        "pass -> pass": 6,
+        "pass -> fail": 3
+      }
+    }
+  },
+  "audit_flag_counts": {
+    "task_complete_conflicts_with_reviewer_reason": 85,
+    "check_claim_support_not_just_evidence_availability": 107,
+    "withdrawn_value_referent_in_parent_pass": 1,
+    "withdrawal_vs_later_negative_in_parent_pass": 1,
+    "unresolved_question_scope": 1,
+    "false_chronology_in_parent_pass": 1
+  },
+  "target_answers": [
+    {
+      "case_id": "C005",
+      "answer_id": "C005-B",
+      "original_id": "F005-Q2",
+      "retrieval_rounds": 0,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C006",
+      "answer_id": "C006-B",
+      "original_id": "F006-Q4",
+      "retrieval_rounds": 1,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C006",
+      "answer_id": "C006-C",
+      "original_id": "F006-Q4",
+      "retrieval_rounds": 2,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C007",
+      "answer_id": "C007-A",
+      "original_id": "F013-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C007",
+      "answer_id": "C007-B",
+      "original_id": "F013-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C007",
+      "answer_id": "C007-C",
+      "original_id": "F013-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C008",
+      "answer_id": "C008-A",
+      "original_id": "F004-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C008",
+      "answer_id": "C008-B",
+      "original_id": "F004-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C008",
+      "answer_id": "C008-C",
+      "original_id": "F004-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C011",
+      "answer_id": "C011-A",
+      "original_id": "F015-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C011",
+      "answer_id": "C011-B",
+      "original_id": "F015-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C011",
+      "answer_id": "C011-C",
+      "original_id": "F015-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C015",
+      "answer_id": "C015-A",
+      "original_id": "F008-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C015",
+      "answer_id": "C015-B",
+      "original_id": "F008-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C015",
+      "answer_id": "C015-C",
+      "original_id": "F008-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C016",
+      "answer_id": "C016-A",
+      "original_id": "F014-Q4",
+      "retrieval_rounds": 2,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C016",
+      "answer_id": "C016-B",
+      "original_id": "F014-Q4",
+      "retrieval_rounds": 1,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C017",
+      "answer_id": "C017-A",
+      "original_id": "F005-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C017",
+      "answer_id": "C017-B",
+      "original_id": "F005-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C017",
+      "answer_id": "C017-C",
+      "original_id": "F005-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C018",
+      "answer_id": "C018-A",
+      "original_id": "F007-Q4",
+      "retrieval_rounds": 1,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C018",
+      "answer_id": "C018-C",
+      "original_id": "F007-Q4",
+      "retrieval_rounds": 2,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C020",
+      "answer_id": "C020-B",
+      "original_id": "F011-Q1",
+      "retrieval_rounds": 2,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C020",
+      "answer_id": "C020-C",
+      "original_id": "F011-Q1",
+      "retrieval_rounds": 1,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C021",
+      "answer_id": "C021-A",
+      "original_id": "F006-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C021",
+      "answer_id": "C021-B",
+      "original_id": "F006-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C021",
+      "answer_id": "C021-C",
+      "original_id": "F006-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C023",
+      "answer_id": "C023-A",
+      "original_id": "F003-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C023",
+      "answer_id": "C023-B",
+      "original_id": "F003-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C023",
+      "answer_id": "C023-C",
+      "original_id": "F003-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C024",
+      "answer_id": "C024-B",
+      "original_id": "F011-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C025",
+      "answer_id": "C025-A",
+      "original_id": "F008-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C025",
+      "answer_id": "C025-B",
+      "original_id": "F008-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C025",
+      "answer_id": "C025-C",
+      "original_id": "F008-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C026",
+      "answer_id": "C026-A",
+      "original_id": "F012-Q5",
+      "retrieval_rounds": 2,
+      "class": "different_value",
+      "verdict": "pass",
+      "audit_flags": [
+        "withdrawn_value_referent_in_parent_pass"
+      ]
+    },
+    {
+      "case_id": "C027",
+      "answer_id": "C027-A",
+      "original_id": "F011-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C027",
+      "answer_id": "C027-B",
+      "original_id": "F011-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C027",
+      "answer_id": "C027-C",
+      "original_id": "F011-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C029",
+      "answer_id": "C029-A",
+      "original_id": "F005-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C029",
+      "answer_id": "C029-C",
+      "original_id": "F005-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C033",
+      "answer_id": "C033-A",
+      "original_id": "F002-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C033",
+      "answer_id": "C033-B",
+      "original_id": "F002-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C033",
+      "answer_id": "C033-C",
+      "original_id": "F002-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C035",
+      "answer_id": "C035-A",
+      "original_id": "F012-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C035",
+      "answer_id": "C035-B",
+      "original_id": "F012-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C035",
+      "answer_id": "C035-C",
+      "original_id": "F012-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C036",
+      "answer_id": "C036-A",
+      "original_id": "F003-Q5",
+      "retrieval_rounds": 2,
+      "class": "different_value",
+      "verdict": "pass",
+      "audit_flags": [
+        "withdrawal_vs_later_negative_in_parent_pass"
+      ]
+    },
+    {
+      "case_id": "C036",
+      "answer_id": "C036-C",
+      "original_id": "F003-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C037",
+      "answer_id": "C037-A",
+      "original_id": "F009-Q5",
+      "retrieval_rounds": 1,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C037",
+      "answer_id": "C037-B",
+      "original_id": "F009-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C037",
+      "answer_id": "C037-C",
+      "original_id": "F009-Q5",
+      "retrieval_rounds": 2,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C038",
+      "answer_id": "C038-A",
+      "original_id": "F001-Q4",
+      "retrieval_rounds": 2,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C038",
+      "answer_id": "C038-B",
+      "original_id": "F001-Q4",
+      "retrieval_rounds": 1,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C042",
+      "answer_id": "C042-A",
+      "original_id": "F007-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C042",
+      "answer_id": "C042-B",
+      "original_id": "F007-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C042",
+      "answer_id": "C042-C",
+      "original_id": "F007-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C044",
+      "answer_id": "C044-B",
+      "original_id": "F001-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C044",
+      "answer_id": "C044-C",
+      "original_id": "F001-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C045",
+      "answer_id": "C045-A",
+      "original_id": "F007-Q5",
+      "retrieval_rounds": 1,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C045",
+      "answer_id": "C045-B",
+      "original_id": "F007-Q5",
+      "retrieval_rounds": 2,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C045",
+      "answer_id": "C045-C",
+      "original_id": "F007-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C046",
+      "answer_id": "C046-A",
+      "original_id": "F009-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C046",
+      "answer_id": "C046-B",
+      "original_id": "F009-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C046",
+      "answer_id": "C046-C",
+      "original_id": "F009-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C047",
+      "answer_id": "C047-A",
+      "original_id": "F006-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C047",
+      "answer_id": "C047-B",
+      "original_id": "F006-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C047",
+      "answer_id": "C047-C",
+      "original_id": "F006-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C048",
+      "answer_id": "C048-B",
+      "original_id": "F011-Q4",
+      "retrieval_rounds": 0,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C050",
+      "answer_id": "C050-A",
+      "original_id": "F010-Q5",
+      "retrieval_rounds": 2,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C050",
+      "answer_id": "C050-C",
+      "original_id": "F010-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C055",
+      "answer_id": "C055-A",
+      "original_id": "F012-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C055",
+      "answer_id": "C055-B",
+      "original_id": "F012-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C055",
+      "answer_id": "C055-C",
+      "original_id": "F012-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C058",
+      "answer_id": "C058-A",
+      "original_id": "F011-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C058",
+      "answer_id": "C058-B",
+      "original_id": "F011-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C058",
+      "answer_id": "C058-C",
+      "original_id": "F011-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C059",
+      "answer_id": "C059-A",
+      "original_id": "F009-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C059",
+      "answer_id": "C059-B",
+      "original_id": "F009-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C059",
+      "answer_id": "C059-C",
+      "original_id": "F009-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C061",
+      "answer_id": "C061-A",
+      "original_id": "F014-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C061",
+      "answer_id": "C061-B",
+      "original_id": "F014-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C061",
+      "answer_id": "C061-C",
+      "original_id": "F014-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C062",
+      "answer_id": "C062-A",
+      "original_id": "F003-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C062",
+      "answer_id": "C062-C",
+      "original_id": "F003-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C063",
+      "answer_id": "C063-A",
+      "original_id": "F002-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C063",
+      "answer_id": "C063-B",
+      "original_id": "F002-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C063",
+      "answer_id": "C063-C",
+      "original_id": "F002-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C065",
+      "answer_id": "C065-B",
+      "original_id": "F012-Q4",
+      "retrieval_rounds": 2,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C066",
+      "answer_id": "C066-A",
+      "original_id": "F002-Q1",
+      "retrieval_rounds": 2,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C066",
+      "answer_id": "C066-B",
+      "original_id": "F002-Q1",
+      "retrieval_rounds": 0,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C066",
+      "answer_id": "C066-C",
+      "original_id": "F002-Q1",
+      "retrieval_rounds": 1,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C067",
+      "answer_id": "C067-A",
+      "original_id": "F013-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C067",
+      "answer_id": "C067-B",
+      "original_id": "F013-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C067",
+      "answer_id": "C067-C",
+      "original_id": "F013-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C069",
+      "answer_id": "C069-A",
+      "original_id": "F006-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C069",
+      "answer_id": "C069-B",
+      "original_id": "F006-Q5",
+      "retrieval_rounds": 1,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C070",
+      "answer_id": "C070-A",
+      "original_id": "F002-Q4",
+      "retrieval_rounds": 0,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C070",
+      "answer_id": "C070-C",
+      "original_id": "F002-Q4",
+      "retrieval_rounds": 1,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C072",
+      "answer_id": "C072-A",
+      "original_id": "F010-Q6",
+      "retrieval_rounds": 0,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C072",
+      "answer_id": "C072-B",
+      "original_id": "F010-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C072",
+      "answer_id": "C072-C",
+      "original_id": "F010-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C073",
+      "answer_id": "C073-B",
+      "original_id": "F001-Q2",
+      "retrieval_rounds": 1,
+      "class": "historical_recall",
+      "verdict": "ambiguous",
+      "audit_flags": [
+        "unresolved_question_scope"
+      ]
+    },
+    {
+      "case_id": "C076",
+      "answer_id": "C076-A",
+      "original_id": "F002-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C076",
+      "answer_id": "C076-B",
+      "original_id": "F002-Q5",
+      "retrieval_rounds": 2,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C078",
+      "answer_id": "C078-A",
+      "original_id": "F008-Q4",
+      "retrieval_rounds": 0,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C079",
+      "answer_id": "C079-B",
+      "original_id": "F004-Q6",
+      "retrieval_rounds": 1,
+      "class": "same_value",
+      "verdict": "pass",
+      "audit_flags": [
+        "false_chronology_in_parent_pass"
+      ]
+    },
+    {
+      "case_id": "C079",
+      "answer_id": "C079-C",
+      "original_id": "F004-Q6",
+      "retrieval_rounds": 2,
+      "class": "same_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C081",
+      "answer_id": "C081-A",
+      "original_id": "F007-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C081",
+      "answer_id": "C081-B",
+      "original_id": "F007-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C081",
+      "answer_id": "C081-C",
+      "original_id": "F007-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C082",
+      "answer_id": "C082-A",
+      "original_id": "F010-Q3",
+      "retrieval_rounds": 1,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C082",
+      "answer_id": "C082-B",
+      "original_id": "F010-Q3",
+      "retrieval_rounds": 0,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C082",
+      "answer_id": "C082-C",
+      "original_id": "F010-Q3",
+      "retrieval_rounds": 2,
+      "class": "withdrawal",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C083",
+      "answer_id": "C083-A",
+      "original_id": "F013-Q1",
+      "retrieval_rounds": 0,
+      "class": "historical_recall",
+      "verdict": "fail",
+      "audit_flags": [
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C084",
+      "answer_id": "C084-B",
+      "original_id": "F013-Q5",
+      "retrieval_rounds": 0,
+      "class": "different_value",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability"
+      ]
+    },
+    {
+      "case_id": "C086",
+      "answer_id": "C086-A",
+      "original_id": "F003-Q4",
+      "retrieval_rounds": 0,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    },
+    {
+      "case_id": "C086",
+      "answer_id": "C086-C",
+      "original_id": "F003-Q4",
+      "retrieval_rounds": 2,
+      "class": "attribution",
+      "verdict": "fail",
+      "audit_flags": [
+        "check_claim_support_not_just_evidence_availability",
+        "task_complete_conflicts_with_reviewer_reason"
+      ]
+    }
+  ],
+  "author_spot_checks": [
+    {
+      "answer_id": "C079-B",
+      "issue": "false_chronology_in_parent_pass",
+      "author_audit_note": "Says the preference at T267 was later withdrawn at T172. The source order is T172 withdrawal then T267 reinstatement; compare rejected C069-A/B.",
+      "independently_adjudicated": false
+    },
+    {
+      "answer_id": "C026-A",
+      "issue": "withdrawn_value_referent_in_parent_pass",
+      "author_audit_note": "Correct negative conclusion, but says this preference was withdrawn. T136 withdraws liking; T199 establishes not liking. Check whether the explanation attributes withdrawal to the current negative value.",
+      "independently_adjudicated": false
+    },
+    {
+      "answer_id": "C036-A",
+      "issue": "withdrawal_vs_later_negative_in_parent_pass",
+      "author_audit_note": "Cites T260 withdrawal and T262 explicit negative as if the latter confirms the withdrawal. Check the explanation consistently against rejected C036-C; a later negative can support the answer independently.",
+      "independently_adjudicated": false
+    },
+    {
+      "answer_id": "C073-B",
+      "issue": "unresolved_question_scope",
+      "author_audit_note": "Names the Real Estate degree and internship, omitting Temple. Preserve ambiguity unless the existing question independently requires the university name; reference wording alone does not decide that.",
+      "independently_adjudicated": false
+    }
+  ],
+  "raw_review_edited": false,
+  "author_replacements_applied": false,
+  "training_labels": 0,
+  "interpretation": "Counts reproduce the saved reviewer verdicts, not accepted corrected scores. Flags request semantic reinspection, not automatic boolean flips."
+}

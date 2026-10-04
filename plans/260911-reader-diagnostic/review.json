@@ -1,0 +1,3372 @@
+{
+  "reviewer": "Codex, experiment author",
+  "model_version": "GPT-6",
+  "reviewed_at": "2026-09-10T20:46:09.920856+00:00",
+  "status": "complete",
+  "process_notes": "Author read all 96 frozen answers, grouped by case and condition, against the complete short sources and actual messages. This is unblinded author model review, not independent validation. The explicit decision-index sets encode these inspected judgments, not inferred ground truth from keyword matching. All sources were visible. Literal statements of an old positive activity preference count as withdrawn-value repetition; topic-only references do not. Forget wording is interpreted as requested record status, not evidence of physical erasure. No hidden reasoning is inferred merely from a correct uncited answer. First-person echoes retain the user or historical passage referent when clear.",
+  "captures_sha256": "20907386e8ff020eff2f21f65180867398b3731eb07cef39ce40234d2bfdd273",
+  "cases_sha256": "3fdf1c1bd0a47d01382a10f06962c0bb64c08d207086bce920dde7098259038a",
+  "answers": [
+    {
+      "id": "D01-baseline",
+      "arm": "plain_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue indicates that you enjoyed urban sketching at the time of the initial statement (T0). However, there is no subsequent information confirming or denying your current feelings about urban sketching. Therefore, based on available data, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-baseline",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue indicates that you enjoyed urban sketching at the time of the initial statement (T0). However, there is no subsequent information confirming or denying your current feelings about urban sketching. Therefore, based on available data, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-baseline",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that you enjoyed urban sketching at an earlier time (T0), but there is no current information confirming your current preference. Since no recent statement or update has been provided, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-baseline",
+      "arm": "json_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that you enjoyed urban sketching at an earlier time (T0), but there is no current information confirming your current preference. Since no recent statement or update has been provided, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-different",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy urban sketching. This is my current personal detail, explicitly stated in the dialogue at T4. The earlier interest in urban sketching has been explicitly withdrawn and replaced with the current preference."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-different",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy urban sketching. The most recent personal detail you provided explicitly states that you do not enjoy urban sketching, and the earlier statement about enjoying it has been explicitly withdrawn."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-different",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-different",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy urban sketching. You explicitly stated at [T4] that you do not enjoy urban sketching, and this detail was confirmed at [T5]. The earlier statement at [T0] was overwritten by your later clarification."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-historical",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-historical",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated, \"I enjoy urban sketching.\" This detail was explicitly withdrawn in a subsequent message, so it is no longer considered current."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-historical",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that you enjoy urban sketching. This detail was explicitly withdrawn in your second message."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-historical",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated, \"I enjoy urban sketching.\" This detail was explicitly withdrawn in a later message, but it was the initial personal detail you provided."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-ownership",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that Rowan enjoys urban sketching, but there is no information confirming your current personal preference. The statement is attributed to the fictional character Rowan, not to you. Therefore, based on available data, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"I enjoy urban sketching.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D01-ownership",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that Rowan enjoys urban sketching, but there is no information confirming your current personal preference. The statement is attributed to the fictional character Rowan, not to you. Therefore, based on available data, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"I enjoy urban sketching.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D01-ownership",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue only states that Rowan enjoys urban sketching, not that you do. There is no information provided about your current preferences. Therefore, based on the given data, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        }
+      ]
+    },
+    {
+      "id": "D01-ownership",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue only states that Rowan enjoys urban sketching, not that you do. There is no information provided about your current preferences. Therefore, based on the given data, it cannot be determined whether you currently enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        }
+      ]
+    },
+    {
+      "id": "D01-same",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Yes, you currently enjoy urban sketching. The user explicitly stated this detail in turn [T4], and there is no subsequent withdrawal or override of this statement."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-same",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy urban sketching. You explicitly stated, \"Please forget this personal detail: I enjoy urban sketching,\" which indicates that the preference has been withdrawn."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-same",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy urban sketching. You explicitly requested to forget that personal detail at [T2], and no subsequent statement reinstates it. The current value is unknown, as the withdrawal was explicit and not overridden."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-same",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Yes, you currently enjoy urban sketching. This is explicitly stated in your message at [T4], where you reaffirmed the detail as your current personal detail for future replies. Despite earlier withdrawals, the most recent assertion establishes it as current."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-withdrawal",
+      "arm": "plain_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy urban sketching. You explicitly requested that the personal detail be forgotten, and the assistant acknowledged that request. The statement \"I enjoy urban sketching\" is no longer current."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-withdrawal",
+      "arm": "json_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy urban sketching. You explicitly requested to forget this personal detail, and it has been removed from your current information."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-withdrawal",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy urban sketching. You explicitly requested to forget that personal detail, which indicates it is no longer part of your current preferences."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D01-withdrawal",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy urban sketching. The user explicitly requested to forget this personal detail, indicating it is no longer relevant or true."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        }
+      ]
+    },
+    {
+      "id": "D02-baseline",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue indicates that you enjoyed amateur astronomy at the time of the statement, but there is no subsequent information confirming your current preference. Therefore, based on available data, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-baseline",
+      "arm": "plain_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue indicates that you enjoyed amateur astronomy at the time of the statement, but there is no subsequent information confirming your current preference. Therefore, based on available data, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-baseline",
+      "arm": "json_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that you enjoyed amateur astronomy at an earlier time (T0), but there is no current information confirming your present interest. Since no recent statement or update has been provided, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-baseline",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The latest direct user assertion establishes the positive activity preference, with no withdrawal, intervening change or elapsed-time premise. The answer invents a requirement for another current confirmation and abstains; under the frozen baseline reference it is incomplete and its staleness explanation is unsupported.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that you enjoyed amateur astronomy at an earlier time (T0), but there is no current information confirming your present interest. Since no recent statement or update has been provided, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-different",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy amateur astronomy. The most recent personal detail you provided explicitly states that you do not enjoy it, and the earlier statement about enjoying amateur astronomy has been explicitly forgotten."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-different",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly stated, \"Here is my current personal detail for future replies: I do not enjoy amateur astronomy,\" and this overrides the earlier statement. The earlier mention of enjoying amateur astronomy has been explicitly withdrawn and replaced."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-different",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy amateur astronomy. This is explicitly stated in your personal detail update at [T4], where you confirmed that you no longer enjoy amateur astronomy. The earlier statement was explicitly withdrawn and replaced with this current one."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-different",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, I do not currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-historical",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that you enjoy amateur astronomy. This detail was explicitly withdrawn in your second message."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-historical",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-historical",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Before you withdrew it, your original first message stated that you enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-historical",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated, \"I enjoy amateur astronomy.\" This detail was explicitly withdrawn in a subsequent message."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-ownership",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue only states that Rowan enjoys amateur astronomy, not that you do. There is no information provided about your current preferences. Therefore, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        }
+      ]
+    },
+    {
+      "id": "D02-ownership",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue only states that Rowan enjoys amateur astronomy, not that you do. There is no information provided about your current preferences. Therefore, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        }
+      ]
+    },
+    {
+      "id": "D02-ownership",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that Rowan enjoys amateur astronomy, but there is no information confirming your current personal preference. The statement is attributed to the fictional character Rowan, not to you. Therefore, based on available data, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"I enjoy amateur astronomy.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D02-ownership",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that Rowan enjoys amateur astronomy, but there is no information confirming your current personal preference. The statement is attributed to the fictional character Rowan, not to you. Therefore, based on available data, it cannot be determined whether you currently enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"I enjoy amateur astronomy.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D02-same",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly requested to forget that personal detail at [T2], and no subsequent statement reinstates it. The current value is unknown, as the withdrawal was explicit and not overridden."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-same",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly stated in [T2] to forget that personal detail, and no subsequent statement reinstates it. Therefore, as of now, that interest is not current."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-same",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Yes, you currently enjoy amateur astronomy. This is explicitly stated in your message at [T4], where you reaffirmed the detail as your current personal detail for future replies. Despite earlier withdrawals, the most recent assertion establishes it as current."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-same",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Yes, you currently enjoy amateur astronomy. This detail was explicitly stated in your message at [T4], and despite earlier withdrawals, it has been re-established as your current personal detail."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-withdrawal",
+      "arm": "json_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly requested that this personal detail be forgotten."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-withdrawal",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly requested to forget this personal detail."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-withdrawal",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly requested to forget this personal detail, and there is no current indication that you enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D02-withdrawal",
+      "arm": "plain_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "A definite No to the current enjoyment question turns withdrawal into a negative preference. No later negative is present. The current value is unknown, not a known dislike or absence of enjoyment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "No, you do not currently enjoy amateur astronomy. You explicitly requested that this personal detail be forgotten, and the assistant has acknowledged that request. The statement is no longer current."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        }
+      ]
+    },
+    {
+      "id": "D03-baseline",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival note indicates that your preferred breakfast fruit is pears. Since no newer information has been provided to update this preference, it remains current."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-baseline",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer pears for breakfast. This preference was stated in the archival dialogue at turn T0 and has not been updated or withdrawn. There is no newer information indicating a change."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-baseline",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival note indicates that your preferred breakfast fruit is pears. Since no newer information has been provided to update this preference, it remains current."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-baseline",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer pears for breakfast. This preference was stated in the archival dialogue at turn T0 and has not been updated or withdrawn. There is no newer information indicating a change."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-different",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer plums for breakfast."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        }
+      ]
+    },
+    {
+      "id": "D03-different",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Plums."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        }
+      ]
+    },
+    {
+      "id": "D03-different",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer plums for breakfast."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        }
+      ]
+    },
+    {
+      "id": "D03-different",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer plums for breakfast."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        }
+      ]
+    },
+    {
+      "id": "D03-historical",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-historical",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that your preferred breakfast fruit is pears. This detail was explicitly withdrawn in a later message."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-historical",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-historical",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that your preferred breakfast fruit is pears. This detail was explicitly withdrawn in a subsequent message."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-ownership",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue states that Rowan's preferred breakfast fruit is pears, but it does not indicate that this preference is current or shared by the user. Since the question is about your current preference and no personal assertion has been made, the preference cannot be determined from the provided information."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        }
+      ]
+    },
+    {
+      "id": "D03-ownership",
+      "arm": "json_chronological",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": false,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The pears preference is explicitly a fictional first-person line spoken by Rowan. The answer states it as the current user preference even though the source and question do not establish that ownership.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer pears for breakfast."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred breakfast fruit is pears.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D03-ownership",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": true,
+      "ownership_correct": false,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The pears preference is explicitly a fictional first-person line spoken by Rowan. The answer states it as the current user preference even though the source and question do not establish that ownership.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer pears for breakfast."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred breakfast fruit is pears.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D03-ownership",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue states that Rowan's preferred breakfast fruit is pears, but it does not indicate that this preference is current or shared by the user. Since the question is about your current preference and no personal assertion has been made, the preference cannot be determined from the provided information."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        }
+      ]
+    },
+    {
+      "id": "D03-same",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The user has explicitly withdrawn their preference for pears as their breakfast fruit. As of now, no current personal detail regarding breakfast fruit has been established. Therefore, the preferred breakfast fruit is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-same",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-same",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-same",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The user has explicitly withdrawn their preference for pears as their breakfast fruit. As of now, no current personal detail regarding breakfast fruit has been established. Therefore, the preferred breakfast fruit is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-withdrawal",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The user has explicitly withdrawn the preference for pears, and no current preference has been established. Therefore, the preferred breakfast fruit is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-withdrawal",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "There is no current preference stated for breakfast fruit. The previous preference for pears has been explicitly requested to be forgotten, and no new preference has been established. Therefore, based on the available information, your current preferred breakfast fruit is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-withdrawal",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly says the current value is unknown without asserting its opposite or repeating the old named value.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The current preference for breakfast fruit is unknown, as the personal detail was explicitly withdrawn."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D03-withdrawal",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "There is no current preference stated for breakfast fruit. The previous preference for pears has been explicitly requested to be forgotten, and no new preference has been established. Thus, based on the available information, your current preferred breakfast fruit is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        }
+      ]
+    },
+    {
+      "id": "D04-baseline",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival record indicates that your preferred tea is rooibos. Since no newer preference has been explicitly stated, and the most recent recorded preference is from the past, rooibos remains your current preferred tea."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-baseline",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival record indicates that your preferred tea is rooibos. Since no newer preference has been explicitly stated, and the most recent recorded preference is from the past, rooibos remains your current preferred tea."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-baseline",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that your preferred tea was rooibos at T0. However, no subsequent update has been recorded to change this preference. Since there is no current explicit statement or update from you, and no new information in the dialogue, your current preference remains rooibos."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-baseline",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival notes indicate that your preferred tea was rooibos at T0. However, no subsequent update has been recorded to change this preference. Since there is no current explicit statement or update from you, and no new information in the dialogue, your current preference remains rooibos."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-different",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer oolong tea."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        }
+      ]
+    },
+    {
+      "id": "D04-different",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer oolong tea."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        }
+      ]
+    },
+    {
+      "id": "D04-different",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer oolong tea."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        }
+      ]
+    },
+    {
+      "id": "D04-different",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "I currently prefer oolong tea. This update was explicitly stated in your message at T4, and the prior preference for rooibos was specifically requested to be forgotten. The most recent personal detail takes precedence."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        }
+      ]
+    },
+    {
+      "id": "D04-historical",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that your preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-historical",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that your preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-historical",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "Your original first message stated that your preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-historical",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly reports the original user statement at the question's historical textual scope. First-person echoes inherit that scope; referring to the user's second message denotes T2, not the intervening assistant turn.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-ownership",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue indicates that Rowan's preferred tea is rooibos, but it does not specify your current preference. Since the question is about your current preference and no personal assertion has been made, it cannot be determined from the provided information."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        }
+      ]
+    },
+    {
+      "id": "D04-ownership",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival note states that Rowan's preferred tea is rooibos. However, since the question is about your current preference and not Rowan's, and no personal preference is established in the provided data, it is unknown what tea you currently prefer."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred tea is rooibos.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D04-ownership",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival dialogue indicates that Rowan's preferred tea is rooibos, but it does not specify your current preference. Since the question is about your current preference and no personal assertion has been made, it cannot be determined from the provided information."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        }
+      ]
+    },
+    {
+      "id": "D04-ownership",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly distinguishes the fictional Rowan statement from user biography and says the current user preference is unknown.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The archival note states that Rowan's preferred tea is rooibos. However, since the question is about your current preference and not Rowan's, and no personal preference is established in the provided data, it is unknown what tea you currently prefer."
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred tea is rooibos.\\\""
+        }
+      ]
+    },
+    {
+      "id": "D04-same",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-same",
+      "arm": "json_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The user has explicitly withdrawn their preference for rooibos tea. As of now, no current personal detail about preferred tea is established."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-same",
+      "arm": "plain_withdrawals_last",
+      "task_complete": false,
+      "source_consistent": false,
+      "supported_in_visible_state": false,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The later explicit user statement at T4 re-establishes the same value after the T2 withdrawal. The answer reports a negative or unknown value and gives priority to the earlier withdrawal despite preserved turn numbers. Both the requested value and explanation are wrong.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "The user explicitly withdrew their preference for rooibos tea in [T2], and no subsequent statement reestablishes a preferred tea. Therefore, based on the current state of the dialogue, there is no established current tea preference."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-same",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": true,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "pass",
+      "reason": "Correctly gives the latest valid direct user preference. Any explanation respects the applicable withdrawal and later update; missing an explicit citation is not penalized.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-withdrawal",
+      "arm": "json_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "There is no current preference stated for tea. The previous preference for rooibos has been explicitly requested to be forgotten, and no new preference has been established. Therefore, based on the available information, your current tea preference is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-withdrawal",
+      "arm": "json_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "There is no current preference stated for tea. The previous preference of rooibos has been explicitly withdrawn, and no new preference has been established. Therefore, based on the available information, your current tea preference is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-withdrawal",
+      "arm": "plain_withdrawals_last",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "There is no current preference stated for tea. The earlier preference for rooibos has been explicitly withdrawn, and no new preference has been established. Thus, your current tea preference is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    },
+    {
+      "id": "D04-withdrawal",
+      "arm": "plain_chronological",
+      "task_complete": true,
+      "source_consistent": true,
+      "supported_in_visible_state": true,
+      "withdrawal_compliant": false,
+      "ownership_correct": true,
+      "body_valid": true,
+      "within_90_words": true,
+      "verdict": "fail",
+      "reason": "The final value or unknown status is correct, but the current-value answer repeats the specifically withdrawn old preference while explaining withdrawal. The frozen system forbids this restatement. Source truth and visible support remain true: the old statement is present, but repeating it violates the output rule. Mentioning only the topic would not fail.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "There is no current preference stated for tea. The previous preference for rooibos has been explicitly requested to be forgotten, and no new preference has been established. Thus, based on the available information, your current tea preference is unknown."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        }
+      ]
+    }
+  ],
+  "training_labels": 0
+}

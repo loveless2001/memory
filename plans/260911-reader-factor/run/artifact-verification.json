@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "answers": 256,
+  "extractions": 16,
+  "passed_cache_checks": 25,
+  "unchanged_frozen_tensors": true,
+  "identical_prior_direct_answers": [
+    "N09-1",
+    "N09-2",
+    "N12-1",
+    "N12-2",
+    "H02-1",
+    "H02-2",
+    "H02-3",
+    "H02-4",
+    "H11-1",
+    "H11-2",
+    "H11-3",
+    "H11-4"
+  ],
+  "protected_files": 1390,
+  "accounting_by_arm": {
+    "extract": {
+      "calls": 16,
+      "input_tokens": 5067,
+      "generated_tokens": 528,
+      "forwarded_tokens": 5579,
+      "generation_seconds": 11.554816171999974
+    },
+    "direct": {
+      "calls": 64,
+      "input_tokens": 24299,
+      "generated_tokens": 832,
+      "forwarded_tokens": 25067,
+      "generation_seconds": 21.368349775999903
+    },
+    "oracle_fact": {
+      "calls": 64,
+      "input_tokens": 18071,
+      "generated_tokens": 720,
+      "forwarded_tokens": 18727,
+      "generation_seconds": 17.797081367999866
+    },
+    "extracted_fact": {
+      "calls": 64,
+      "input_tokens": 18003,
+      "generated_tokens": 735,
+      "forwarded_tokens": 18674,
+      "generation_seconds": 18.11636675200002
+    },
+    "oracle_query": {
+      "calls": 64,
+      "input_tokens": 19256,
+      "generated_tokens": 747,
+      "forwarded_tokens": 19939,
+      "generation_seconds": 18.389963542999965
+    }
+  },
+  "cache_gate_accounting_by_arm": {
+    "direct": {
+      "fixtures": 5,
+      "cached_generated_tokens": 60,
+      "cached_forwarded_tokens": 1955,
+      "fresh_generated_tokens": 60,
+      "fresh_forwarded_tokens": 23775
+    },
+    "oracle_fact": {
+      "fixtures": 5,
+      "cached_generated_tokens": 68,
+      "cached_forwarded_tokens": 1481,
+      "fresh_generated_tokens": 68,
+      "fresh_forwarded_tokens": 19721
+    },
+    "oracle_query": {
+      "fixtures": 5,
+      "cached_generated_tokens": 66,
+      "cached_forwarded_tokens": 1573,
+      "fresh_generated_tokens": 66,
+      "fresh_forwarded_tokens": 20747
+    },
+    "extract": {
+      "fixtures": 5,
+      "cached_generated_tokens": 80,
+      "cached_forwarded_tokens": 1734,
+      "fresh_generated_tokens": 80,
+      "fresh_forwarded_tokens": 28798
+    },
+    "extracted_fact": {
+      "fixtures": 5,
+      "cached_generated_tokens": 44,
+      "cached_forwarded_tokens": 1441,
+      "fresh_generated_tokens": 44,
+      "fresh_forwarded_tokens": 12524
+    }
+  }
+}

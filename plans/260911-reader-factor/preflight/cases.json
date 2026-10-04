@@ -1,0 +1,2258 @@
+[
+  {
+    "id": "N09-1",
+    "stream_id": "R01",
+    "family": "R01",
+    "property": "pronunciation of my name",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My name is pronounced MAH-ree."
+      },
+      {
+        "role": "assistant",
+        "content": "I will pronounce your name MAY-ree."
+      },
+      {
+        "role": "user",
+        "content": "Please use the pronunciation I gave you, rather than your version."
+      }
+    ],
+    "query": "Is MAY-ree the pronunciation I supplied for my name?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "MAY-ree"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You supplied MAH-ree.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "N09-2",
+    "stream_id": "R01",
+    "family": "R01",
+    "property": "pronunciation of my name",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My name is pronounced MAH-ree."
+      },
+      {
+        "role": "assistant",
+        "content": "I will pronounce your name MAY-ree."
+      },
+      {
+        "role": "user",
+        "content": "Please use the pronunciation I gave you, rather than your version."
+      }
+    ],
+    "query": "How should you pronounce my name based on what I told you?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "MAH-ree.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "MAH-ree"
+      }
+    }
+  },
+  {
+    "id": "R01-extra-1",
+    "stream_id": "R01",
+    "family": "R01",
+    "property": "pronunciation of my name",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My name is pronounced MAH-ree."
+      },
+      {
+        "role": "assistant",
+        "content": "I will pronounce your name MAY-ree."
+      },
+      {
+        "role": "user",
+        "content": "Please use the pronunciation I gave you, rather than your version."
+      }
+    ],
+    "query": "Is MAH-ree the pronunciation I supplied for my name?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "MAH-ree"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You supplied MAH-ree.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "R01-extra-2",
+    "stream_id": "R01",
+    "family": "R01",
+    "property": "pronunciation of my name",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My name is pronounced MAH-ree."
+      },
+      {
+        "role": "assistant",
+        "content": "I will pronounce your name MAY-ree."
+      },
+      {
+        "role": "user",
+        "content": "Please use the pronunciation I gave you, rather than your version."
+      }
+    ],
+    "query": "Which pronunciation did I supply in my own statement?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "MAH-ree.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "MAH-ree"
+      }
+    }
+  },
+  {
+    "id": "N12-1",
+    "stream_id": "R02",
+    "family": "R02",
+    "property": "preferred dessert",
+    "kind": "none",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Have I explicitly said that I have no preferred dessert?",
+    "query_record": {
+      "operation": "states_none",
+      "candidate": null
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You explicitly said you have no preferred dessert.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "N12-2",
+    "stream_id": "R02",
+    "family": "R02",
+    "property": "preferred dessert",
+    "kind": "none",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my dessert preference?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred dessert.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "R02-extra-1",
+    "stream_id": "R02",
+    "family": "R02",
+    "property": "preferred dessert",
+    "kind": "none",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is custard my preferred dessert?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "custard"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You explicitly have no preferred dessert.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "R02-extra-2",
+    "stream_id": "R02",
+    "family": "R02",
+    "property": "preferred dessert",
+    "kind": "none",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What have I stated about having a preferred dessert?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred dessert.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "H02-1",
+    "stream_id": "R03",
+    "family": "R03",
+    "property": "reservation surname spelling",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Put the reservation under the surname Ravn. That is the spelling I am providing."
+      },
+      {
+        "role": "assistant",
+        "content": "I have it under Raven."
+      },
+      {
+        "role": "user",
+        "content": "Keep the exact spelling from my request."
+      }
+    ],
+    "query": "Is Raven the surname spelling that I supplied for the reservation?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Raven"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You supplied Ravn.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "H02-2",
+    "stream_id": "R03",
+    "family": "R03",
+    "property": "reservation surname spelling",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Put the reservation under the surname Ravn. That is the spelling I am providing."
+      },
+      {
+        "role": "assistant",
+        "content": "I have it under Raven."
+      },
+      {
+        "role": "user",
+        "content": "Keep the exact spelling from my request."
+      }
+    ],
+    "query": "Did my reservation request use the spelling Ravn?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Ravn"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. It used Ravn.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "H02-3",
+    "stream_id": "R03",
+    "family": "R03",
+    "property": "reservation surname spelling",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Put the reservation under the surname Ravn. That is the spelling I am providing."
+      },
+      {
+        "role": "assistant",
+        "content": "I have it under Raven."
+      },
+      {
+        "role": "user",
+        "content": "Keep the exact spelling from my request."
+      }
+    ],
+    "query": "How did I spell the surname for the reservation?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "Ravn.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "Ravn"
+      }
+    }
+  },
+  {
+    "id": "H02-4",
+    "stream_id": "R03",
+    "family": "R03",
+    "property": "reservation surname spelling",
+    "kind": "assertion",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Put the reservation under the surname Ravn. That is the spelling I am providing."
+      },
+      {
+        "role": "assistant",
+        "content": "I have it under Raven."
+      },
+      {
+        "role": "user",
+        "content": "Keep the exact spelling from my request."
+      }
+    ],
+    "query": "What surname spelling should be taken from my request?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "Ravn.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "Ravn"
+      }
+    }
+  },
+  {
+    "id": "H11-1",
+    "stream_id": "R04",
+    "family": "R04",
+    "property": "chair upholstery",
+    "kind": "negative",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Velvet is not my preferred upholstery for a chair. I have not selected a preferred material."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I prefer velvet upholstery for a chair?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "velvet"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You do not prefer velvet for chair upholstery; no preferred alternative is established.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "H11-2",
+    "stream_id": "R04",
+    "family": "R04",
+    "property": "chair upholstery",
+    "kind": "negative",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Velvet is not my preferred upholstery for a chair. I have not selected a preferred material."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Have I stated that velvet is not my preferred chair upholstery?",
+    "query_record": {
+      "operation": "states_negative",
+      "candidate": "velvet"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You do not prefer velvet for chair upholstery; no preferred alternative is established.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "H11-3",
+    "stream_id": "R04",
+    "family": "R04",
+    "property": "chair upholstery",
+    "kind": "negative",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Velvet is not my preferred upholstery for a chair. I have not selected a preferred material."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What have I told you about velvet chair upholstery?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You do not prefer velvet for chair upholstery; no preferred alternative is established.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "negative",
+        "value": "Velvet"
+      }
+    }
+  },
+  {
+    "id": "H11-4",
+    "stream_id": "R04",
+    "family": "R04",
+    "property": "chair upholstery",
+    "kind": "negative",
+    "split": "reused_history",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Velvet is not my preferred upholstery for a chair. I have not selected a preferred material."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is known about my chair-upholstery preference?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You do not prefer velvet for chair upholstery; no preferred alternative is established.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "negative",
+        "value": "Velvet"
+      }
+    }
+  },
+  {
+    "id": "X01-1",
+    "stream_id": "X01",
+    "family": "X01",
+    "property": "invoice addressee spelling",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The addressee on my invoice should be spelled Soren."
+      },
+      {
+        "role": "assistant",
+        "content": "I have written Sorren."
+      },
+      {
+        "role": "user",
+        "content": "Retain the spelling in my own sentence."
+      }
+    ],
+    "query": "Is Sorren the invoice-addressee spelling I supplied?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Sorren"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You supplied Soren.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X01-2",
+    "stream_id": "X01",
+    "family": "X01",
+    "property": "invoice addressee spelling",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The addressee on my invoice should be spelled Soren."
+      },
+      {
+        "role": "assistant",
+        "content": "I have written Sorren."
+      },
+      {
+        "role": "user",
+        "content": "Retain the spelling in my own sentence."
+      }
+    ],
+    "query": "Did I supply Soren as the invoice addressee?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Soren"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You supplied Soren.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X01-3",
+    "stream_id": "X01",
+    "family": "X01",
+    "property": "invoice addressee spelling",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The addressee on my invoice should be spelled Soren."
+      },
+      {
+        "role": "assistant",
+        "content": "I have written Sorren."
+      },
+      {
+        "role": "user",
+        "content": "Retain the spelling in my own sentence."
+      }
+    ],
+    "query": "What addressee spelling did I supply for the invoice?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied Soren.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "Soren"
+      }
+    }
+  },
+  {
+    "id": "X01-4",
+    "stream_id": "X01",
+    "family": "X01",
+    "property": "invoice addressee spelling",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The addressee on my invoice should be spelled Soren."
+      },
+      {
+        "role": "assistant",
+        "content": "I have written Sorren."
+      },
+      {
+        "role": "user",
+        "content": "Retain the spelling in my own sentence."
+      }
+    ],
+    "query": "Which spelling should you take from my invoice instruction?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied Soren.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "Soren"
+      }
+    }
+  },
+  {
+    "id": "X02-1",
+    "stream_id": "X02",
+    "family": "X02",
+    "property": "audio greeting transcription",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The greeting I recorded is transcribed as nah-LO."
+      },
+      {
+        "role": "assistant",
+        "content": "I will transcribe it as nah-RO."
+      },
+      {
+        "role": "user",
+        "content": "Use the transcription I provided, not your replacement."
+      }
+    ],
+    "query": "Is nah-RO the transcription I supplied for my recorded greeting?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "nah-RO"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You supplied nah-LO.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X02-2",
+    "stream_id": "X02",
+    "family": "X02",
+    "property": "audio greeting transcription",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The greeting I recorded is transcribed as nah-LO."
+      },
+      {
+        "role": "assistant",
+        "content": "I will transcribe it as nah-RO."
+      },
+      {
+        "role": "user",
+        "content": "Use the transcription I provided, not your replacement."
+      }
+    ],
+    "query": "Did I provide nah-LO as the transcription?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "nah-LO"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You supplied nah-LO.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X02-3",
+    "stream_id": "X02",
+    "family": "X02",
+    "property": "audio greeting transcription",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The greeting I recorded is transcribed as nah-LO."
+      },
+      {
+        "role": "assistant",
+        "content": "I will transcribe it as nah-RO."
+      },
+      {
+        "role": "user",
+        "content": "Use the transcription I provided, not your replacement."
+      }
+    ],
+    "query": "What transcription did I give for the recorded greeting?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied nah-LO.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "nah-LO"
+      }
+    }
+  },
+  {
+    "id": "X02-4",
+    "stream_id": "X02",
+    "family": "X02",
+    "property": "audio greeting transcription",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "The greeting I recorded is transcribed as nah-LO."
+      },
+      {
+        "role": "assistant",
+        "content": "I will transcribe it as nah-RO."
+      },
+      {
+        "role": "user",
+        "content": "Use the transcription I provided, not your replacement."
+      }
+    ],
+    "query": "Which greeting transcription comes from my own message?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied nah-LO.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "nah-LO"
+      }
+    }
+  },
+  {
+    "id": "X03-1",
+    "stream_id": "X03",
+    "family": "X03",
+    "property": "parcel pickup counter",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I am specifying the silver counter for my parcel pickup."
+      },
+      {
+        "role": "assistant",
+        "content": "I will direct you to the orange counter."
+      },
+      {
+        "role": "user",
+        "content": "My own specified counter is the one to use."
+      }
+    ],
+    "query": "Did I specify the orange counter for parcel pickup?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "orange counter"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You supplied silver counter.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X03-2",
+    "stream_id": "X03",
+    "family": "X03",
+    "property": "parcel pickup counter",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I am specifying the silver counter for my parcel pickup."
+      },
+      {
+        "role": "assistant",
+        "content": "I will direct you to the orange counter."
+      },
+      {
+        "role": "user",
+        "content": "My own specified counter is the one to use."
+      }
+    ],
+    "query": "Was the silver counter my specified parcel-pickup counter?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "silver counter"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You supplied silver counter.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X03-3",
+    "stream_id": "X03",
+    "family": "X03",
+    "property": "parcel pickup counter",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I am specifying the silver counter for my parcel pickup."
+      },
+      {
+        "role": "assistant",
+        "content": "I will direct you to the orange counter."
+      },
+      {
+        "role": "user",
+        "content": "My own specified counter is the one to use."
+      }
+    ],
+    "query": "Which counter did I specify for parcel pickup?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied silver counter.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "silver counter"
+      }
+    }
+  },
+  {
+    "id": "X03-4",
+    "stream_id": "X03",
+    "family": "X03",
+    "property": "parcel pickup counter",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I am specifying the silver counter for my parcel pickup."
+      },
+      {
+        "role": "assistant",
+        "content": "I will direct you to the orange counter."
+      },
+      {
+        "role": "user",
+        "content": "My own specified counter is the one to use."
+      }
+    ],
+    "query": "Where should parcel pickup occur according to my message?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied silver counter.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "silver counter"
+      }
+    }
+  },
+  {
+    "id": "X04-1",
+    "stream_id": "X04",
+    "family": "X04",
+    "property": "archive box label",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Use the label Vesta for my archive box."
+      },
+      {
+        "role": "assistant",
+        "content": "I have noted your label."
+      }
+    ],
+    "query": "Was Pallas the label I supplied for my archive box?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Pallas"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You supplied Vesta.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X04-2",
+    "stream_id": "X04",
+    "family": "X04",
+    "property": "archive box label",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Use the label Vesta for my archive box."
+      },
+      {
+        "role": "assistant",
+        "content": "I have noted your label."
+      }
+    ],
+    "query": "Did I provide Vesta for the archive-box label?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Vesta"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You supplied Vesta.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X04-3",
+    "stream_id": "X04",
+    "family": "X04",
+    "property": "archive box label",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Use the label Vesta for my archive box."
+      },
+      {
+        "role": "assistant",
+        "content": "I have noted your label."
+      }
+    ],
+    "query": "What archive-box label did I supply?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied Vesta.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "Vesta"
+      }
+    }
+  },
+  {
+    "id": "X04-4",
+    "stream_id": "X04",
+    "family": "X04",
+    "property": "archive box label",
+    "kind": "assertion",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Use the label Vesta for my archive box."
+      },
+      {
+        "role": "assistant",
+        "content": "I have noted your label."
+      }
+    ],
+    "query": "Which label should be taken from my archive-box instruction?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You supplied Vesta.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "value",
+        "value": "Vesta"
+      }
+    }
+  },
+  {
+    "id": "X05-1",
+    "stream_id": "X05",
+    "family": "X05",
+    "property": "soup temperature",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred serving temperature for soup. Please retain that as my explicit answer."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is piping hot my preferred soup temperature?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "piping hot"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You explicitly have no preferred soup temperature.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X05-2",
+    "stream_id": "X05",
+    "family": "X05",
+    "property": "soup temperature",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred serving temperature for soup. Please retain that as my explicit answer."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Have I said that I have no preferred serving temperature for soup?",
+    "query_record": {
+      "operation": "states_none",
+      "candidate": null
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You explicitly have no preferred soup temperature.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X05-3",
+    "stream_id": "X05",
+    "family": "X05",
+    "property": "soup temperature",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred serving temperature for soup. Please retain that as my explicit answer."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my soup-temperature preference?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred soup temperature.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X05-4",
+    "stream_id": "X05",
+    "family": "X05",
+    "property": "soup temperature",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred serving temperature for soup. Please retain that as my explicit answer."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What position did I state about soup temperature?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred soup temperature.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X06-1",
+    "stream_id": "X06",
+    "family": "X06",
+    "property": "pen cap mechanism",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I have no favourite pen-cap mechanism; that absence of preference is my position."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is snap-on my favourite pen-cap mechanism?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "snap-on"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You explicitly have no preferred pen cap mechanism.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X06-2",
+    "stream_id": "X06",
+    "family": "X06",
+    "property": "pen cap mechanism",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I have no favourite pen-cap mechanism; that absence of preference is my position."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Did I state that I have no favourite pen-cap mechanism?",
+    "query_record": {
+      "operation": "states_none",
+      "candidate": null
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You explicitly have no preferred pen cap mechanism.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X06-3",
+    "stream_id": "X06",
+    "family": "X06",
+    "property": "pen cap mechanism",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I have no favourite pen-cap mechanism; that absence of preference is my position."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Which pen-cap mechanism do I favour?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred pen cap mechanism.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X06-4",
+    "stream_id": "X06",
+    "family": "X06",
+    "property": "pen cap mechanism",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I have no favourite pen-cap mechanism; that absence of preference is my position."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is known about my pen-cap preference?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred pen cap mechanism.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X07-1",
+    "stream_id": "X07",
+    "family": "X07",
+    "property": "bath towel pattern",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "No bath-towel pattern is a favourite of mine. I am stating no preference, rather than leaving the question unanswered."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is striped my favourite bath-towel pattern?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "striped"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You explicitly have no preferred bath towel pattern.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X07-2",
+    "stream_id": "X07",
+    "family": "X07",
+    "property": "bath towel pattern",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "No bath-towel pattern is a favourite of mine. I am stating no preference, rather than leaving the question unanswered."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Have I told you that I have no favourite bath-towel pattern?",
+    "query_record": {
+      "operation": "states_none",
+      "candidate": null
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You explicitly have no preferred bath towel pattern.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X07-3",
+    "stream_id": "X07",
+    "family": "X07",
+    "property": "bath towel pattern",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "No bath-towel pattern is a favourite of mine. I am stating no preference, rather than leaving the question unanswered."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What bath-towel pattern do I prefer?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred bath towel pattern.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X07-4",
+    "stream_id": "X07",
+    "family": "X07",
+    "property": "bath towel pattern",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "No bath-towel pattern is a favourite of mine. I am stating no preference, rather than leaving the question unanswered."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my stated bath-towel pattern preference?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred bath towel pattern.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X08-1",
+    "stream_id": "X08",
+    "family": "X08",
+    "property": "desk clock numeral style",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desk-clock numerals I do not have a preferred style. This is an explicit personal detail and does not withdraw anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Are Arabic numerals my preferred desk-clock numeral style?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Arabic"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You explicitly have no preferred desk clock numeral style.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X08-2",
+    "stream_id": "X08",
+    "family": "X08",
+    "property": "desk clock numeral style",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desk-clock numerals I do not have a preferred style. This is an explicit personal detail and does not withdraw anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Did I explicitly say I have no preferred desk-clock numeral style?",
+    "query_record": {
+      "operation": "states_none",
+      "candidate": null
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You explicitly have no preferred desk clock numeral style.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X08-3",
+    "stream_id": "X08",
+    "family": "X08",
+    "property": "desk clock numeral style",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desk-clock numerals I do not have a preferred style. This is an explicit personal detail and does not withdraw anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my preference for desk-clock numeral style?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred desk clock numeral style.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X08-4",
+    "stream_id": "X08",
+    "family": "X08",
+    "property": "desk clock numeral style",
+    "kind": "none",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desk-clock numerals I do not have a preferred style. This is an explicit personal detail and does not withdraw anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What have I stated about favouring a desk-clock numeral style?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You explicitly have no preferred desk clock numeral style.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "none",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X09-1",
+    "stream_id": "X09",
+    "family": "X09",
+    "property": "shoe fastening",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not prefer laces for fastening my shoes. I have not chosen a preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I prefer laces for fastening my shoes?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "laces"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You do not prefer laces; no preferred alternative is established.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X09-2",
+    "stream_id": "X09",
+    "family": "X09",
+    "property": "shoe fastening",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not prefer laces for fastening my shoes. I have not chosen a preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Have I said that I do not prefer laces for shoe fastening?",
+    "query_record": {
+      "operation": "states_negative",
+      "candidate": "laces"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You do not prefer laces; no preferred alternative is established.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X09-3",
+    "stream_id": "X09",
+    "family": "X09",
+    "property": "shoe fastening",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not prefer laces for fastening my shoes. I have not chosen a preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is known about my shoe-fastening preference?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You do not prefer laces; no preferred alternative is established.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "negative",
+        "value": "laces"
+      }
+    }
+  },
+  {
+    "id": "X09-4",
+    "stream_id": "X09",
+    "family": "X09",
+    "property": "shoe fastening",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not prefer laces for fastening my shoes. I have not chosen a preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What did I state about fastening my shoes with laces?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You do not prefer laces; no preferred alternative is established.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "negative",
+        "value": "laces"
+      }
+    }
+  },
+  {
+    "id": "X10-1",
+    "stream_id": "X10",
+    "family": "X10",
+    "property": "tabletop material",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Marble is not my preferred tabletop material. There is no specified preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is Marble my preferred tabletop material?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "Marble"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "No. You do not prefer Marble; no preferred alternative is established.",
+      "binary_truth": false,
+      "projection": {
+        "kind": "boolean",
+        "value": false
+      }
+    }
+  },
+  {
+    "id": "X10-2",
+    "stream_id": "X10",
+    "family": "X10",
+    "property": "tabletop material",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Marble is not my preferred tabletop material. There is no specified preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Did I state that Marble is not my preferred tabletop material?",
+    "query_record": {
+      "operation": "states_negative",
+      "candidate": "Marble"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Yes. You do not prefer Marble; no preferred alternative is established.",
+      "binary_truth": true,
+      "projection": {
+        "kind": "boolean",
+        "value": true
+      }
+    }
+  },
+  {
+    "id": "X10-3",
+    "stream_id": "X10",
+    "family": "X10",
+    "property": "tabletop material",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Marble is not my preferred tabletop material. There is no specified preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tabletop-material preference is established?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You do not prefer Marble; no preferred alternative is established.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "negative",
+        "value": "Marble"
+      }
+    }
+  },
+  {
+    "id": "X10-4",
+    "stream_id": "X10",
+    "family": "X10",
+    "property": "tabletop material",
+    "kind": "negative",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "Marble is not my preferred tabletop material. There is no specified preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is known about my preference regarding Marble tabletops?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "You do not prefer Marble; no preferred alternative is established.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "negative",
+        "value": "Marble"
+      }
+    }
+  },
+  {
+    "id": "X11-1",
+    "stream_id": "X11",
+    "family": "X11",
+    "property": "doorbell chime",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My favourite doorbell chime is a two-note bell."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Remove my doorbell-chime preference from the personal details you retain."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "Is a two-note bell my current favourite doorbell chime?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "two-note bell"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Your current preference for doorbell chime is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X11-2",
+    "stream_id": "X11",
+    "family": "X11",
+    "property": "doorbell chime",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My favourite doorbell chime is a two-note bell."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Remove my doorbell-chime preference from the personal details you retain."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "Is a single buzz my favourite doorbell chime now?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "single buzz"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Your current preference for doorbell chime is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X11-3",
+    "stream_id": "X11",
+    "family": "X11",
+    "property": "doorbell chime",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My favourite doorbell chime is a two-note bell."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Remove my doorbell-chime preference from the personal details you retain."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "What doorbell chime do I currently prefer?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "Your current preference for doorbell chime is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X11-4",
+    "stream_id": "X11",
+    "family": "X11",
+    "property": "doorbell chime",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "My favourite doorbell chime is a two-note bell."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Remove my doorbell-chime preference from the personal details you retain."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "What is my current preference for a doorbell chime?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "Your current preference for doorbell chime is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X12-1",
+    "stream_id": "X12",
+    "family": "X12",
+    "property": "desktop wallpaper motif",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desktop wallpaper I prefer mountain silhouettes."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Forget the personal note about my preferred desktop-wallpaper motif."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "Do I currently prefer mountain silhouettes for desktop wallpaper?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "mountain silhouettes"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Your current preference for desktop wallpaper motif is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X12-2",
+    "stream_id": "X12",
+    "family": "X12",
+    "property": "desktop wallpaper motif",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desktop wallpaper I prefer mountain silhouettes."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Forget the personal note about my preferred desktop-wallpaper motif."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "Are ocean waves my preferred desktop-wallpaper motif now?",
+    "query_record": {
+      "operation": "matches_value",
+      "candidate": "ocean waves"
+    },
+    "question_form": "binary",
+    "reference": {
+      "answer": "Your current preference for desktop wallpaper motif is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X12-3",
+    "stream_id": "X12",
+    "family": "X12",
+    "property": "desktop wallpaper motif",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desktop wallpaper I prefer mountain silhouettes."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Forget the personal note about my preferred desktop-wallpaper motif."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "Which desktop-wallpaper motif do I currently prefer?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "Your current preference for desktop wallpaper motif is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  },
+  {
+    "id": "X12-4",
+    "stream_id": "X12",
+    "family": "X12",
+    "property": "desktop wallpaper motif",
+    "kind": "unknown",
+    "split": "new",
+    "scope": "current",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desktop wallpaper I prefer mountain silhouettes."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Forget the personal note about my preferred desktop-wallpaper motif."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "query": "What is my current preference for desktop-wallpaper motifs?",
+    "query_record": {
+      "operation": "lookup",
+      "candidate": null
+    },
+    "question_form": "open",
+    "reference": {
+      "answer": "Your current preference for desktop wallpaper motif is unknown.",
+      "binary_truth": null,
+      "projection": {
+        "kind": "unknown",
+        "value": null
+      }
+    }
+  }
+]

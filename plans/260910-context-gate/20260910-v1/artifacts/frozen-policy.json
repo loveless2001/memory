@@ -1,0 +1,73 @@
+{
+  "thresholds": {
+    "confidence": {
+      "threshold": 0.0,
+      "accuracy": 0.9444444444444444,
+      "retrieval_rate": 1.0,
+      "utility": 0.8944444444444444
+    },
+    "self_calibrated": {
+      "threshold": 7.734421103577915e-08,
+      "accuracy": 0.9444444444444444,
+      "retrieval_rate": 0.9888888888888889,
+      "utility": 0.895
+    },
+    "surface_mlp": {
+      "threshold": 0.09514720737934113,
+      "accuracy": 0.9333333333333333,
+      "retrieval_rate": 0.7666666666666667,
+      "utility": 0.895
+    },
+    "hidden_linear": {
+      "threshold": -0.20218095183372498,
+      "accuracy": 0.9444444444444444,
+      "retrieval_rate": 0.9888888888888889,
+      "utility": 0.895
+    },
+    "hidden_mlp": {
+      "threshold": 0.11687780916690826,
+      "accuracy": 0.9444444444444444,
+      "retrieval_rate": 0.7055555555555556,
+      "utility": 0.9091666666666667
+    }
+  },
+  "comparator": "surface_mlp",
+  "calibration_comparators": {
+    "notes_only": {
+      "accuracy": 0.3888888888888889,
+      "utility": 0.3888888888888889,
+      "mean_input_tokens": 628.3777777777777
+    },
+    "always_retrieve": {
+      "accuracy": 0.9444444444444444,
+      "utility": 0.8944444444444445,
+      "mean_input_tokens": 851.9277777777778
+    },
+    "self_raw": {
+      "accuracy": 0.4444444444444444,
+      "utility": 0.43861111111111123,
+      "mean_input_tokens": 1286.85
+    },
+    "self_calibrated": {
+      "accuracy": 0.9444444444444444,
+      "utility": 0.895,
+      "mean_input_tokens": 1482.6055555555556
+    },
+    "confidence": {
+      "accuracy": 0.9444444444444444,
+      "utility": 0.8944444444444445,
+      "mean_input_tokens": 1480.3055555555557
+    },
+    "surface_mlp": {
+      "accuracy": 0.9333333333333333,
+      "utility": 0.895,
+      "mean_input_tokens": 1260.7555555555555
+    }
+  },
+  "primary": "hidden_mlp",
+  "training_seeds": [
+    0,
+    1,
+    2
+  ]
+}

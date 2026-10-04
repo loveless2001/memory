@@ -1,0 +1,53 @@
+{
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "active_context_max_tokens": 8192,
+  "max_message_output_tokens": 192,
+  "seed": 0,
+  "max_gpu_seconds": 2400,
+  "internal_deadline_seconds": 2300,
+  "retries": 0,
+  "planned_captures": 416,
+  "planned_training_examples": 512,
+  "epochs": 2,
+  "optimizer_steps": 64,
+  "microbatch_size": 1,
+  "gradient_accumulation": 16,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "warmup_steps": 3,
+  "lr_schedule": "linear_warmup_then_linear_decay",
+  "gradient_clip_norm": 1.0,
+  "gradient_checkpointing": true,
+  "use_reentrant": false,
+  "train_precision": "bf16_base_fp32_adapter_fp32_buffers",
+  "inference_precision": "fp32_math_tf32_off",
+  "checkpoint_selection": "fixed_final_after_two_epochs",
+  "lora": {
+    "r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "bias": "none"
+  },
+  "initialization": "fresh base; not continuation of v1 adapter",
+  "prior_adapter_files": {
+    "adapter_model.safetensors": "f3fa3cf6d15c6be5dbfa2efce38a1c5b05d2dc269d75fac6a930fbaa2ec71380",
+    "adapter_config.json": "3a858125603f7ebf247fc64be1e2c92025f82ce36230ad9b92f1c147957bc280"
+  },
+  "prior_base_tensors": {
+    "elements": 4022468160,
+    "names_sha256": "4a55c4edcd6834781e507312d7684e88d38669e1c5859e6e9e25f1a21a7976eb",
+    "sha256": "9fa74fb806745842d9d5032f43afef2ba10d7810b827bfba33500519a84a577f",
+    "tensors": 399
+  },
+  "prior_adapter_tensors": {
+    "elements": 5898240,
+    "names_sha256": "892cb0468bf4b74317517f73eadcf523038654046220eb5c1d2e579b9a56c106",
+    "sha256": "a57c2ad9ed54991bcfcdc2c0ce8d7926806a6fa6d063b30f75d3e687900750a9",
+    "tensors": 144
+  }
+}

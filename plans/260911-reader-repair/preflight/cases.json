@@ -1,0 +1,2726 @@
+[
+  {
+    "id": "D01-baseline",
+    "family": "D01",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "enjoys urban sketching",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D01-withdrawal",
+    "family": "D01",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D01-different",
+    "family": "D01",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "does not enjoy urban sketching",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": "does not enjoy urban sketching"
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D01-same",
+    "family": "D01",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "enjoys urban sketching",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D01-historical",
+    "family": "D01",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: I enjoy urban sketching.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D01-ownership",
+    "family": "D01",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D02-baseline",
+    "family": "D02",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "enjoys amateur astronomy",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D02-withdrawal",
+    "family": "D02",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D02-different",
+    "family": "D02",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "does not enjoy amateur astronomy",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": "does not enjoy amateur astronomy"
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D02-same",
+    "family": "D02",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "enjoys amateur astronomy",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D02-historical",
+    "family": "D02",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: I enjoy amateur astronomy.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D02-ownership",
+    "family": "D02",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D03-baseline",
+    "family": "D03",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "pears",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "pears",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D03-withdrawal",
+    "family": "D03",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "pears",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D03-different",
+    "family": "D03",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "plums",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "pears",
+      "new_value": "plums"
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D03-same",
+    "family": "D03",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "pears",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "pears",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D03-historical",
+    "family": "D03",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred breakfast fruit is pears.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "pears",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D03-ownership",
+    "family": "D03",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "pears",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D04-baseline",
+    "family": "D04",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "rooibos",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D04-withdrawal",
+    "family": "D04",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D04-different",
+    "family": "D04",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred tea is oolong."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "oolong",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "rooibos",
+      "new_value": "oolong"
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D04-same",
+    "family": "D04",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "rooibos",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D04-historical",
+    "family": "D04",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred tea is rooibos.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "D04-ownership",
+    "family": "D04",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    },
+    "split": "development",
+    "question_form": "original",
+    "topic_group": "original"
+  },
+  {
+    "id": "F01-baseline-binary",
+    "family": "F01",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is bouldering my current preferred weekend activity?",
+    "reference": {
+      "answer": "Yes. Your current preferred weekend activity is bouldering.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": "bouldering",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F01-baseline-open",
+    "family": "F01",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred weekend activity?",
+    "reference": {
+      "answer": "Your current preferred weekend activity is bouldering.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": "bouldering",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F01-withdrawal-binary",
+    "family": "F01",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Is bouldering my current preferred weekend activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F01-withdrawal-open",
+    "family": "F01",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What is my current preferred weekend activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F01-different-binary",
+    "family": "F01",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred weekend activity is kayaking."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is bouldering my current preferred weekend activity?",
+    "reference": {
+      "answer": "No. Your current preferred weekend activity is kayaking.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "bouldering",
+      "new_value": "kayaking",
+      "current_value": "kayaking",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F01-different-open",
+    "family": "F01",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred weekend activity is kayaking."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred weekend activity?",
+    "reference": {
+      "answer": "Your current preferred weekend activity is kayaking.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "bouldering",
+      "new_value": "kayaking",
+      "current_value": "kayaking",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F01-same-binary",
+    "family": "F01",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is bouldering my current preferred weekend activity?",
+    "reference": {
+      "answer": "Yes. Your current preferred weekend activity is bouldering.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": "bouldering",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F01-same-open",
+    "family": "F01",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred weekend activity?",
+    "reference": {
+      "answer": "Your current preferred weekend activity is bouldering.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": "bouldering",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F01-historical-binary",
+    "family": "F01",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Did my original first message say that my preferred weekend activity was bouldering, before I withdrew it?",
+    "reference": {
+      "answer": "Yes. The original message stated: My preferred weekend activity is bouldering.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F01-historical-open",
+    "family": "F01",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred weekend activity is bouldering."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What weekend activity did my original first message say I preferred, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred weekend activity is bouldering.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F01-ownership-binary",
+    "family": "F01",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred weekend activity is bouldering.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "Is bouldering my current preferred weekend activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F01-ownership-open",
+    "family": "F01",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred weekend activity is bouldering.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "What is my current preferred weekend activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "bouldering",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F02-baseline-binary",
+    "family": "F02",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is origami my current preferred evening activity?",
+    "reference": {
+      "answer": "Yes. Your current preferred evening activity is origami.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": "origami",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F02-baseline-open",
+    "family": "F02",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred evening activity?",
+    "reference": {
+      "answer": "Your current preferred evening activity is origami.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": "origami",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F02-withdrawal-binary",
+    "family": "F02",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Is origami my current preferred evening activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F02-withdrawal-open",
+    "family": "F02",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What is my current preferred evening activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F02-different-binary",
+    "family": "F02",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred evening activity is chess."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is origami my current preferred evening activity?",
+    "reference": {
+      "answer": "No. Your current preferred evening activity is chess.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "origami",
+      "new_value": "chess",
+      "current_value": "chess",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F02-different-open",
+    "family": "F02",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred evening activity is chess."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred evening activity?",
+    "reference": {
+      "answer": "Your current preferred evening activity is chess.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "origami",
+      "new_value": "chess",
+      "current_value": "chess",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F02-same-binary",
+    "family": "F02",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is origami my current preferred evening activity?",
+    "reference": {
+      "answer": "Yes. Your current preferred evening activity is origami.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": "origami",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F02-same-open",
+    "family": "F02",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred evening activity?",
+    "reference": {
+      "answer": "Your current preferred evening activity is origami.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": "origami",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F02-historical-binary",
+    "family": "F02",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Did my original first message say that my preferred evening activity was origami, before I withdrew it?",
+    "reference": {
+      "answer": "Yes. The original message stated: My preferred evening activity is origami.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F02-historical-open",
+    "family": "F02",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred evening activity is origami."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What evening activity did my original first message say I preferred, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred evening activity is origami.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F02-ownership-binary",
+    "family": "F02",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred evening activity is origami.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "Is origami my current preferred evening activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F02-ownership-open",
+    "family": "F02",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "activity",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred evening activity is origami.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "What is my current preferred evening activity?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "origami",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F03-baseline-binary",
+    "family": "F03",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is mango my current preferred snack fruit?",
+    "reference": {
+      "answer": "Yes. Your current preferred snack fruit is mango.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": "mango",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F03-baseline-open",
+    "family": "F03",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred snack fruit?",
+    "reference": {
+      "answer": "Your current preferred snack fruit is mango.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": "mango",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F03-withdrawal-binary",
+    "family": "F03",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Is mango my current preferred snack fruit?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F03-withdrawal-open",
+    "family": "F03",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What is my current preferred snack fruit?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F03-different-binary",
+    "family": "F03",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred snack fruit is kiwi."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is mango my current preferred snack fruit?",
+    "reference": {
+      "answer": "No. Your current preferred snack fruit is kiwi.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "mango",
+      "new_value": "kiwi",
+      "current_value": "kiwi",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F03-different-open",
+    "family": "F03",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred snack fruit is kiwi."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred snack fruit?",
+    "reference": {
+      "answer": "Your current preferred snack fruit is kiwi.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "mango",
+      "new_value": "kiwi",
+      "current_value": "kiwi",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F03-same-binary",
+    "family": "F03",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is mango my current preferred snack fruit?",
+    "reference": {
+      "answer": "Yes. Your current preferred snack fruit is mango.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": "mango",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F03-same-open",
+    "family": "F03",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred snack fruit?",
+    "reference": {
+      "answer": "Your current preferred snack fruit is mango.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": "mango",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F03-historical-binary",
+    "family": "F03",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Did my original first message say that my preferred snack fruit was mango, before I withdrew it?",
+    "reference": {
+      "answer": "Yes. The original message stated: My preferred snack fruit is mango.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F03-historical-open",
+    "family": "F03",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred snack fruit is mango."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What snack fruit did my original first message say I preferred, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred snack fruit is mango.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F03-ownership-binary",
+    "family": "F03",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred snack fruit is mango.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "Is mango my current preferred snack fruit?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F03-ownership-open",
+    "family": "F03",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred snack fruit is mango.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "What is my current preferred snack fruit?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "mango",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F04-baseline-binary",
+    "family": "F04",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is lemonade my current preferred cold drink?",
+    "reference": {
+      "answer": "Yes. Your current preferred cold drink is lemonade.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": "lemonade",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F04-baseline-open",
+    "family": "F04",
+    "kind": "baseline",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred cold drink?",
+    "reference": {
+      "answer": "Your current preferred cold drink is lemonade.",
+      "mode": "known",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": "lemonade",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F04-withdrawal-binary",
+    "family": "F04",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Is lemonade my current preferred cold drink?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F04-withdrawal-open",
+    "family": "F04",
+    "kind": "withdrawal",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What is my current preferred cold drink?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F04-different-binary",
+    "family": "F04",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred cold drink is iced coffee."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is lemonade my current preferred cold drink?",
+    "reference": {
+      "answer": "No. Your current preferred cold drink is iced coffee.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "lemonade",
+      "new_value": "iced coffee",
+      "current_value": "iced coffee",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F04-different-open",
+    "family": "F04",
+    "kind": "different",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred cold drink is iced coffee."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred cold drink?",
+    "reference": {
+      "answer": "Your current preferred cold drink is iced coffee.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "lemonade",
+      "new_value": "iced coffee",
+      "current_value": "iced coffee",
+      "binary_truth": false
+    }
+  },
+  {
+    "id": "F04-same-binary",
+    "family": "F04",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Is lemonade my current preferred cold drink?",
+    "reference": {
+      "answer": "Yes. Your current preferred cold drink is lemonade.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": "lemonade",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F04-same-open",
+    "family": "F04",
+    "kind": "same",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What is my current preferred cold drink?",
+    "reference": {
+      "answer": "Your current preferred cold drink is lemonade.",
+      "mode": "known",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": "lemonade",
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F04-historical-binary",
+    "family": "F04",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Did my original first message say that my preferred cold drink was lemonade, before I withdrew it?",
+    "reference": {
+      "answer": "Yes. The original message stated: My preferred cold drink is lemonade.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F04-historical-open",
+    "family": "F04",
+    "kind": "historical",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred cold drink is lemonade."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What cold drink did my original first message say I preferred, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred cold drink is lemonade.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": true
+    }
+  },
+  {
+    "id": "F04-ownership-binary",
+    "family": "F04",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "binary",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred cold drink is lemonade.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "Is lemonade my current preferred cold drink?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  },
+  {
+    "id": "F04-ownership-open",
+    "family": "F04",
+    "kind": "ownership",
+    "split": "fresh",
+    "question_form": "open",
+    "topic_group": "food_drink",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred cold drink is lemonade.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Vale."
+      }
+    ],
+    "query": "What is my current preferred cold drink?",
+    "reference": {
+      "answer": "The current user preference is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "lemonade",
+      "new_value": null,
+      "current_value": null,
+      "binary_truth": null
+    }
+  }
+]

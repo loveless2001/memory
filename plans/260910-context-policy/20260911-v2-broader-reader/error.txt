@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/root/modal-broader-reader.py", line 64, in collect
+    result = run(payloads['runtime-config.json'], payloads['reader-input.json'], payloads['note-worklist.json'],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/experiments/context_policy/broader_reader.py", line 179, in run
+    deadline(); messages = transcripts[n]; started = time.monotonic()
+    ^^^^^^^^^^
+  File "/root/modal-broader-reader.py", line 62, in deadline
+    raise TimeoutError('forty-minute ceiling; reserving artifact-save time')
+TimeoutError: forty-minute ceiling; reserving artifact-save time

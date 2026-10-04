@@ -1,0 +1,438 @@
+[
+  {
+    "id": "R01",
+    "property": "pronunciation of my name",
+    "history": [
+      {
+        "role": "user",
+        "content": "My name is pronounced MAH-ree."
+      },
+      {
+        "role": "assistant",
+        "content": "I will pronounce your name MAY-ree."
+      },
+      {
+        "role": "user",
+        "content": "Please use the pronunciation I gave you, rather than your version."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\npronunciation of my name\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My name is pronounced MAH-ree.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I will pronounce your name MAY-ree.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please use the pronunciation I gave you, rather than your version.\"}]"
+      }
+    ],
+    "input_tokens": 331
+  },
+  {
+    "id": "R02",
+    "property": "preferred dessert",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\npreferred dessert\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 305
+  },
+  {
+    "id": "R03",
+    "property": "reservation surname spelling",
+    "history": [
+      {
+        "role": "user",
+        "content": "Put the reservation under the surname Ravn. That is the spelling I am providing."
+      },
+      {
+        "role": "assistant",
+        "content": "I have it under Raven."
+      },
+      {
+        "role": "user",
+        "content": "Keep the exact spelling from my request."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\nreservation surname spelling\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Put the reservation under the surname Ravn. That is the spelling I am providing.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I have it under Raven.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Keep the exact spelling from my request.\"}]"
+      }
+    ],
+    "input_tokens": 329
+  },
+  {
+    "id": "R04",
+    "property": "chair upholstery",
+    "history": [
+      {
+        "role": "user",
+        "content": "Velvet is not my preferred upholstery for a chair. I have not selected a preferred material."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\nchair upholstery\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Velvet is not my preferred upholstery for a chair. I have not selected a preferred material.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 302
+  },
+  {
+    "id": "X01",
+    "property": "invoice addressee spelling",
+    "history": [
+      {
+        "role": "user",
+        "content": "The addressee on my invoice should be spelled Soren."
+      },
+      {
+        "role": "assistant",
+        "content": "I have written Sorren."
+      },
+      {
+        "role": "user",
+        "content": "Retain the spelling in my own sentence."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\ninvoice addressee spelling\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"The addressee on my invoice should be spelled Soren.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I have written Sorren.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Retain the spelling in my own sentence.\"}]"
+      }
+    ],
+    "input_tokens": 328
+  },
+  {
+    "id": "X02",
+    "property": "audio greeting transcription",
+    "history": [
+      {
+        "role": "user",
+        "content": "The greeting I recorded is transcribed as nah-LO."
+      },
+      {
+        "role": "assistant",
+        "content": "I will transcribe it as nah-RO."
+      },
+      {
+        "role": "user",
+        "content": "Use the transcription I provided, not your replacement."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\naudio greeting transcription\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"The greeting I recorded is transcribed as nah-LO.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I will transcribe it as nah-RO.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Use the transcription I provided, not your replacement.\"}]"
+      }
+    ],
+    "input_tokens": 330
+  },
+  {
+    "id": "X03",
+    "property": "parcel pickup counter",
+    "history": [
+      {
+        "role": "user",
+        "content": "I am specifying the silver counter for my parcel pickup."
+      },
+      {
+        "role": "assistant",
+        "content": "I will direct you to the orange counter."
+      },
+      {
+        "role": "user",
+        "content": "My own specified counter is the one to use."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\nparcel pickup counter\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I am specifying the silver counter for my parcel pickup.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I will direct you to the orange counter.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"My own specified counter is the one to use.\"}]"
+      }
+    ],
+    "input_tokens": 328
+  },
+  {
+    "id": "X04",
+    "property": "archive box label",
+    "history": [
+      {
+        "role": "user",
+        "content": "Use the label Vesta for my archive box."
+      },
+      {
+        "role": "assistant",
+        "content": "I have noted your label."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\narchive box label\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Use the label Vesta for my archive box.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I have noted your label.\"}]"
+      }
+    ],
+    "input_tokens": 297
+  },
+  {
+    "id": "X05",
+    "property": "soup temperature",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not have a preferred serving temperature for soup. Please retain that as my explicit answer."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\nsoup temperature\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I do not have a preferred serving temperature for soup. Please retain that as my explicit answer.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 302
+  },
+  {
+    "id": "X06",
+    "property": "pen cap mechanism",
+    "history": [
+      {
+        "role": "user",
+        "content": "I have no favourite pen-cap mechanism; that absence of preference is my position."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\npen cap mechanism\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I have no favourite pen-cap mechanism; that absence of preference is my position.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 300
+  },
+  {
+    "id": "X07",
+    "property": "bath towel pattern",
+    "history": [
+      {
+        "role": "user",
+        "content": "No bath-towel pattern is a favourite of mine. I am stating no preference, rather than leaving the question unanswered."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\nbath towel pattern\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"No bath-towel pattern is a favourite of mine. I am stating no preference, rather than leaving the question unanswered.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 309
+  },
+  {
+    "id": "X08",
+    "property": "desk clock numeral style",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desk-clock numerals I do not have a preferred style. This is an explicit personal detail and does not withdraw anything."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\ndesk clock numeral style\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"For desk-clock numerals I do not have a preferred style. This is an explicit personal detail and does not withdraw anything.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 310
+  },
+  {
+    "id": "X09",
+    "property": "shoe fastening",
+    "history": [
+      {
+        "role": "user",
+        "content": "I do not prefer laces for fastening my shoes. I have not chosen a preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\nshoe fastening\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I do not prefer laces for fastening my shoes. I have not chosen a preferred alternative.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 305
+  },
+  {
+    "id": "X10",
+    "property": "tabletop material",
+    "history": [
+      {
+        "role": "user",
+        "content": "Marble is not my preferred tabletop material. There is no specified preferred alternative."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\ntabletop material\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Marble is not my preferred tabletop material. There is no specified preferred alternative.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+      }
+    ],
+    "input_tokens": 300
+  },
+  {
+    "id": "X11",
+    "property": "doorbell chime",
+    "history": [
+      {
+        "role": "user",
+        "content": "My favourite doorbell chime is a two-note bell."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Remove my doorbell-chime preference from the personal details you retain."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\ndoorbell chime\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My favourite doorbell chime is a two-note bell.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Noted.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Remove my doorbell-chime preference from the personal details you retain.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"Acknowledged.\"}]"
+      }
+    ],
+    "input_tokens": 348
+  },
+  {
+    "id": "X12",
+    "property": "desktop wallpaper motif",
+    "history": [
+      {
+        "role": "user",
+        "content": "For desktop wallpaper I prefer mountain silhouettes."
+      },
+      {
+        "role": "assistant",
+        "content": "Noted."
+      },
+      {
+        "role": "user",
+        "content": "Forget the personal note about my preferred desktop-wallpaper motif."
+      },
+      {
+        "role": "assistant",
+        "content": "Acknowledged."
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Identify the final supported USER fact about TARGET PROPERTY in the archive.\nOutput only JSON after the supplied ANSWER prefix, with exactly these keys:\n{\"status\":\"value|none|negative|unknown\",\"value\":null,\"turn\":0,\"quote\":\"exact user text\"}.\nUse status value for a supplied positive fact, none only for an explicit statement\nof having no preference, negative for an explicitly non-preferred value, and\nunknown when the current detail has been withdrawn or is not established.\nFor value/negative, value is the minimal verbatim value string from the USER\nsource; for none/unknown it is null. turn and quote must identify the USER\nstatement supporting this state; quote is an exact substring with sufficient\ncontext. For a withdrawal cite the withdrawal. If there is no supporting user\nstatement use turn null and quote null. An assistant substitution or another\nspeaker's quotation cannot establish a user fact. Later USER statements control;\nwithdrawal establishes unknown, not a negative or no-preference state. Do not\nanswer any downstream question. No explanations or markdown fences."
+      },
+      {
+        "role": "user",
+        "content": "TARGET PROPERTY\ndesktop wallpaper motif\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"For desktop wallpaper I prefer mountain silhouettes.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Noted.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Forget the personal note about my preferred desktop-wallpaper motif.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"Acknowledged.\"}]"
+      }
+    ],
+    "input_tokens": 343
+  }
+]

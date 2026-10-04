@@ -1,0 +1,16 @@
+{
+  "frozen_utc": "2026-09-10T04:23:06.326252+00:00",
+  "scope": "ten-question engineering diagnostic, manual Codex judgments",
+  "reviewed_references_sha256": "134e4a1e4bb00797c726bffbcb647d28664e03888a68908c8057f382baafb391",
+  "criteria": {
+    "task_complete": "Substantively answers the current request or asks for essential information genuinely unavailable in the full visible history. General advice may satisfy an open-ended request; do not require matching the reference words or gratuitous personal detail.",
+    "source_consistent": "No unsupported personal history, ownership error, or reliance on a withdrawn detail; a current explicit request may revisit the topic. Check raw user statements when notes make questionable assertions.",
+    "supported_in_visible_state": "Personal claims must be supported by the actual supplied notes/recent/tool text, not merely happen to be true in the archive. General recommendations are not claims about remembered preferences.",
+    "contextual_value": "Record separately whether correct contextual detail materially improves the answer. Do not turn a stylistic preference into an accuracy gain.",
+    "protocol_valid": "ANSWER message, nonempty body, EOS before cap; malformed or truncated answers fail regardless of content."
+  },
+  "acceptable_definition": "protocol_valid AND task_complete AND source_consistent AND supported_in_visible_state",
+  "routing": "For each of states zero and one retrieval, choose answer-now when acceptable; otherwise retrieve only if a later captured state is acceptable. No later acceptable answer means action target is masked. This is development labeling, not trained policy behavior.",
+  "blindness": "Reference version frozen before capture; judgments see actual evidence and complete answer, no policy checkpoint exists. Reviewer is not independent of reference author.",
+  "full_corpus_admission": false
+}

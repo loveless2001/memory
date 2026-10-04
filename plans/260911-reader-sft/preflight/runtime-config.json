@@ -1,0 +1,36 @@
+{
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "active_context_max_tokens": 8192,
+  "max_message_output_tokens": 192,
+  "seed": 0,
+  "max_gpu_seconds": 2400,
+  "internal_deadline_seconds": 2300,
+  "retries": 0,
+  "planned_captures": 288,
+  "planned_training_examples": 384,
+  "epochs": 2,
+  "optimizer_steps": 48,
+  "microbatch_size": 1,
+  "gradient_accumulation": 16,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "warmup_steps": 3,
+  "lr_schedule": "linear_warmup_then_linear_decay",
+  "gradient_clip_norm": 1.0,
+  "gradient_checkpointing": true,
+  "use_reentrant": false,
+  "train_precision": "bf16_base_fp32_adapter_fp32_buffers",
+  "inference_precision": "fp32_math_tf32_off",
+  "checkpoint_selection": "fixed_final_after_two_epochs",
+  "lora": {
+    "r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "bias": "none"
+  }
+}

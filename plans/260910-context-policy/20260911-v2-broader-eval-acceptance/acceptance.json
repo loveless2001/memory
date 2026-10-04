@@ -1,0 +1,905 @@
+{
+  "recorded_at": "2026-09-10T18:17:20.026438+00:00",
+  "status": "reference_review_complete",
+  "delta_accepts": 12,
+  "inherited_parent_accepts": 108,
+  "additional_findings": 0,
+  "fresh_120_case_review": false,
+  "candidate_edited": false,
+  "new_reader_inference_runs": 0,
+  "training_labels": 0,
+  "artifact_hashes": {
+    "plans/260910-context-policy/20260910-v2-broader-eval-v1/freeze.json": "1465222774e1714bfc4d8e42d60974dd6a8af97db44fa05a02cde181ab716c40",
+    "plans/260910-context-policy/20260910-v2-broader-eval-v1/review/reference-review.json": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+    "plans/260910-context-policy/20260910-v2-broader-eval-v1/review/REVIEW.md": "a207912722243c890fce5c2e175a8649958e3ae306a50ffda937c48502710414",
+    "plans/260910-context-policy/20260910-v2-broader-eval-v2/freeze.json": "3a161e9ef2a28dc83e432f6b878957181181aa40a17da2e77b9c9969d01d7f05",
+    "plans/260910-context-policy/20260910-v2-broader-eval-v2/review/delta-review.json": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+    "plans/260910-context-policy/20260910-v2-broader-eval-v2/review/REVIEW.md": "d7f69beee256638e3c3bb86bebe39a1d56bd5ff0b822164b4b9922a9e7308c95",
+    "plans/260910-context-policy/20260910-v2-broader-eval-v2/revision-manifest.json": "d6eab23bb45dd0d2ff6fad7c97fffe06670547856cb8dbc605ddd3d5c0cab034"
+  },
+  "checks": {
+    "candidate": {
+      "verified_at": "2026-09-10T18:17:15.342440+00:00",
+      "status": "PASS",
+      "freeze_sha256": "3a161e9ef2a28dc83e432f6b878957181181aa40a17da2e77b9c9969d01d7f05",
+      "candidate_files_verified": 82,
+      "prior_protected_files_verified": 228,
+      "references_structurally_valid": 120,
+      "parent_candidate_and_review_files_verified": 80,
+      "full_base_histories_verified": 20,
+      "synthetic_prefixes_verified": 40,
+      "paired_query_triplets_verified": 20,
+      "reader_histories_sanitized": 60,
+      "modes_unscored": {
+        "general": 60,
+        "abstain": 20,
+        "personalized": 40
+      },
+      "semantic_acceptance": "pending independent review",
+      "inference_runs": 0,
+      "training_labels": 0
+    },
+    "delta": {
+      "status": "PASS",
+      "changed_cases": 12,
+      "unchanged_parent_accepts": 108,
+      "answer_changes": 11,
+      "question_changes": 2,
+      "parent_files_preserved": 80,
+      "source_history_changes": 0,
+      "evidence_span_changes": 0,
+      "independent_delta_review": {
+        "delta_counts": {
+          "accept": 12
+        },
+        "unchanged_parent_accepts": 108,
+        "additional_findings": {},
+        "all_references_covered_by_parent_plus_delta_accepts": true,
+        "semantic_truth_certified_by_validator": false,
+        "training_authorized": false
+      }
+    }
+  },
+  "case_review_coverage": [
+    {
+      "id": "F001-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "c8402308e2d8b48bb92520e72c9daabfc86275c3616aaa11d6384340cfa8351d"
+    },
+    {
+      "id": "F001-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "10591914e07845a77cab5e0e861c91e45b668796d419780aa82559cc4485a9e0"
+    },
+    {
+      "id": "F001-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "41115963581c08af1c3ec80c775f17b55822c6a700a2d46344c2f130eb4ffbe3"
+    },
+    {
+      "id": "F001-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "59b50c42bb732c3f595f6277083a5d9fd85d4d06ea5506685c34955d608f4dc5"
+    },
+    {
+      "id": "F001-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "ee5aa179f1337bb59affe4cafd907867177e4de62d375587656c90e56088faf4"
+    },
+    {
+      "id": "F001-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "99aaa08c50cb5c26f717b0f8f6e84ee150a5f79e38aeb6f8856a07c2c7ca68ab"
+    },
+    {
+      "id": "F002-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "777c309bbad823db93d931b1ae65025729068de3e7a4c3a75981c4cdd39814bb"
+    },
+    {
+      "id": "F002-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "b65d1c034ba59331be926a890c544132f0089edd317f3b72ce03aef86e0973b9"
+    },
+    {
+      "id": "F002-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "7500812cd1561451eba92ad83f4445c09f70626612932c4e1de9e6c2cceb997f"
+    },
+    {
+      "id": "F002-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "e0b75b31db947e4c0b6263bea49fde2c55b80ef530990d892abce541ecce7705"
+    },
+    {
+      "id": "F002-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "aedfd5ac599c135cfdb31cf3ec01ae53b99d155dae1b421e07a0435e51f38ff4"
+    },
+    {
+      "id": "F002-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "61c2e0ea03e4c58ce19c92b98d6e81174f41bef5c7c3c256bc77df4ae09d1b8c"
+    },
+    {
+      "id": "F003-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "171cdd0d69facac23773f40ae05e42a9b4f8e24cf8b3d4fc4a2b670870ebf3e9"
+    },
+    {
+      "id": "F003-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "51a5de229e044d8e21d2764e9c1a06ae92dffe11f0794a8b491f4c6efaf39b46"
+    },
+    {
+      "id": "F003-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "384eadbd830f55703489de000a17c0894db196bf5471a86d801b87bc782caf43"
+    },
+    {
+      "id": "F003-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "dace30e648fc2ff75d0c34cc359126a97019626d9c1333c7310d5766af814f6c"
+    },
+    {
+      "id": "F003-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "bdbb9371f0e35b73b809c234ee15a57edfddb14550a492e98683a606c4a9253c"
+    },
+    {
+      "id": "F003-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "05d3bfab56d3036b5f6121a63f0923146ac7e2db1aa153b75c402560eff984ab"
+    },
+    {
+      "id": "F004-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "51e76ee4c8eceb6d1744f21ca7e8a31c195b366aeca504a754452848551a2e9b"
+    },
+    {
+      "id": "F004-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "7ffeb6e9312d5d8cf5b076be4e160cb1e7f969aa93d31a808079faa43cee7bfa"
+    },
+    {
+      "id": "F004-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "3c1ba75fe7c2d056ee2c859ada1a34aa85cf1fb6c9f9b216e813cd009a33b2e2"
+    },
+    {
+      "id": "F004-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "cf4390ab0da72002ca54acea529bc8c1bbbdb29584789b843446a2bd9cef9367"
+    },
+    {
+      "id": "F004-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "7b5b3e41b7865d7c9a17fdfa547b3267d6d4b8bc3bd9ebdcfbe8029eeda0de45"
+    },
+    {
+      "id": "F004-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "f85899d2973fdc9d80885875e0ea8f917786f589b138d655cd0f3779e3934dfd"
+    },
+    {
+      "id": "F005-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "6634c4b9c93b86b6e1c5bd49f79e67df610753c2e357365716f25a64a290414d"
+    },
+    {
+      "id": "F005-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "6d4b6639b546ef5999f09995f3233ef34e76e3f120d38634b0013c2e503023d9"
+    },
+    {
+      "id": "F005-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "b81b2c55dfc2a6a99c12e3025a8fd82dce286173a96eb11fcf049077a6503b37"
+    },
+    {
+      "id": "F005-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "cab622d5476326b2c23838ceded0f57e864c5ba8b49323fe28f2049f7fae1908"
+    },
+    {
+      "id": "F005-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "df97265edfa51189f1c35baebd2f81c706a87079f4762bb8a0a2011c4b7ce27f"
+    },
+    {
+      "id": "F005-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "a0ebab4b2954574eddbc077953e96214ca6a40e6bb1c09bb31e79cba9d2e838d"
+    },
+    {
+      "id": "F006-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "b800f4d18927547c204d97c79c7dd20caeeb61baf9992f00c192b89c490ce4ae"
+    },
+    {
+      "id": "F006-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "030ee34b97a46de8ee57c4dff4f8dc99893583af186ef05cd7541703d51ce286"
+    },
+    {
+      "id": "F006-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "9a8e22f81ad8a621e05b55b1ce73e89f09b892e8f108d1554f728550edbfa64d"
+    },
+    {
+      "id": "F006-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "d31208307e76edb6662c502d753acf6b5e36581e56442e85576ce6f30e95b22a"
+    },
+    {
+      "id": "F006-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "ad7f3f475fe41d8ae66a24d19009e5bbad76ae7601f4ebf736d16485ce3b3856"
+    },
+    {
+      "id": "F006-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "cb6bddbd3dd6eea17cb37c656a097e3e61544582d214896b5c67ab4236c52d6e"
+    },
+    {
+      "id": "F007-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "30686546f9fb9cd712cb7903ab001a608f2bce6733e16e7d94d010a9ce7dd3be"
+    },
+    {
+      "id": "F007-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "486c4bc2d6ba1c3161b295e2121a7eecdd50bb121d2b8d29a35dbc11a85cdfaa"
+    },
+    {
+      "id": "F007-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "18b6b1c9eac70dcaf8a07c519eb0b451bf7c8f762fa947fbebcf0feea7646e7d"
+    },
+    {
+      "id": "F007-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "44ddaf846083444a43c56fab52e57b61be6b297822fbd5f364c8b8da720acb64"
+    },
+    {
+      "id": "F007-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "f03af54685b7fa4f351b72b3520d75e738105319dea8472d12f1b4f0d1384e26"
+    },
+    {
+      "id": "F007-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "7e92085f0d28cdc87c0d552fb991542e6021c72e482d8309d7677bd05857fee2"
+    },
+    {
+      "id": "F008-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "956ea0c602876bfcd6615a7c074f67a6b44fe2334f3d63a6dcd49707243b2ee3"
+    },
+    {
+      "id": "F008-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "3a0e75fb2e980c948ae164a938e48ece4b9f0db9b60eeda106c15fc54d0d4a07"
+    },
+    {
+      "id": "F008-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "10b2030399e866a3c10291e21b375dd8281981ffdde3b7458e5368e69e07a540"
+    },
+    {
+      "id": "F008-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "301e7fb7dd34dda8c3105c1a91b919150519eb2fa50d950965d839b9ad28357b"
+    },
+    {
+      "id": "F008-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "6537c718c29d5c0b449390f2af2da4354e3b548b2e1a6ba69a0e93ae38700132"
+    },
+    {
+      "id": "F008-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "62233292b112f7f8586e1486d1e74d33a38eaadfd7173670c5e75ae9a8185db3"
+    },
+    {
+      "id": "F009-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "85966c630cb0cd30b27efbc1620da446eb48a2580ef85ae1e01a59df3eaa7399"
+    },
+    {
+      "id": "F009-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "45dcf41bf1c0871bd5bcf22da92ca01afa60e39f19c24e6158cb6bf8b0c10ba4"
+    },
+    {
+      "id": "F009-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "20ab6253ebd33a520b6606b4fafb6499a5586e80a1535ab4a83b4b6dbf03cdc4"
+    },
+    {
+      "id": "F009-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "c9d71098896443775fd41f6b83915108b06929c8d05566a88fe512e2181ad7a4"
+    },
+    {
+      "id": "F009-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "0f34f527bcc7e70433cec488af708249eb90b75c3d88bff58e5c7946f36c8e67"
+    },
+    {
+      "id": "F009-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "85f4d72788664dbd9e33c20926874c7633473a3cd22ca3b5e7cb15b24c0f285b"
+    },
+    {
+      "id": "F010-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "b4a8b9c8189a43a031a99e42bf2f8c9648bb8691cd55f736942ba2d769e3f5ae"
+    },
+    {
+      "id": "F010-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "f06f0f3cde017429137af8e8974b2dde564fcb8f5142520935b89346829d0dac"
+    },
+    {
+      "id": "F010-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "f3892afdafc86feecda9cb7c67edf51c09105ea1c0e1ce9ede7e50881a456bab"
+    },
+    {
+      "id": "F010-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "69314268248555ece885eecd1624cb93565de2417e1baaaed85d1cf6cab5171a"
+    },
+    {
+      "id": "F010-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "e8f107316e32bae2dbcc4dec26a7246c28736abb38daa925016edb15431aceb6"
+    },
+    {
+      "id": "F010-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "c861a601dbde402a4363a49c18d4cde8fa75f3d7970303b4d892eb09df6feb2c"
+    },
+    {
+      "id": "F011-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "a0b2ecc5f62c4268d572f8a7a22db01ae6e3a04a05c4c174b7564f718e6943c5"
+    },
+    {
+      "id": "F011-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "584df3e558b3d8337e0b3df2cd2f4739d3532d005d5b691193cf9dd0963962bc"
+    },
+    {
+      "id": "F011-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "c858089a8f402c1461199c0819737628d78ddafd24e478a3aa6aa3a4ba75b897"
+    },
+    {
+      "id": "F011-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "39550c7557e67ddd0e2282677a032938fa6deb1c0cbe5d11a1e780375b21e5c9"
+    },
+    {
+      "id": "F011-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "df9dd2252e852d97c7733ee1d93cadbe5f5f349eb78a5f37660d95e25dc1a5dd"
+    },
+    {
+      "id": "F011-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "64f2fb0b3d1fc6f264595afdb5ae0393ffd9842de23cf2624df9a7e2215a24ae"
+    },
+    {
+      "id": "F012-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "21f2773751badc806c57d268c9ce33930f0487141ebd505bfd1adc7a82c190cc"
+    },
+    {
+      "id": "F012-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "2820d30a0b96b50992c8a240a73cb9242e3a2fd9448f8a00a3972ac121aa55c8"
+    },
+    {
+      "id": "F012-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "8e72343994ed958d991bea06da10d658f3358dbf7d860fc4469ef6bd4a6d21f7"
+    },
+    {
+      "id": "F012-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "63c562ad3839304d090c44bdbc66bf8c75f00af5d508b69d5e282d4f5aa79ea1"
+    },
+    {
+      "id": "F012-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "ef228a8a65d52ad03c202a04a0a45e264b65e27344cc58526c7aab129c4aea7f"
+    },
+    {
+      "id": "F012-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "bbd7462dc73b4f7322cdf4594218ea22eb98f961a0f7ab8dc066f0a22d6c5d51"
+    },
+    {
+      "id": "F013-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "62ba39a78f4df1265ff5a52685d6088e992b7dffe5f7b6647ffd1887a08d37af"
+    },
+    {
+      "id": "F013-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "73f9f1ef41048f5e53fb513dd7f54a9f9724df2fb3c3912e058024e0d6fe967e"
+    },
+    {
+      "id": "F013-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "3c0fe3dfbd336e0503843c18f1ccc3589282b4325fb842c221598b01e0f7bd18"
+    },
+    {
+      "id": "F013-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "bda708a386e4d9c571873deabc7a7bbd63778d2684cab0323cd0c82bd8d2bb89"
+    },
+    {
+      "id": "F013-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "f8f175a16051c429c72027e03d6ab14531dcf58ba74ced14f26d74a5fe410307"
+    },
+    {
+      "id": "F013-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "cd5dd4a063e1ef94f33129f92b5dcea2750b33aec1080222357e2724e5323a66"
+    },
+    {
+      "id": "F014-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "e7e4f5c81a9d87602fca2813b370759cf1b77c993673549faab695d4196d2531"
+    },
+    {
+      "id": "F014-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "0ce12e218df52434f64cf377397d8103dc34c4fdac5b3e5c82a562f894566864"
+    },
+    {
+      "id": "F014-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "05ebd3798c4e93e324b357d7fe50b06737e272ab8463f8eab86490cb6383d353"
+    },
+    {
+      "id": "F014-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "5f8116134fa73ebd1d93d15011a994ba501237d50a06b46a5d7fc3eec76b4c5e"
+    },
+    {
+      "id": "F014-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "8f5e384ade0a6d505d4fdd3f63cf2948f0a2b5d983f216ebcbea2e0d5b18032c"
+    },
+    {
+      "id": "F014-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "dd6bdc537d83a9a5c38e3bba94682a55beb2c106238926119c7dba08514b537b"
+    },
+    {
+      "id": "F015-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "e217f8a4c26610c94f3d5f533d828c2f341eaf4eda36a85508a69dcc8b0e9e2c"
+    },
+    {
+      "id": "F015-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "62baf5e300864222c83fecf8e587bb9bf9f7ac66f51804cefb314ad76d287b7c"
+    },
+    {
+      "id": "F015-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "908507840401b76cf897d5d1aab670a0830388dc2bac28040e77f409e02a549b"
+    },
+    {
+      "id": "F015-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "f56503339236523b41bd9aad415c6ec0dd0fca0b04d335689f71c7a8c77c5fda"
+    },
+    {
+      "id": "F015-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "a44a8c6448d3eb07a53451c29367dd70fd662db48120e21618b5e4fcbb7d6ab6"
+    },
+    {
+      "id": "F015-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "8bdb1969a5f65c2a24e7f7b70523966ca3d1e8e6a1f4a025bcacf3bfd037af0b"
+    },
+    {
+      "id": "F016-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "62dab88e461d6521caa1262e0812a14e2155ed9a21548a00a44d2d4d75e450d1"
+    },
+    {
+      "id": "F016-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "19267382fab47dd89f027ef32d8bc452091aa1cb4556d09ace1300014d40c822"
+    },
+    {
+      "id": "F016-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "01550fd2d3c115be0f7f58703f0b74399324b3c9bb3fd314595e3572b3eb1778"
+    },
+    {
+      "id": "F016-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "5f3f094da94c97d8e92589933d39f6071248bf1c7744dfd70403009ef35e983b"
+    },
+    {
+      "id": "F016-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "fa0ca6310f933930d807e7ef0d67fd79a22b137a49838b04571582b30c4b8e0b"
+    },
+    {
+      "id": "F016-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "43ead6f64d4ec5e4a6daea0b7a72a448ebf7438a411d859bd496ce5cc5ba4e2e"
+    },
+    {
+      "id": "F017-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "27a4f85bf1979e3b8bfad9f188cc5f1991d03c109c9e0b4e37fa0a655fd4ade0"
+    },
+    {
+      "id": "F017-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "fd68f28e016ad33bb7988bf8b751747b1875a3b7df812f3c9b1cbc3457be8146"
+    },
+    {
+      "id": "F017-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "0033748f2122ee9cd26df04f513874b7a8a331396a8ebb95f5f3f2d671cb1c3e"
+    },
+    {
+      "id": "F017-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "333b224946e3320caed8b534fe037f23886af6603aca72e526df93f354a04f25"
+    },
+    {
+      "id": "F017-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "fcdee3ab27a12e55b1b00ffd5dacdc566a1c0bdaca7eae58c705053e07d4ab50"
+    },
+    {
+      "id": "F017-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "39bd0c07d37f2c5204dc2436bce9b7b45cf45c946e4daec8578272f859850d83"
+    },
+    {
+      "id": "F018-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "5c121221b56686b5f9aae76ed9536ba42bcdb34f8898892773a732a15a188c69"
+    },
+    {
+      "id": "F018-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "7afd92dcdcb25fe80e1bd9546f3c9fec599ba5fb58380d70720f1bb979691608"
+    },
+    {
+      "id": "F018-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "df447c60aa89a480487b91ed382330158d6b8ea6016ccc446f9316e2440ce1a3"
+    },
+    {
+      "id": "F018-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "f3045fb22d10f7ca1c8ddad5e240a11b8d007c91c14f7664ae5795f4e3122d6c"
+    },
+    {
+      "id": "F018-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "42f1aaec6398adf9e220febaa1ceb322bb050f444bbffe9b780cb89d62e27d15"
+    },
+    {
+      "id": "F018-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "d28a3f49c93881f9ace3f37a854669060eb1a37f1186dacf50aee6a66c5116ef"
+    },
+    {
+      "id": "F019-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "5914bfd72e2653b10e556be3355a26d05f94cda34330134edaad16678759f652"
+    },
+    {
+      "id": "F019-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "268642c89547ae66aaed105193f703f1d72261dbaabb0576d2a20ef51d1dd174"
+    },
+    {
+      "id": "F019-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "873f123ea2073b69723bc640cd8058eee07908bb4d7c2faeb00dbf2c90b6cd33"
+    },
+    {
+      "id": "F019-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "6d44b488ed7e873377fba88a8748333696ee98a7feaf898c4789db08c0c2e255"
+    },
+    {
+      "id": "F019-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "96e53e93f8812a7f0082c96b6bdbe84dd57dbc42174d4b2f08fd150dba5df380"
+    },
+    {
+      "id": "F019-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "19f64fcc4dee97ab9668263f96878f386dbfef498e41018c2f476bc133d1e67d"
+    },
+    {
+      "id": "F020-Q1",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "0a20fe7d9771022e12c84d5742d13df657f6e904753d157ed5666a8ee52b3dbc"
+    },
+    {
+      "id": "F020-Q2",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "2140a8a451248a8d453c46b55825500c5efb512d6e3f8f3a3ad309b18b7df651"
+    },
+    {
+      "id": "F020-Q3",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "1975b98091cf5f5e0127bd114cfbd46c7d5966c8c1a60ad48f2a9d579233808d"
+    },
+    {
+      "id": "F020-Q4",
+      "status": "accepted_by_model_review",
+      "basis": "delta_review",
+      "review_sha256": "0cad6a69e420701a596ed3b16dab6738717cef1616af7bf14c71a766f22690cd",
+      "reference_sha256": "f6c77ddaad6d5e41a606bcaa4f6df62174d927e9a8b5244b718ab8fed3f18aef"
+    },
+    {
+      "id": "F020-Q5",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "481ff5587557e14c68c6487a6f563d5a27620d0bd540e7d93ce6c671d1539620"
+    },
+    {
+      "id": "F020-Q6",
+      "status": "accepted_by_model_review",
+      "basis": "inherited_parent_accept",
+      "review_sha256": "550f5b5cc5633bff8243a90a9f5f417775b73a92ce7c4ed764a8acea76b12f43",
+      "reference_sha256": "e1d19f4b69dce5774271770a56fac347253b5b1b4a961a2e8a4d02c8609ccf82"
+    }
+  ]
+}

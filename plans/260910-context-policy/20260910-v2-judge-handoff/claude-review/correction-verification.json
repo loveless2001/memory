@@ -1,0 +1,121 @@
+{
+  "status": "pass",
+  "verified_at": "2026-09-10T10:29:01.952076+00:00",
+  "editor": "Codex",
+  "scope": "User-authorized editorial correction; no independent rejudging or experiment rerun.",
+  "blind_first_pass_preserved_since_preceding_check": true,
+  "preservation_scope": "Blind-file hashes match the preceding Codex check; this does not establish byte preservation before that check.",
+  "protected_files_unchanged": 69,
+  "recoded_cases_unchanged": true,
+  "review_validators": {
+    "review.json": "pass",
+    "review-recoded.json": "pass"
+  },
+  "verdicts": {
+    "pass": 25,
+    "fail": 17
+  },
+  "recoded_vs_blind_change_counts": {
+    "task_complete": 13,
+    "supported_in_visible_state": 3,
+    "reason": 1,
+    "source_consistent": 1
+  },
+  "recoded_vs_blind_changed_cells": [
+    {
+      "answer_id": "C002-B",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C003-A",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C003-B",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C006-A",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C006-A",
+      "field": "supported_in_visible_state"
+    },
+    {
+      "answer_id": "C006-B",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C007-B",
+      "field": "reason"
+    },
+    {
+      "answer_id": "C007-B",
+      "field": "source_consistent"
+    },
+    {
+      "answer_id": "C008-B",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C010-A",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C010-A",
+      "field": "supported_in_visible_state"
+    },
+    {
+      "answer_id": "C010-B",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C010-B",
+      "field": "supported_in_visible_state"
+    },
+    {
+      "answer_id": "C015-A",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C017-B",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C018-A",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C019-A",
+      "field": "task_complete"
+    },
+    {
+      "answer_id": "C019-B",
+      "field": "task_complete"
+    }
+  ],
+  "changed_input_pairs": 19,
+  "identical_input_pairs": [
+    "C010",
+    "C011"
+  ],
+  "different_value_controls": [
+    "C001",
+    "C009"
+  ],
+  "blind_file_sha256": {
+    "review.json": "76357bf9123b93550bba98d1c1b3557eb52827cad558443fed018c0f65a705d1",
+    "reference-review.json": "507cc761bf762f20e451836760c64a4669ee08d31b60a70c24660a5157d7c9e7"
+  },
+  "corrected_file_sha256": {
+    "ADDENDUM-clarified-criteria.md": "45b6dba276358e7051afd4d4e9dd42dbe5d26f36defc93892fd6666c36c4262d",
+    "review-recoded.json": "842ee88703e048297551dd22820bcd72882d042b67d2276abfc69edf0a291b85"
+  },
+  "editorial_history_sha256": {
+    "editorial-history/20260910-clarification-corrections/ADDENDUM-clarified-criteria.md": "4e8376841092633219d3a41384b7f0f41b6705ec923cc56889f3e2d9d68ec334",
+    "editorial-history/20260910-clarification-corrections/before.json": "399402dd938cca37ee7f8c9811738ff1c2912c193cb0370d44c9a78a74414661",
+    "editorial-history/20260910-clarification-corrections/review-recoded.json": "ec860086e3ee5882aa74aad24b153c33199af5c4b508f4b3fb0bb5b45fcd4a93"
+  },
+  "training_launched": false
+}

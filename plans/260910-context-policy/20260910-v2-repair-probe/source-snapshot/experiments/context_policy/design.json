@@ -1,0 +1,117 @@
+{
+  "protocol": "context-policy-v2-design",
+  "status": "label_repair_ready_for_small_diagnostic",
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "torch": "2.7.1",
+  "transformers": "4.55.2",
+  "safetensors": "0.5.3",
+  "proposed_peft": "0.17.0",
+  "lora": {
+    "r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "bias": "none"
+  },
+  "training": {
+    "seed": 0,
+    "adapters": [
+      "answer_only",
+      "policy"
+    ],
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "microbatch": 1,
+    "gradient_accumulation": 16,
+    "max_epochs": 2,
+    "max_steps": 500,
+    "max_sequence_tokens": 8192
+  },
+  "scenario_families": {
+    "train": 280,
+    "validation": 60,
+    "internal_test": 60
+  },
+  "questions_per_family": 5,
+  "notes_max_tokens": 768,
+  "recent_max_tokens": 512,
+  "chunk_max_tokens": 384,
+  "chunk_overlap_tokens": 64,
+  "evidence_tokens_per_round": 1024,
+  "max_retrieval_rounds": 2,
+  "max_message_output_tokens": 192,
+  "max_query_output_tokens": 384,
+  "active_context_max_tokens": 8192,
+  "external": {
+    "dataset": "xiaowu0162/longmemeval-cleaned",
+    "filename": "longmemeval_s_cleaned.json",
+    "questions": 500,
+    "revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "evaluator_revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "judge_snapshot": null,
+    "judge_budget_usd": null,
+    "connected_source_groups": 1,
+    "registered_inference_status": "unassessable_one_source_component"
+  },
+  "development_manifest_sha256": null,
+  "label_repair": {
+    "fresh_questions": 50,
+    "known_failures_repaired": 4,
+    "personalized_references": 12,
+    "review": "Codex author review; no independent human review",
+    "full_corpus_admitted": false,
+    "diagnostic_questions": 10,
+    "diagnostic_counterfactuals": 30,
+    "diagnostic_max_gpu_minutes": 15,
+    "plan": "plans/260910-context-policy/20260910-v2-label-repair/DIAGNOSTIC-PLAN.md"
+  },
+  "development_candidate": {
+    "dataset": "bowen-upenn/PersonaMem-v2",
+    "revision": "ed956dea41521fc4499acbc63f966e0fd3c053ba",
+    "training_csv_sha256": "62abb042f529818a22be4ced84b683364f000af68608008c20186527740276d6",
+    "adopted": false,
+    "admission_passed": false,
+    "audit_questions": 50,
+    "confirmed_disqualifying_questions": 4,
+    "maximum_possible_sound_questions": 46,
+    "required_sound_questions": 48,
+    "report": "plans/260910-context-policy/20260910-v2-personamem-intake/REPORT.md"
+  },
+  "embedding_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+  "gpu_preflight_passed": true,
+  "planned_gpu_stage_minutes": {
+    "preflight": 15,
+    "notes_embeddings_and_labels": 120,
+    "training": 90,
+    "internal_eval": 30,
+    "external_eval": 90
+  },
+  "automatic_retries": 0,
+  "advance": {
+    "accuracy_noninferiority_margin": 0.02,
+    "minimum_mean_latency_reduction": 0.15,
+    "maximum_p95_latency_increase": 0.1,
+    "maximum_invalid_action_rate": 0.01,
+    "one_sided_comparison_alpha": 0.0125
+  },
+  "price_snapshot": {
+    "date": "2026-09-10",
+    "source": "https://modal.com/pricing",
+    "h100_usd_per_second": 0.001097,
+    "cpu_usd_per_physical_core_second": 1.31e-05,
+    "memory_usd_per_gib_second": 2.22e-06,
+    "planned_h100_ceiling_usd": 22.7079
+  },
+  "reader_runtime": "fp32_math",
+  "reader_precision": "float32",
+  "reader_attention_backend": "math",
+  "reader_tf32": false,
+  "gpu_preflight_run_id": "20260910-v2-numerics",
+  "shared_dialogue_generator_runtime": "bf16_auto",
+  "training_precision": "bfloat16"
+}

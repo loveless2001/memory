@@ -1,0 +1,628 @@
+{
+  "status": "PASS",
+  "remote_status": "collection_complete",
+  "complete": true,
+  "answers": 416,
+  "cache_checks": 40,
+  "passed_cache_checks": 40,
+  "optimizer_steps": 64,
+  "training_exposures": 1024,
+  "training_answer_target_tokens": 11988,
+  "training_masked_prefix_tokens": 409548,
+  "saved_adapter_reload_verified": true,
+  "base_parameters_and_buffers_unchanged": true,
+  "protected_files_unchanged": 1321,
+  "prior_baseline_reproduction": [
+    {
+      "id": "D01-baseline",
+      "tokens_equal": true
+    },
+    {
+      "id": "D01-withdrawal",
+      "tokens_equal": true
+    },
+    {
+      "id": "D01-different",
+      "tokens_equal": true
+    },
+    {
+      "id": "D01-same",
+      "tokens_equal": true
+    },
+    {
+      "id": "D01-historical",
+      "tokens_equal": true
+    },
+    {
+      "id": "D01-ownership",
+      "tokens_equal": true
+    },
+    {
+      "id": "D02-baseline",
+      "tokens_equal": true
+    },
+    {
+      "id": "D02-withdrawal",
+      "tokens_equal": true
+    },
+    {
+      "id": "D02-different",
+      "tokens_equal": true
+    },
+    {
+      "id": "D02-same",
+      "tokens_equal": true
+    },
+    {
+      "id": "D02-historical",
+      "tokens_equal": true
+    },
+    {
+      "id": "D02-ownership",
+      "tokens_equal": true
+    },
+    {
+      "id": "D03-baseline",
+      "tokens_equal": true
+    },
+    {
+      "id": "D03-withdrawal",
+      "tokens_equal": true
+    },
+    {
+      "id": "D03-different",
+      "tokens_equal": true
+    },
+    {
+      "id": "D03-same",
+      "tokens_equal": true
+    },
+    {
+      "id": "D03-historical",
+      "tokens_equal": true
+    },
+    {
+      "id": "D03-ownership",
+      "tokens_equal": true
+    },
+    {
+      "id": "D04-baseline",
+      "tokens_equal": true
+    },
+    {
+      "id": "D04-withdrawal",
+      "tokens_equal": true
+    },
+    {
+      "id": "D04-different",
+      "tokens_equal": true
+    },
+    {
+      "id": "D04-same",
+      "tokens_equal": true
+    },
+    {
+      "id": "D04-historical",
+      "tokens_equal": true
+    },
+    {
+      "id": "D04-ownership",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-baseline-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-baseline-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-withdrawal-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-withdrawal-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-different-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-different-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-same-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-same-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-historical-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-historical-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-ownership-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F01-ownership-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-baseline-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-baseline-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-withdrawal-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-withdrawal-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-different-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-different-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-same-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-same-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-historical-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-historical-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-ownership-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F02-ownership-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-baseline-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-baseline-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-withdrawal-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-withdrawal-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-different-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-different-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-same-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-same-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-historical-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-historical-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-ownership-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F03-ownership-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-baseline-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-baseline-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-withdrawal-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-withdrawal-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-different-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-different-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-same-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-same-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-historical-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-historical-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-ownership-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "F04-ownership-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "N01-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N01-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N02-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N02-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N03-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N03-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N04-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N04-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N05-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N05-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N06-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N06-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N07-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N07-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N08-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N08-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N09-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N09-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N10-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N10-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N11-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N11-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "N12-1",
+      "tokens_equal": true
+    },
+    {
+      "id": "N12-2",
+      "tokens_equal": true
+    },
+    {
+      "id": "E01-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E01-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E02-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E02-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E03-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E03-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E04-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E04-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E05-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E05-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E06-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E06-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E07-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E07-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E08-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E08-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E09-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E09-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E10-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E10-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E11-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E11-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E12-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E12-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E13-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E13-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E14-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E14-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E15-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E15-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E16-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E16-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E17-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E17-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E18-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E18-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E19-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E19-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E20-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E20-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E21-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E21-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E22-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E22-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E23-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E23-open",
+      "tokens_equal": true
+    },
+    {
+      "id": "E24-binary",
+      "tokens_equal": true
+    },
+    {
+      "id": "E24-open",
+      "tokens_equal": true
+    }
+  ],
+  "identical_prior_baseline_sequences": 144,
+  "accounting_by_arm": {
+    "prior": {
+      "calls": 208,
+      "input_tokens": 83151,
+      "generated_tokens": 2381,
+      "forwarded_tokens": 85324,
+      "generation_seconds": 76.57693777899988
+    },
+    "adapted": {
+      "calls": 208,
+      "input_tokens": 83151,
+      "generated_tokens": 2524,
+      "forwarded_tokens": 85467,
+      "generation_seconds": 79.51106662099903
+    }
+  },
+  "cache_gate_accounting_by_arm": {
+    "prior": {
+      "fixtures": 20,
+      "cached_generated_tokens": 233,
+      "cached_forwarded_tokens": 8179,
+      "fresh_generated_tokens": 233,
+      "fresh_forwarded_tokens": 94044
+    },
+    "adapted": {
+      "fixtures": 20,
+      "cached_generated_tokens": 249,
+      "cached_forwarded_tokens": 8196,
+      "fresh_generated_tokens": 249,
+      "fresh_forwarded_tokens": 100971
+    }
+  },
+  "body_valid_answers": 416,
+  "answers_within_90_words": 416
+}

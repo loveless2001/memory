@@ -7,14 +7,22 @@
 > `max_certified_depth = 0`. Clean policy:
 > `still-compact-v1:t1024:depth0:sha256:c00b2437fdd813cc`.
 
+> **READER/RETRIEVAL RESEARCH PAUSED (2026-09-11).** The latest structured
+> decision recipe failed its acceptance rule. Additional prose training
+> improved synthetic-test accuracy but still lost previously correct answers.
+> Work is paused at the user's request. See [current research status](CONTEXT-POLICY.md)
+> and the [final comparison](plans/260911-reader-decision/REPORT.md).
+
 A runtime for long-lived LLM conversation threads that keeps recent context
 exact, compresses older context, persists it to disk, and expands it back
 when the compressed form turns out to be insufficient — plus the
 certification machinery to say *when* that expansion is necessary.
 
-Everything here runs against a **frozen** Qwen3-4B base: no backbone
-training, ever. What gets trained is the compaction policy and the decision
-layer that routes around its losses.
+The certified substrate runs against a **frozen** Qwen3-4B base. Its trained
+components are the compaction policy and the decision layer that routes around
+its losses. Separate reader research also trains LoRA adapters over frozen
+base weights; those checkpoints are experimental model identities outside
+the substrate's existing certification.
 
 - Design of record: `unified_memory_substrate_spec_v0.3.7.md`
 - Build scope for the MVP: `BUILD.md`
@@ -224,3 +232,15 @@ drafted. The clean unfrozen compactor is a research artifact, not an L3 policy:
 GT13 fails and the default remains evict-oldest-nonsink. Not started: the absorption
 measurement study (spec §16.4), recurrence-depth training beyond depth 1,
 serving/vLLM integration, and any HTTP surface.
+
+The separate ContextGate/ContextPolicy research campaign is **paused**.
+The latest four-condition pilot scored 130/160 new questions with current
+prose, 20/160 with the current structured prompt, 155/160 after prose training,
+and 145/160 after structured training. The trained prose and structured models
+lost eight and 45 cases, respectively, from the union of 259 previously correct
+cases. Structured output also trails on final answers alone (147/160 versus
+155/160). These are synthetic, unblinded author-reviewed results; neither
+checkpoint establishes reliable preservation. Reports and checkpoints are
+retained, and no further runs are scheduled. See
+[ContextPolicy](CONTEXT-POLICY.md) for the stopping decision and deferred
+conditions for reconsidering the work.

@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-09-11T05:10:19.573589+00:00",
+  "requested_app_ids": [
+    "ap-M8XkUoXTzLT4ceWmCOhh4l",
+    "ap-5XKMwz5cuglatWwtBQ5y4R",
+    "ap-5vjhoy7uundd9vUtp7XihE"
+  ],
+  "rows": [
+    {
+      "app_id": "ap-5XKMwz5cuglatWwtBQ5y4R",
+      "description": "memsub-reader-qwen3-8b-cache",
+      "interval": "2026-09-11T05:00:00Z",
+      "cost": "0.00355970",
+      "cost_by_resource": {
+        "Memory": "0.00088889",
+        "CPU": "0.00267081"
+      }
+    },
+    {
+      "app_id": "ap-5vjhoy7uundd9vUtp7XihE",
+      "description": "memsub-reader-qwen3-8b",
+      "interval": "2026-09-11T05:00:00Z",
+      "cost": "0.33940695",
+      "cost_by_resource": {
+        "CPU": "0.01461044",
+        "H100": "0.30502763",
+        "Memory": "0.01976888"
+      }
+    },
+    {
+      "app_id": "ap-M8XkUoXTzLT4ceWmCOhh4l",
+      "description": "memsub-reader-qwen3-8b-cache",
+      "interval": "2026-09-11T04:00:00Z",
+      "cost": "0.00001152",
+      "cost_by_resource": {
+        "Memory": "0.00000167",
+        "CPU": "0.00000986"
+      }
+    }
+  ],
+  "reported_total_usd": "0.34297817",
+  "apps_without_reported_row": [],
+  "caveat": "Observed billing can lag terminal execution. No reported row does not establish zero cost."
+}

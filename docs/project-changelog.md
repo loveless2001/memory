@@ -1,5 +1,31 @@
 # Project Changelog
 
+## 2026-09-11 — Reader/retrieval research paused
+
+- Paused the ContextGate/ContextPolicy campaign at the user's request after
+  completing the [four-condition supervision experiment](../plans/260911-reader-decision/REPORT.md).
+  The structured recipe fails its frozen acceptance rule; further iteration
+  on that recipe is discontinued for now.
+- New strict scores: current prose 130/160, current structured 20/160,
+  trained prose 155/160, trained structured 145/160. Regression scores are
+  250/260, 29/260, 252/260, and 215/260 respectively. Trained prose loses eight
+  cases and trained structured loses 45 from the 259-case union of previously
+  correct answers. Structured final-answer-only accuracy also trails prose
+  (147/160 versus 155/160).
+- The extra prose supervision improves this synthetic packet, but preservation
+  failures remain. The work uses unblinded author review and does not establish
+  external generalization, production readiness, or a general impossibility
+  result for memory/retrieval.
+- All 1,680 captures, 80 numerical fixtures, checkpoint reloads, and artifact
+  checks completed; 260 prior direct outputs reproduced exactly and 1,460
+  protected files were preserved. The latest app stopped with zero tasks;
+  observed run cost was $3.35500240. Frozen reports, references, judgments,
+  failure inventories, and checkpoints are retained.
+- No further training, inference, or deployment work is scheduled. An
+  independently reviewed evaluation on the actual target workload is a
+  deferred proposal only if the user reopens the campaign. See
+  [ContextPolicy](../CONTEXT-POLICY.md) for the current pause boundary.
+
 ## 2026-07-21 — Clean E1FULL recertification: GT13 no-ship
 
 - Reserved 15 documents/domain before manifest construction, then trained

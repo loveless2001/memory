@@ -1,0 +1,1083 @@
+{
+  "status": "review_validated",
+  "author_review_only": true,
+  "questions": 96,
+  "answer_captures": 288,
+  "extraction_streams": 52,
+  "counts": {
+    "regression": {
+      "baseline": {
+        "n": 72,
+        "strict_pass": 53,
+        "task_correct": 60
+      },
+      "oracle": {
+        "n": 72,
+        "strict_pass": 60,
+        "task_correct": 64
+      },
+      "extracted": {
+        "n": 72,
+        "strict_pass": 52,
+        "task_correct": 56
+      }
+    },
+    "all": {
+      "baseline": {
+        "n": 96,
+        "strict_pass": 70,
+        "task_correct": 78
+      },
+      "oracle": {
+        "n": 96,
+        "strict_pass": 78,
+        "task_correct": 82
+      },
+      "extracted": {
+        "n": 96,
+        "strict_pass": 66,
+        "task_correct": 71
+      }
+    },
+    "new": {
+      "baseline": {
+        "n": 24,
+        "strict_pass": 17,
+        "task_correct": 18
+      },
+      "oracle": {
+        "n": 24,
+        "strict_pass": 18,
+        "task_correct": 18
+      },
+      "extracted": {
+        "n": 24,
+        "strict_pass": 14,
+        "task_correct": 15
+      }
+    }
+  },
+  "counts_by_scope": {
+    "regression": {
+      "current": {
+        "baseline": {
+          "n": 60,
+          "strict_pass": 42,
+          "task_correct": 48
+        },
+        "oracle": {
+          "n": 60,
+          "strict_pass": 52,
+          "task_correct": 52
+        },
+        "extracted": {
+          "n": 60,
+          "strict_pass": 44,
+          "task_correct": 44
+        }
+      },
+      "historical": {
+        "oracle": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 12
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 12
+        },
+        "baseline": {
+          "n": 12,
+          "strict_pass": 11,
+          "task_correct": 12
+        }
+      }
+    },
+    "all": {
+      "current": {
+        "baseline": {
+          "n": 83,
+          "strict_pass": 58,
+          "task_correct": 65
+        },
+        "oracle": {
+          "n": 83,
+          "strict_pass": 69,
+          "task_correct": 69
+        },
+        "extracted": {
+          "n": 83,
+          "strict_pass": 57,
+          "task_correct": 58
+        }
+      },
+      "historical": {
+        "oracle": {
+          "n": 13,
+          "strict_pass": 9,
+          "task_correct": 13
+        },
+        "extracted": {
+          "n": 13,
+          "strict_pass": 9,
+          "task_correct": 13
+        },
+        "baseline": {
+          "n": 13,
+          "strict_pass": 12,
+          "task_correct": 13
+        }
+      }
+    },
+    "new": {
+      "current": {
+        "baseline": {
+          "n": 23,
+          "strict_pass": 16,
+          "task_correct": 17
+        },
+        "oracle": {
+          "n": 23,
+          "strict_pass": 17,
+          "task_correct": 17
+        },
+        "extracted": {
+          "n": 23,
+          "strict_pass": 13,
+          "task_correct": 14
+        }
+      },
+      "historical": {
+        "oracle": {
+          "n": 1,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "extracted": {
+          "n": 1,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "baseline": {
+          "n": 1,
+          "strict_pass": 1,
+          "task_correct": 1
+        }
+      }
+    }
+  },
+  "counts_by_kind": {
+    "regression": {
+      "baseline": {
+        "baseline": {
+          "n": 12,
+          "strict_pass": 10,
+          "task_correct": 10
+        },
+        "oracle": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "withdrawal": {
+        "oracle": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 8
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 8
+        },
+        "baseline": {
+          "n": 12,
+          "strict_pass": 0,
+          "task_correct": 6
+        }
+      },
+      "different": {
+        "extracted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        },
+        "baseline": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        },
+        "oracle": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "same": {
+        "baseline": {
+          "n": 12,
+          "strict_pass": 10,
+          "task_correct": 10
+        },
+        "oracle": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "historical": {
+        "oracle": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 12
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 12
+        },
+        "baseline": {
+          "n": 12,
+          "strict_pass": 11,
+          "task_correct": 12
+        }
+      },
+      "ownership": {
+        "extracted": {
+          "n": 12,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "baseline": {
+          "n": 12,
+          "strict_pass": 10,
+          "task_correct": 10
+        },
+        "oracle": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 8
+        }
+      }
+    },
+    "new": {
+      "withdrawal_assistant_echo": {
+        "baseline": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 1
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        }
+      },
+      "explicit_negative": {
+        "extracted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "selective_withdrawal": {
+        "oracle": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        }
+      },
+      "unrelated_withdrawal": {
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        }
+      },
+      "quoted_then_personal": {
+        "extracted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "quote_after_withdrawal": {
+        "oracle": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        }
+      },
+      "same_reinstatement": {
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "multiple_updates": {
+        "extracted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "assistant_conflict": {
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 1
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "historical_scope": {
+        "baseline": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        }
+      },
+      "other_person_distractor": {
+        "extracted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "oracle": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "explicit_no_preference": {
+        "oracle": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "extracted": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "baseline": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      }
+    }
+  },
+  "counts_by_form": {
+    "regression": {
+      "original": {
+        "baseline": {
+          "n": 24,
+          "strict_pass": 17,
+          "task_correct": 19
+        },
+        "oracle": {
+          "n": 24,
+          "strict_pass": 20,
+          "task_correct": 24
+        },
+        "extracted": {
+          "n": 24,
+          "strict_pass": 16,
+          "task_correct": 20
+        }
+      },
+      "binary": {
+        "baseline": {
+          "n": 24,
+          "strict_pass": 16,
+          "task_correct": 17
+        },
+        "oracle": {
+          "n": 24,
+          "strict_pass": 16,
+          "task_correct": 16
+        },
+        "extracted": {
+          "n": 24,
+          "strict_pass": 16,
+          "task_correct": 16
+        }
+      },
+      "open": {
+        "oracle": {
+          "n": 24,
+          "strict_pass": 24,
+          "task_correct": 24
+        },
+        "extracted": {
+          "n": 24,
+          "strict_pass": 20,
+          "task_correct": 20
+        },
+        "baseline": {
+          "n": 24,
+          "strict_pass": 20,
+          "task_correct": 24
+        }
+      }
+    },
+    "new": {
+      "binary": {
+        "baseline": {
+          "n": 12,
+          "strict_pass": 8,
+          "task_correct": 8
+        },
+        "oracle": {
+          "n": 12,
+          "strict_pass": 7,
+          "task_correct": 7
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 5,
+          "task_correct": 6
+        }
+      },
+      "open": {
+        "oracle": {
+          "n": 12,
+          "strict_pass": 11,
+          "task_correct": 11
+        },
+        "extracted": {
+          "n": 12,
+          "strict_pass": 9,
+          "task_correct": 9
+        },
+        "baseline": {
+          "n": 12,
+          "strict_pass": 9,
+          "task_correct": 10
+        }
+      }
+    }
+  },
+  "criteria": {
+    "regression": {
+      "baseline": {
+        "task_complete": {
+          "false": 12,
+          "true": 60
+        },
+        "source_consistent": {
+          "false": 13,
+          "true": 59
+        },
+        "supported_in_visible_state": {
+          "false": 13,
+          "true": 59
+        },
+        "withdrawal_compliant": {
+          "true": 58,
+          "false": 14
+        },
+        "ownership_correct": {
+          "true": 70,
+          "false": 2
+        },
+        "body_valid": {
+          "true": 72
+        },
+        "within_90_words": {
+          "true": 72
+        }
+      },
+      "oracle": {
+        "task_complete": {
+          "true": 64,
+          "false": 8
+        },
+        "source_consistent": {
+          "true": 60,
+          "false": 12
+        },
+        "supported_in_visible_state": {
+          "true": 60,
+          "false": 12
+        },
+        "withdrawal_compliant": {
+          "true": 68,
+          "false": 4
+        },
+        "ownership_correct": {
+          "true": 72
+        },
+        "body_valid": {
+          "true": 72
+        },
+        "within_90_words": {
+          "true": 72
+        }
+      },
+      "extracted": {
+        "task_complete": {
+          "true": 56,
+          "false": 16
+        },
+        "source_consistent": {
+          "true": 52,
+          "false": 20
+        },
+        "supported_in_visible_state": {
+          "true": 52,
+          "false": 20
+        },
+        "withdrawal_compliant": {
+          "true": 68,
+          "false": 4
+        },
+        "ownership_correct": {
+          "true": 60,
+          "false": 12
+        },
+        "body_valid": {
+          "true": 72
+        },
+        "within_90_words": {
+          "true": 72
+        }
+      }
+    },
+    "all": {
+      "baseline": {
+        "task_complete": {
+          "false": 18,
+          "true": 78
+        },
+        "source_consistent": {
+          "false": 19,
+          "true": 77
+        },
+        "supported_in_visible_state": {
+          "false": 19,
+          "true": 77
+        },
+        "withdrawal_compliant": {
+          "true": 75,
+          "false": 21
+        },
+        "ownership_correct": {
+          "true": 94,
+          "false": 2
+        },
+        "body_valid": {
+          "true": 96
+        },
+        "within_90_words": {
+          "true": 96
+        }
+      },
+      "oracle": {
+        "task_complete": {
+          "true": 82,
+          "false": 14
+        },
+        "source_consistent": {
+          "true": 78,
+          "false": 18
+        },
+        "supported_in_visible_state": {
+          "true": 78,
+          "false": 18
+        },
+        "withdrawal_compliant": {
+          "true": 88,
+          "false": 8
+        },
+        "ownership_correct": {
+          "true": 96
+        },
+        "body_valid": {
+          "true": 96
+        },
+        "within_90_words": {
+          "true": 96
+        }
+      },
+      "extracted": {
+        "task_complete": {
+          "true": 71,
+          "false": 25
+        },
+        "source_consistent": {
+          "true": 66,
+          "false": 30
+        },
+        "supported_in_visible_state": {
+          "true": 66,
+          "false": 30
+        },
+        "withdrawal_compliant": {
+          "true": 86,
+          "false": 10
+        },
+        "ownership_correct": {
+          "true": 84,
+          "false": 12
+        },
+        "body_valid": {
+          "true": 96
+        },
+        "within_90_words": {
+          "true": 96
+        }
+      }
+    },
+    "new": {
+      "baseline": {
+        "task_complete": {
+          "false": 6,
+          "true": 18
+        },
+        "source_consistent": {
+          "false": 6,
+          "true": 18
+        },
+        "supported_in_visible_state": {
+          "false": 6,
+          "true": 18
+        },
+        "withdrawal_compliant": {
+          "false": 7,
+          "true": 17
+        },
+        "ownership_correct": {
+          "true": 24
+        },
+        "body_valid": {
+          "true": 24
+        },
+        "within_90_words": {
+          "true": 24
+        }
+      },
+      "oracle": {
+        "task_complete": {
+          "false": 6,
+          "true": 18
+        },
+        "source_consistent": {
+          "false": 6,
+          "true": 18
+        },
+        "supported_in_visible_state": {
+          "false": 6,
+          "true": 18
+        },
+        "withdrawal_compliant": {
+          "false": 4,
+          "true": 20
+        },
+        "ownership_correct": {
+          "true": 24
+        },
+        "body_valid": {
+          "true": 24
+        },
+        "within_90_words": {
+          "true": 24
+        }
+      },
+      "extracted": {
+        "task_complete": {
+          "false": 9,
+          "true": 15
+        },
+        "source_consistent": {
+          "false": 10,
+          "true": 14
+        },
+        "supported_in_visible_state": {
+          "false": 10,
+          "true": 14
+        },
+        "withdrawal_compliant": {
+          "false": 6,
+          "true": 18
+        },
+        "ownership_correct": {
+          "true": 24
+        },
+        "body_valid": {
+          "true": 24
+        },
+        "within_90_words": {
+          "true": 24
+        }
+      }
+    }
+  },
+  "state_prompt_support": {
+    "regression": {
+      "oracle": {
+        "true": 60,
+        "false": 12
+      },
+      "extracted": {
+        "true": 64,
+        "false": 8
+      }
+    },
+    "new": {
+      "oracle": {
+        "false": 6,
+        "true": 18
+      },
+      "extracted": {
+        "false": 8,
+        "true": 16
+      }
+    }
+  },
+  "extraction_scores": {
+    "regression": {
+      "streams": 40,
+      "schema_and_spans_valid": 40,
+      "semantic_events_correct": 30,
+      "quotes_sufficient": 30,
+      "resolved_state_correct": 30
+    },
+    "all": {
+      "streams": 52,
+      "schema_and_spans_valid": 50,
+      "semantic_events_correct": 35,
+      "quotes_sufficient": 38,
+      "resolved_state_correct": 38
+    },
+    "new": {
+      "streams": 12,
+      "schema_and_spans_valid": 10,
+      "semantic_events_correct": 5,
+      "quotes_sufficient": 8,
+      "resolved_state_correct": 8
+    }
+  },
+  "current_pipeline_decomposition": {
+    "regression": {
+      "state_correct / answer_correct": 42,
+      "state_wrong / answer_correct": 2,
+      "state_wrong / answer_wrong": 12,
+      "state_correct / answer_wrong": 4,
+      "state_correct_but_strict_fail": 4
+    },
+    "new": {
+      "state_correct / answer_wrong": 4,
+      "state_correct_but_strict_fail": 4,
+      "state_correct / answer_correct": 11,
+      "state_wrong / answer_correct": 3,
+      "state_wrong / answer_wrong": 5,
+      "invalid_extraction_but_correct_answer": 1
+    }
+  },
+  "matched_effects": {
+    "regression": {
+      "all": {
+        "baseline_to_oracle": {
+          "n": 72,
+          "strict_corrections": 14,
+          "strict_regressions": 7,
+          "task_corrections": 7,
+          "task_regressions": 3
+        },
+        "baseline_to_extracted": {
+          "n": 72,
+          "strict_corrections": 13,
+          "strict_regressions": 14,
+          "task_corrections": 6,
+          "task_regressions": 10
+        },
+        "oracle_to_extracted": {
+          "n": 72,
+          "strict_corrections": 0,
+          "strict_regressions": 8,
+          "task_corrections": 0,
+          "task_regressions": 8
+        }
+      },
+      "current": {
+        "baseline_to_oracle": {
+          "n": 60,
+          "strict_corrections": 13,
+          "strict_regressions": 3,
+          "task_corrections": 7,
+          "task_regressions": 3
+        },
+        "baseline_to_extracted": {
+          "n": 60,
+          "strict_corrections": 12,
+          "strict_regressions": 10,
+          "task_corrections": 6,
+          "task_regressions": 10
+        },
+        "oracle_to_extracted": {
+          "n": 60,
+          "strict_corrections": 0,
+          "strict_regressions": 8,
+          "task_corrections": 0,
+          "task_regressions": 8
+        }
+      },
+      "historical": {
+        "baseline_to_oracle": {
+          "n": 12,
+          "strict_corrections": 1,
+          "strict_regressions": 4,
+          "task_corrections": 0,
+          "task_regressions": 0
+        },
+        "baseline_to_extracted": {
+          "n": 12,
+          "strict_corrections": 1,
+          "strict_regressions": 4,
+          "task_corrections": 0,
+          "task_regressions": 0
+        },
+        "oracle_to_extracted": {
+          "n": 12,
+          "strict_corrections": 0,
+          "strict_regressions": 0,
+          "task_corrections": 0,
+          "task_regressions": 0
+        }
+      }
+    },
+    "new": {
+      "all": {
+        "baseline_to_oracle": {
+          "n": 24,
+          "strict_corrections": 3,
+          "strict_regressions": 2,
+          "task_corrections": 2,
+          "task_regressions": 2
+        },
+        "baseline_to_extracted": {
+          "n": 24,
+          "strict_corrections": 3,
+          "strict_regressions": 6,
+          "task_corrections": 2,
+          "task_regressions": 5
+        },
+        "oracle_to_extracted": {
+          "n": 24,
+          "strict_corrections": 0,
+          "strict_regressions": 4,
+          "task_corrections": 0,
+          "task_regressions": 3
+        }
+      },
+      "current": {
+        "baseline_to_oracle": {
+          "n": 23,
+          "strict_corrections": 3,
+          "strict_regressions": 2,
+          "task_corrections": 2,
+          "task_regressions": 2
+        },
+        "baseline_to_extracted": {
+          "n": 23,
+          "strict_corrections": 3,
+          "strict_regressions": 6,
+          "task_corrections": 2,
+          "task_regressions": 5
+        },
+        "oracle_to_extracted": {
+          "n": 23,
+          "strict_corrections": 0,
+          "strict_regressions": 4,
+          "task_corrections": 0,
+          "task_regressions": 3
+        }
+      },
+      "historical": {
+        "baseline_to_oracle": {
+          "n": 1,
+          "strict_corrections": 0,
+          "strict_regressions": 0,
+          "task_corrections": 0,
+          "task_regressions": 0
+        },
+        "baseline_to_extracted": {
+          "n": 1,
+          "strict_corrections": 0,
+          "strict_regressions": 0,
+          "task_corrections": 0,
+          "task_regressions": 0
+        },
+        "oracle_to_extracted": {
+          "n": 1,
+          "strict_corrections": 0,
+          "strict_regressions": 0,
+          "task_corrections": 0,
+          "task_regressions": 0
+        }
+      }
+    }
+  },
+  "gates": {
+    "baseline": {
+      "regression_72_of_72": false,
+      "new_24_of_24": false,
+      "both_pass": false
+    },
+    "oracle": {
+      "regression_72_of_72": false,
+      "new_24_of_24": false,
+      "both_pass": false
+    },
+    "extracted": {
+      "regression_72_of_72": false,
+      "new_24_of_24": false,
+      "both_pass": false
+    }
+  },
+  "n01_sensitivity": {
+    "description": "Generously credit all three N01-1 binary responses under an epistemic refusal-to-assert reading; all other judgments unchanged. This is a disclosed post-review sensitivity, not a change to the frozen primary convention.",
+    "new_counts": {
+      "baseline": {
+        "n": 24,
+        "strict_pass": 18,
+        "task_correct": 19
+      },
+      "oracle": {
+        "n": 24,
+        "strict_pass": 19,
+        "task_correct": 19
+      },
+      "extracted": {
+        "n": 24,
+        "strict_pass": 15,
+        "task_correct": 16
+      }
+    }
+  },
+  "training_admission": false,
+  "training_labels": 0,
+  "source_hashes": {
+    "review.json": "f7733dec6171d87a078757a05dee8e75fe4bed35f54640d0418d7704b7a2ee7b",
+    "extraction-review.json": "d89556713e4f8a8c710bae1cc8274b1ef4a33ff840b7840014334e00ffb429f3",
+    "preflight/cases.json": "bb8620dc995f7de7e65fa9d2a9ee7f82b78f4771f043f70d7db44c92aecba568",
+    "preflight/gold-events.json": "787aaee50128a55584e94bdd682ffb8d0c5b9c71e20cec48bb22443467388e91",
+    "preflight/freeze.json": "db18cfcc778835a32bb8f035c928bb881ca4919d4c6caa7303d86c9530ef4956",
+    "run/captures.json": "49128aa393f6a17c4b082a9bf323f2fad44cb78dc7414f8130c6fe8bf6d80f68",
+    "run/extractions.json": "bf3b414a066337a1cbdc87b9286acf96687e957c18d0e4d13edbea76f1f68b38",
+    "run/artifact-verification.json": "c60c66b1ccc1782650186787fe92c1259131a4cd91227ebe24fe83835b568703"
+  }
+}

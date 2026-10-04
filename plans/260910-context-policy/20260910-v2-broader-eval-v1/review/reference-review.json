@@ -1,0 +1,2665 @@
+{
+ "candidate_freeze_sha256": "1465222774e1714bfc4d8e42d60974dd6a8af97db44fa05a02cde181ab716c40",
+ "cases": [
+  {
+   "contradicting_evidence": [],
+   "id": "F001-Q1",
+   "query_sha256": "f8a2e50e4f7f657d623a9356668196f9c0a7dc5be05a3679d7231a80dd1158a3",
+   "rationale": "T2 is the only winter-break class piece; it names Accra (family visit) and Dakar (stop on the way back). Both components given, no over-specificity, no leakage. Other narrative pieces (T64 commute, T82 arrival in Philadelphia, T60 vineyard) do not match the winter-break/class cue and name no such city pair.",
+   "source_sha256": "e5b6eac7c3e7c2ed1ae4428ed87da73c80ef271f62f423eef553503ac8684961",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 184,
+     "role": "user",
+     "start": 72,
+     "text_sha256": "89f0f8aee68cc5fe5e3b5ba94d30ced6b13fc6561a3b6a33a2c616c4e5feef14",
+     "turn": 2
+    },
+    {
+     "end": 664,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "d67dc2d599379efcee3dfa98655fa566ce9cfb7fdd3d4b8c47d65e547b4d9c49",
+     "turn": 2
+    }
+   ],
+   "visible_history_sha256": "6f21a720daafd708f7669bf9377a5c2d21d8c548ab0bd696786887445cb7e88e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F001-Q2",
+   "query_sha256": "ef7cd2da139974aafb54ae5b77df14c93e9d7be95be341a64209bd42b4e7a38f",
+   "rationale": "T24 (Subject: Seeking Your Guidance, to Professor Jacobs) names 'Real Estate degree at Temple' and 'internship at Urban Horizons Realty Group'. Both asked components present and exact. Other mentor emails do not compete: T42 is a thank-you to Mr. Thompson, T50 a scheduling email, T98 an extension request to Prof. Reynolds; none is guidance-seeking with a degree named.",
+   "source_sha256": "e5b6eac7c3e7c2ed1ae4428ed87da73c80ef271f62f423eef553503ac8684961",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 249,
+     "role": "user",
+     "start": 182,
+     "text_sha256": "9200221b806e1ef7dd40c2b0ad92c1456f8a3cb8256b0f936f7bc2fca4d3178f",
+     "turn": 24
+    },
+    {
+     "end": 416,
+     "role": "user",
+     "start": 335,
+     "text_sha256": "fb18dbb1e283e2e088002e86ea0836b3744654f5b3a98f0f34d848f3a30738cc",
+     "turn": 24
+    }
+   ],
+   "visible_history_sha256": "6f21a720daafd708f7669bf9377a5c2d21d8c548ab0bd696786887445cb7e88e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F001-Q3",
+   "query_sha256": "7017f30456833de591e5d2864481f4ea9ba5a4516f2c92c2d6afff53306423bb",
+   "rationale": "The clothing-color preference is established only at T152 (beige blazer/brown shirt, muted over bright) and withdrawn at T156, which names exactly that content. I checked every user turn T158-T223: none restates a clothing-color preference in any wording. T168/T170 ask about cultural accessories generally and state no preference. Abstain is correct; withdrawal establishes neither value nor its opposite.",
+   "source_sha256": "e5b6eac7c3e7c2ed1ae4428ed87da73c80ef271f62f423eef553503ac8684961",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 62,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "55bf905a9394818f7b14e95bf911f414b71fad7206a0343edc0aad74c227dd3c",
+     "turn": 156
+    }
+   ],
+   "visible_history_sha256": "6f21a720daafd708f7669bf9377a5c2d21d8c548ab0bd696786887445cb7e88e"
+  },
+  {
+   "contradicting_evidence": [
+    {
+     "end": 148,
+     "role": "user",
+     "start": 126,
+     "text_sha256": "2637fc27c31da4c80557f317f4c533d1207fd6132544370d937ba6fd98a18e58",
+     "turn": 24
+    },
+    {
+     "end": 1030,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "400fcaf61dd8fafdb124de4f66dd485de4c3c44b829334a91460add86c2675ac",
+     "turn": 24
+    }
+   ],
+   "id": "F001-Q4",
+   "query_sha256": "d28a8872f6b125209488f622842b15f29ba984a251ef16933c72172ef8c87479",
+   "rationale": "Core attribution is right: within the T24 email Kwame Mensah is the writer approaching a final semester and Professor Jacobs is the mentor asked for guidance. But 'his' asserts a gender the passage never states (the email is first-person, signed only with a name) and nothing elsewhere in F001 establishes it. Unsupported specificity in a reference whose stated task is attribution within the identified passage.",
+   "source_sha256": "e5b6eac7c3e7c2ed1ae4428ed87da73c80ef271f62f423eef553503ac8684961",
+   "status": "reject",
+   "suggested_answer": "Within the email, Kwame Mensah is the writer approaching a final semester, and Professor Jacobs is the mentor asked for career guidance.",
+   "supporting_evidence": [
+    {
+     "end": 148,
+     "role": "user",
+     "start": 126,
+     "text_sha256": "2637fc27c31da4c80557f317f4c533d1207fd6132544370d937ba6fd98a18e58",
+     "turn": 24
+    },
+    {
+     "end": 1030,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "400fcaf61dd8fafdb124de4f66dd485de4c3c44b829334a91460add86c2675ac",
+     "turn": 24
+    }
+   ],
+   "visible_history_sha256": "6f21a720daafd708f7669bf9377a5c2d21d8c548ab0bd696786887445cb7e88e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F001-Q5",
+   "query_sha256": "7017f30456833de591e5d2864481f4ea9ba5a4516f2c92c2d6afff53306423bb",
+   "rationale": "In F001-different the post-withdrawal user declaration at T224 explicitly re-establishes a current preference for bright primary colors rather than muted earth tones. The proposed answer mirrors it exactly, including the contrast clause, and post-dates the T156 withdrawal. No later user turn alters it (T225 is the assistant ack).",
+   "source_sha256": "b645c7bcb3ac9b7343987ee6f546bb089eb407d1ae61161a0cb6988beb781b30",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 147,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "9bd26a2a50ec8dca4bad78ace0ca44dd7bde79952dbf7ed7a786815a15328131",
+     "turn": 224
+    }
+   ],
+   "visible_history_sha256": "bda1ab9f4b1d2b7c3709df0dc9d97ba8b0ca69b63aaed429b3c4780b5aa5fbe7"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F001-Q6",
+   "query_sha256": "7017f30456833de591e5d2864481f4ea9ba5a4516f2c92c2d6afff53306423bb",
+   "rationale": "In F001-same the user re-establishes at T224 the same value withdrawn at T156: a current preference for muted earth tones in clothing. An explicit later user statement overrides the earlier withdrawal, so the proposed answer is correct and complete at the asked granularity.",
+   "source_sha256": "b03007a566a7b34d2511a8d56426db4e20f26354fbdf407f52e7a9918a9080ae",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 113,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "7fa3e13f7cbbd7aa5811c10bd194320e9268b943d566d8d2832ea26e1a3165ec",
+     "turn": 224
+    }
+   ],
+   "visible_history_sha256": "8e7f0a2a70594e3cd8d78b051ce5970886d051ef9c6e83d13faaba69e3aa94b2"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F002-Q1",
+   "query_sha256": "48fae1a746631db93dd912ccc65f155f21fe2fd6742ba755f0a5b699931da649",
+   "rationale": "T22 is the only portfolio blurb about launching a first mobile title; its text names exactly engagement, ethical monetization, sustainable growth. Answer gives all three at correct granularity. Other bio-ish passages (T30 pitch deck, T58 LinkedIn, T92 intro, T109 founder bio) lack this triad, so no competing passage. Scoped to quoted text, no leakage.",
+   "source_sha256": "6dc3b4ff186f3e404bed68663f51fe46deebb79cac8bdea5453dc4e8ba70e008",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 500,
+     "role": "user",
+     "start": 416,
+     "text_sha256": "9a05977326fc59864fa4c107b241a6ee8e79de9ecd321b285822294d9d3b5f1a",
+     "turn": 22
+    }
+   ],
+   "visible_history_sha256": "ca8dbeefd173dcf1f755f2519d37f47f4069d836d31dc7ce4d912ebc6af7503d"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F002-Q2",
+   "query_sha256": "9dc6b84f6c4a0b4dc4b7b323c1479796100f40770a2218bc5f441b58a701ab81",
+   "rationale": "T30 is the only pitch-deck paragraph; it states 'Beyond ads and traditional IAPs, I've pioneered limited-edition digital art drops tied to in-game events'. Answer matches exactly, no unsupported specificity. T31 is only the assistant's rewrite, not a competing source. Question supplies the cue (in-game events), not the answer.",
+   "source_sha256": "6dc3b4ff186f3e404bed68663f51fe46deebb79cac8bdea5453dc4e8ba70e008",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 483,
+     "role": "user",
+     "start": 412,
+     "text_sha256": "5ce133f515a0b94c33f97731e996908b2ea07802db2b8029572fb71727100023",
+     "turn": 30
+    }
+   ],
+   "visible_history_sha256": "ca8dbeefd173dcf1f755f2519d37f47f4069d836d31dc7ce4d912ebc6af7503d"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F002-Q3",
+   "query_sha256": "83a5179616b959135d57641aa3c63a8989956f1df481b5703495f2381e263adf",
+   "rationale": "Withdrawal at T189; base history ends at T190 (assistant only), so no later user turn of any wording re-establishes the detail. Earlier bike mentions are not re-establishments: T50 is a first-person narrative submitted for polishing about a weekday pre-work ride, T188/T186 are assistant suggestions. Unknown is correct; abstain mode fits.",
+   "source_sha256": "6dc3b4ff186f3e404bed68663f51fe46deebb79cac8bdea5453dc4e8ba70e008",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 46,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "5777c163327c4822ba0700d03b160f712a334e28396d9df1fd80e80815409404",
+     "turn": 189
+    }
+   ],
+   "visible_history_sha256": "ca8dbeefd173dcf1f755f2519d37f47f4069d836d31dc7ce4d912ebc6af7503d"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F002-Q4",
+   "query_sha256": "078256a13865c4cdae0b2d5d61bd7fae6bd8c946032acb3232f19cf998427588",
+   "rationale": "T38 (subject 'Exploring Synergies for Ad Monetization') is the passage whose sender asks for a take on rewarded video pacing: 'Hi Alex' recipient, 'I'm Izzy, founder of PixelPulse', 'your platform's success'. Both components answered. A second Alex outreach email at T105 also concerns ad monetization but asks about fill rate/eCPM, not pacing advice; it yields the same Izzy-to-Alex answer, so no material ambiguity.",
+   "source_sha256": "6dc3b4ff186f3e404bed68663f51fe46deebb79cac8bdea5453dc4e8ba70e008",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 235,
+     "role": "user",
+     "start": 195,
+     "text_sha256": "95430e31b9f7042e2da722500b329859735f01f061a4f4243bff92c9931c9f74",
+     "turn": 38
+    },
+    {
+     "end": 299,
+     "role": "user",
+     "start": 235,
+     "text_sha256": "ab7a248162267b404ba6ce71edba573e40fc40ed32f565103c334ff7fa8e77a3",
+     "turn": 38
+    },
+    {
+     "end": 468,
+     "role": "user",
+     "start": 387,
+     "text_sha256": "e5b8302e142b8ffe91a8c49f9eeb92105d13d467a38b3660d4a5645c73280e1f",
+     "turn": 38
+    },
+    {
+     "end": 728,
+     "role": "user",
+     "start": 677,
+     "text_sha256": "8d0542c7c994e78d38ad47f658a03865be33ee5fd49cef8b392070ae8b65b17b",
+     "turn": 38
+    }
+   ],
+   "visible_history_sha256": "ca8dbeefd173dcf1f755f2519d37f47f4069d836d31dc7ce4d912ebc6af7503d"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F002-Q5",
+   "query_sha256": "83a5179616b959135d57641aa3c63a8989956f1df481b5703495f2381e263adf",
+   "rationale": "In F002-different the user withdraws at T189 and then explicitly declares at T191 'I do not enjoy weekend bike rides' as a current detail. That later explicit statement establishes the negative value; answer 'No' with that attribution is correct and complete.",
+   "source_sha256": "9b1e52ea74226ca774676879a66c5df4b2e7711e2a06cd5f75df4532cee92e0c",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 105,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "6df359f20de2bb2d7da5d264b36759d2848d781cf9f05021796ea20cb0e85f41",
+     "turn": 191
+    },
+    {
+     "end": 46,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "5777c163327c4822ba0700d03b160f712a334e28396d9df1fd80e80815409404",
+     "turn": 189
+    }
+   ],
+   "visible_history_sha256": "9e83c38de644d4c2ea1b8a85d14031f39cc2ecd694772e5c131d13790a3695d5"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F002-Q6",
+   "query_sha256": "83a5179616b959135d57641aa3c63a8989956f1df481b5703495f2381e263adf",
+   "rationale": "In F002-same the withdrawal at T189 is followed by an explicit user re-establishment at T191 ('I enjoy weekend bike rides') offered as a current detail for future replies. Re-establishment after withdrawal is valid, so 'Yes' is correct.",
+   "source_sha256": "35dd6a58e2fece67417171349b6682ba27e49125c2bb493f01c0f46a386573e4",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 98,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "e183baccc9cbe2b430a7ace636be2137aabe06795338d345b43269c1d1d32205",
+     "turn": 191
+    },
+    {
+     "end": 46,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "5777c163327c4822ba0700d03b160f712a334e28396d9df1fd80e80815409404",
+     "turn": 189
+    }
+   ],
+   "visible_history_sha256": "bc7158bc3b910476e9f36fb4fe43ef0de9f30c34e31fcaba9c2913d1361a4e83"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F003-Q1",
+   "query_sha256": "cd00d305979a2423a4c6b81085059d3f55509845cca7acf9da39d9ba39e4ca59",
+   "rationale": "T12 is the only bio for the team's internal site (grep confirms one 'internal site'); it states 'building portfolio optimization models for fintech clients'. Both requested components (model type, client type) are given at source granularity. The other bios (T28 conference, T90 networking, T174 partner pitch, T202 portfolio) carry different cues and different wording, so no competing passage. No leakage; scoped to quoted text.",
+   "source_sha256": "a3f184b6fc08d8ee74d586923399f9446525e0cb33a597d7d08edbf721d1e346",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 192,
+     "role": "user",
+     "start": 118,
+     "text_sha256": "a400b09e9855081354359bfe55f0b39580f1139411bb796ab6b3ff14fe465331",
+     "turn": 12
+    }
+   ],
+   "visible_history_sha256": "efdd5b2f48a0efa65cd14524d706840b1f21756cbe76edb37e05ff7478b62f2a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F003-Q2",
+   "query_sha256": "0a60f740e823c43c90a9eb7491a613be1455c469a55a00720acfc6efaa03476f",
+   "rationale": "T28 is the only fintech-conference bio; it reads 'introducing a partner from Madrid to one of Austin's contemporary art exhibits'. Both cities correct and complete. T12 (internal-site bio) contains no partner/art detail, so the cue is unambiguous. Question adds 'visiting' (assistant's T29 wording) but supplies neither city, so no leakage or over-specificity.",
+   "source_sha256": "a3f184b6fc08d8ee74d586923399f9446525e0cb33a597d7d08edbf721d1e346",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 442,
+     "role": "user",
+     "start": 364,
+     "text_sha256": "439c412e987ed3403e7ca85950b2b411a2743c1b93f810136e1c207a337dac42",
+     "turn": 28
+    }
+   ],
+   "visible_history_sha256": "efdd5b2f48a0efa65cd14524d706840b1f21756cbe76edb37e05ff7478b62f2a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F003-Q3",
+   "query_sha256": "4b4e6a2a8ac221646b318de05bbb1047d2a374f2899bd3af8a65f6e8c063590f",
+   "rationale": "T260 withdraws the workshop detail and is the LAST user turn of the base history (T261 assistant closes it), so no later user re-establishment in any wording is possible. T258 is merely a topical weekend-activities question and T259 is assistant text, neither of which establishes a user fact. Withdrawal establishes neither value; 'unknown' is the correct answer and abstain mode fits.",
+   "source_sha256": "a3f184b6fc08d8ee74d586923399f9446525e0cb33a597d7d08edbf721d1e346",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 58,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c058f14ca13dd921c43a3bf12811e853031d8819f0365493d7d005052b6bc92f",
+     "turn": 260
+    }
+   ],
+   "visible_history_sha256": "efdd5b2f48a0efa65cd14524d706840b1f21756cbe76edb37e05ff7478b62f2a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F003-Q4",
+   "query_sha256": "7ec3decac7ffb7eac185e15ef1f42795ae59083957d52b6ddf0fa499af7352fd",
+   "rationale": "T112 quotes the project-timeline email: addressed 'Hi Luca', signed 'Daniel', with Daniel reporting 'unexpected trips back east ... with family'. Both components correct. The other received Daniel email (T188) concerns exchange-rate swings, not the timeline or family trips, so the cue is unambiguous. Attribution stays inside the quoted email; no current-user biography inferred.",
+   "source_sha256": "a3f184b6fc08d8ee74d586923399f9446525e0cb33a597d7d08edbf721d1e346",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 695,
+     "role": "user",
+     "start": 193,
+     "text_sha256": "157c7fbffb08ac0c2b682cda0cbc84954777316ebd467f94cb52ddeefc2cba35",
+     "turn": 112
+    }
+   ],
+   "visible_history_sha256": "efdd5b2f48a0efa65cd14524d706840b1f21756cbe76edb37e05ff7478b62f2a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F003-Q5",
+   "query_sha256": "4b4e6a2a8ac221646b318de05bbb1047d2a374f2899bd3af8a65f6e8c063590f",
+   "rationale": "In F003-different, T262 is an explicit current-detail user declaration: 'I do not sign up for skill-building workshops.' It postdates the T260 withdrawal and validly establishes the negative value, so 'No' is correct and complete. Verified T262/T263 are the only appended turns.",
+   "source_sha256": "206eb2f5ce6a40ebc5c367541787b9ee51e9e911d0aa76219c26db3d2d002ea7",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 117,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "d9456c718789b3cc2ede756dfb308cdad5c9a6170342e365391d951a160bdf31",
+     "turn": 262
+    },
+    {
+     "end": 58,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c058f14ca13dd921c43a3bf12811e853031d8819f0365493d7d005052b6bc92f",
+     "turn": 260
+    }
+   ],
+   "visible_history_sha256": "f335706b34f56519ad23071e5ef39dbe858f6c167df1c954d670af6da303e092"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F003-Q6",
+   "query_sha256": "4b4e6a2a8ac221646b318de05bbb1047d2a374f2899bd3af8a65f6e8c063590f",
+   "rationale": "In F003-same, T262 explicitly re-establishes the value after the T260 withdrawal: 'I sign up for skill-building workshops.' A later explicit user statement overrides the withdrawal, so 'Yes' is correct and complete. Verified T262/T263 are the only appended turns.",
+   "source_sha256": "e41f87378bc0fb11119fc483ed8e496081020c33906bc1a8298fdd321a4b0c5d",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 110,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "744aae559d95666e071db318d4b436e15f3983616eea1a1ad84519ef6f39dc95",
+     "turn": 262
+    },
+    {
+     "end": 58,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c058f14ca13dd921c43a3bf12811e853031d8819f0365493d7d005052b6bc92f",
+     "turn": 260
+    }
+   ],
+   "visible_history_sha256": "aa39ffe9ce71fd6dc0a95367729e04510e4378f1d8dc748a29d4c21294a429f5"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F004-Q1",
+   "query_sha256": "892d50261bbae7ea44bf2570f9c2cd5c02aecf80578f43baac7dcc6d330ec95a",
+   "rationale": "T10 is the only rainy-evening creative-writing passage in the history (T11 is only the assistant rewrite). It names My Hero Academia as the battle scene and the roommate plus cousin watching a telenovela marathon. Both requested components are present, granularity matches the text, no answer leaked by the question, no competing passage.",
+   "source_sha256": "42b33a2770734711e49689b597b033326c5fee14b4db31b0cdb3adb2d8fd3f07",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 579,
+     "role": "user",
+     "start": 403,
+     "text_sha256": "59349c4353612ca45b8cb3aa8615475dfcf7c24a264313419f24afdc3c496f15",
+     "turn": 10
+    }
+   ],
+   "visible_history_sha256": "185adffafb8d32e7f9ff0a97af1876e1b38930c70c9578b2ac6200152c9a8bcf"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F004-Q2",
+   "query_sha256": "87ccf9fb34f345f0baaffe5be94a7589ae12f12f80743ba39e01bbfb8d2858c8",
+   "rationale": "T18 self-describes as a convention diary entry and states Uraraka (version 2 hero costume) and a limited-edition Bakugo figure. Other cosplay/con passages do not match both cues: T130 is a spring cosplay meet-up caption (All Might pin, no costume version), T156 an AnimeCon vignette (All Might figure, no cosplay), T148 a future Anime Expo post. Answer complete and correctly attributed to the narrator.",
+   "source_sha256": "42b33a2770734711e49689b597b033326c5fee14b4db31b0cdb3adb2d8fd3f07",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 336,
+     "role": "user",
+     "start": 184,
+     "text_sha256": "3f8237005e700eff93dad75b4331bce9ee43d0017a7a56c2ec85a491285d4de6",
+     "turn": 18
+    }
+   ],
+   "visible_history_sha256": "185adffafb8d32e7f9ff0a97af1876e1b38930c70c9578b2ac6200152c9a8bcf"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F004-Q3",
+   "query_sha256": "416803180e1dc108d6ee232fb55ea4e6b9af8d2f0f6956c05e9f80dff49db62c",
+   "rationale": "Candle love appears only at T168 (caption) and T171 (assistant), then is withdrawn by the user at T172. I checked every user turn T173-T266 (including T174, T180, T220, T260 and a regex sweep for candle/scent/aroma/fragrance/incense wording): no user re-establishment in any wording. T263 aromatherapy is assistant-generated and generic. Unknown is the correct answer; abstain mode fits.",
+   "source_sha256": "42b33a2770734711e49689b597b033326c5fee14b4db31b0cdb3adb2d8fd3f07",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 58,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "b470cf87b5b6367b461a1e4939d9e013e3350b30827662d3f699688dae0b0c06",
+     "turn": 172
+    }
+   ],
+   "visible_history_sha256": "185adffafb8d32e7f9ff0a97af1876e1b38930c70c9578b2ac6200152c9a8bcf"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F004-Q4",
+   "query_sha256": "adfd6f802bfd5fa61556fc461a01c92c503f90759cc95e5aa2f0678022a67508",
+   "rationale": "T0 is the only fantasy-themed commission email and the only passage containing a preview-GIF offer (T1 is the assistant rewrite). The email is addressed 'Hello Marcus' and signed 'Isabella', so Isabella offers and Marcus is asked to consider. Both roles supplied, attributed within the quoted email rather than as current user biography.",
+   "source_sha256": "42b33a2770734711e49689b597b033326c5fee14b4db31b0cdb3adb2d8fd3f07",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 588,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "97f17349494eceb83c25ff659c93088198bebe4876598c3f20d30206878c2a13",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "185adffafb8d32e7f9ff0a97af1876e1b38930c70c9578b2ac6200152c9a8bcf"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F004-Q5",
+   "query_sha256": "416803180e1dc108d6ee232fb55ea4e6b9af8d2f0f6956c05e9f80dff49db62c",
+   "rationale": "After the T172 withdrawal, the appended T267 user turn explicitly declares a current detail: does not like scented candles in the apartment. That is a valid user re-establishment postdating the withdrawal, and 'do not like' correctly answers 'do I love' as No. Answer scope and ownership (user, current) are right.",
+   "source_sha256": "9320584c25ab0bf7aee4f443ffba69a2abdd216581b50f09674f860714bcd05b",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 117,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8197c7faa3e19dab7731b59d6af3fd97d74a4ff2669ccdab3ac9b5335496e775",
+     "turn": 267
+    },
+    {
+     "end": 58,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "b470cf87b5b6367b461a1e4939d9e013e3350b30827662d3f699688dae0b0c06",
+     "turn": 172
+    }
+   ],
+   "visible_history_sha256": "8b4ada328084f5da20c24f5a91ec5841618c6945bc6ab9f59a05dfcbb79a77e3"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F004-Q6",
+   "query_sha256": "416803180e1dc108d6ee232fb55ea4e6b9af8d2f0f6956c05e9f80dff49db62c",
+   "rationale": "The appended T267 user turn re-establishes the exact value withdrawn at T172, stating as a current detail that the user loves scented candles in the apartment. The later explicit user statement overrides the withdrawal, so Yes is correct and the answer stays at user/current scope without adding unsupported detail.",
+   "source_sha256": "e5b7eed278875bcfc69e9350f7a6b525a40e04d60ec7231a45407f78eb1129d3",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 110,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "7a12bb4b100d25e2c01b0e91f228b17bc161dd217b69fcb80dc64e591d875726",
+     "turn": 267
+    },
+    {
+     "end": 58,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "b470cf87b5b6367b461a1e4939d9e013e3350b30827662d3f699688dae0b0c06",
+     "turn": 172
+    }
+   ],
+   "visible_history_sha256": "c6d8bea76f75e1aaa8c287d139fad61ea1e7dac026ef0951bc5a3db272c4b5a9"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F005-Q1",
+   "query_sha256": "9d55bb73ce50f61cb25083ba76edc1299b600109a2fc42a939f30603085f7f06",
+   "rationale": "T0 is the only Skylight Loft brochure draft in the history (T1 is the assistant rewrite of it). It names Portland's Alberta Arts District and the lounge-wall mural 'inspired by the dynamic frames of vintage graphic novels'. Both requested components are given at the right granularity; the question leaks neither. Correctly scoped to the quoted draft, not to user biography.",
+   "source_sha256": "3e744be9316755704e5b1597395bd804c610300ceb61ccc9b56eac19a5ecd417",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 489,
+     "role": "user",
+     "start": 170,
+     "text_sha256": "ab650862880db77aa4d85a38a5204f37b2e053d436a27abbe7ed4596068bae90",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "b4163a9205a811eb44f886d3e0196c1d07ed6c5215469a333efda1280fd5e225"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F005-Q2",
+   "query_sha256": "52ea5c43c3ab0c30f03717be2f82256534cd98cba3ed2358d335efa5b7973bde",
+   "rationale": "T4 is the only 'coffee ritual' post; it states the concept 'blends storybook charm with eco-friendly design'. Other posts (T96 grill, T106 chai/swatch, T148 chai sketching) do not mention a coffee ritual or a two-quality property concept, so no competing passage. Both qualities are supplied; no leakage in the question.",
+   "source_sha256": "3e744be9316755704e5b1597395bd804c610300ceb61ccc9b56eac19a5ecd417",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 412,
+     "role": "user",
+     "start": 316,
+     "text_sha256": "392f54a677b95f874ed332de257c353b5d01768d6f4b966affa4c6f59112fd79",
+     "turn": 4
+    }
+   ],
+   "visible_history_sha256": "b4163a9205a811eb44f886d3e0196c1d07ed6c5215469a333efda1280fd5e225"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F005-Q3",
+   "query_sha256": "4b616c04f9465f34cf6ed52632fa0b37d3c6cbcf0b7db10b2746e1afd6b082be",
+   "rationale": "T136 withdraws the corporate-partner preference. I checked every user turn T138-T222: none re-establishes any supplier preference in any wording. T195 (community vs commercial projects) is merely topical and T219 (family perspective) is about counsel, not suppliers; neither is a user preference statement. Assistant repetitions (T133, T135, T137) cannot establish it. Unknown is correct; mode abstain fits.",
+   "source_sha256": "3e744be9316755704e5b1597395bd804c610300ceb61ccc9b56eac19a5ecd417",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 109,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "624a484ca42a0904e4423b24c7e889bf51a4fff468eb941320fec8144b26eac4",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "b4163a9205a811eb44f886d3e0196c1d07ed6c5215469a333efda1280fd5e225"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F005-Q4",
+   "query_sha256": "4326abc17823305508a81b09250666583f4f566ade715ffe91ffda22dd457641",
+   "rationale": "T38 is the only coastal-property collaboration email involving ceramic lamps: addressed 'Hi Samantha', referring to 'your handmade ceramic lamps' for 'the new coastal-themed vacation home I'm designing', signed Arjun. Other emails (T58 Camila artisan collective, T114 Lila 'Urban Oasis', T142 Mira branding) and T64's sailboat ceramic lighting do not match the cue. Both roles correctly assigned within the quoted passage.",
+   "source_sha256": "3e744be9316755704e5b1597395bd804c610300ceb61ccc9b56eac19a5ecd417",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 335,
+     "role": "user",
+     "start": 133,
+     "text_sha256": "7e1150d59868fb57a3118fe27f4f2f6011f203745673736fa4a1773d948fff03",
+     "turn": 38
+    },
+    {
+     "end": 906,
+     "role": "user",
+     "start": 895,
+     "text_sha256": "afffef165e141c824be5e3797e48e31df8f707bde9c824ed5e36e190e16c8d74",
+     "turn": 38
+    }
+   ],
+   "visible_history_sha256": "b4163a9205a811eb44f886d3e0196c1d07ed6c5215469a333efda1280fd5e225"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F005-Q5",
+   "query_sha256": "4b616c04f9465f34cf6ed52632fa0b37d3c6cbcf0b7db10b2746e1afd6b082be",
+   "rationale": "In F005-different the user explicitly declares at T223 a current preference for family-owned suppliers over corporate partners, which post-dates and overrides the T136 withdrawal. The proposed answer matches the declared direction exactly and is not over-specific. No later turn contradicts (T224 is only 'Understood.').",
+   "source_sha256": "22b7a5c9db54b89bf74e9219ee0595eeea4bcd602dcb6a929e37c76c536d83a8",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 140,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c5f294974b57ef6d3633e3e47063abeb396e7ae7dd98872c5a6531e043cf96ce",
+     "turn": 223
+    },
+    {
+     "end": 109,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "624a484ca42a0904e4423b24c7e889bf51a4fff468eb941320fec8144b26eac4",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "806bc8cf5580e10c9f8e055d8ea56cc497302183b0dd6f5f4f57a1648c7c5379"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F005-Q6",
+   "query_sha256": "4b616c04f9465f34cf6ed52632fa0b37d3c6cbcf0b7db10b2746e1afd6b082be",
+   "rationale": "In F005-same the user re-establishes at T223 a current preference for corporate partners over family-owned suppliers. Re-establishing the same value that was withdrawn at T136 is valid because it is an explicit later user statement, not an inference from the withdrawal. Answer direction matches T223 exactly.",
+   "source_sha256": "744f144ec18a73df125769976b9685b59e5923019a72059ff67d726f9ab8d210",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 140,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "ddb1d23c88891dbcedaae8efc9cfef8323d25f7c945dc365771a5f332456bf4f",
+     "turn": 223
+    },
+    {
+     "end": 109,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "624a484ca42a0904e4423b24c7e889bf51a4fff468eb941320fec8144b26eac4",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "aa68352b8292b2f8aa06a36e74c5987c9341ecd668807e9d5a4e4e41d186ff78"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F006-Q1",
+   "query_sha256": "b343fba8f41d6cd3cab31099ba1f96d8c92120fd4bba948f1de7e1c0840151b4",
+   "rationale": "T24 is the only passage comparing a board game to rally strategy (T25 is only the assistant's rewrite of it, same details). Text gives both requested components: 'floor of my Auckland apartment' and pieces 'lined up like miniature rally cars ready for the start line'. Question supplies no leakage; answer complete and correctly scoped to the quoted passage.",
+   "source_sha256": "c803921589e55fd910c4d32016a45ca10f4ef82a5c7fcda4e64d94ac9d02595b",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 425,
+     "role": "user",
+     "start": 249,
+     "text_sha256": "2bfd82428ebb27faffaffa7d57bf55900576c03a42a3136fe878857352776a32",
+     "turn": 24
+    }
+   ],
+   "visible_history_sha256": "b2821e3d9458dec367b4f860cafb79aefd53e43cf057db617e7204aa689faf09"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F006-Q2",
+   "query_sha256": "a8bac5579c937f540b12a51749e4b4eaab9f3986cf0b997380cf416ffb52c3ef",
+   "rationale": "T38 is the only email addressed to Farah (Farah Zainal at T9 is a third-party press-release subject, not a recipient). Both components present: 'just got back from Kuala Terengganu' and 'caught up with my parents over endless plates of nasi dagang'. Other emails (T18 Aina, T74 Sarah, T92 Mark, T98 Thompson, T116 Alex, T154 Lana) do not match the cue.",
+   "source_sha256": "c803921589e55fd910c4d32016a45ca10f4ef82a5c7fcda4e64d94ac9d02595b",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 195,
+     "role": "user",
+     "start": 148,
+     "text_sha256": "33838be044356386e0d0a75c1fcb32d70cfc06bf067c36a9077f7d298cf0c059",
+     "turn": 38
+    },
+    {
+     "end": 588,
+     "role": "user",
+     "start": 393,
+     "text_sha256": "1f4b327fcae135bebc7ddfb24713271ad7bf3754591d8bd33dcca1e8537f98cb",
+     "turn": 38
+    }
+   ],
+   "visible_history_sha256": "b2821e3d9458dec367b4f860cafb79aefd53e43cf057db617e7204aa689faf09"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F006-Q3",
+   "query_sha256": "69829ef9f4701837585efe594f1f969bb5542b78c2a5eaf2b81bb3748fab981a",
+   "rationale": "Withdrawal at T238 is the final user turn of the base history; only T239 (assistant) follows, and an assistant restatement cannot establish a user fact. Techno appears nowhere else except T237 (assistant suggestion). No re-establishment in any wording, so the current value is genuinely unknown; abstain mode is used appropriately.",
+   "source_sha256": "c803921589e55fd910c4d32016a45ca10f4ef82a5c7fcda4e64d94ac9d02595b",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 50,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "647881329412ee65133825184c9a283bb4d2f5f62efe295710027e473ab0cd18",
+     "turn": 238
+    }
+   ],
+   "visible_history_sha256": "b2821e3d9458dec367b4f860cafb79aefd53e43cf057db617e7204aa689faf09"
+  },
+  {
+   "contradicting_evidence": [
+    {
+     "end": 588,
+     "role": "user",
+     "start": 393,
+     "text_sha256": "1f4b327fcae135bebc7ddfb24713271ad7bf3754591d8bd33dcca1e8537f98cb",
+     "turn": 38
+    },
+    {
+     "end": 1027,
+     "role": "user",
+     "start": 1013,
+     "text_sha256": "1c20411f358be816c7bf816da7279d53b5e36f96e4d4794f22bea35a5b66b1ed",
+     "turn": 38
+    }
+   ],
+   "id": "F006-Q4",
+   "query_sha256": "ce6c610fe5f8a4b5ee552ac42337eb531e79dbc2be3f25a8c17d17bc8e8066f2",
+   "rationale": "Direction of the attribution is right: in T38 the writer says 'my brother insisted on taking me for a spin ... I ended up giving him rally-style driving tips', and the email is signed Aisyah. But 'her brother' asserts a gender for Aisyah that neither the email nor any user turn states; only the assistant addresses her by name at T33, and assistant text cannot establish a source fact.",
+   "source_sha256": "c803921589e55fd910c4d32016a45ca10f4ef82a5c7fcda4e64d94ac9d02595b",
+   "status": "reject",
+   "suggested_answer": "Aisyah, the email's writer, gave rally-style driving tips to the brother mentioned in that email.",
+   "supporting_evidence": [
+    {
+     "end": 588,
+     "role": "user",
+     "start": 393,
+     "text_sha256": "1f4b327fcae135bebc7ddfb24713271ad7bf3754591d8bd33dcca1e8537f98cb",
+     "turn": 38
+    },
+    {
+     "end": 1027,
+     "role": "user",
+     "start": 1013,
+     "text_sha256": "1c20411f358be816c7bf816da7279d53b5e36f96e4d4794f22bea35a5b66b1ed",
+     "turn": 38
+    }
+   ],
+   "visible_history_sha256": "b2821e3d9458dec367b4f860cafb79aefd53e43cf057db617e7204aa689faf09"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F006-Q5",
+   "query_sha256": "69829ef9f4701837585efe594f1f969bb5542b78c2a5eaf2b81bb3748fab981a",
+   "rationale": "In F006-different the appended T240 is an explicit current-state user declaration of the negative value, after the T238 withdrawal. Withdrawal alone would leave it unknown, but T240 re-establishes it, so 'No' is correct and correctly attributed to the user's own statement.",
+   "source_sha256": "e486e1d2f7fbd8004cc695816121b6273e6940a2d12707594acf13560cc6b925",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 109,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "2e0abfea97a042519e5ad6e29f707e3eab9a3ada39b9514406305cf8bd911f8a",
+     "turn": 240
+    },
+    {
+     "end": 50,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "647881329412ee65133825184c9a283bb4d2f5f62efe295710027e473ab0cd18",
+     "turn": 238
+    }
+   ],
+   "visible_history_sha256": "023961c4b40e8b11ef8106ec148205cede283a340e1464ab2ec4d90e9e39d89d"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F006-Q6",
+   "query_sha256": "69829ef9f4701837585efe594f1f969bb5542b78c2a5eaf2b81bb3748fab981a",
+   "rationale": "In F006-same the appended T240 explicitly re-establishes the positive value after the T238 withdrawal, framed as a current personal detail. 'Yes' is correct; no later turn (only T241 'Understood.') alters it.",
+   "source_sha256": "c51e668e8963e8f74ffefc237ac56fdad5712ad3fd2a47e326b46af7574458ff",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 102,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "19460586b12b44899adbb3a5510119a5395ff8c4b9075ce5ffa3a3275293dd08",
+     "turn": 240
+    },
+    {
+     "end": 50,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "647881329412ee65133825184c9a283bb4d2f5f62efe295710027e473ab0cd18",
+     "turn": 238
+    }
+   ],
+   "visible_history_sha256": "db618beaa7351066532841aaa84e150b875d26d597672eae62db128e3894d16c"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F007-Q1",
+   "query_sha256": "f1704c5d20b6351f2f59f6125f0d471b8deda627513c6f1f2cd046aeef607495",
+   "rationale": "T6 is the only passage using a 'new frontier' cloud-computing analogy (T7 is the assistant's rewrite of it). It names NASA's Artemis program and exactly two advances: AI integration and distributed systems. Answer gives both requested components at the right granularity, adds no unsupported detail, and the question supplies neither the program nor the advances.",
+   "source_sha256": "394b886d1df212f25ef96448935b7b57bbedf5302751c11b921b8225bd2d0c6a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 467,
+     "role": "user",
+     "start": 229,
+     "text_sha256": "de14069c11496b0b38ad3199f3a613f3edf9b0b3ef161962f7d2cb8b81c11e75",
+     "turn": 6
+    }
+   ],
+   "visible_history_sha256": "31713db750ed806ae5d9b861932d108b6233b06965b60f8a2e6e66c8c831d8ff"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F007-Q2",
+   "query_sha256": "b2edccbf2c5c9ee2430d367ca5c4f0d6a94439270c30f423e0b79cc1fbd63063",
+   "rationale": "Cue 'LinkedIn draft about returning from a cloud summit' matches only T8 ('polished for LinkedIn', 'Just got back from'). Other summits are distinct passages and do not fit the cue: T28 is an email after the Northwest Cloud Innovation Summit, T66/T156 concern an upcoming Cloud Innovators Summit, T30 a San Francisco conference. Both requested components (name, theme) are correct and complete.",
+   "source_sha256": "394b886d1df212f25ef96448935b7b57bbedf5302751c11b921b8225bd2d0c6a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 203,
+     "role": "user",
+     "start": 61,
+     "text_sha256": "8f6ab9701bdcf0f2148df46405e356965a90d0007b9123c718a7c805014ba779",
+     "turn": 8
+    }
+   ],
+   "visible_history_sha256": "31713db750ed806ae5d9b861932d108b6233b06965b60f8a2e6e66c8c831d8ff"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F007-Q3",
+   "query_sha256": "8fe1860459d83741642a7fa32fc3ed737b558ba4e62737087c05b320123ef2e3",
+   "rationale": "The hobby was stated pre-withdrawal (T118 side table, T121 assistant) then withdrawn at T122. I checked every user turn from T124 to T237: none re-establishes woodworking in any wording (T130 martial arts, T148-151 coding nostalgia, T162 weekend socializing, T226-229 baking are unrelated). Withdrawal establishes neither value, so 'unknown' is correct; abstain mode fits.",
+   "source_sha256": "394b886d1df212f25ef96448935b7b57bbedf5302751c11b921b8225bd2d0c6a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 53,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "f4e0a8b9dc620e0e7ea779f6b425151e5024f5424d6297d24344696709a9c4de",
+     "turn": 122
+    }
+   ],
+   "visible_history_sha256": "31713db750ed806ae5d9b861932d108b6233b06965b60f8a2e6e66c8c831d8ff"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F007-Q4",
+   "query_sha256": "e375ee510286c0aac42bdd7d5accfeb24e9a05249ba7766fdcc4bd5e7623726c",
+   "rationale": "T28 is the only original email following the Northwest Cloud Innovation Summit (T29 is the assistant's rewrite of the same text). Inside it the writer signs 'Emily' and addresses 'Hi Jordan', offering a coffee-shop meeting or, alternatively, a virtual meeting. Answer names both roles correctly, adds no gender or biographical detail beyond the text, and stays at historical passage scope.",
+   "source_sha256": "394b886d1df212f25ef96448935b7b57bbedf5302751c11b921b8225bd2d0c6a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 623,
+     "role": "user",
+     "start": 66,
+     "text_sha256": "166ac299b45fdb19b5844332161eca3bc3247d6f6d3e6f56529f4c319a5fbbc6",
+     "turn": 28
+    }
+   ],
+   "visible_history_sha256": "31713db750ed806ae5d9b861932d108b6233b06965b60f8a2e6e66c8c831d8ff"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F007-Q5",
+   "query_sha256": "8fe1860459d83741642a7fa32fc3ed737b558ba4e62737087c05b320123ef2e3",
+   "rationale": "In F007-different the user explicitly states at T238 that they do not practice woodworking as a hobby, which post-dates the T122 withdrawal and is the latest user statement on the value. The negative answer is correct, complete and attributed to the user's own statement rather than inferred from the withdrawal.",
+   "source_sha256": "5899397d592ce5e62d4af2196826d1d5d9a2f9c1b84ed703541686e3bb676656",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 112,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "4a56d25e08088dbfc01b64d06f6d957a7f12b4b4eb4ea4c41c6b9b09678f73f9",
+     "turn": 238
+    },
+    {
+     "end": 53,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "f4e0a8b9dc620e0e7ea779f6b425151e5024f5424d6297d24344696709a9c4de",
+     "turn": 122
+    }
+   ],
+   "visible_history_sha256": "f7cf8de1f3f34cbde64b8f737da15c551e8216fa6db1b615ba5c0c95bd587256"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F007-Q6",
+   "query_sha256": "8fe1860459d83741642a7fa32fc3ed737b558ba4e62737087c05b320123ef2e3",
+   "rationale": "In F007-same the user re-establishes the detail at T238, after the T122 withdrawal, saying they practice woodworking as a hobby. Nothing between T123 and T237 contradicts it. The affirmative answer is correct and rests on the user's explicit later statement, not on the withdrawn original.",
+   "source_sha256": "2df0df7d950b0220781a53ca19706cba34b6f07daf04cc35bd85fb9fdf18ae0d",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 105,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "f6208adfddd7d438ad49635382ec69761283e8f80f846c193f8c4edeccc400a2",
+     "turn": 238
+    },
+    {
+     "end": 53,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "f4e0a8b9dc620e0e7ea779f6b425151e5024f5424d6297d24344696709a9c4de",
+     "turn": 122
+    }
+   ],
+   "visible_history_sha256": "7443966c402068f289dbf5d895f06514efa6583a7a4390bebc3857bc06aeec6f"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F008-Q1",
+   "query_sha256": "f3b744692b548fcb23a4416377494de127f12888e7d89a8506793c0e204aa0b5",
+   "rationale": "T0 is the original internal-newsletter bio: 'Over the past eleven years as a Senior Accountant'. Both components (title, duration) given, no unsupported detail, no leakage. The only competing bio (T20, quarterly newsletter) states the same title and same eleven years, so identification does not change the answer.",
+   "source_sha256": "1612e0ccc895b87deae031a3f5dc02bd7377d83c3f1fb5ccd8054d05dbc7d9c7",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 110,
+     "role": "user",
+     "start": 37,
+     "text_sha256": "6db3e0f6da7cad515cb49cd4b0be7927367cf31f238db19a8747a1da953bd1f1",
+     "turn": 0
+    },
+    {
+     "end": 288,
+     "role": "user",
+     "start": 200,
+     "text_sha256": "73468861f59f1c5e9719f5cdeee4864e777e5109069b79ee6f0ca0b02eaae164",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "f9b1b2a7bcf268ed00c4c144d820e21443e925297742ca540795fc08dd87bf9a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F008-Q2",
+   "query_sha256": "f09f3975bf79baa87c3516206abe04cbd0ea4bd4c8cf42c5a14767025d835429",
+   "rationale": "T12 is the only 'performance summary': Margaret Otieno is the subject and 'showed particular skill in mediating between colleagues with differing approaches'. Both asked components supplied. The other appraisal-style passage (T162, Samuel Wainaina) is a 'work report' about accuracy, not mediation, so the cue is unambiguous. Female pronouns are in the source itself.",
+   "source_sha256": "1612e0ccc895b87deae031a3f5dc02bd7377d83c3f1fb5ccd8054d05dbc7d9c7",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 71,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "6df5bf32757688474d26748ea11808d5c9aed4dd50e7d700fc8c949093cd289d",
+     "turn": 12
+    },
+    {
+     "end": 165,
+     "role": "user",
+     "start": 119,
+     "text_sha256": "30ff7bc00a2112d182b6a75d854ae7bd2677d4a949c51bbdd282c219126e0944",
+     "turn": 12
+    },
+    {
+     "end": 360,
+     "role": "user",
+     "start": 275,
+     "text_sha256": "c6cd810224a5ad4244a64b29c4a8ecf2e4e09249fe6395a96e92d1ba4bd5835a",
+     "turn": 12
+    }
+   ],
+   "visible_history_sha256": "f9b1b2a7bcf268ed00c4c144d820e21443e925297742ca540795fc08dd87bf9a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F008-Q3",
+   "query_sha256": "d8501e48ffec217d36df25963fd4a4a91be110a36c005cd9abb9be43e12181fd",
+   "rationale": "T160 withdraws the board-game preference. I checked every user turn T162-T250: none re-establishes it in any wording (topics are work reports, emails, faith, decor, dairy, finance, etc.). The pre-withdrawal T154 'weekend strategy game with friends' precedes T160 and cannot re-establish; T159/T161 are assistant text. Unknown is correct; abstain mode fits.",
+   "source_sha256": "1612e0ccc895b87deae031a3f5dc02bd7377d83c3f1fb5ccd8054d05dbc7d9c7",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 52,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "7269a84a2a7710e3e678d87ca6d4c493a3adba02e490b5a80ef3144e420c0161",
+     "turn": 160
+    }
+   ],
+   "visible_history_sha256": "f9b1b2a7bcf268ed00c4c144d820e21443e925297742ca540795fc08dd87bf9a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F008-Q4",
+   "query_sha256": "a99df1c8e2318844ada4425f7a73327ed4f53bb4f9b4af6617054199590a2961",
+   "rationale": "T197 identifies the email as from friend Ruth; T199 quotes it: Ruth recounts her own hard early weeks after her little boy was born and thanks the addressee, Amina ('Dear Amina', 'I'm grateful for you', signed Ruth). Both components correct. No competing 'email from my friend' about a birth exists (T174 is written by the user to Mary; T164 is to Ruth).",
+   "source_sha256": "1612e0ccc895b87deae031a3f5dc02bd7377d83c3f1fb5ccd8054d05dbc7d9c7",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 40,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "70dcac7ad9133bfea51d80e1b2dc1c4cd6929e0ce62f6823c42d8350b5fc51c5",
+     "turn": 197
+    },
+    {
+     "end": 34,
+     "role": "user",
+     "start": 23,
+     "text_sha256": "76b8de2ca94ad6984da9a097ba3066935b7f5e9fdadba6aad2656ebe3f04e664",
+     "turn": 199
+    },
+    {
+     "end": 103,
+     "role": "user",
+     "start": 36,
+     "text_sha256": "7f39408828e7d26faa0e63c82d3d7029aad70eff71ecdbe489cd97be0a3be193",
+     "turn": 199
+    },
+    {
+     "end": 609,
+     "role": "user",
+     "start": 558,
+     "text_sha256": "c3066bea1e579f4ab43bfd2d2f1cf609be0bee483c7e42042642abbe45cd7b9f",
+     "turn": 199
+    },
+    {
+     "end": 746,
+     "role": "user",
+     "start": 731,
+     "text_sha256": "362dcb5956491194c071f168f48a6d910ec047292f06537a16ec2bd68019cd83",
+     "turn": 199
+    }
+   ],
+   "visible_history_sha256": "f9b1b2a7bcf268ed00c4c144d820e21443e925297742ca540795fc08dd87bf9a"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F008-Q5",
+   "query_sha256": "d8501e48ffec217d36df25963fd4a4a91be110a36c005cd9abb9be43e12181fd",
+   "rationale": "In F008-different the appended T251 user turn explicitly declares the current detail 'I do not enjoy board games with friends', post-dating the T160 withdrawal. That later explicit statement validly establishes the negative current value, so the 'No' answer is correct and complete.",
+   "source_sha256": "4e01ecb50a28f8f24d3a730f6254383e35f137b42b58c12d1588d0c52ee0075a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 111,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "84687571489d781a605241f09ae1b8a5491d4449dae9d3b704388e04370c1e5c",
+     "turn": 251
+    }
+   ],
+   "visible_history_sha256": "d83c396c3e630542a6ea16679305a0b68df8f710bf465366b16ba859f14be1a0"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F008-Q6",
+   "query_sha256": "d8501e48ffec217d36df25963fd4a4a91be110a36c005cd9abb9be43e12181fd",
+   "rationale": "In F008-same the appended T251 user turn explicitly states 'I enjoy board games with friends', after the T160 withdrawal. Re-establishment is valid and the affirmative answer matches the declaration exactly; no later turn contradicts it (T252 is only 'Understood.').",
+   "source_sha256": "a8850efd1c87755aed910637a67b9f774618a7ba4ad10a031e352ca6fa11a4bc",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 104,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "4b09550bed0031aecad17230d2045f5c5db622cd25db824a034193e8f8255e25",
+     "turn": 251
+    }
+   ],
+   "visible_history_sha256": "a467c808af3874aa5580155f67dae938b3def5478b688264b03a259f43086fdc"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F009-Q1",
+   "query_sha256": "d7856fd36aa06ee0c90d76b79468cd13756d4029db1d377e883fc10315dda823",
+   "rationale": "T10 is the only Vietnamese-translation request and the only bird-story passage; its text gives both components exactly: saved to 'my digital reading log' and to recommend 'at the next mothers' reading circle'. Answer is complete, not over-specific, and stays at quoted-passage scope. Other reading circles (T155 winter, T163 parents') are separate passages and not cued by the question.",
+   "source_sha256": "c307d0f737892792fb43991b443e80030caf5cb6df09bd7e5c7957b5ce3c529a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 419,
+     "role": "user",
+     "start": 297,
+     "text_sha256": "916d2b350adc42ac40e408271e34fdda07efeaffc5d7038de886e25517a95c0c",
+     "turn": 10
+    }
+   ],
+   "visible_history_sha256": "536e542a1a2c6fef052a20e5a609e22bddfe4e60311ef4d77de3d757f1fe98ce"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F009-Q2",
+   "query_sha256": "28e64e485a0eb44226f73006dab00b93ef16e850ed27ae56f0b390bddfe4ba59",
+   "rationale": "T28 email, subject 'Adjusting Start Time for Literacy Workshop', requests beginning the session at 10:15 instead of 10:00. Unique match: no other scheduling email requests a start-time change (T159 concerns seating/cart; T163 announces a 10 am park storytime without change). Answer gives both old and new times; no leakage, no unsupported detail.",
+   "source_sha256": "c307d0f737892792fb43991b443e80030caf5cb6df09bd7e5c7957b5ce3c529a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 370,
+     "role": "user",
+     "start": 319,
+     "text_sha256": "3b149884d7cbce23b7249ab5adb84cb3252ecf02027a2d4ce99feea72c21d7d7",
+     "turn": 28
+    }
+   ],
+   "visible_history_sha256": "536e542a1a2c6fef052a20e5a609e22bddfe4e60311ef4d77de3d757f1fe98ce"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F009-Q3",
+   "query_sha256": "b6d8a4c5f4b3d36ebb50be421eceada1c4e4ffb693e15140f2003d39ac82a158",
+   "rationale": "Withdrawn at T82. I read every later user turn (T84-T226): none re-establishes the detail in any wording. Nearest topical items are pre-withdrawal (T78 library circuitry-kit programming, T80 topical hands-on question, T81 assistant assertion) and T147/T148's science-museum outing, which is a visit, not a stated hobby preference. 'Unknown' is correct; abstain mode fits.",
+   "source_sha256": "c307d0f737892792fb43991b443e80030caf5cb6df09bd7e5c7957b5ce3c529a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 56,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "83563f671b75450e4e957aed504f4a8447c5ad924ec8d878e9335bdac5020b66",
+     "turn": 82
+    }
+   ],
+   "visible_history_sha256": "536e542a1a2c6fef052a20e5a609e22bddfe4e60311ef4d77de3d757f1fe98ce"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F009-Q4",
+   "query_sha256": "2029303cbec85cb975fc204c04d80fe3810f444773ba9037bbbdaba9c19de773",
+   "rationale": "T126 is the only community-playdate email received. Header shows From Karen Whitfield To Lina Al-Masri; Karen writes 'it didn't sit quite right with me'. Both components answered with correct roles. The feminine pronoun is grounded in the user's own framing ('this email from a neighbor... what she might really be hinting at'), so no unsupported gender assertion; no leakage.",
+   "source_sha256": "c307d0f737892792fb43991b443e80030caf5cb6df09bd7e5c7957b5ce3c529a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 251,
+     "role": "user",
+     "start": 159,
+     "text_sha256": "440357ffb6a95741ae458888332186ec2c9a931c65854fa898fd52a565a7b0e6",
+     "turn": 126
+    },
+    {
+     "end": 876,
+     "role": "user",
+     "start": 817,
+     "text_sha256": "9aae66de2cf5c3815c57012ce0ee4463cf344a483beb680c0a92123a431e4021",
+     "turn": 126
+    },
+    {
+     "end": 117,
+     "role": "user",
+     "start": 4,
+     "text_sha256": "48f56b03dbea2d9d33b5d515a031c6eaba42255f576ec8a379e8c0866aa6ead8",
+     "turn": 126
+    }
+   ],
+   "visible_history_sha256": "536e542a1a2c6fef052a20e5a609e22bddfe4e60311ef4d77de3d757f1fe98ce"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F009-Q5",
+   "query_sha256": "b6d8a4c5f4b3d36ebb50be421eceada1c4e4ffb693e15140f2003d39ac82a158",
+   "rationale": "In F009-different the appended T227 user turn explicitly declares the current detail as negative, post-dating the T82 withdrawal. A later explicit user statement validly re-establishes the value, so 'No' is correct and complete at current scope.",
+   "source_sha256": "ee5f6eac9dadd0b34370f09c88f7afece803d813d3028e7cc817b0d925b59c1a",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 115,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "edfb2e391c21e34af972dfc2059928c9ac81bec47691d33742f586b33a7a10bf",
+     "turn": 227
+    }
+   ],
+   "visible_history_sha256": "f2acec074cd0477fd58ff31b3244952158e4412d148ab1c9477c353367dda2f9"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F009-Q6",
+   "query_sha256": "b6d8a4c5f4b3d36ebb50be421eceada1c4e4ffb693e15140f2003d39ac82a158",
+   "rationale": "In F009-same the appended T227 user turn explicitly re-declares enjoyment of DIY electronics kits as a current detail, after the T82 withdrawal. 'Yes' is correct; the later explicit user statement overrides the earlier forget request.",
+   "source_sha256": "28eef52544b13eba543ed21bde421796eb8319fceff263de92677c3a3a529f5b",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 108,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "5065645af6f067492b7cc93494d766a2cfddbf7ba653c4be27d5ecfaa5e67be5",
+     "turn": 227
+    }
+   ],
+   "visible_history_sha256": "22afca2fea173e6057b70fda217b4922f8f6743268df5edbaca9af6fb3d893ee"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F010-Q1",
+   "query_sha256": "e4a6f693a5b31b2e0da4e0c8a17899a17163d7d03c86257d91bde87142dbf376",
+   "rationale": "T14 is the only client-proposal passage about the holiday campaign; it states accents 'drawn from winter landscapes' and the product remaining 'the focal point'. Both components answered at the question's granularity. Other proposal/bio passages (T124/T140, T254) are not holiday-campaign pieces, so the cue is unambiguous.",
+   "source_sha256": "69b0fb5123752a0c542caddacba5607ecdaca00d6d99b6d8c01f07b6ddb930c9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 526,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "7101d2302b456996c962f66a0376af7bbf45c30cdeddb5a0db00934271693b8d",
+     "turn": 14
+    }
+   ],
+   "visible_history_sha256": "d49b270d48dbe88ebc4c21bc8f728b4b52995835c56a49988365f1e788af96aa"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F010-Q2",
+   "query_sha256": "d78bdd6067eb10b0dea03631f8fe6c70e0c8210bd297b764c6b176d0004a8ecd",
+   "rationale": "T20 is the only Sunday-morning reflection submitted for French translation; it names sketching while listening to a favorite design podcast as what sparks ideas. Competing translation requests (T52 Spanish museum piece, T196-T198 Spanish piece about the daughter, T246 Arabic morning-walk piece) do not match the cue and give different content.",
+   "source_sha256": "69b0fb5123752a0c542caddacba5607ecdaca00d6d99b6d8c01f07b6ddb930c9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 462,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "df6764b560d5384b77deb4fff631f0973d0f156292c57eff290e3c4c6eb5d8e4",
+     "turn": 20
+    }
+   ],
+   "visible_history_sha256": "d49b270d48dbe88ebc4c21bc8f728b4b52995835c56a49988365f1e788af96aa"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F010-Q3",
+   "query_sha256": "c97ef633cdb6e865871bce37f5d82a811cdccb1a1031dc8043d24a9d42af61f4",
+   "rationale": "Preference withdrawn at T274. I read every later user turn (T276-T305): all are topical questions (T288 brutalist web design, T294 Kyoto preservation) and none states a current preference about photographing architecture. The pre-withdrawal T270 camera walk cannot re-establish it, and assistant text cannot establish a user fact, so the unknown answer is correct.",
+   "source_sha256": "69b0fb5123752a0c542caddacba5607ecdaca00d6d99b6d8c01f07b6ddb930c9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 65,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "31813b29ac5efea30c2bf1484b449284ae0c184ecda343022858280f0320cbed",
+     "turn": 274
+    }
+   ],
+   "visible_history_sha256": "d49b270d48dbe88ebc4c21bc8f728b4b52995835c56a49988365f1e788af96aa"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F010-Q4",
+   "query_sha256": "cee2388dab192f3a4caad5767ea87f1123f57ddbf431846f5bb8df67fec80bab",
+   "rationale": "T116 is the only community-arts-festival branding email: signed Miguel Alejandro Santos, who asks to review designs on printed boards, and addressed to Alicia, who is asked for a papel picado variation. Both roles correct; other emails (T0 to Senorita Ramirez, T208 to Dr. Harris) do not match the cue.",
+   "source_sha256": "69b0fb5123752a0c542caddacba5607ecdaca00d6d99b6d8c01f07b6ddb930c9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 1016,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "18917eb47089bd458966f876ee088bfdcc0b029ab0fd37fc010245a065b96327",
+     "turn": 116
+    }
+   ],
+   "visible_history_sha256": "d49b270d48dbe88ebc4c21bc8f728b4b52995835c56a49988365f1e788af96aa"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F010-Q5",
+   "query_sha256": "c97ef633cdb6e865871bce37f5d82a811cdccb1a1031dc8043d24a9d42af61f4",
+   "rationale": "The synthetic T306 declaration post-dates the T274 withdrawal and explicitly negates the activity. Its wording omits 'interesting', but disliking photographing architecture entails disliking the narrower case the question asks about, and the answer restates the declaration without over-claiming.",
+   "source_sha256": "58e970f3bb7d07b23efd767b43a34c8167eea6334353a927349e75ffa0ad1f26",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 112,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "3c0997891bc7779b7569a397bddc16cb34d168b4d740cd5c4ca181888da2c7e2",
+     "turn": 306
+    }
+   ],
+   "visible_history_sha256": "d189725eb21eb785470d1eb3b3666d17c7612f5efb6c886637be5dcb47a5f9e6"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F010-Q6",
+   "query_sha256": "c97ef633cdb6e865871bce37f5d82a811cdccb1a1031dc8043d24a9d42af61f4",
+   "rationale": "The synthetic T306 declaration re-establishes the same value after the T274 withdrawal, in wording matching the question exactly; the proposed answer mirrors it and attributes it to the user's own statement rather than to the withdrawn preference.",
+   "source_sha256": "cda9b0af4df828f526f4327255941b7f116a8ec70159460e2ae2f5c951f92268",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 117,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "dd8a0a25f06f1789904045aa4ddeef0862a33650dbacd8ea1ebf8e2dfba38bc8",
+     "turn": 306
+    }
+   ],
+   "visible_history_sha256": "a6c2ac3769264e1d13465b57539caf39a1c87fdfd996c8400f67b7e8ea24cbf7"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F011-Q1",
+   "query_sha256": "77c7ec7c80f45e492f71cf039f6a158b611dd6befc420e4144dcc8ec67a78c9a",
+   "rationale": "T0 original post: 'safety-focused promo campaign for a client's autumn menu' gives both season (autumn) and stated focus (safety) exactly as proposed. No other downtown-cafe/promo-campaign passage found in T1-T238 to compete. ownership=quoted_text_only correctly scopes this to the source text, not current user biography.",
+   "source_sha256": "7ce9684955ad011dc9dd0ce8e020e6a31783e7b8676d429ec55d52c8cc121790",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 359,
+     "role": "user",
+     "start": 280,
+     "text_sha256": "64c6a5d13255cdc7e7904cb4a5230fb5abf10a97dfc9c8b1a9c7d3235d004dcb",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "1335cde604849fcba69b0295c99bde1554b25f28b90e9c707a37cb83dc655aa1"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F011-Q2",
+   "query_sha256": "723a4ecc52c5700bd2c992505fb2efb965f1c40fde740359910abb276b48cfab",
+   "rationale": "T2 lists exactly three touches: softer lighting, seating layouts minimizing exposure to drafts, and staff offering warm beverages upon seating - matching the proposed answer's three items at correct granularity. No duplicate 'seasonal comfort' marketing passage with a different list appears elsewhere in the history.",
+   "source_sha256": "7ce9684955ad011dc9dd0ce8e020e6a31783e7b8676d429ec55d52c8cc121790",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 490,
+     "role": "user",
+     "start": 351,
+     "text_sha256": "b878596a6830ea963d472eb7662527a0dbf1d75ef35d2041bb5f300b94fa599b",
+     "turn": 2
+    }
+   ],
+   "visible_history_sha256": "1335cde604849fcba69b0295c99bde1554b25f28b90e9c707a37cb83dc655aa1"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F011-Q3",
+   "query_sha256": "ee0b806f67979db5587ccc2c664a6c7752204fc4f825f38c05695d7de9ded0e6",
+   "rationale": "T184 withdraws 'I enjoy spicy Tex-Mex food regularly'; withdrawal alone establishes neither value nor its opposite. Checked every user turn T185-T238: only near-miss is T221 ('tolerate spicier dishes more easily'), a topical, unqualified tolerance question that never mentions Tex-Mex or 'enjoy...regularly' - not a valid re-establishment per the topical-question rule. Current value remains correctly unknown.",
+   "source_sha256": "7ce9684955ad011dc9dd0ce8e020e6a31783e7b8676d429ec55d52c8cc121790",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 56,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8d467063a1ff80700e38c79dec4acab3eac8061ea13854f1ce9f0a526332a571",
+     "turn": 184
+    }
+   ],
+   "visible_history_sha256": "1335cde604849fcba69b0295c99bde1554b25f28b90e9c707a37cb83dc655aa1"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F011-Q4",
+   "query_sha256": "4f244d37e68d8f4b942bbfe502318eb5399755f4333d988c0ccbd90ad3a33943",
+   "rationale": "T14 email is signed 'Jasper', addressed 'Hi Maya,' and invites her to 'drop by' before the show and 'catch up in person again' - Jasper invites Maya, as proposed. Other Maya emails (T62-63, T128) exist but are different content with no Capitol Hill Playhouse mention, so no passage ambiguity for this specific cue.",
+   "source_sha256": "7ce9684955ad011dc9dd0ce8e020e6a31783e7b8676d429ec55d52c8cc121790",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 562,
+     "role": "user",
+     "start": 106,
+     "text_sha256": "bdc30a583f8cfc9332dcc1dea4b048fde87dac26ebc63694ec11253050dd14be",
+     "turn": 14
+    }
+   ],
+   "visible_history_sha256": "1335cde604849fcba69b0295c99bde1554b25f28b90e9c707a37cb83dc655aa1"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F011-Q5",
+   "query_sha256": "ee0b806f67979db5587ccc2c664a6c7752204fc4f825f38c05695d7de9ded0e6",
+   "rationale": "Appended T239 declares 'I do not enjoy spicy Tex-Mex food' (unqualified negation), superseding the T184 withdrawal that had established neither value. A full negation of enjoyment logically entails no 'regular' enjoyment either, so 'No' correctly answers the question's 'regularly' scope even though T239 itself omits that word.",
+   "source_sha256": "36b187092db8e8043484401a05053202cdcf04754a10eff6157c3a72a96bdd09",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 105,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "55dc2c01be18d9b140a267a62bcf3596113878bc102987d6aba6a4b42814e6e0",
+     "turn": 239
+    },
+    {
+     "end": 56,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8d467063a1ff80700e38c79dec4acab3eac8061ea13854f1ce9f0a526332a571",
+     "turn": 184
+    }
+   ],
+   "visible_history_sha256": "fddca02158e4be1b7f0af30e6af433ca75aeb3b330ed78c8543d0f199a38ee87"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F011-Q6",
+   "query_sha256": "ee0b806f67979db5587ccc2c664a6c7752204fc4f825f38c05695d7de9ded0e6",
+   "rationale": "Appended T239 states 'I enjoy spicy Tex-Mex food regularly', directly and explicitly matching the question's scope, superseding the T184 withdrawal. Straightforward current-value re-establishment.",
+   "source_sha256": "f5f73b49c6fdebd16877708dcf842c4a6dab2cca442704a8043424e24ba4076b",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 108,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "148fea8f49e6cb5ee52513c633d18061269a09d417d73ebbc1e40dad4a1f51da",
+     "turn": 239
+    },
+    {
+     "end": 56,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8d467063a1ff80700e38c79dec4acab3eac8061ea13854f1ce9f0a526332a571",
+     "turn": 184
+    }
+   ],
+   "visible_history_sha256": "ae9a6e60fb7e6cf24c73c1b347ca5f35d6fed12a3a95fd732ac0f1fe992a5371"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F012-Q1",
+   "query_sha256": "f744b3b8cb3c272fc33f277e7abeff56f8ee1c7b5f7b21789e5683b057a2efa4",
+   "rationale": "T6 departmental-report passage: Latin American cinema holdings metadata overhaul, work staggered in three intensive bursts. No competing 'departmental update' passage exists elsewhere (T38 is a different professional bio, T76 a schedule email). Answer complete and correctly attributed to quoted text scope.",
+   "source_sha256": "e0ab5675bb5f364b84a512f46e08cf758bf0ddcfeed9497cc8129433356b3eb9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 576,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c00555c54eb387e628956415e4bd6f60d0ec87e36626c48e6f5376947238c762",
+     "turn": 6
+    }
+   ],
+   "visible_history_sha256": "0eed38c0529d44521586f27be9d083106eddb115e28b9ed0c7a69ac699b04d84"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F012-Q2",
+   "query_sha256": "0a786a9ee31059116e4698cac7c2659eb7582e2b5a9c70f4f1dcef3fc5c09d3d",
+   "rationale": "T10 is the only passage the user asks to translate to Korean; text states posters promoted diversity and inclusion, and narrator had to remind people of name and how to address them. Both parts of the two-part question answered, no unsupported specificity, no other Korean-translation passage exists to compete.",
+   "source_sha256": "e0ab5675bb5f364b84a512f46e08cf758bf0ddcfeed9497cc8129433356b3eb9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 344,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "b797950a1bdef225e02ed4905a2407c0e75902f0dae8974e828b73cafdbb9cd1",
+     "turn": 10
+    }
+   ],
+   "visible_history_sha256": "0eed38c0529d44521586f27be9d083106eddb115e28b9ed0c7a69ac699b04d84"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F012-Q3",
+   "query_sha256": "2a8d931199dd93aa731d3347fc55b4cbdafe327dd86dffc98e86dc62a50777ce",
+   "rationale": "T136 withdraws the board-games preference ('Please forget that I like trying new board games with friends'); checked every later base turn T137-T198 (including T132-135 topical tabletop/game-night discussion, which is merely topical, not a re-declared preference) and found no re-establishment in any wording. Withdrawal leaves value unknown; abstain answer is correct.",
+   "source_sha256": "e0ab5675bb5f364b84a512f46e08cf758bf0ddcfeed9497cc8129433356b3eb9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 62,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "05d275d240d9dbe629b4e3247fed57ad863e9628008f789636c08ce5310c8dfb",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "0eed38c0529d44521586f27be9d083106eddb115e28b9ed0c7a69ac699b04d84"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F012-Q4",
+   "query_sha256": "997cf8d3c974925c9fa12fd7e75451561ac2b3df93a192892d6c0f4697b65b61",
+   "rationale": "T0 cataloging-project email: Sebasti\u00e1n proposes shorter shifts/alternating tasks, addressed to Dr. Reynolds. Both requested roles (proposer, asked party) given correctly; no other cataloging email competes (T112 is a different, unrelated 1978-restoration email).",
+   "source_sha256": "e0ab5675bb5f364b84a512f46e08cf758bf0ddcfeed9497cc8129433356b3eb9",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 887,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "28af129358ed5d0ccd5124d056c39e1899e489fb9cc3ca11cb03fcec5f44baec",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "0eed38c0529d44521586f27be9d083106eddb115e28b9ed0c7a69ac699b04d84"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F012-Q5",
+   "query_sha256": "2a8d931199dd93aa731d3347fc55b4cbdafe327dd86dffc98e86dc62a50777ce",
+   "rationale": "Variant F012-different appends T199 user: 'I do not like trying new board games with friends' as a current personal detail, explicitly re-establishing (with opposite value) after the T136 withdrawal. Proposed 'No' answer matches this current, explicit user statement; ownership=user is correct since T199 is the current user speaking, not a quoted third party.",
+   "source_sha256": "82389f8aeeef336e921422d9d78c3f74fb4ef0276c27ef95a399b084bc38015f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 121,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "54b197dbe920655a5174c54e69013899114ebac4921bafdc8e4c1503985e9a6b",
+     "turn": 199
+    },
+    {
+     "end": 62,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "05d275d240d9dbe629b4e3247fed57ad863e9628008f789636c08ce5310c8dfb",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "c452828a48508ad777dda4897140c5b1be03a22bae99927fd045cd0874bf16ca"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F012-Q6",
+   "query_sha256": "2a8d931199dd93aa731d3347fc55b4cbdafe327dd86dffc98e86dc62a50777ce",
+   "rationale": "Variant F012-same appends T199 user: 'I like trying new board games with friends' as a current personal detail, explicitly re-establishing the original (withdrawn at T136) value. Proposed 'Yes' answer matches this current, explicit user statement; correctly scoped as ownership=user, current.",
+   "source_sha256": "833647b553ee446e8f2d81642af614db70d41528061d93ee1b186290a1802add",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 114,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "eff4ebb71e949d94988ad61916c389aa74caae2ce1c763628b0c847aea615e2d",
+     "turn": 199
+    },
+    {
+     "end": 62,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "05d275d240d9dbe629b4e3247fed57ad863e9628008f789636c08ce5310c8dfb",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "3ef0602a02114a6df76e63c76fa2152e4d97e024c378802b072eb3b4da90a837"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F013-Q1",
+   "query_sha256": "0a385ff684b927b40e4c3f5fd57557aa26e4760fe06ba8527f8a8a78fc92e897",
+   "rationale": "T2 (original, user's own words): mind 'as restless as an unsolved equation'; 'a quiet sort of hope' keeps narrator returning to work. Both components correct/complete. T138 is another PhD reflection submitted for translation but has unrelated content (resilience, coffee, community), so no true ambiguity despite similar cue.",
+   "source_sha256": "fb515ef7e9e47923c642f676959629f85d3e4fef2a30b3afd2e3dd8747697d12",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 745,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "4fb30241bdfe779cde68a062cb4d096303103af80869c81d7a6a4a4d4fb3387c",
+     "turn": 2
+    }
+   ],
+   "visible_history_sha256": "9146b0e4998810cc3f172ddaef1e948a3297645ab68173fd6e1fd322a995da81"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F013-Q2",
+   "query_sha256": "6f39fab45e58245c4fc09407048a436f22bff2244ebe9d4d5ef55bb28a038dda",
+   "rationale": "T4 original December-kitchen reflection: narrator explains a signal processing concept to uncle while he 'stirs a simmering pot of mole'. Both components correct/complete. T5 is only a refined restatement of the same passage, not a competing original; no other December-kitchen text exists.",
+   "source_sha256": "fb515ef7e9e47923c642f676959629f85d3e4fef2a30b3afd2e3dd8747697d12",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 868,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "99f2e27c16b013f8da4a050802ea661d3838dd7d2daa50aacd5985792f2fcb42",
+     "turn": 4
+    }
+   ],
+   "visible_history_sha256": "9146b0e4998810cc3f172ddaef1e948a3297645ab68173fd6e1fd322a995da81"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F013-Q3",
+   "query_sha256": "b6bcfe234d25c75689171254ef8acd26113799fcb65874feb5f5e2777c06fa16",
+   "rationale": "T222 withdraws 'I like organizing personal archives or photo albums'; base history ends at T223 (assistant ack only) with no later user turn re-establishing the value. Correct abstain: unknown current status, not automatically insufficient_source.",
+   "source_sha256": "fb515ef7e9e47923c642f676959629f85d3e4fef2a30b3afd2e3dd8747697d12",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 71,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "180e7aa34882701534f9b41861fa726c08a0ea40dc049bc574a3c6f216efb993",
+     "turn": 222
+    }
+   ],
+   "visible_history_sha256": "9146b0e4998810cc3f172ddaef1e948a3297645ab68173fd6e1fd322a995da81"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F013-Q4",
+   "query_sha256": "a883b6365ef0c49426aaab6f1e5e295db4b6f379268044d5af704a3cf62c923f",
+   "rationale": "T26 email opens 'Hi Adrian' and is signed 'Luis'; Luis (sender) describes translating jokes for friends and a different rhythm with family; Adrian is addressee. Both roles correctly and completely attributed. No competing email with this content found.",
+   "source_sha256": "fb515ef7e9e47923c642f676959629f85d3e4fef2a30b3afd2e3dd8747697d12",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 823,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "91b7521f2b9de58f88f6be65a859eee86032aa4436c600388be5df6a21163dcb",
+     "turn": 26
+    }
+   ],
+   "visible_history_sha256": "9146b0e4998810cc3f172ddaef1e948a3297645ab68173fd6e1fd322a995da81"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F013-Q5",
+   "query_sha256": "b6bcfe234d25c75689171254ef8acd26113799fcb65874feb5f5e2777c06fa16",
+   "rationale": "T222 withdraws the preference; appended T224 (different variant) explicitly re-establishes a current value: 'I do not like organizing personal archives or photo albums.' This is a valid explicit user re-establishment, so 'No' is the correct current answer.",
+   "source_sha256": "577f9f256db404e61143e8ee419e35d0c9db8bb94dde2daabdf2ef67488a75a6",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 130,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "5cd4285f4463a7b09709ab77766df1c80903fac12ccc84e960c5a052bb9e8f16",
+     "turn": 224
+    },
+    {
+     "end": 71,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "180e7aa34882701534f9b41861fa726c08a0ea40dc049bc574a3c6f216efb993",
+     "turn": 222
+    }
+   ],
+   "visible_history_sha256": "ac34f07f1539418e3344a796a95f63793d5022376309237c91d2275f0dd2166d"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F013-Q6",
+   "query_sha256": "b6bcfe234d25c75689171254ef8acd26113799fcb65874feb5f5e2777c06fa16",
+   "rationale": "T222 withdraws the preference; appended T224 (same variant) explicitly re-establishes: 'I like organizing personal archives or photo albums.' Valid explicit current user statement post-withdrawal, so 'Yes' is the correct current answer.",
+   "source_sha256": "0a5b5aa4d4d397b9a93b0d7e8f470cb088cb23b54fc2c6300f4d6331a0f3bbe7",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 123,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "7ee9e406055afa35ffab7875ee1129692a7dae2a58c19b82ed5f04a9590ec34e",
+     "turn": 224
+    },
+    {
+     "end": 71,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "180e7aa34882701534f9b41861fa726c08a0ea40dc049bc574a3c6f216efb993",
+     "turn": 222
+    }
+   ],
+   "visible_history_sha256": "48bcccaf6d7d7b0ccda18f5390572555a1539bfe104c3aaf3b0ec40fac7573d1"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F014-Q1",
+   "query_sha256": "d54f317767b41d45c502c60420a0e52ca9b8967e0afffb689eb15910e6d61a88",
+   "rationale": "T4 uniquely matches 'coastal-town travel notes submitted for Spanish translation' (translated at T5). A distractor 'coastal town of Alvor' passage at T57 is a different, third-person (Rachel) reflection, not submitted for translation, so no ambiguity. Text states narrator spent quiet mornings 'tidying the sands before the tide returned' with locals - answer matches exactly and completely.",
+   "source_sha256": "120f2f06c02ed9fefb17fd860ffa1780dce2913be4f006c8284bdd44aec6d48e",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 489,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "455b8c88bb682eb760f0af02f42a4b4f3f26df9fedfb88578490b816c22c09ce",
+     "turn": 4
+    }
+   ],
+   "visible_history_sha256": "ef425e795b616b272f2580f0681bb0cd028816ffae59b703b0777ff18f760480"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F014-Q2",
+   "query_sha256": "2636e039b0afaac4bb05e3f739846f90eaa8588e5c4ee1407de1b383ca21b454",
+   "rationale": "T26 is the sole 'Kyoto travel excerpt' in the history (T27 is just its refined restatement, same source). Text ends invoking a shamisen ('final notes of a shamisen') and narrator eats at 'a small riverside eatery' after the performance. Both components of the two-part question are answered correctly and completely.",
+   "source_sha256": "120f2f06c02ed9fefb17fd860ffa1780dce2913be4f006c8284bdd44aec6d48e",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 513,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "1f5f55e63dbca3bcfb4e8637cb1a4f1084199ba7e777408836529dd3a8004c0e",
+     "turn": 26
+    }
+   ],
+   "visible_history_sha256": "ef425e795b616b272f2580f0681bb0cd028816ffae59b703b0777ff18f760480"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F014-Q3",
+   "query_sha256": "dae1eb381bc581d82db1cc892fbeac100fc328f2020642583907609c77a9c971",
+   "rationale": "Boutique-hotel preference withdrawn at T202. Checked every later user turn (T204-T258, incl. T212's unrelated 'hotel room' photo reference and T229/T198-style accommodation mentions preceding withdrawal only) - none re-establish any current hotel-type preference (unrelated T208 African-drumming withdrawal is a separate topic, correctly not conflated). Correct abstain; mode=abstain matches an actual unknown, not misuse.",
+   "source_sha256": "120f2f06c02ed9fefb17fd860ffa1780dce2913be4f006c8284bdd44aec6d48e",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 76,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "99215d7e352836b1a869928c4a09b373c6e8fff420fa3c54303e527ca59afccf",
+     "turn": 202
+    }
+   ],
+   "visible_history_sha256": "ef425e795b616b272f2580f0681bb0cd028816ffae59b703b0777ff18f760480"
+  },
+  {
+   "contradicting_evidence": [
+    {
+     "end": 734,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "84f44755936443ace25c4c5da7c43b71fbe0ebbdddbdce4cb18442d4b05cc5ca",
+     "turn": 70
+    }
+   ],
+   "id": "F014-Q4",
+   "query_sha256": "a5dda6e0a50a2868a6be3a98a46e60c7a802d4dfae466ae094e1716f69ab4540",
+   "rationale": "Core attribution is right: the T70 email is signed Lena, describes the writer's own frothy green morning ritual, and invites Amara to share a slow morning. But 'her own ritual' asserts a gender the email never states; the user's own framing at T70 says 'this email I got from a friend ... what they're really saying', and only the assistant at T71 uses 'her'.",
+   "source_sha256": "120f2f06c02ed9fefb17fd860ffa1780dce2913be4f006c8284bdd44aec6d48e",
+   "status": "reject",
+   "suggested_answer": "Lena, the email's writer, describes that morning green-drink ritual as their own and invites Amara to share a slow morning.",
+   "supporting_evidence": [
+    {
+     "end": 734,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "84f44755936443ace25c4c5da7c43b71fbe0ebbdddbdce4cb18442d4b05cc5ca",
+     "turn": 70
+    }
+   ],
+   "visible_history_sha256": "ef425e795b616b272f2580f0681bb0cd028816ffae59b703b0777ff18f760480"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F014-Q5",
+   "query_sha256": "dae1eb381bc581d82db1cc892fbeac100fc328f2020642583907609c77a9c971",
+   "rationale": "Variant F014-different appends T259: explicit current-user declaration 'I prefer staying in large chain hotels rather than boutique hotels.' This is a valid later re-establishment overriding the T202 withdrawal, correctly scoped as ownership=user/status=current. Answer matches the declaration verbatim in substance.",
+   "source_sha256": "a523034065093bdc26e72bd92c46bccab4474cb8cef666da898350d32c5ea390",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 138,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "ce90c93fa905b8fa848d0c3609018026a06bb1872feb3dcf2af67980c4d3ff9a",
+     "turn": 259
+    }
+   ],
+   "visible_history_sha256": "0c1505d6e9f723b8802232a335ca69f89398ed78e127bd299ce8d3494122f54f"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F014-Q6",
+   "query_sha256": "dae1eb381bc581d82db1cc892fbeac100fc328f2020642583907609c77a9c971",
+   "rationale": "Variant F014-same appends T259: explicit current-user declaration 'I prefer staying in boutique hotels.' This re-establishes (post-withdrawal at T202) the same preference value as a fresh current statement, which per the rules validly sets a current value. Answer matches the declaration exactly.",
+   "source_sha256": "cb364fc91d5fcdd9689e9285c00b2fcf2f05a692c5f476ff51ce1eb6df3d8c67",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 107,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "e0fc83ffe312d79270dd024a1ecbc2012e3d1bbd5847a3bdbc46560aa1ab0e17",
+     "turn": 259
+    }
+   ],
+   "visible_history_sha256": "ec06d2c49d6cc1e58cfb1ed099a5c4c7499342ec40a657da157e865e9732001e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F015-Q1",
+   "query_sha256": "2d738876913dbdd700e917d57592dcf1bbabbd5cd45fc1d51748aa352e961c0e",
+   "rationale": "T6 is the early-morning garage piece: telemetry synced to the laptop, then 'The Yamaha interface pinged softly'. Both components correct. The other pre-race workshop passage (T108) is set in the workshop, mentions telemetry review but names no interface brand, so it cannot supply a competing answer.",
+   "source_sha256": "0576ea9c4b50af675596531400e73bb0167a0712afe2429493ab0e5a2d988440",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 664,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "f63952bc00178fadfb7963f92a66a0505035364c45dedb709281f35e8c37bc1b",
+     "turn": 6
+    }
+   ],
+   "visible_history_sha256": "51622e81ab229f5e37a7631a1fcc474508e126e677b83c51bbf4b4bf36623b64"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F015-Q2",
+   "query_sha256": "f2348693ea025ad7562750e67a00c6644e54455a41d6440fde4a58d94a452be8",
+   "rationale": "T76 is the only email to a mentor (Naomi) about a long-term racing career; it names balancing competition with 'more safety consulting and maybe even some engineering-side projects'. Both kinds named at the right granularity, with the hedge preserved. Other emails (T0, T20, T30, T54) go to friends and do not discuss career balance.",
+   "source_sha256": "0576ea9c4b50af675596531400e73bb0167a0712afe2429493ab0e5a2d988440",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 1005,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "ad55c72a3c990bd9d344facfa41d5ac7d318a2d0a85f9cf5d6c6818978196edf",
+     "turn": 76
+    }
+   ],
+   "visible_history_sha256": "51622e81ab229f5e37a7631a1fcc474508e126e677b83c51bbf4b4bf36623b64"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F015-Q3",
+   "query_sha256": "417ba568b22160b7fcec4af243fd29e496838228d63e305e0a9bce1f693ae700",
+   "rationale": "Withdrawn at T184. Every later user turn (T186-T236) is either a different topic or a general-knowledge question (T207 coffee shops, T225 scenic trains are merely topical); none states a current preference about exploring new neighborhood spots. The pre-withdrawal T178 mention of wandering into cafes cannot re-establish it, so unknown is correct.",
+   "source_sha256": "0576ea9c4b50af675596531400e73bb0167a0712afe2429493ab0e5a2d988440",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 60,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "97456a6b59da4b55c937f603a76f6e4f6ee554b82fcf4711ca6763c70a757775",
+     "turn": 184
+    }
+   ],
+   "visible_history_sha256": "51622e81ab229f5e37a7631a1fcc474508e126e677b83c51bbf4b4bf36623b64"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F015-Q4",
+   "query_sha256": "cb825e5a01d6f6ea6227c98f33061d0e6e1f67caf0bdcfac783b5309d2b6c51b",
+   "rationale": "T20 is the only birthday-helmet email: signed Erika, addressed 'Hi Mia', and the helmet is for Yumi's birthday. All three roles in the question are answered and correctly distinguished; no other passage describes this gift.",
+   "source_sha256": "0576ea9c4b50af675596531400e73bb0167a0712afe2429493ab0e5a2d988440",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 792,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8d10c51aef5dc342d82a25bb956b8070caaf63fa6d4c2b4702bbc8e94ac61ab7",
+     "turn": 20
+    }
+   ],
+   "visible_history_sha256": "51622e81ab229f5e37a7631a1fcc474508e126e677b83c51bbf4b4bf36623b64"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F015-Q5",
+   "query_sha256": "417ba568b22160b7fcec4af243fd29e496838228d63e305e0a9bce1f693ae700",
+   "rationale": "The synthetic T237 declaration post-dates the T184 withdrawal and is an explicit negative in the question's own wording; the answer restates it and attributes it to the user's statement rather than inferring the opposite of the withdrawal.",
+   "source_sha256": "234eed733ba2221e4bed1a852d430e527be7217a649a5878c9376d76bbf7470f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 118,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "476c8775f485982e16ab4f11d52163127141efa90e9db5cd4e23111efb38a8cc",
+     "turn": 237
+    }
+   ],
+   "visible_history_sha256": "d191968b35d99a979d6e79f56aac915633b3f84fc8406d16bccf7d3c363a57d5"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F015-Q6",
+   "query_sha256": "417ba568b22160b7fcec4af243fd29e496838228d63e305e0a9bce1f693ae700",
+   "rationale": "The synthetic T237 declaration re-establishes the same value after the T184 withdrawal, in wording matching the question; the proposed answer mirrors it exactly and rests on the user's own current statement.",
+   "source_sha256": "d74cd4d0bfd54f0568d2d5d7e1b415bb0c374cd367c9c15d4a2fc8a3e2d90875",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 111,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "45a3ab9d01ce436c2539d87aa0c7ff83ca3f6d863a35ed3d6aa206b6cfea7f0b",
+     "turn": 237
+    }
+   ],
+   "visible_history_sha256": "f9620db20ac5073de81834d54d72f68ef731a4a549a35c69665c124ab0b0b018"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F016-Q1",
+   "query_sha256": "4d8b2a41362da1f03eb63ae2648f3ed9400401c273397c75c9a768ea691a3e99",
+   "rationale": "T18 email titled 'Request to Adjust Training Schedule for Upcoming Competitions' states 'shifting two of the endurance sessions earlier in the week'. Unique passage, no competing training-adjustment email matches this cue. Answer complete (count + direction).",
+   "source_sha256": "6713531548e6b9ac7c6290b53bfb0cdc6aa181b55a205a26d1ce0ecb787933ad",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 985,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "248ce0642936d7a27e1722992041523f94b69223a32a193d5ed67ae48890e7b7",
+     "turn": 18
+    }
+   ],
+   "visible_history_sha256": "a418a4e3c6c3e47ac8e1e44c57b69f3c14a9094e435f4606c065335ca25f3ed0"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F016-Q2",
+   "query_sha256": "25d78c8c43a9bf5f4192bf08b13c6a953e83ad42247c24f73b4b42bc50a5869a",
+   "rationale": "T22 'traveling for a competition' passage: 'drowned at times by the passing trams... I heard half a dozen languages in just minutes'. Unique match for the cue (other travel/city passages, e.g. T90-93, T128-131, don't mention musicians/languages). Answer is complete and accurate.",
+   "source_sha256": "6713531548e6b9ac7c6290b53bfb0cdc6aa181b55a205a26d1ce0ecb787933ad",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 585,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "bf2a70740dec44f1dafc18e425d7e8f192bb119616ea2077fd6859f84878c0dc",
+     "turn": 22
+    }
+   ],
+   "visible_history_sha256": "a418a4e3c6c3e47ac8e1e44c57b69f3c14a9094e435f4606c065335ca25f3ed0"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F016-Q3",
+   "query_sha256": "af499d61486a4d2ee072af39569f75d66146cdf32865f92523d862304b218b01",
+   "rationale": "Preference (open, unstructured schedule when not training) established via self-authored T164 text, withdrawn at T168. Checked every later user turn (T169-T230) for re-establishment in any wording: none found (T182 'training schedule will pull me back into structure' is a labeled creative-writing piece, not a current-detail declaration). Correct abstain.",
+   "source_sha256": "6713531548e6b9ac7c6290b53bfb0cdc6aa181b55a205a26d1ce0ecb787933ad",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 82,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "88085168d67a84beab9cfea0c980eece5e535319f043452274efabd621e3165a",
+     "turn": 168
+    }
+   ],
+   "visible_history_sha256": "a418a4e3c6c3e47ac8e1e44c57b69f3c14a9094e435f4606c065335ca25f3ed0"
+  },
+  {
+   "contradicting_evidence": [
+    {
+     "end": 1281,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8a82339abcf4e1d2288c5ed29f240a859e1963cd3867ba196c64fe1121c1764c",
+     "turn": 0
+    }
+   ],
+   "id": "F016-Q4",
+   "query_sha256": "040ab94973b5996ec68acfb3f8a1938714584e957bec97da421b3be757c77c45",
+   "rationale": "Core attribution is right: the T0 partnership proposal is written by Lars Henriksen, who reports his competitive results and seeks partners, and is addressed to Ms. Johansen. But 'his results' asserts a gender for Lars that the email never states; 'Ms. Johansen' is source wording for the addressee, whereas the sender's is inferred from the name alone.",
+   "source_sha256": "6713531548e6b9ac7c6290b53bfb0cdc6aa181b55a205a26d1ce0ecb787933ad",
+   "status": "reject",
+   "suggested_answer": "Lars Henriksen reports their own biathlon results and seeks partners; the proposal is addressed to Ms. Johansen.",
+   "supporting_evidence": [
+    {
+     "end": 1281,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "8a82339abcf4e1d2288c5ed29f240a859e1963cd3867ba196c64fe1121c1764c",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "a418a4e3c6c3e47ac8e1e44c57b69f3c14a9094e435f4606c065335ca25f3ed0"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F016-Q5",
+   "query_sha256": "af499d61486a4d2ee072af39569f75d66146cdf32865f92523d862304b218b01",
+   "rationale": "Variant F016-different appends T231: 'I prefer a fixed, carefully structured schedule' when not in training. This is a fresh explicit current-detail declaration (post-dating and distinct in value from the T168 withdrawal of the opposite, unstructured preference). Answer matches declaration wording exactly.",
+   "source_sha256": "df15ec52630fa7e1fd74aa4762ea8d0f623540eff419072ec3e0c3cad0eadd28",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 146,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "e6af7935108c978e55c0707183eb06173ee991b3e2a324424479b16b9b0892c2",
+     "turn": 231
+    },
+    {
+     "end": 82,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "88085168d67a84beab9cfea0c980eece5e535319f043452274efabd621e3165a",
+     "turn": 168
+    }
+   ],
+   "visible_history_sha256": "aa7c720d7f77b6dfcf9d4a7ec3749c8d9ab0060e5c255e612e5849c0b15368a8"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F016-Q6",
+   "query_sha256": "af499d61486a4d2ee072af39569f75d66146cdf32865f92523d862304b218b01",
+   "rationale": "Variant F016-same appends T231: 'I prefer open, unstructured schedules' when not in training. Though this repeats the value withdrawn at T168, it is a new explicit user declaration at T231 that independently establishes the current value (withdrawal alone doesn't block a later re-declaration of the same value). Answer matches declaration wording exactly.",
+   "source_sha256": "63aa351e81fcb7a9cded324706b283307b345677ce3d49a72c20756bd620735f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 136,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "3880f570ebcccc90df07fcfab8ad84d01905959e3e5a47b8c4a51c72b1d465fe",
+     "turn": 231
+    },
+    {
+     "end": 82,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "88085168d67a84beab9cfea0c980eece5e535319f043452274efabd621e3165a",
+     "turn": 168
+    }
+   ],
+   "visible_history_sha256": "6e8b1b6448788b0e128dda9cc771120f3d040b5da9d6ac4168955739a90ab141"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F017-Q1",
+   "query_sha256": "a7f9cc955d799af058be7f305f28c5e8086c2e3dcbbb19ba3f30e23622aa1af5",
+   "rationale": "T2 (Andre's original joint-practice email to Jordan) states 'the Willow Springs meet last weekend' (recent meeting location) and 'perhaps at Road Atlanta' for the first session. Both components match proposed answer; passage is unique (only one joint-practice email; other Road Atlanta mentions at T128/T140 are unrelated events).",
+   "source_sha256": "92cf76c7acf7039a39c8538669a78a69f24d883485a5e9533ba3b0070cf4413f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 795,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "d35e1f9a7646e6e36c0a04f175b3659eacca9f032a9de092e3fd441f3dbd46a8",
+     "turn": 2
+    }
+   ],
+   "visible_history_sha256": "84e27f39749814f3b592511e55bb16f9f5905720b36fd2503fd40481ec909a20"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F017-Q2",
+   "query_sha256": "d0449e9b19b63b581ecfffc4a4491ba0bccbd3efef2f45fe6052d5812cc936e3",
+   "rationale": "T12 self-introduction submitted for Chinese translation states 'a professional car racer from Charlotte, North Carolina' and 'GT and endurance races' as the two race types. Matches proposed answer exactly; only one Chinese-translation request in the history (others are Japanese/Ukrainian/Thai), so passage is unambiguous.",
+   "source_sha256": "92cf76c7acf7039a39c8538669a78a69f24d883485a5e9533ba3b0070cf4413f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 545,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c1abeecbc409cb877f6659f2b580821373220789e254b7e1098ec01df040bed1",
+     "turn": 12
+    }
+   ],
+   "visible_history_sha256": "84e27f39749814f3b592511e55bb16f9f5905720b36fd2503fd40481ec909a20"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F017-Q3",
+   "query_sha256": "77cb2c1cc093316a127326304820915e3c5b14f45fbd08b506c61731f9cd6a0c",
+   "rationale": "T136 'Please forget that I like wholesome comedy shows' is a withdrawal, establishing neither current like nor dislike. Checked every later base turn (T137-T232, incl. T137 assistant ack which cannot establish a user fact) via full read and grep for comedy/wholesome/TV/sitcom keywords: no re-establishment found. Correct abstain.",
+   "source_sha256": "92cf76c7acf7039a39c8538669a78a69f24d883485a5e9533ba3b0070cf4413f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 49,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "45ca4fda169079596128543a7b1313963451c40feba2cdfb6bf298e0e446e5ed",
+     "turn": 136
+    }
+   ],
+   "visible_history_sha256": "84e27f39749814f3b592511e55bb16f9f5905720b36fd2503fd40481ec909a20"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F017-Q4",
+   "query_sha256": "d8d6d4a23bf10e7a849aece0decf14fcbf4d15089786ace021f37593bfe2c11a",
+   "rationale": "T44-46: Andre receives email from Rebecca re: Riverside Motors Expo; T46 states 'I've finalized your slot for the media highlights session' (Rebecca finalized; slot belongs to Andre, the addressee/current user). Matches proposed answer; only one Riverside Motors Expo email in the history, unambiguous.",
+   "source_sha256": "92cf76c7acf7039a39c8538669a78a69f24d883485a5e9533ba3b0070cf4413f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 67,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c9b28d56eed549597487c2df17cc448df8da3a4cdfd0279d9b17a27b5a815feb",
+     "turn": 44
+    },
+    {
+     "end": 539,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "48ac262ab56f08584fb800fbedfe7a5aefe0a74c8f274728941a6e694027024e",
+     "turn": 46
+    }
+   ],
+   "visible_history_sha256": "84e27f39749814f3b592511e55bb16f9f5905720b36fd2503fd40481ec909a20"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F017-Q5",
+   "query_sha256": "77cb2c1cc093316a127326304820915e3c5b14f45fbd08b506c61731f9cd6a0c",
+   "rationale": "Variant F017-different appends T233: 'Here is a current personal detail I want you to use in future replies: I do not like wholesome comedy shows.' This is an explicit user re-establishment after the T136 withdrawal, correctly yielding 'No, you do not like wholesome comedy shows' as the current value.",
+   "source_sha256": "76ca16dca922ca29eaa408a32a1a634ad275356fd2e49300a64fd7028d61e123",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 108,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "7e7c805c471f02612be6c2e66de564a8bf645ea77a1a36ae605521f981414652",
+     "turn": 233
+    }
+   ],
+   "visible_history_sha256": "d0cc6b21e2c5dab291bf3c097d3f0bad42aca5d51c437038cea723fe956a39d0"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F017-Q6",
+   "query_sha256": "77cb2c1cc093316a127326304820915e3c5b14f45fbd08b506c61731f9cd6a0c",
+   "rationale": "Variant F017-same appends T233: 'Here is a current personal detail I want you to use in future replies: I like wholesome comedy shows.' Explicit re-establishment after T136 withdrawal, correctly yielding 'Yes, you like wholesome comedy shows' as the current value.",
+   "source_sha256": "d268de73a69f669a9af18434ce2726d6466db9f87eb79e5942f9c71e7bac757f",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 101,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "10e33727a80ce2d23a92a86845af54ad26b760008f254fa5461ea1977090b29c",
+     "turn": 233
+    }
+   ],
+   "visible_history_sha256": "b9e34cae2e3b417436483bab402351402c99404d7e812d279750bef4efab9d18"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F018-Q1",
+   "query_sha256": "de0e295bd5c4d996ce3d3365e825824162e393dc3b6931173f49d1dbf271b63c",
+   "rationale": "T2 is the only Thai paragraph submitted for Ukrainian translation; it opens 'I work as a tour guide in Bangkok'. Both occupation and city are given. The other Thai self-authored pieces go to Portuguese (T50), Japanese (T74) and French (T134), so the target-language cue disambiguates even though T134 states the same occupation.",
+   "source_sha256": "782ec9cd281835389be781b8196b608e79ca37a1e7d88b6198b29a02f3191caa",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 327,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "0b987f51c62df79b48cf1f0d306c4ace0aa66dea419d2569f3e9f52d58b6c167",
+     "turn": 2
+    }
+   ],
+   "visible_history_sha256": "ebf1b2acac7879749b0dfe6c516d12cd2eb9728976a7c8949a1eb4543188174f"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F018-Q2",
+   "query_sha256": "3ac2bd194ae612b850f89353277cb61002af7f999c777d6a7e1b2e16b8244c08",
+   "rationale": "T14 is the only market passage submitted for Italian translation and lists exactly three flavours with the warm corn tortillas: tangy lime, fresh cilantro and 'that unmistakable fiery kick'. Complete. Minor wording note: the reference renders 'fiery kick' as 'a fiery spicy kick'; 'spicy' is a gloss of 'fiery' rather than an added source detail.",
+   "source_sha256": "782ec9cd281835389be781b8196b608e79ca37a1e7d88b6198b29a02f3191caa",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 489,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "d848a0786c6b3aa2a7ea28d3ed716cfd9440ffd10778eb55f6411bb9d9730e3b",
+     "turn": 14
+    }
+   ],
+   "visible_history_sha256": "ebf1b2acac7879749b0dfe6c516d12cd2eb9728976a7c8949a1eb4543188174f"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F018-Q3",
+   "query_sha256": "56b959b920b53438ec9354b33057988d64b2d5168083247083a383b44cb7384d",
+   "rationale": "The preference is stated by the assistant at T233 and withdrawn by the user at T234, the last user turn of the base history (only assistant T235 follows). No later user turn exists that could re-establish any clothing-style value, so the unknown answer is correct rather than insufficient source.",
+   "source_sha256": "782ec9cd281835389be781b8196b608e79ca37a1e7d88b6198b29a02f3191caa",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 74,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "0a1a38591c53a854587d5622bf2c9a7da327eb8f91eb82ab4f45e113ef954c32",
+     "turn": 234
+    }
+   ],
+   "visible_history_sha256": "ebf1b2acac7879749b0dfe6c516d12cd2eb9728976a7c8949a1eb4543188174f"
+  },
+  {
+   "contradicting_evidence": [
+    {
+     "end": 747,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "6864bed82ee27782558b3e642291648f31894f219fc8cb2adc286b0cd94feca6",
+     "turn": 30
+    }
+   ],
+   "id": "F018-Q4",
+   "query_sha256": "af2899794f148099fa0f4a22dfcf2757cd34ae070e6c9cd89c1ca663a3793131",
+   "rationale": "Core attribution is right: in the T30 email Lila thanks May for taking her around the riverside and describes stopping at the night market where a silver bracelet caught her eye. But 'her' asserts a gender for Lila that no user turn states; at T4-T5 the user only asks which grammatical form the assistant chose, and the assistant's feminine rendering cannot establish a source fact.",
+   "source_sha256": "782ec9cd281835389be781b8196b608e79ca37a1e7d88b6198b29a02f3191caa",
+   "status": "reject",
+   "suggested_answer": "Lila stopped to admire the silver bracelets on the way home, and May had taken Lila around the riverside.",
+   "supporting_evidence": [
+    {
+     "end": 747,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "6864bed82ee27782558b3e642291648f31894f219fc8cb2adc286b0cd94feca6",
+     "turn": 30
+    }
+   ],
+   "visible_history_sha256": "ebf1b2acac7879749b0dfe6c516d12cd2eb9728976a7c8949a1eb4543188174f"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F018-Q5",
+   "query_sha256": "56b959b920b53438ec9354b33057988d64b2d5168083247083a383b44cb7384d",
+   "rationale": "The synthetic T236 declaration post-dates the T234 withdrawal and states an alternate value ('understated, loose-fitting ... rather than bold, form-fitting'); the answer reproduces it including the contrast clause and rests on the user's own statement.",
+   "source_sha256": "dda42750973a20b4b22e37c6236db53540a5f5433b37afba34353e4a7882cd25",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 153,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "ab3855587e2913719faf54cca5a2698fb019de10e5cc2c6438fb152e711380db",
+     "turn": 236
+    }
+   ],
+   "visible_history_sha256": "350f2da275bde57fad160f2ba69e4144c3c1cf2eb40fb0d510b196b015920a60"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F018-Q6",
+   "query_sha256": "56b959b920b53438ec9354b33057988d64b2d5168083247083a383b44cb7384d",
+   "rationale": "The synthetic T236 declaration re-establishes the same value after the T234 withdrawal in matching wording; the answer mirrors it and attributes it to the user's current statement rather than to the withdrawn preference.",
+   "source_sha256": "588ae26df54ea07f1ffc943a98facc7b192fe3d11c7b18c655c52ea48bb88307",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 114,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "85dd95ba2ebcdca3194de9b3dc0e0c1ef0e6e08e2f15e355910266d2e2861c02",
+     "turn": 236
+    }
+   ],
+   "visible_history_sha256": "b32efd5ddd4b6dfb30ee9accb565b670151c0fb8e22e78c198972339b9755851"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F019-Q1",
+   "query_sha256": "d3bbf9e54d27937dc6286c544e6fbdc8bd1492c2a0cb8bddbc69d873a034193f",
+   "rationale": "T10 is the apartment reflection submitted for Spanish translation and names exactly three additions: plants, art that reminds the writer of travels, and furniture with simple, clean lines. Complete at the question's granularity. The other Spanish-translation piece (T122) is about evenings with partner and dog and cannot supply a competing answer.",
+   "source_sha256": "6b03c907bac535fbed4ba6963de77771af655ba463969a5b72fd1fccaf3881d5",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 429,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "20cc46c2473adc7f97ada6041a13a8e4889df4ceba8fabb998fa60198d7c2e14",
+     "turn": 10
+    }
+   ],
+   "visible_history_sha256": "498474da3d45d1c07e71eefe4013557f6d62bee124d57f90f5963be262173089"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F019-Q2",
+   "query_sha256": "3111b23e0e296ccca5822d8b2a6a2c1340a17d8f28202db1bf278e95a68107bd",
+   "rationale": "T48 is the only childhood-meals paragraph submitted for French translation: 'plenty of vegetables and whole grains, and very little added sugar'. Both plentiful groups and the low ingredient are given; T50/T51 is only a poetic re-rendering of the same passage.",
+   "source_sha256": "6b03c907bac535fbed4ba6963de77771af655ba463969a5b72fd1fccaf3881d5",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 451,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "e40e12a49c15c4e806d6b97745867fc91863f74ad4d59672d2ec837ad987c88f",
+     "turn": 48
+    }
+   ],
+   "visible_history_sha256": "498474da3d45d1c07e71eefe4013557f6d62bee124d57f90f5963be262173089"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F019-Q3",
+   "query_sha256": "667591cc01c522d8defd85f47a6cd685143d7938f26c3d3c8f26f8072f2125fa",
+   "rationale": "Withdrawn at T204; only two user turns follow (T206 asks about energy foods, T208 is a separate withdrawal about anemia), and neither re-establishes the documentary preference in any wording. Unknown is correct.",
+   "source_sha256": "6b03c907bac535fbed4ba6963de77771af655ba463969a5b72fd1fccaf3881d5",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 71,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "30993fe3d5581e74693ecf0d078b84e4fe65a168671e12f5ada9f07a360abbd9",
+     "turn": 204
+    }
+   ],
+   "visible_history_sha256": "498474da3d45d1c07e71eefe4013557f6d62bee124d57f90f5963be262173089"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F019-Q4",
+   "query_sha256": "278b2aa374b291b93d952ba80c04f0092d86000f5e4beecd1b5f05cbd81de4dd",
+   "rationale": "Correct on substance: the passage attributes the saying to someone else - 'my mom ... She used to say' - not the writer, and the answer names the mother rather than stopping at the binary. The question's two-option phrasing does not supply which party. Minor note: the possessive 'her' for the writer is not established inside T48 itself; it rests on the user's own later self-description at T60.",
+   "source_sha256": "6b03c907bac535fbed4ba6963de77771af655ba463969a5b72fd1fccaf3881d5",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 451,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "e40e12a49c15c4e806d6b97745867fc91863f74ad4d59672d2ec837ad987c88f",
+     "turn": 48
+    },
+    {
+     "end": 73,
+     "role": "user",
+     "start": 45,
+     "text_sha256": "4d5b47c36c1f203c66ed67dfead622724afcae3fbfc6ec976400fbbefe0ddae6",
+     "turn": 60
+    }
+   ],
+   "visible_history_sha256": "498474da3d45d1c07e71eefe4013557f6d62bee124d57f90f5963be262173089"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F019-Q5",
+   "query_sha256": "667591cc01c522d8defd85f47a6cd685143d7938f26c3d3c8f26f8072f2125fa",
+   "rationale": "The synthetic T210 declaration post-dates the T204 withdrawal and explicitly negates the activity in the question's own wording; the answer restates it and rests on the user's statement, not on the withdrawal.",
+   "source_sha256": "d887e746236bd1062f8a46b7aa6ede4980eb0e5d778556c2a47c5c43f5242342",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 130,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c2b6f79a57928a4aa72aa1c36947c03bd0a69ad81ba3e694a5e56ab5afd39bfa",
+     "turn": 210
+    }
+   ],
+   "visible_history_sha256": "4d2720f44d73d12a662fccd33210c57bab79de8eb064701128b3feea20cd0e72"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F019-Q6",
+   "query_sha256": "667591cc01c522d8defd85f47a6cd685143d7938f26c3d3c8f26f8072f2125fa",
+   "rationale": "The synthetic T210 declaration re-establishes the same value after the T204 withdrawal in matching wording; the answer mirrors it exactly and attributes it to the user's current statement.",
+   "source_sha256": "6362eb5108b3c7c6b0bab99aa9c83300d470decac08bd892f14257cbdf2759fd",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 123,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "9a634f5c535bd07f5a510920ccd2aff936dedb966b2355baedd37f375a990742",
+     "turn": 210
+    }
+   ],
+   "visible_history_sha256": "4f9c5bed251cfcfcab505fe8af3c045f525808331938d776637a6b1ea89b5edc"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F020-Q1",
+   "query_sha256": "3bc00793133c45465b924c14997ba8f44a80a1e781d76074fb6121b76ee75659",
+   "rationale": "T18 is the sole Portuguese-translation self-written passage; source states 'walkable streets, community gardens, and historic brick buildings' as the three features connecting daily life to the city's story. Answer gives all three at correct granularity, matches quoted_text_only scope.",
+   "source_sha256": "7a72a71655a835923db078178c3e85aa9f75c8717a7286c3c07a49201ea03a80",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 518,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "303e1f41c90ad4244ae25fb1b3f1d7fcfaf94a230066cb06dd95e285d7bf3b5b",
+     "turn": 18
+    }
+   ],
+   "visible_history_sha256": "e1164df336e83eae17ea9cc9cf3b08a170dd9397331b901c7f86cc15e679684e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F020-Q2",
+   "query_sha256": "7dbc6c033fbc0b41f588ac7539b9861cfe2f788d2e3daf89eff17c10a266f80a",
+   "rationale": "T82 is the sole German-translation weekend-routines passage; source names 'vintage caps and old team pennants' as the two nostalgic objects at market stalls. Answer is complete and correctly scoped to the quoted passage.",
+   "source_sha256": "7a72a71655a835923db078178c3e85aa9f75c8717a7286c3c07a49201ea03a80",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 538,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "95cbd8b0cdefb41711d7f881107a8ed7530f98d2d2b658f4db45aab01ff29959",
+     "turn": 82
+    }
+   ],
+   "visible_history_sha256": "e1164df336e83eae17ea9cc9cf3b08a170dd9397331b901c7f86cc15e679684e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F020-Q3",
+   "query_sha256": "786ca5ffa54b8bd834bbf00fdb393c3d7010f3e5cc4caf42593e15615e8c1ab0",
+   "rationale": "T200 withdraws the recipe-experimenting preference. Read every turn T201-T252 of the base history: no later user turn re-establishes liking (or disliking) recipe experimentation in any wording (T202 French translation, T208-252 unrelated topics). Withdrawal establishes neither value; 'unknown' is the correct abstain answer.",
+   "source_sha256": "7a72a71655a835923db078178c3e85aa9f75c8717a7286c3c07a49201ea03a80",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 57,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c523970b96166854e0fe30c441369a9a2586d518ae6a7ef9a7a7115d4e25b785",
+     "turn": 200
+    }
+   ],
+   "visible_history_sha256": "e1164df336e83eae17ea9cc9cf3b08a170dd9397331b901c7f86cc15e679684e"
+  },
+  {
+   "contradicting_evidence": [
+    {
+     "end": 572,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "dc2e47d1837194346f623cd66062dfb21f966f5d84324be314a45da5251eb6b3",
+     "turn": 0
+    }
+   ],
+   "id": "F020-Q4",
+   "query_sha256": "d782f00b3b96e106b3d5b4e0c0534df38b3662bf56ce740f2a7cc7008d9e2f0b",
+   "rationale": "Core attribution is right: T0 is the only waterfront walk-through email, Karen signs it and says 'I'll already have my own container and bags', and Jon is the addressee told 'No need to pick anything up yourself'. But the reference asserts gender for both parties ('her', 'he') that no turn in the history states; the question itself stays neutral ('their', 'they'). Unsupported specificity in a source-attribution reference, so it needs correction rather than acceptance.",
+   "source_sha256": "7a72a71655a835923db078178c3e85aa9f75c8717a7286c3c07a49201ea03a80",
+   "status": "reject",
+   "suggested_answer": "Karen, who wrote the email, plans to bring the container and bags; Jon, the recipient, is told there is no need to pick anything up.",
+   "supporting_evidence": [
+    {
+     "end": 572,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "dc2e47d1837194346f623cd66062dfb21f966f5d84324be314a45da5251eb6b3",
+     "turn": 0
+    }
+   ],
+   "visible_history_sha256": "e1164df336e83eae17ea9cc9cf3b08a170dd9397331b901c7f86cc15e679684e"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F020-Q5",
+   "query_sha256": "786ca5ffa54b8bd834bbf00fdb393c3d7010f3e5cc4caf42593e15615e8c1ab0",
+   "rationale": "In variant F020-different, T253 explicitly declares as a current personal detail 'I do not like experimenting with new recipes', after the T200 withdrawal. This is a valid re-establishment (opposite value) per rule 1; answer correctly reflects 'No' with the explicit quote.",
+   "source_sha256": "822989ae9720a31de6dcc44be816faa80d82c5d59a965d1b3b2e40396b7562fd",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 116,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "a1fb257e1ba692e1ddde2f1340c3f744d0a1b8c1c430007a7a1ec7510fdcf2e4",
+     "turn": 253
+    },
+    {
+     "end": 57,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c523970b96166854e0fe30c441369a9a2586d518ae6a7ef9a7a7115d4e25b785",
+     "turn": 200
+    }
+   ],
+   "visible_history_sha256": "9528e3efe81f534931d52dfc224584bea915ca7bafe57a3903957fbec87cb5f0"
+  },
+  {
+   "contradicting_evidence": [],
+   "id": "F020-Q6",
+   "query_sha256": "786ca5ffa54b8bd834bbf00fdb393c3d7010f3e5cc4caf42593e15615e8c1ab0",
+   "rationale": "In variant F020-same, T253 explicitly declares as a current personal detail 'I like experimenting with new recipes', re-establishing the pre-T200 value after withdrawal. Answer correctly reflects 'Yes' with the explicit quote.",
+   "source_sha256": "5ae9c5864960310d76fb9c462d172ee8700583aa893b32cca6055f9bf791ab75",
+   "status": "accept",
+   "suggested_answer": null,
+   "supporting_evidence": [
+    {
+     "end": 109,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "b04787c5ac2b3b8bed85a6e5ab7abe4cdd07ea7cdd6d896c2425363106f41d46",
+     "turn": 253
+    },
+    {
+     "end": 57,
+     "role": "user",
+     "start": 0,
+     "text_sha256": "c523970b96166854e0fe30c441369a9a2586d518ae6a7ef9a7a7115d4e25b785",
+     "turn": 200
+    }
+   ],
+   "visible_history_sha256": "244cdafc01c71578d8e20d7f69e6593ceddfa0c8c0b3d2f58afd413023ce3834"
+  }
+ ],
+ "created_at": "2026-09-10T16:43:13.508829+00:00",
+ "full_base_histories_read": [
+  "F001",
+  "F002",
+  "F003",
+  "F004",
+  "F005",
+  "F006",
+  "F007",
+  "F008",
+  "F009",
+  "F010",
+  "F011",
+  "F012",
+  "F013",
+  "F014",
+  "F015",
+  "F016",
+  "F017",
+  "F018",
+  "F019",
+  "F020"
+ ],
+ "reviewer": "Claude Opus 5 (claude-opus-5), Claude Code independent reference review"
+}

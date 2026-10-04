@@ -1,0 +1,68 @@
+{
+  "reviewed_utc": "2026-09-10T05:22:56.528303+00:00",
+  "status": "collection_complete_development_only",
+  "questions": 10,
+  "notes": 10,
+  "note_updates": 63,
+  "note_updates_accepted": 63,
+  "note_tokens_range": [
+    553,
+    768
+  ],
+  "withdrawals_preserved": 147,
+  "selected_quotes": 65,
+  "body_structurally_valid": 30,
+  "generated_action_protocol_valid": null,
+  "source_content_by_round": [
+    8,
+    8,
+    10
+  ],
+  "over_90_words": 11,
+  "instruction_filtered_by_round": [
+    6,
+    6,
+    4
+  ],
+  "old_question_drift": 0,
+  "source_content_targets": {
+    "ANSWER": 16,
+    "RETRIEVE": 4,
+    "null": 0
+  },
+  "word_filtered_targets": {
+    "ANSWER": 12,
+    "RETRIEVE": 3,
+    "null": 5
+  },
+  "notes_generation_seconds": 127.678296527,
+  "captures_seconds": 98.62733644700006,
+  "mean_capture_seconds_by_round": [
+    2.9188903232999963,
+    3.1293201049999992,
+    3.8145232164000107
+  ],
+  "mean_input_tokens_by_round": [
+    1471.8,
+    2471.4,
+    3466.5
+  ],
+  "bindings": {
+    "plans/260910-context-policy/20260910-v2-repair-r4/artifacts/captures.json": "4ff1999d89c2445fad62db248dadc98f1c993162fad2d9fceb1494a101e31dbd",
+    "plans/260910-context-policy/20260910-v2-repair-r4/artifacts/notes.json": "0ca309f3f30ced9a3fc1a6f90c2deb042cc12cc0bcf64eb72a851ef60bbb2e0d",
+    "plans/260910-context-policy/20260910-v2-repair-r4/artifacts/note-events.json": "dc1bc40c10eb4350f859370bc3170e3c7ff6cd59dc99fbf775455f7f65715ca0",
+    "plans/260910-context-policy/20260910-v2-label-repair/reviewed-references.jsonl": "134e4a1e4bb00797c726bffbcb647d28664e03888a68908c8057f382baafb391",
+    "plans/260910-context-policy/20260910-v2-repair-r4-plan/PLAN.md": "40b7a01183216fb322be53c3ff05bc7aeee38e430c8baf6e00429fd914d02795"
+  },
+  "limitations": [
+    "enriched ten-question development sample",
+    "reviewer also authored references",
+    "word-compliance sensitivity is additional to frozen source/content criteria",
+    "mostly generic questions; no memory-necessity claim",
+    "syntax enforced for notes and ANSWER prefix supplied for body capture",
+    "not a trained policy or benchmark result"
+  ],
+  "corpus_admitted": false,
+  "corpus_trained": false,
+  "training_traces_exported": 0
+}

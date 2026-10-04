@@ -1,0 +1,566 @@
+{
+  "status": "review_validated",
+  "captures": 144,
+  "cases": 72,
+  "author_review_only": true,
+  "counts_by_split_and_arm": {
+    "development": {
+      "repair": {
+        "pass": 15,
+        "fail": 9
+      },
+      "baseline": {
+        "fail": 4,
+        "pass": 20
+      }
+    },
+    "fresh": {
+      "baseline": {
+        "pass": 39,
+        "fail": 9
+      },
+      "repair": {
+        "pass": 28,
+        "fail": 20
+      }
+    }
+  },
+  "counts_by_split_class_arm": {
+    "development": {
+      "baseline": {
+        "repair": {
+          "pass": 4
+        },
+        "baseline": {
+          "fail": 3,
+          "pass": 1
+        }
+      },
+      "different": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "pass": 3,
+          "fail": 1
+        }
+      },
+      "historical": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "pass": 4
+        }
+      },
+      "ownership": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "fail": 4
+        }
+      },
+      "same": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "pass": 4
+        }
+      },
+      "withdrawal": {
+        "repair": {
+          "fail": 4
+        },
+        "baseline": {
+          "pass": 3,
+          "fail": 1
+        }
+      }
+    },
+    "fresh": {
+      "baseline": {
+        "baseline": {
+          "pass": 8
+        },
+        "repair": {
+          "pass": 8
+        }
+      },
+      "different": {
+        "repair": {
+          "fail": 6,
+          "pass": 2
+        },
+        "baseline": {
+          "pass": 8
+        }
+      },
+      "historical": {
+        "repair": {
+          "pass": 8
+        },
+        "baseline": {
+          "pass": 8
+        }
+      },
+      "ownership": {
+        "baseline": {
+          "pass": 5,
+          "fail": 3
+        },
+        "repair": {
+          "fail": 6,
+          "pass": 2
+        }
+      },
+      "same": {
+        "baseline": {
+          "pass": 8
+        },
+        "repair": {
+          "pass": 8
+        }
+      },
+      "withdrawal": {
+        "baseline": {
+          "fail": 6,
+          "pass": 2
+        },
+        "repair": {
+          "fail": 8
+        }
+      }
+    }
+  },
+  "fresh_counts_by_form_arm": {
+    "binary": {
+      "baseline": {
+        "pass": 20,
+        "fail": 4
+      },
+      "repair": {
+        "pass": 13,
+        "fail": 11
+      }
+    },
+    "open": {
+      "repair": {
+        "pass": 15,
+        "fail": 9
+      },
+      "baseline": {
+        "pass": 19,
+        "fail": 5
+      }
+    }
+  },
+  "fresh_counts_by_topic_form_arm": {
+    "activity": {
+      "binary": {
+        "baseline": {
+          "pass": 10,
+          "fail": 2
+        },
+        "repair": {
+          "pass": 6,
+          "fail": 6
+        }
+      },
+      "open": {
+        "repair": {
+          "pass": 9,
+          "fail": 3
+        },
+        "baseline": {
+          "pass": 9,
+          "fail": 3
+        }
+      }
+    },
+    "food_drink": {
+      "binary": {
+        "repair": {
+          "pass": 7,
+          "fail": 5
+        },
+        "baseline": {
+          "pass": 10,
+          "fail": 2
+        }
+      },
+      "open": {
+        "baseline": {
+          "pass": 10,
+          "fail": 2
+        },
+        "repair": {
+          "pass": 6,
+          "fail": 6
+        }
+      }
+    }
+  },
+  "fresh_counts_by_class_form_arm": {
+    "baseline": {
+      "binary": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "pass": 4
+        }
+      },
+      "open": {
+        "repair": {
+          "pass": 4
+        },
+        "baseline": {
+          "pass": 4
+        }
+      }
+    },
+    "different": {
+      "binary": {
+        "repair": {
+          "fail": 3,
+          "pass": 1
+        },
+        "baseline": {
+          "pass": 4
+        }
+      },
+      "open": {
+        "repair": {
+          "fail": 3,
+          "pass": 1
+        },
+        "baseline": {
+          "pass": 4
+        }
+      }
+    },
+    "historical": {
+      "binary": {
+        "repair": {
+          "pass": 4
+        },
+        "baseline": {
+          "pass": 4
+        }
+      },
+      "open": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "pass": 4
+        }
+      }
+    },
+    "ownership": {
+      "binary": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "fail": 4
+        }
+      },
+      "open": {
+        "repair": {
+          "pass": 2,
+          "fail": 2
+        },
+        "baseline": {
+          "pass": 1,
+          "fail": 3
+        }
+      }
+    },
+    "same": {
+      "binary": {
+        "baseline": {
+          "pass": 4
+        },
+        "repair": {
+          "pass": 4
+        }
+      },
+      "open": {
+        "repair": {
+          "pass": 4
+        },
+        "baseline": {
+          "pass": 4
+        }
+      }
+    },
+    "withdrawal": {
+      "binary": {
+        "baseline": {
+          "fail": 4
+        },
+        "repair": {
+          "fail": 4
+        }
+      },
+      "open": {
+        "repair": {
+          "fail": 4
+        },
+        "baseline": {
+          "fail": 2,
+          "pass": 2
+        }
+      }
+    }
+  },
+  "criterion_counts_by_split_arm": {
+    "development": {
+      "repair": {
+        "task_complete": {
+          "true": 17,
+          "false": 7
+        },
+        "source_consistent": {
+          "true": 16,
+          "false": 8
+        },
+        "supported_in_visible_state": {
+          "true": 16,
+          "false": 8
+        },
+        "withdrawal_compliant": {
+          "true": 19,
+          "false": 5
+        },
+        "ownership_correct": {
+          "true": 22,
+          "false": 2
+        },
+        "body_valid": {
+          "true": 24
+        },
+        "within_90_words": {
+          "true": 24
+        }
+      },
+      "baseline": {
+        "task_complete": {
+          "false": 3,
+          "true": 21
+        },
+        "source_consistent": {
+          "false": 3,
+          "true": 21
+        },
+        "supported_in_visible_state": {
+          "false": 3,
+          "true": 21
+        },
+        "withdrawal_compliant": {
+          "true": 23,
+          "false": 1
+        },
+        "ownership_correct": {
+          "true": 24
+        },
+        "body_valid": {
+          "true": 24
+        },
+        "within_90_words": {
+          "true": 24
+        }
+      }
+    },
+    "fresh": {
+      "baseline": {
+        "task_complete": {
+          "true": 42,
+          "false": 6
+        },
+        "source_consistent": {
+          "true": 42,
+          "false": 6
+        },
+        "supported_in_visible_state": {
+          "true": 42,
+          "false": 6
+        },
+        "withdrawal_compliant": {
+          "true": 42,
+          "false": 6
+        },
+        "ownership_correct": {
+          "true": 45,
+          "false": 3
+        },
+        "body_valid": {
+          "true": 48
+        },
+        "within_90_words": {
+          "true": 48
+        }
+      },
+      "repair": {
+        "task_complete": {
+          "true": 38,
+          "false": 10
+        },
+        "source_consistent": {
+          "true": 38,
+          "false": 10
+        },
+        "supported_in_visible_state": {
+          "true": 38,
+          "false": 10
+        },
+        "withdrawal_compliant": {
+          "true": 34,
+          "false": 14
+        },
+        "ownership_correct": {
+          "true": 48
+        },
+        "body_valid": {
+          "true": 48
+        },
+        "within_90_words": {
+          "true": 48
+        }
+      }
+    }
+  },
+  "paired_effects": {
+    "development": {
+      "transitions": {
+        "fail -> pass": 3,
+        "pass -> fail": 8,
+        "pass -> pass": 12,
+        "fail -> fail": 1
+      },
+      "strict_corrections": 3,
+      "strict_regressions": 8,
+      "task_corrections": 3,
+      "task_regressions": 7
+    },
+    "fresh": {
+      "transitions": {
+        "pass -> pass": 27,
+        "fail -> fail": 8,
+        "pass -> fail": 12,
+        "fail -> pass": 1
+      },
+      "strict_corrections": 1,
+      "strict_regressions": 12,
+      "task_corrections": 1,
+      "task_regressions": 5
+    }
+  },
+  "gates": {
+    "baseline": {
+      "development_24_of_24": false,
+      "fresh_48_of_48": false,
+      "both_pass": false
+    },
+    "repair": {
+      "development_24_of_24": false,
+      "fresh_48_of_48": false,
+      "both_pass": false
+    }
+  },
+  "primary_original_prompt_gate": false,
+  "against_4b": {
+    "development": {
+      "baseline": {
+        "n": 24,
+        "4b_strict_pass": 17,
+        "8b_strict_pass": 20,
+        "strict_delta": 3,
+        "4b_task_correct": 19,
+        "8b_task_correct": 21,
+        "task_delta": 2,
+        "strict_corrections": 4,
+        "strict_regressions": 1,
+        "task_corrections": 3,
+        "task_regressions": 1,
+        "transitions": {
+          "fail -> fail": 3,
+          "fail -> pass": 4,
+          "pass -> pass": 16,
+          "pass -> fail": 1
+        }
+      },
+      "repair": {
+        "n": 24,
+        "4b_strict_pass": 14,
+        "8b_strict_pass": 15,
+        "strict_delta": 1,
+        "4b_task_correct": 18,
+        "8b_task_correct": 17,
+        "task_delta": -1,
+        "strict_corrections": 1,
+        "strict_regressions": 0,
+        "task_corrections": 0,
+        "task_regressions": 1,
+        "transitions": {
+          "pass -> pass": 14,
+          "fail -> fail": 9,
+          "fail -> pass": 1
+        }
+      }
+    },
+    "fresh": {
+      "baseline": {
+        "n": 48,
+        "4b_strict_pass": 36,
+        "8b_strict_pass": 39,
+        "strict_delta": 3,
+        "4b_task_correct": 41,
+        "8b_task_correct": 42,
+        "task_delta": 1,
+        "strict_corrections": 6,
+        "strict_regressions": 3,
+        "task_corrections": 4,
+        "task_regressions": 3,
+        "transitions": {
+          "pass -> pass": 33,
+          "fail -> fail": 6,
+          "fail -> pass": 6,
+          "pass -> fail": 3
+        }
+      },
+      "repair": {
+        "n": 48,
+        "4b_strict_pass": 26,
+        "8b_strict_pass": 28,
+        "strict_delta": 2,
+        "4b_task_correct": 36,
+        "8b_task_correct": 38,
+        "task_delta": 2,
+        "strict_corrections": 4,
+        "strict_regressions": 2,
+        "task_corrections": 2,
+        "task_regressions": 0,
+        "transitions": {
+          "pass -> pass": 24,
+          "fail -> fail": 18,
+          "pass -> fail": 2,
+          "fail -> pass": 4
+        }
+      }
+    }
+  },
+  "training_admission": false,
+  "training_labels": 0,
+  "source_hashes": {
+    "captures.json": "4f85c81fe8dc3553b0ff5de18a88178a60dde4aa610653e7b855afb87de697d5",
+    "cases.json": "5a075227e6655fbdc5c6d8c5c6d2bfbdb10dcff187f65bfca74280429dc7d2ce",
+    "review.json": "e9a509188b1b1997f57e47a0b8d10a99cc50668f7d618de3fdf1bac3351822f1",
+    "preflight-freeze.json": "f0d171e0dbe7ba5bee3d40f49597357725f876aba02856b827d77a948d5654fe",
+    "4b-review.json": "2b749d7cb50f0dd9de1518cc8b07693a9722fdf525b9ef7dc4e7c1ea0d16cb93",
+    "4b-result-manifest.json": "e706e740888e300de77a817627a36572f37e642f94d94c5d22d82df6d165cd9c"
+  }
+}

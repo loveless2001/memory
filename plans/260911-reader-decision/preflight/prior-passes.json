@@ -1,0 +1,6566 @@
+{
+  "rule": "Preserve every strict-correct non-oracle answer on an identical source history/question from the seven prior reader experiments. This includes previous direct and extracted pipelines, all sizes; oracle outputs are excluded.",
+  "source_hashes": {
+    "plans/260911-reader-diagnostic/review.json": "bb41629635333fff782be9278a076c24e7e66aea3b0a075eafd652ca25ab95ff",
+    "plans/260911-reader-diagnostic/preflight/cases.json": "3fdf1c1bd0a47d01382a10f06962c0bb64c08d207086bce920dde7098259038a",
+    "plans/260911-reader-repair/review.json": "2b749d7cb50f0dd9de1518cc8b07693a9722fdf525b9ef7dc4e7c1ea0d16cb93",
+    "plans/260911-reader-repair/preflight/cases.json": "5a075227e6655fbdc5c6d8c5c6d2bfbdb10dcff187f65bfca74280429dc7d2ce",
+    "plans/260911-reader-qwen3-8b/review.json": "e9a509188b1b1997f57e47a0b8d10a99cc50668f7d618de3fdf1bac3351822f1",
+    "plans/260911-reader-qwen3-8b/preflight/cases.json": "5a075227e6655fbdc5c6d8c5c6d2bfbdb10dcff187f65bfca74280429dc7d2ce",
+    "plans/260911-reader-state/review.json": "f7733dec6171d87a078757a05dee8e75fe4bed35f54640d0418d7704b7a2ee7b",
+    "plans/260911-reader-state/preflight/cases.json": "bb8620dc995f7de7e65fa9d2a9ee7f82b78f4771f043f70d7db44c92aecba568",
+    "plans/260911-reader-sft/review.json": "e877a6601d6b5a296d2ece6f07b43b6ef006b4c53ae6a3b6480874854b4ffb82",
+    "plans/260911-reader-sft/preflight/eval-cases.json": "5e9819cb14ae63934c93b2d787d26beb09560efc0861da5913fda8d91a4f5c0b",
+    "plans/260911-reader-sft-v2/review.json": "f2ddeadfc7dcc888fc386923cd7b66c3c973b8bb3a58572ad7605312bc1b4e68",
+    "plans/260911-reader-sft-v2/preflight/eval-cases.json": "7f29464007d9353c7537173f17102ec3534f9081215020734c6bfd4ad9f5562d",
+    "plans/260911-reader-factor/review.json": "303f90a4059f64d24c5ed7b75a7c2e4ead3371d8fd0f53ac3bbb8bb13a63bb15",
+    "plans/260911-reader-factor/preflight/cases.json": "e70f1ee65ecfed8709db37000b12da19f6a624ace703f0b193fafa4253a61796"
+  },
+  "required_ids": [
+    "D01-baseline",
+    "D01-withdrawal",
+    "D01-different",
+    "D01-same",
+    "D01-historical",
+    "D01-ownership",
+    "D02-baseline",
+    "D02-withdrawal",
+    "D02-different",
+    "D02-same",
+    "D02-historical",
+    "D02-ownership",
+    "D03-baseline",
+    "D03-withdrawal",
+    "D03-different",
+    "D03-same",
+    "D03-historical",
+    "D03-ownership",
+    "D04-baseline",
+    "D04-withdrawal",
+    "D04-different",
+    "D04-same",
+    "D04-historical",
+    "D04-ownership",
+    "F01-baseline-binary",
+    "F01-baseline-open",
+    "F01-withdrawal-binary",
+    "F01-withdrawal-open",
+    "F01-different-binary",
+    "F01-different-open",
+    "F01-same-binary",
+    "F01-same-open",
+    "F01-historical-binary",
+    "F01-historical-open",
+    "F01-ownership-binary",
+    "F01-ownership-open",
+    "F02-baseline-binary",
+    "F02-baseline-open",
+    "F02-withdrawal-binary",
+    "F02-withdrawal-open",
+    "F02-different-binary",
+    "F02-different-open",
+    "F02-same-binary",
+    "F02-same-open",
+    "F02-historical-binary",
+    "F02-historical-open",
+    "F02-ownership-binary",
+    "F02-ownership-open",
+    "F03-baseline-binary",
+    "F03-baseline-open",
+    "F03-withdrawal-binary",
+    "F03-withdrawal-open",
+    "F03-different-binary",
+    "F03-different-open",
+    "F03-same-binary",
+    "F03-same-open",
+    "F03-historical-binary",
+    "F03-historical-open",
+    "F03-ownership-binary",
+    "F03-ownership-open",
+    "F04-baseline-binary",
+    "F04-baseline-open",
+    "F04-withdrawal-binary",
+    "F04-withdrawal-open",
+    "F04-different-binary",
+    "F04-different-open",
+    "F04-same-binary",
+    "F04-same-open",
+    "F04-historical-binary",
+    "F04-historical-open",
+    "F04-ownership-binary",
+    "F04-ownership-open",
+    "N01-2",
+    "N02-1",
+    "N02-2",
+    "N03-1",
+    "N03-2",
+    "N04-1",
+    "N04-2",
+    "N05-1",
+    "N05-2",
+    "N06-1",
+    "N06-2",
+    "N07-1",
+    "N07-2",
+    "N08-1",
+    "N08-2",
+    "N09-1",
+    "N09-2",
+    "N10-1",
+    "N10-2",
+    "N11-1",
+    "N11-2",
+    "N12-1",
+    "N12-2",
+    "E01-binary",
+    "E01-open",
+    "E02-binary",
+    "E02-open",
+    "E03-binary",
+    "E03-open",
+    "E04-binary",
+    "E04-open",
+    "E05-binary",
+    "E05-open",
+    "E06-binary",
+    "E06-open",
+    "E07-binary",
+    "E07-open",
+    "E08-binary",
+    "E08-open",
+    "E09-binary",
+    "E09-open",
+    "E10-binary",
+    "E10-open",
+    "E11-binary",
+    "E11-open",
+    "E12-binary",
+    "E12-open",
+    "E13-binary",
+    "E13-open",
+    "E14-binary",
+    "E14-open",
+    "E15-binary",
+    "E15-open",
+    "E16-binary",
+    "E16-open",
+    "E17-binary",
+    "E17-open",
+    "E18-binary",
+    "E18-open",
+    "E19-binary",
+    "E19-open",
+    "E20-binary",
+    "E20-open",
+    "E21-binary",
+    "E21-open",
+    "E22-binary",
+    "E22-open",
+    "E23-binary",
+    "E23-open",
+    "E24-binary",
+    "E24-open",
+    "H01-1",
+    "H01-2",
+    "H01-3",
+    "H01-4",
+    "H02-1",
+    "H02-2",
+    "H02-3",
+    "H02-4",
+    "H03-1",
+    "H03-2",
+    "H03-3",
+    "H03-4",
+    "H04-1",
+    "H04-2",
+    "H04-3",
+    "H04-4",
+    "H05-1",
+    "H05-2",
+    "H05-3",
+    "H05-4",
+    "H06-1",
+    "H06-2",
+    "H06-3",
+    "H06-4",
+    "H07-1",
+    "H07-2",
+    "H07-3",
+    "H07-4",
+    "H08-1",
+    "H08-2",
+    "H08-3",
+    "H08-4",
+    "H09-1",
+    "H09-2",
+    "H09-3",
+    "H09-4",
+    "H10-1",
+    "H10-2",
+    "H10-3",
+    "H10-4",
+    "H11-1",
+    "H11-2",
+    "H11-3",
+    "H11-4",
+    "H12-1",
+    "H12-2",
+    "H12-3",
+    "H12-4",
+    "H13-1",
+    "H13-2",
+    "H13-3",
+    "H13-4",
+    "H14-1",
+    "H14-2",
+    "H14-3",
+    "H14-4",
+    "H15-1",
+    "H15-2",
+    "H15-3",
+    "H15-4",
+    "H16-1",
+    "H16-2",
+    "H16-3",
+    "H16-4",
+    "R01-extra-1",
+    "R01-extra-2",
+    "R02-extra-1",
+    "R02-extra-2",
+    "X01-1",
+    "X01-2",
+    "X01-3",
+    "X01-4",
+    "X02-1",
+    "X02-2",
+    "X02-3",
+    "X02-4",
+    "X03-1",
+    "X03-2",
+    "X03-3",
+    "X03-4",
+    "X04-1",
+    "X04-2",
+    "X04-3",
+    "X04-4",
+    "X05-1",
+    "X05-2",
+    "X05-3",
+    "X05-4",
+    "X06-1",
+    "X06-2",
+    "X06-3",
+    "X06-4",
+    "X07-1",
+    "X07-2",
+    "X07-3",
+    "X07-4",
+    "X08-1",
+    "X08-2",
+    "X08-3",
+    "X08-4",
+    "X09-1",
+    "X09-2",
+    "X09-3",
+    "X09-4",
+    "X10-1",
+    "X10-2",
+    "X10-3",
+    "X10-4",
+    "X11-1",
+    "X11-2",
+    "X11-3",
+    "X11-4",
+    "X12-1",
+    "X12-2",
+    "X12-3",
+    "X12-4"
+  ],
+  "sources_by_id": {
+    "D01-baseline": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-baseline",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-baseline",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-baseline",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-baseline",
+        "arm": "adapted"
+      }
+    ],
+    "D01-withdrawal": [
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-withdrawal",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-withdrawal",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-withdrawal",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-withdrawal",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-withdrawal",
+        "arm": "adapted"
+      }
+    ],
+    "D01-different": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-different",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-different",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-different",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-different",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-different",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-different",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-different",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-different",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-different",
+        "arm": "adapted"
+      }
+    ],
+    "D01-same": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-same",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-same",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-same",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-same",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-same",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-same",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-same",
+        "arm": "adapted"
+      }
+    ],
+    "D01-historical": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-historical",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-historical",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-historical",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-historical",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-historical",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-historical",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-historical",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-historical",
+        "arm": "adapted"
+      }
+    ],
+    "D01-ownership": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-ownership",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-ownership",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-ownership",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D01-ownership",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D01-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D01-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D01-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-ownership",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D01-ownership",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-ownership",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D01-ownership",
+        "arm": "adapted"
+      }
+    ],
+    "D02-baseline": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-baseline",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-baseline",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-baseline",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-baseline",
+        "arm": "adapted"
+      }
+    ],
+    "D02-withdrawal": [
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-withdrawal",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-withdrawal",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-withdrawal",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-withdrawal",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-withdrawal",
+        "arm": "adapted"
+      }
+    ],
+    "D02-different": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-different",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-different",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-different",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-different",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-different",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-different",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-different",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-different",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-different",
+        "arm": "adapted"
+      }
+    ],
+    "D02-same": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-same",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-same",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-same",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-same",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-same",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-same",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-same",
+        "arm": "adapted"
+      }
+    ],
+    "D02-historical": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-historical",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-historical",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-historical",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-historical",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-historical",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-historical",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-historical",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-historical",
+        "arm": "adapted"
+      }
+    ],
+    "D02-ownership": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-ownership",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-ownership",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-ownership",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D02-ownership",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D02-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D02-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D02-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-ownership",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D02-ownership",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-ownership",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D02-ownership",
+        "arm": "adapted"
+      }
+    ],
+    "D03-baseline": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-baseline",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-baseline",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-baseline",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-baseline",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-baseline",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-baseline",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-baseline",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-baseline",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-baseline",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-baseline",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-baseline",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-baseline",
+        "arm": "adapted"
+      }
+    ],
+    "D03-withdrawal": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-withdrawal",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-withdrawal",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-withdrawal",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-withdrawal",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-withdrawal",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-withdrawal",
+        "arm": "adapted"
+      }
+    ],
+    "D03-different": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-different",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-different",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-different",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-different",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-different",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-different",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-different",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-different",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-different",
+        "arm": "adapted"
+      }
+    ],
+    "D03-same": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-same",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-same",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-same",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-same",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-same",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-same",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-same",
+        "arm": "adapted"
+      }
+    ],
+    "D03-historical": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-historical",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-historical",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-historical",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-historical",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D03-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D03-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-historical",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-historical",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-historical",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-historical",
+        "arm": "adapted"
+      }
+    ],
+    "D03-ownership": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-ownership",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D03-ownership",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D03-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D03-ownership",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-ownership",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D03-ownership",
+        "arm": "adapted"
+      }
+    ],
+    "D04-baseline": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-baseline",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-baseline",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-baseline",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-baseline",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-baseline",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-baseline",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-baseline",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-baseline",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-baseline",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-baseline",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-baseline",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-baseline",
+        "arm": "adapted"
+      }
+    ],
+    "D04-withdrawal": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-withdrawal",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-withdrawal",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-withdrawal",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-withdrawal",
+        "arm": "adapted"
+      }
+    ],
+    "D04-different": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-different",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-different",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-different",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-different",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-different",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-different",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-different",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-different",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-different",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-different",
+        "arm": "adapted"
+      }
+    ],
+    "D04-same": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-same",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-same",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-same",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-same",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-same",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-same",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-same",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-same",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-same",
+        "arm": "adapted"
+      }
+    ],
+    "D04-historical": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-historical",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-historical",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-historical",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-historical",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-historical",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-historical",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-historical",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-historical",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-historical",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-historical",
+        "arm": "adapted"
+      }
+    ],
+    "D04-ownership": [
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-ownership",
+        "arm": "plain_chronological"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-ownership",
+        "arm": "json_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-ownership",
+        "arm": "plain_withdrawals_last"
+      },
+      {
+        "review": "plans/260911-reader-diagnostic/review.json",
+        "id": "D04-ownership",
+        "arm": "json_chronological"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "D04-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "D04-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "D04-ownership",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-ownership",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "D04-ownership",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-ownership",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "D04-ownership",
+        "arm": "adapted"
+      }
+    ],
+    "F01-baseline-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-baseline-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F01-baseline-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-baseline-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-baseline-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-baseline-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-baseline-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-baseline-open",
+        "arm": "adapted"
+      }
+    ],
+    "F01-withdrawal-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-withdrawal-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-withdrawal-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-withdrawal-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F01-withdrawal-open": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-withdrawal-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-withdrawal-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-withdrawal-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-withdrawal-open",
+        "arm": "adapted"
+      }
+    ],
+    "F01-different-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-different-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-different-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-different-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-different-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-different-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-different-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F01-different-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-different-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-different-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-different-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-different-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-different-open",
+        "arm": "adapted"
+      }
+    ],
+    "F01-same-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-same-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-same-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-same-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-same-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-same-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F01-same-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-same-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-same-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-same-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-same-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-same-open",
+        "arm": "adapted"
+      }
+    ],
+    "F01-historical-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-historical-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-historical-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-historical-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-historical-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-historical-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F01-historical-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-historical-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-historical-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-historical-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-historical-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-historical-open",
+        "arm": "adapted"
+      }
+    ],
+    "F01-ownership-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-ownership-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F01-ownership-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F01-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-ownership-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F01-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F01-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-ownership-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F01-ownership-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-ownership-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F01-ownership-open",
+        "arm": "adapted"
+      }
+    ],
+    "F02-baseline-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-baseline-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F02-baseline-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-baseline-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-baseline-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-baseline-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-baseline-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-baseline-open",
+        "arm": "adapted"
+      }
+    ],
+    "F02-withdrawal-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-withdrawal-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-withdrawal-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-withdrawal-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F02-withdrawal-open": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-withdrawal-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-withdrawal-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-withdrawal-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-withdrawal-open",
+        "arm": "adapted"
+      }
+    ],
+    "F02-different-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-different-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-different-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-different-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-different-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-different-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F02-different-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-different-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-different-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-different-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-different-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-different-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-different-open",
+        "arm": "adapted"
+      }
+    ],
+    "F02-same-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-same-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-same-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-same-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-same-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F02-same-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-same-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-same-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-same-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-same-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-same-open",
+        "arm": "adapted"
+      }
+    ],
+    "F02-historical-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-historical-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-historical-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-historical-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-historical-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-historical-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F02-historical-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-historical-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-historical-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-historical-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-historical-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-historical-open",
+        "arm": "adapted"
+      }
+    ],
+    "F02-ownership-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-ownership-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F02-ownership-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F02-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F02-ownership-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F02-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-ownership-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F02-ownership-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-ownership-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F02-ownership-open",
+        "arm": "adapted"
+      }
+    ],
+    "F03-baseline-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-baseline-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F03-baseline-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-baseline-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-baseline-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-baseline-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-baseline-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-baseline-open",
+        "arm": "adapted"
+      }
+    ],
+    "F03-withdrawal-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-withdrawal-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-withdrawal-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-withdrawal-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F03-withdrawal-open": [
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-withdrawal-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-withdrawal-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-withdrawal-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-withdrawal-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-withdrawal-open",
+        "arm": "adapted"
+      }
+    ],
+    "F03-different-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-different-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-different-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-different-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-different-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-different-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-different-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F03-different-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-different-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-different-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-different-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-different-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-different-open",
+        "arm": "adapted"
+      }
+    ],
+    "F03-same-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-same-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-same-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-same-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-same-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F03-same-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-same-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-same-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-same-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-same-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-same-open",
+        "arm": "adapted"
+      }
+    ],
+    "F03-historical-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-historical-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-historical-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-historical-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-historical-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-historical-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F03-historical-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-historical-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-historical-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-historical-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-historical-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-historical-open",
+        "arm": "adapted"
+      }
+    ],
+    "F03-ownership-binary": [
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F03-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-ownership-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-ownership-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-ownership-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F03-ownership-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F03-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F03-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-ownership-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F03-ownership-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-ownership-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F03-ownership-open",
+        "arm": "adapted"
+      }
+    ],
+    "F04-baseline-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-baseline-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F04-baseline-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-baseline-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-baseline-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-baseline-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-baseline-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-baseline-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-baseline-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-baseline-open",
+        "arm": "adapted"
+      }
+    ],
+    "F04-withdrawal-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-withdrawal-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-withdrawal-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-withdrawal-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F04-withdrawal-open": [
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-withdrawal-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-withdrawal-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-withdrawal-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-withdrawal-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-withdrawal-open",
+        "arm": "adapted"
+      }
+    ],
+    "F04-different-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-different-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-different-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-different-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-different-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-different-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-different-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-different-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F04-different-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-different-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-different-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-different-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-different-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-different-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-different-open",
+        "arm": "adapted"
+      }
+    ],
+    "F04-same-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-same-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-same-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-same-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-same-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-same-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-same-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-same-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F04-same-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-same-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-same-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-same-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-same-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-same-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-same-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-same-open",
+        "arm": "adapted"
+      }
+    ],
+    "F04-historical-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-historical-binary",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-historical-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-historical-binary",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-historical-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-historical-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-historical-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F04-historical-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-historical-open",
+        "arm": "repair"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-historical-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-historical-open",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-historical-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-historical-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-historical-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-historical-open",
+        "arm": "adapted"
+      }
+    ],
+    "F04-ownership-binary": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-qwen3-8b/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-ownership-binary",
+        "arm": "adapted"
+      }
+    ],
+    "F04-ownership-open": [
+      {
+        "review": "plans/260911-reader-repair/review.json",
+        "id": "F04-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "F04-ownership-open",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-ownership-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "F04-ownership-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-ownership-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "F04-ownership-open",
+        "arm": "adapted"
+      }
+    ],
+    "N01-1": [],
+    "N01-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N01-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N01-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N01-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N01-2",
+        "arm": "adapted"
+      }
+    ],
+    "N02-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N02-1",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N02-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N02-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N02-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N02-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N02-1",
+        "arm": "adapted"
+      }
+    ],
+    "N02-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N02-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N02-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N02-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N02-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N02-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N02-2",
+        "arm": "adapted"
+      }
+    ],
+    "N03-1": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N03-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N03-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N03-1",
+        "arm": "adapted"
+      }
+    ],
+    "N03-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N03-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N03-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N03-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N03-2",
+        "arm": "adapted"
+      }
+    ],
+    "N04-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N04-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N04-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N04-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N04-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N04-1",
+        "arm": "adapted"
+      }
+    ],
+    "N04-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N04-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N04-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N04-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N04-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N04-2",
+        "arm": "adapted"
+      }
+    ],
+    "N05-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N05-1",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N05-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N05-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N05-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N05-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N05-1",
+        "arm": "adapted"
+      }
+    ],
+    "N05-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N05-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N05-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N05-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N05-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N05-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N05-2",
+        "arm": "adapted"
+      }
+    ],
+    "N06-1": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N06-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N06-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N06-1",
+        "arm": "adapted"
+      }
+    ],
+    "N06-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N06-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N06-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N06-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N06-2",
+        "arm": "adapted"
+      }
+    ],
+    "N07-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N07-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N07-1",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N07-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N07-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N07-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N07-1",
+        "arm": "adapted"
+      }
+    ],
+    "N07-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N07-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N07-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N07-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N07-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N07-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N07-2",
+        "arm": "adapted"
+      }
+    ],
+    "N08-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N08-1",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N08-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N08-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N08-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N08-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N08-1",
+        "arm": "adapted"
+      }
+    ],
+    "N08-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N08-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N08-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N08-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N08-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N08-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N08-2",
+        "arm": "adapted"
+      }
+    ],
+    "N09-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N09-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N09-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "N09-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "N09-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N09-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N09-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N09-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N09-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N09-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "N09-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "N09-2",
+        "arm": "direct"
+      }
+    ],
+    "N10-1": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N10-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N10-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N10-1",
+        "arm": "adapted"
+      }
+    ],
+    "N10-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N10-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N10-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N10-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N10-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N10-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N10-2",
+        "arm": "adapted"
+      }
+    ],
+    "N11-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N11-1",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N11-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N11-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N11-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N11-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N11-1",
+        "arm": "adapted"
+      }
+    ],
+    "N11-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N11-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N11-2",
+        "arm": "extracted"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N11-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N11-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N11-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N11-2",
+        "arm": "adapted"
+      }
+    ],
+    "N12-1": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N12-1",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N12-1",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N12-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N12-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "N12-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "N12-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "N12-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "N12-2": [
+      {
+        "review": "plans/260911-reader-state/review.json",
+        "id": "N12-2",
+        "arm": "baseline"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "N12-2",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "N12-2",
+        "arm": "extracted_fact"
+      }
+    ],
+    "E01-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E01-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E01-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E01-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E01-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E01-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E01-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E01-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E01-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E01-open",
+        "arm": "adapted"
+      }
+    ],
+    "E02-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E02-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E02-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E02-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E02-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E02-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E02-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E02-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E02-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E02-open",
+        "arm": "adapted"
+      }
+    ],
+    "E03-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E03-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E03-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E03-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E03-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E03-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E03-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E03-open",
+        "arm": "adapted"
+      }
+    ],
+    "E04-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E04-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E04-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E04-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E04-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E04-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E04-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E04-open",
+        "arm": "adapted"
+      }
+    ],
+    "E05-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E05-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E05-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E05-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E05-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E05-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E05-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E05-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E05-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E05-open",
+        "arm": "adapted"
+      }
+    ],
+    "E06-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E06-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E06-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E06-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E06-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E06-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E06-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E06-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E06-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E06-open",
+        "arm": "adapted"
+      }
+    ],
+    "E07-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E07-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E07-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E07-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E07-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E07-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E07-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E07-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E07-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E07-open",
+        "arm": "adapted"
+      }
+    ],
+    "E08-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E08-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E08-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E08-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E08-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E08-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E08-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E08-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E08-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E08-open",
+        "arm": "adapted"
+      }
+    ],
+    "E09-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E09-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E09-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E09-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E09-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E09-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E09-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E09-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E09-open",
+        "arm": "adapted"
+      }
+    ],
+    "E10-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E10-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E10-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E10-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E10-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E10-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E10-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E10-open",
+        "arm": "adapted"
+      }
+    ],
+    "E11-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E11-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E11-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E11-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E11-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E11-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E11-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E11-open",
+        "arm": "adapted"
+      }
+    ],
+    "E12-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E12-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E12-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E12-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E12-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E12-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E12-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E12-open",
+        "arm": "adapted"
+      }
+    ],
+    "E13-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E13-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E13-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E13-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E13-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E13-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E13-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E13-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E13-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E13-open",
+        "arm": "adapted"
+      }
+    ],
+    "E14-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E14-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E14-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E14-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E14-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E14-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E14-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E14-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E14-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E14-open",
+        "arm": "adapted"
+      }
+    ],
+    "E15-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E15-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E15-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E15-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E15-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E15-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E15-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E15-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E15-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E15-open",
+        "arm": "adapted"
+      }
+    ],
+    "E16-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E16-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E16-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E16-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E16-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E16-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E16-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E16-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E16-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E16-open",
+        "arm": "adapted"
+      }
+    ],
+    "E17-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E17-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E17-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E17-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E17-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E17-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E17-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E17-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E17-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E17-open",
+        "arm": "adapted"
+      }
+    ],
+    "E18-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E18-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E18-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E18-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E18-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E18-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E18-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E18-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E18-open",
+        "arm": "adapted"
+      }
+    ],
+    "E19-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E19-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E19-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E19-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E19-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E19-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E19-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E19-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E19-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E19-open",
+        "arm": "adapted"
+      }
+    ],
+    "E20-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E20-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E20-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E20-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E20-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E20-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E20-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E20-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E20-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E20-open",
+        "arm": "adapted"
+      }
+    ],
+    "E21-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E21-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E21-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E21-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E21-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E21-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E21-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E21-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E21-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E21-open",
+        "arm": "adapted"
+      }
+    ],
+    "E22-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E22-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E22-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E22-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E22-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E22-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E22-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E22-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E22-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E22-open",
+        "arm": "adapted"
+      }
+    ],
+    "E23-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E23-binary",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E23-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E23-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E23-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E23-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E23-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E23-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E23-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E23-open",
+        "arm": "adapted"
+      }
+    ],
+    "E24-binary": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E24-binary",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E24-binary",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E24-binary",
+        "arm": "adapted"
+      }
+    ],
+    "E24-open": [
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E24-open",
+        "arm": "base"
+      },
+      {
+        "review": "plans/260911-reader-sft/review.json",
+        "id": "E24-open",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E24-open",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "E24-open",
+        "arm": "adapted"
+      }
+    ],
+    "H01-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-1",
+        "arm": "adapted"
+      }
+    ],
+    "H01-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-2",
+        "arm": "adapted"
+      }
+    ],
+    "H01-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-3",
+        "arm": "adapted"
+      }
+    ],
+    "H01-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H01-4",
+        "arm": "adapted"
+      }
+    ],
+    "H02-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "H02-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H02-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H02-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-2",
+        "arm": "direct"
+      }
+    ],
+    "H02-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H02-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H02-3",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-3",
+        "arm": "direct"
+      }
+    ],
+    "H02-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H02-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H02-4",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H02-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "H03-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-1",
+        "arm": "adapted"
+      }
+    ],
+    "H03-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-2",
+        "arm": "adapted"
+      }
+    ],
+    "H03-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-3",
+        "arm": "adapted"
+      }
+    ],
+    "H03-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H03-4",
+        "arm": "adapted"
+      }
+    ],
+    "H04-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-1",
+        "arm": "adapted"
+      }
+    ],
+    "H04-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-2",
+        "arm": "adapted"
+      }
+    ],
+    "H04-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-3",
+        "arm": "adapted"
+      }
+    ],
+    "H04-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H04-4",
+        "arm": "adapted"
+      }
+    ],
+    "H05-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-1",
+        "arm": "adapted"
+      }
+    ],
+    "H05-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-2",
+        "arm": "adapted"
+      }
+    ],
+    "H05-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-3",
+        "arm": "adapted"
+      }
+    ],
+    "H05-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H05-4",
+        "arm": "adapted"
+      }
+    ],
+    "H06-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-1",
+        "arm": "adapted"
+      }
+    ],
+    "H06-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-2",
+        "arm": "adapted"
+      }
+    ],
+    "H06-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-3",
+        "arm": "adapted"
+      }
+    ],
+    "H06-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H06-4",
+        "arm": "adapted"
+      }
+    ],
+    "H07-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-1",
+        "arm": "adapted"
+      }
+    ],
+    "H07-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-2",
+        "arm": "adapted"
+      }
+    ],
+    "H07-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-3",
+        "arm": "adapted"
+      }
+    ],
+    "H07-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H07-4",
+        "arm": "adapted"
+      }
+    ],
+    "H08-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-1",
+        "arm": "adapted"
+      }
+    ],
+    "H08-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-2",
+        "arm": "adapted"
+      }
+    ],
+    "H08-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-3",
+        "arm": "adapted"
+      }
+    ],
+    "H08-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H08-4",
+        "arm": "adapted"
+      }
+    ],
+    "H09-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-1",
+        "arm": "adapted"
+      }
+    ],
+    "H09-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-2",
+        "arm": "adapted"
+      }
+    ],
+    "H09-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-3",
+        "arm": "adapted"
+      }
+    ],
+    "H09-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H09-4",
+        "arm": "prior"
+      }
+    ],
+    "H10-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-1",
+        "arm": "adapted"
+      }
+    ],
+    "H10-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-2",
+        "arm": "adapted"
+      }
+    ],
+    "H10-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-3",
+        "arm": "adapted"
+      }
+    ],
+    "H10-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H10-4",
+        "arm": "adapted"
+      }
+    ],
+    "H11-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-1",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H11-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H11-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "H11-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-2",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H11-2",
+        "arm": "direct"
+      }
+    ],
+    "H11-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-3",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H11-3",
+        "arm": "direct"
+      }
+    ],
+    "H11-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H11-4",
+        "arm": "adapted"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "H11-4",
+        "arm": "direct"
+      }
+    ],
+    "H12-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-1",
+        "arm": "adapted"
+      }
+    ],
+    "H12-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-2",
+        "arm": "adapted"
+      }
+    ],
+    "H12-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-3",
+        "arm": "adapted"
+      }
+    ],
+    "H12-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H12-4",
+        "arm": "adapted"
+      }
+    ],
+    "H13-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-1",
+        "arm": "adapted"
+      }
+    ],
+    "H13-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-2",
+        "arm": "adapted"
+      }
+    ],
+    "H13-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-3",
+        "arm": "adapted"
+      }
+    ],
+    "H13-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H13-4",
+        "arm": "adapted"
+      }
+    ],
+    "H14-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-1",
+        "arm": "adapted"
+      }
+    ],
+    "H14-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-2",
+        "arm": "adapted"
+      }
+    ],
+    "H14-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-3",
+        "arm": "adapted"
+      }
+    ],
+    "H14-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H14-4",
+        "arm": "adapted"
+      }
+    ],
+    "H15-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-1",
+        "arm": "adapted"
+      }
+    ],
+    "H15-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-2",
+        "arm": "adapted"
+      }
+    ],
+    "H15-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-3",
+        "arm": "adapted"
+      }
+    ],
+    "H15-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H15-4",
+        "arm": "adapted"
+      }
+    ],
+    "H16-1": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-1",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-1",
+        "arm": "adapted"
+      }
+    ],
+    "H16-2": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-2",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-2",
+        "arm": "adapted"
+      }
+    ],
+    "H16-3": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-3",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-3",
+        "arm": "adapted"
+      }
+    ],
+    "H16-4": [
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-4",
+        "arm": "prior"
+      },
+      {
+        "review": "plans/260911-reader-sft-v2/review.json",
+        "id": "H16-4",
+        "arm": "adapted"
+      }
+    ],
+    "R01-extra-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R01-extra-1",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R01-extra-1",
+        "arm": "direct"
+      }
+    ],
+    "R01-extra-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R01-extra-2",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R01-extra-2",
+        "arm": "extracted_fact"
+      }
+    ],
+    "R02-extra-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R02-extra-1",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R02-extra-1",
+        "arm": "direct"
+      }
+    ],
+    "R02-extra-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R02-extra-2",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "R02-extra-2",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X01-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X01-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-2",
+        "arm": "direct"
+      }
+    ],
+    "X01-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-3",
+        "arm": "direct"
+      }
+    ],
+    "X01-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X01-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X02-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X02-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-2",
+        "arm": "direct"
+      }
+    ],
+    "X02-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-3",
+        "arm": "direct"
+      }
+    ],
+    "X02-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X02-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X03-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X03-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-2",
+        "arm": "direct"
+      }
+    ],
+    "X03-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-3",
+        "arm": "direct"
+      }
+    ],
+    "X03-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X03-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X04-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X04-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-2",
+        "arm": "direct"
+      }
+    ],
+    "X04-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-3",
+        "arm": "direct"
+      }
+    ],
+    "X04-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X04-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X05-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X05-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-2",
+        "arm": "direct"
+      }
+    ],
+    "X05-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-3",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X05-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X05-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X06-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X06-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-2",
+        "arm": "direct"
+      }
+    ],
+    "X06-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-3",
+        "arm": "direct"
+      }
+    ],
+    "X06-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X06-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X07-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X07-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-2",
+        "arm": "direct"
+      }
+    ],
+    "X07-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-3",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X07-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X07-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X08-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X08-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-2",
+        "arm": "direct"
+      }
+    ],
+    "X08-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-3",
+        "arm": "direct"
+      }
+    ],
+    "X08-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X08-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X09-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X09-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-2",
+        "arm": "direct"
+      }
+    ],
+    "X09-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-3",
+        "arm": "direct"
+      }
+    ],
+    "X09-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X09-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X10-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X10-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-2",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-2",
+        "arm": "direct"
+      }
+    ],
+    "X10-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-3",
+        "arm": "direct"
+      }
+    ],
+    "X10-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X10-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X11-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X11-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-2",
+        "arm": "direct"
+      }
+    ],
+    "X11-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-3",
+        "arm": "direct"
+      }
+    ],
+    "X11-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X11-4",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X12-1": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-1",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-1",
+        "arm": "extracted_fact"
+      }
+    ],
+    "X12-2": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-2",
+        "arm": "direct"
+      }
+    ],
+    "X12-3": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-3",
+        "arm": "extracted_fact"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-3",
+        "arm": "direct"
+      }
+    ],
+    "X12-4": [
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-4",
+        "arm": "direct"
+      },
+      {
+        "review": "plans/260911-reader-factor/review.json",
+        "id": "X12-4",
+        "arm": "extracted_fact"
+      }
+    ]
+  }
+}

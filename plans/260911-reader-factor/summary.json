@@ -1,0 +1,1788 @@
+{
+  "status": "complete",
+  "descriptive_only": true,
+  "independent_review": false,
+  "answer_captures": 256,
+  "extraction_captures": 16,
+  "scores": {
+    "all": {
+      "direct": {
+        "total": 64,
+        "strict_correct": 56,
+        "required_answer_correct": 57,
+        "strict_failures": [
+          "N09-1",
+          "N12-2",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X06-1",
+          "X07-3"
+        ],
+        "required_answer_failures": [
+          "N09-1",
+          "N12-2",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X07-3"
+        ]
+      },
+      "extracted_fact": {
+        "total": 64,
+        "strict_correct": 59,
+        "required_answer_correct": 59,
+        "strict_failures": [
+          "H11-2",
+          "H11-3",
+          "H11-4",
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "H11-2",
+          "H11-3",
+          "H11-4",
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_fact": {
+        "total": 64,
+        "strict_correct": 62,
+        "required_answer_correct": 62,
+        "strict_failures": [
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_query": {
+        "total": 64,
+        "strict_correct": 60,
+        "required_answer_correct": 60,
+        "strict_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ]
+      }
+    },
+    "split:new": {
+      "direct": {
+        "total": 48,
+        "strict_correct": 43,
+        "required_answer_correct": 44,
+        "strict_failures": [
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X06-1",
+          "X07-3"
+        ],
+        "required_answer_failures": [
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X07-3"
+        ]
+      },
+      "extracted_fact": {
+        "total": 48,
+        "strict_correct": 46,
+        "required_answer_correct": 46,
+        "strict_failures": [
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_fact": {
+        "total": 48,
+        "strict_correct": 46,
+        "required_answer_correct": 46,
+        "strict_failures": [
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_query": {
+        "total": 48,
+        "strict_correct": 44,
+        "required_answer_correct": 44,
+        "strict_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ]
+      }
+    },
+    "split:reused_history": {
+      "direct": {
+        "total": 16,
+        "strict_correct": 13,
+        "required_answer_correct": 13,
+        "strict_failures": [
+          "N09-1",
+          "N12-2",
+          "H02-1"
+        ],
+        "required_answer_failures": [
+          "N09-1",
+          "N12-2",
+          "H02-1"
+        ]
+      },
+      "extracted_fact": {
+        "total": 16,
+        "strict_correct": 13,
+        "required_answer_correct": 13,
+        "strict_failures": [
+          "H11-2",
+          "H11-3",
+          "H11-4"
+        ],
+        "required_answer_failures": [
+          "H11-2",
+          "H11-3",
+          "H11-4"
+        ]
+      },
+      "oracle_fact": {
+        "total": 16,
+        "strict_correct": 16,
+        "required_answer_correct": 16,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_query": {
+        "total": 16,
+        "strict_correct": 16,
+        "required_answer_correct": 16,
+        "strict_failures": [],
+        "required_answer_failures": []
+      }
+    },
+    "kind:assertion": {
+      "direct": {
+        "total": 24,
+        "strict_correct": 20,
+        "required_answer_correct": 20,
+        "strict_failures": [
+          "N09-1",
+          "H02-1",
+          "X01-1",
+          "X04-1"
+        ],
+        "required_answer_failures": [
+          "N09-1",
+          "H02-1",
+          "X01-1",
+          "X04-1"
+        ]
+      },
+      "extracted_fact": {
+        "total": 24,
+        "strict_correct": 24,
+        "required_answer_correct": 24,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_fact": {
+        "total": 24,
+        "strict_correct": 24,
+        "required_answer_correct": 24,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_query": {
+        "total": 24,
+        "strict_correct": 24,
+        "required_answer_correct": 24,
+        "strict_failures": [],
+        "required_answer_failures": []
+      }
+    },
+    "kind:negative": {
+      "direct": {
+        "total": 12,
+        "strict_correct": 12,
+        "required_answer_correct": 12,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "extracted_fact": {
+        "total": 12,
+        "strict_correct": 9,
+        "required_answer_correct": 9,
+        "strict_failures": [
+          "H11-2",
+          "H11-3",
+          "H11-4"
+        ],
+        "required_answer_failures": [
+          "H11-2",
+          "H11-3",
+          "H11-4"
+        ]
+      },
+      "oracle_fact": {
+        "total": 12,
+        "strict_correct": 12,
+        "required_answer_correct": 12,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_query": {
+        "total": 12,
+        "strict_correct": 12,
+        "required_answer_correct": 12,
+        "strict_failures": [],
+        "required_answer_failures": []
+      }
+    },
+    "kind:none": {
+      "direct": {
+        "total": 20,
+        "strict_correct": 16,
+        "required_answer_correct": 17,
+        "strict_failures": [
+          "N12-2",
+          "X05-3",
+          "X06-1",
+          "X07-3"
+        ],
+        "required_answer_failures": [
+          "N12-2",
+          "X05-3",
+          "X07-3"
+        ]
+      },
+      "extracted_fact": {
+        "total": 20,
+        "strict_correct": 20,
+        "required_answer_correct": 20,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_fact": {
+        "total": 20,
+        "strict_correct": 20,
+        "required_answer_correct": 20,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_query": {
+        "total": 20,
+        "strict_correct": 20,
+        "required_answer_correct": 20,
+        "strict_failures": [],
+        "required_answer_failures": []
+      }
+    },
+    "kind:unknown": {
+      "direct": {
+        "total": 8,
+        "strict_correct": 8,
+        "required_answer_correct": 8,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "extracted_fact": {
+        "total": 8,
+        "strict_correct": 6,
+        "required_answer_correct": 6,
+        "strict_failures": [
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_fact": {
+        "total": 8,
+        "strict_correct": 6,
+        "required_answer_correct": 6,
+        "strict_failures": [
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_query": {
+        "total": 8,
+        "strict_correct": 4,
+        "required_answer_correct": 4,
+        "strict_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ]
+      }
+    },
+    "question_form:binary": {
+      "direct": {
+        "total": 32,
+        "strict_correct": 27,
+        "required_answer_correct": 28,
+        "strict_failures": [
+          "N09-1",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X06-1"
+        ],
+        "required_answer_failures": [
+          "N09-1",
+          "H02-1",
+          "X01-1",
+          "X04-1"
+        ]
+      },
+      "extracted_fact": {
+        "total": 32,
+        "strict_correct": 29,
+        "required_answer_correct": 29,
+        "strict_failures": [
+          "H11-2",
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "H11-2",
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_fact": {
+        "total": 32,
+        "strict_correct": 30,
+        "required_answer_correct": 30,
+        "strict_failures": [
+          "X11-2",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "oracle_query": {
+        "total": 32,
+        "strict_correct": 28,
+        "required_answer_correct": 28,
+        "strict_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ],
+        "required_answer_failures": [
+          "X11-1",
+          "X11-2",
+          "X12-1",
+          "X12-2"
+        ]
+      }
+    },
+    "question_form:open": {
+      "direct": {
+        "total": 32,
+        "strict_correct": 29,
+        "required_answer_correct": 29,
+        "strict_failures": [
+          "N12-2",
+          "X05-3",
+          "X07-3"
+        ],
+        "required_answer_failures": [
+          "N12-2",
+          "X05-3",
+          "X07-3"
+        ]
+      },
+      "extracted_fact": {
+        "total": 32,
+        "strict_correct": 30,
+        "required_answer_correct": 30,
+        "strict_failures": [
+          "H11-3",
+          "H11-4"
+        ],
+        "required_answer_failures": [
+          "H11-3",
+          "H11-4"
+        ]
+      },
+      "oracle_fact": {
+        "total": 32,
+        "strict_correct": 32,
+        "required_answer_correct": 32,
+        "strict_failures": [],
+        "required_answer_failures": []
+      },
+      "oracle_query": {
+        "total": 32,
+        "strict_correct": 32,
+        "required_answer_correct": 32,
+        "strict_failures": [],
+        "required_answer_failures": []
+      }
+    }
+  },
+  "extraction": {
+    "schema_and_spans_valid": 16,
+    "raw_semantic_meaning_correct": 13,
+    "record_state_correct": 13,
+    "evidence_sufficient_for_true_state": 15,
+    "ownership_correct": 16,
+    "literal_record_matches_gold": 12,
+    "usable_correct_record": 13,
+    "total": 16
+  },
+  "matched_transitions": {
+    "direct->extracted_fact": {
+      "strict": {
+        "corrected": [
+          "N09-1",
+          "N12-2",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X06-1",
+          "X07-3"
+        ],
+        "regressed": [
+          "H11-2",
+          "H11-3",
+          "H11-4",
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "required": {
+        "corrected": [
+          "N09-1",
+          "N12-2",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X07-3"
+        ],
+        "regressed": [
+          "H11-2",
+          "H11-3",
+          "H11-4",
+          "X11-2",
+          "X12-2"
+        ]
+      }
+    },
+    "direct->oracle_fact": {
+      "strict": {
+        "corrected": [
+          "N09-1",
+          "N12-2",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X06-1",
+          "X07-3"
+        ],
+        "regressed": [
+          "X11-2",
+          "X12-2"
+        ]
+      },
+      "required": {
+        "corrected": [
+          "N09-1",
+          "N12-2",
+          "H02-1",
+          "X01-1",
+          "X04-1",
+          "X05-3",
+          "X07-3"
+        ],
+        "regressed": [
+          "X11-2",
+          "X12-2"
+        ]
+      }
+    },
+    "oracle_fact->oracle_query": {
+      "strict": {
+        "corrected": [],
+        "regressed": [
+          "X11-1",
+          "X12-1"
+        ]
+      },
+      "required": {
+        "corrected": [],
+        "regressed": [
+          "X11-1",
+          "X12-1"
+        ]
+      }
+    },
+    "extracted_fact->oracle_fact": {
+      "strict": {
+        "corrected": [
+          "H11-2",
+          "H11-3",
+          "H11-4"
+        ],
+        "regressed": []
+      },
+      "required": {
+        "corrected": [
+          "H11-2",
+          "H11-3",
+          "H11-4"
+        ],
+        "regressed": []
+      }
+    }
+  },
+  "extracted_answer_pathway": {
+    "correct_record": {
+      "total": 52,
+      "strict_correct": 50,
+      "required_answer_correct": 50,
+      "strict_failures": [
+        "X11-2",
+        "X12-2"
+      ],
+      "required_answer_failures": [
+        "X11-2",
+        "X12-2"
+      ]
+    },
+    "incorrect_record": {
+      "total": 12,
+      "strict_correct": 9,
+      "required_answer_correct": 9,
+      "strict_failures": [
+        "H11-2",
+        "H11-3",
+        "H11-4"
+      ],
+      "required_answer_failures": [
+        "H11-2",
+        "H11-3",
+        "H11-4"
+      ]
+    }
+  },
+  "record_faithfulness": {
+    "extracted_fact": 62,
+    "oracle_fact": 62,
+    "oracle_query": 60
+  },
+  "typed_status_followed": {
+    "extracted_fact": 54,
+    "oracle_fact": 62,
+    "oracle_query": 60
+  },
+  "history_consistency": {
+    "direct": {
+      "fully_strict_correct_histories": [
+        "R04",
+        "X02",
+        "X03",
+        "X08",
+        "X09",
+        "X10",
+        "X11",
+        "X12"
+      ],
+      "fully_required_correct_histories": [
+        "R04",
+        "X02",
+        "X03",
+        "X06",
+        "X08",
+        "X09",
+        "X10",
+        "X11",
+        "X12"
+      ]
+    },
+    "extracted_fact": {
+      "fully_strict_correct_histories": [
+        "R01",
+        "R02",
+        "R03",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05",
+        "X06",
+        "X07",
+        "X08",
+        "X09",
+        "X10"
+      ],
+      "fully_required_correct_histories": [
+        "R01",
+        "R02",
+        "R03",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05",
+        "X06",
+        "X07",
+        "X08",
+        "X09",
+        "X10"
+      ]
+    },
+    "oracle_fact": {
+      "fully_strict_correct_histories": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05",
+        "X06",
+        "X07",
+        "X08",
+        "X09",
+        "X10"
+      ],
+      "fully_required_correct_histories": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05",
+        "X06",
+        "X07",
+        "X08",
+        "X09",
+        "X10"
+      ]
+    },
+    "oracle_query": {
+      "fully_strict_correct_histories": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05",
+        "X06",
+        "X07",
+        "X08",
+        "X09",
+        "X10"
+      ],
+      "fully_required_correct_histories": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05",
+        "X06",
+        "X07",
+        "X08",
+        "X09",
+        "X10"
+      ]
+    }
+  },
+  "mechanical_selector": {
+    "oracle_query_required": true,
+    "gold_record_correct": 64,
+    "model_record_correct": 52,
+    "total": 64,
+    "rows": [
+      {
+        "id": "N09-1",
+        "stream_id": "R01",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "N09-2",
+        "stream_id": "R01",
+        "actual": {
+          "kind": "value",
+          "value": "MAH-ree"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "MAH-ree"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "R01-extra-1",
+        "stream_id": "R01",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "R01-extra-2",
+        "stream_id": "R01",
+        "actual": {
+          "kind": "value",
+          "value": "MAH-ree"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "MAH-ree"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "N12-1",
+        "stream_id": "R02",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "N12-2",
+        "stream_id": "R02",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "R02-extra-1",
+        "stream_id": "R02",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "R02-extra-2",
+        "stream_id": "R02",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "H02-1",
+        "stream_id": "R03",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "H02-2",
+        "stream_id": "R03",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "H02-3",
+        "stream_id": "R03",
+        "actual": {
+          "kind": "value",
+          "value": "Ravn"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "Ravn"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "H02-4",
+        "stream_id": "R03",
+        "actual": {
+          "kind": "value",
+          "value": "Ravn"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "Ravn"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "H11-1",
+        "stream_id": "R04",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "H11-2",
+        "stream_id": "R04",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "H11-3",
+        "stream_id": "R04",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "negative",
+          "value": "Velvet"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "H11-4",
+        "stream_id": "R04",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "negative",
+          "value": "Velvet"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X01-1",
+        "stream_id": "X01",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X01-2",
+        "stream_id": "X01",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X01-3",
+        "stream_id": "X01",
+        "actual": {
+          "kind": "value",
+          "value": "Soren"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "Soren"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X01-4",
+        "stream_id": "X01",
+        "actual": {
+          "kind": "value",
+          "value": "Soren"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "Soren"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X02-1",
+        "stream_id": "X02",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X02-2",
+        "stream_id": "X02",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X02-3",
+        "stream_id": "X02",
+        "actual": {
+          "kind": "value",
+          "value": "nah-LO"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "nah-LO"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X02-4",
+        "stream_id": "X02",
+        "actual": {
+          "kind": "value",
+          "value": "nah-LO"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "nah-LO"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X03-1",
+        "stream_id": "X03",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X03-2",
+        "stream_id": "X03",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X03-3",
+        "stream_id": "X03",
+        "actual": {
+          "kind": "value",
+          "value": "silver"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "silver counter"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X03-4",
+        "stream_id": "X03",
+        "actual": {
+          "kind": "value",
+          "value": "silver"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "silver counter"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X04-1",
+        "stream_id": "X04",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X04-2",
+        "stream_id": "X04",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X04-3",
+        "stream_id": "X04",
+        "actual": {
+          "kind": "value",
+          "value": "Vesta"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "Vesta"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X04-4",
+        "stream_id": "X04",
+        "actual": {
+          "kind": "value",
+          "value": "Vesta"
+        },
+        "reference": {
+          "kind": "value",
+          "value": "Vesta"
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X05-1",
+        "stream_id": "X05",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X05-2",
+        "stream_id": "X05",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X05-3",
+        "stream_id": "X05",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X05-4",
+        "stream_id": "X05",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X06-1",
+        "stream_id": "X06",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X06-2",
+        "stream_id": "X06",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X06-3",
+        "stream_id": "X06",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X06-4",
+        "stream_id": "X06",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X07-1",
+        "stream_id": "X07",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X07-2",
+        "stream_id": "X07",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X07-3",
+        "stream_id": "X07",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X07-4",
+        "stream_id": "X07",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X08-1",
+        "stream_id": "X08",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X08-2",
+        "stream_id": "X08",
+        "actual": {
+          "kind": "boolean",
+          "value": true
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X08-3",
+        "stream_id": "X08",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X08-4",
+        "stream_id": "X08",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "none",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X09-1",
+        "stream_id": "X09",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X09-2",
+        "stream_id": "X09",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X09-3",
+        "stream_id": "X09",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "negative",
+          "value": "laces"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X09-4",
+        "stream_id": "X09",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "negative",
+          "value": "laces"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X10-1",
+        "stream_id": "X10",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": false
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X10-2",
+        "stream_id": "X10",
+        "actual": {
+          "kind": "boolean",
+          "value": false
+        },
+        "reference": {
+          "kind": "boolean",
+          "value": true
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X10-3",
+        "stream_id": "X10",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "negative",
+          "value": "Marble"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X10-4",
+        "stream_id": "X10",
+        "actual": {
+          "kind": "none",
+          "value": null
+        },
+        "reference": {
+          "kind": "negative",
+          "value": "Marble"
+        },
+        "usable": true,
+        "correct": false
+      },
+      {
+        "id": "X11-1",
+        "stream_id": "X11",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X11-2",
+        "stream_id": "X11",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X11-3",
+        "stream_id": "X11",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X11-4",
+        "stream_id": "X11",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X12-1",
+        "stream_id": "X12",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X12-2",
+        "stream_id": "X12",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X12-3",
+        "stream_id": "X12",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      },
+      {
+        "id": "X12-4",
+        "stream_id": "X12",
+        "actual": {
+          "kind": "unknown",
+          "value": null
+        },
+        "reference": {
+          "kind": "unknown",
+          "value": null
+        },
+        "usable": true,
+        "correct": true
+      }
+    ],
+    "normalization": "Frozen case-folded literal equality only; no post hoc alias normalization."
+  },
+  "withdrawal_wording_sensitivity": {
+    "direct": {
+      "categorical_no_failures": [],
+      "strict_correct_if_all_read_as_epistemic_refusal": 56,
+      "total": 64
+    },
+    "extracted_fact": {
+      "categorical_no_failures": [
+        "X11-2",
+        "X12-2"
+      ],
+      "strict_correct_if_all_read_as_epistemic_refusal": 61,
+      "total": 64
+    },
+    "oracle_fact": {
+      "categorical_no_failures": [
+        "X11-2",
+        "X12-2"
+      ],
+      "strict_correct_if_all_read_as_epistemic_refusal": 64,
+      "total": 64
+    },
+    "oracle_query": {
+      "categorical_no_failures": [
+        "X11-1",
+        "X11-2",
+        "X12-1",
+        "X12-2"
+      ],
+      "strict_correct_if_all_read_as_epistemic_refusal": 64,
+      "total": 64
+    }
+  },
+  "verification": {
+    "status": "PASS",
+    "answers": 256,
+    "extractions": 16,
+    "passed_cache_checks": 25,
+    "unchanged_frozen_tensors": true,
+    "identical_prior_direct_answers": [
+      "N09-1",
+      "N09-2",
+      "N12-1",
+      "N12-2",
+      "H02-1",
+      "H02-2",
+      "H02-3",
+      "H02-4",
+      "H11-1",
+      "H11-2",
+      "H11-3",
+      "H11-4"
+    ],
+    "protected_files": 1390,
+    "accounting_by_arm": {
+      "extract": {
+        "calls": 16,
+        "input_tokens": 5067,
+        "generated_tokens": 528,
+        "forwarded_tokens": 5579,
+        "generation_seconds": 11.554816171999974
+      },
+      "direct": {
+        "calls": 64,
+        "input_tokens": 24299,
+        "generated_tokens": 832,
+        "forwarded_tokens": 25067,
+        "generation_seconds": 21.368349775999903
+      },
+      "oracle_fact": {
+        "calls": 64,
+        "input_tokens": 18071,
+        "generated_tokens": 720,
+        "forwarded_tokens": 18727,
+        "generation_seconds": 17.797081367999866
+      },
+      "extracted_fact": {
+        "calls": 64,
+        "input_tokens": 18003,
+        "generated_tokens": 735,
+        "forwarded_tokens": 18674,
+        "generation_seconds": 18.11636675200002
+      },
+      "oracle_query": {
+        "calls": 64,
+        "input_tokens": 19256,
+        "generated_tokens": 747,
+        "forwarded_tokens": 19939,
+        "generation_seconds": 18.389963542999965
+      }
+    },
+    "cache_gate_accounting_by_arm": {
+      "direct": {
+        "fixtures": 5,
+        "cached_generated_tokens": 60,
+        "cached_forwarded_tokens": 1955,
+        "fresh_generated_tokens": 60,
+        "fresh_forwarded_tokens": 23775
+      },
+      "oracle_fact": {
+        "fixtures": 5,
+        "cached_generated_tokens": 68,
+        "cached_forwarded_tokens": 1481,
+        "fresh_generated_tokens": 68,
+        "fresh_forwarded_tokens": 19721
+      },
+      "oracle_query": {
+        "fixtures": 5,
+        "cached_generated_tokens": 66,
+        "cached_forwarded_tokens": 1573,
+        "fresh_generated_tokens": 66,
+        "fresh_forwarded_tokens": 20747
+      },
+      "extract": {
+        "fixtures": 5,
+        "cached_generated_tokens": 80,
+        "cached_forwarded_tokens": 1734,
+        "fresh_generated_tokens": 80,
+        "fresh_forwarded_tokens": 28798
+      },
+      "extracted_fact": {
+        "fixtures": 5,
+        "cached_generated_tokens": 44,
+        "cached_forwarded_tokens": 1441,
+        "fresh_generated_tokens": 44,
+        "fresh_forwarded_tokens": 12524
+      }
+    }
+  }
+}

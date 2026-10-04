@@ -1,0 +1,141 @@
+{
+  "verdicts": {
+    "pass": 104,
+    "fail": 157,
+    "ambiguous": 1
+  },
+  "criteria": {
+    "task_complete": {
+      "true": 138,
+      "false": 123,
+      "none": 1
+    },
+    "source_consistent": {
+      "true": 147,
+      "false": 115
+    },
+    "supported_in_visible_state": {
+      "true": 147,
+      "false": 115
+    },
+    "withdrawal_compliant": {
+      "true": 164,
+      "false": 98
+    },
+    "ownership_correct": {
+      "true": 261,
+      "false": 1
+    },
+    "body_valid": {
+      "true": 262
+    },
+    "within_90_words": {
+      "true": 262
+    }
+  },
+  "by_retrieval": {
+    "2": {
+      "pass": 46,
+      "fail": 42
+    },
+    "1": {
+      "pass": 49,
+      "fail": 37,
+      "ambiguous": 1
+    },
+    "0": {
+      "fail": 78,
+      "pass": 9
+    }
+  },
+  "by_frozen_class_and_retrieval": {
+    "historical_recall": {
+      "2": {
+        "pass": 28,
+        "fail": 2
+      },
+      "1": {
+        "pass": 27,
+        "fail": 2,
+        "ambiguous": 1
+      },
+      "0": {
+        "fail": 30
+      }
+    },
+    "withdrawal": {
+      "2": {
+        "fail": 15
+      },
+      "1": {
+        "fail": 15
+      },
+      "0": {
+        "fail": 14,
+        "pass": 1
+      }
+    },
+    "attribution": {
+      "1": {
+        "pass": 9,
+        "fail": 5
+      },
+      "2": {
+        "pass": 9,
+        "fail": 6
+      },
+      "0": {
+        "fail": 14
+      }
+    },
+    "same_value": {
+      "0": {
+        "fail": 12,
+        "pass": 2
+      },
+      "2": {
+        "fail": 14
+      },
+      "1": {
+        "fail": 12,
+        "pass": 2
+      }
+    },
+    "different_value": {
+      "1": {
+        "pass": 11,
+        "fail": 3
+      },
+      "0": {
+        "fail": 8,
+        "pass": 6
+      },
+      "2": {
+        "pass": 9,
+        "fail": 5
+      }
+    }
+  },
+  "paired_complete_questions": 87,
+  "transitions_from_zero": {
+    "1": {
+      "fail -> pass": 43,
+      "fail -> fail": 34,
+      "pass -> pass": 6,
+      "pass -> fail": 3,
+      "fail -> ambiguous": 1
+    },
+    "2": {
+      "fail -> pass": 40,
+      "fail -> fail": 38,
+      "pass -> fail": 4,
+      "pass -> pass": 5
+    }
+  },
+  "adjudicated_answers": 20,
+  "support_true_to_false": 19,
+  "task_false_to_true": 2,
+  "verdict_changes_from_claude_correction": 0,
+  "independent_review_of_author_overlay": false,
+  "training_labels": 0
+}

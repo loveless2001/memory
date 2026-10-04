@@ -1,0 +1,180 @@
+{
+  "status": "review_validated",
+  "captures": 96,
+  "cases": 24,
+  "author_review_only": true,
+  "counts_by_arm": {
+    "plain_chronological": {
+      "fail": 7,
+      "pass": 17
+    },
+    "plain_withdrawals_last": {
+      "fail": 11,
+      "pass": 13
+    },
+    "json_withdrawals_last": {
+      "fail": 13,
+      "pass": 11
+    },
+    "json_chronological": {
+      "fail": 7,
+      "pass": 17
+    }
+  },
+  "counts_by_case_class_and_arm": {
+    "baseline": {
+      "plain_chronological": {
+        "fail": 2,
+        "pass": 2
+      },
+      "plain_withdrawals_last": {
+        "fail": 2,
+        "pass": 2
+      },
+      "json_withdrawals_last": {
+        "fail": 2,
+        "pass": 2
+      },
+      "json_chronological": {
+        "fail": 2,
+        "pass": 2
+      }
+    },
+    "different": {
+      "plain_chronological": {
+        "fail": 1,
+        "pass": 3
+      },
+      "json_withdrawals_last": {
+        "fail": 2,
+        "pass": 2
+      },
+      "json_chronological": {
+        "pass": 4
+      },
+      "plain_withdrawals_last": {
+        "pass": 2,
+        "fail": 2
+      }
+    },
+    "historical": {
+      "json_chronological": {
+        "pass": 4
+      },
+      "plain_withdrawals_last": {
+        "pass": 4
+      },
+      "plain_chronological": {
+        "pass": 4
+      },
+      "json_withdrawals_last": {
+        "pass": 4
+      }
+    },
+    "ownership": {
+      "json_withdrawals_last": {
+        "pass": 3,
+        "fail": 1
+      },
+      "json_chronological": {
+        "pass": 3,
+        "fail": 1
+      },
+      "plain_chronological": {
+        "pass": 4
+      },
+      "plain_withdrawals_last": {
+        "pass": 4
+      }
+    },
+    "same": {
+      "json_chronological": {
+        "pass": 4
+      },
+      "json_withdrawals_last": {
+        "fail": 4
+      },
+      "plain_withdrawals_last": {
+        "fail": 4
+      },
+      "plain_chronological": {
+        "pass": 4
+      }
+    },
+    "withdrawal": {
+      "plain_chronological": {
+        "fail": 4
+      },
+      "json_chronological": {
+        "fail": 4
+      },
+      "plain_withdrawals_last": {
+        "fail": 3,
+        "pass": 1
+      },
+      "json_withdrawals_last": {
+        "fail": 4
+      }
+    }
+  },
+  "criterion_counts": {
+    "task_complete": {
+      "false": 26,
+      "true": 70
+    },
+    "source_consistent": {
+      "false": 26,
+      "true": 70
+    },
+    "supported_in_visible_state": {
+      "false": 26,
+      "true": 70
+    },
+    "withdrawal_compliant": {
+      "true": 68,
+      "false": 28
+    },
+    "ownership_correct": {
+      "true": 94,
+      "false": 2
+    },
+    "body_valid": {
+      "true": 96
+    },
+    "within_90_words": {
+      "true": 96
+    }
+  },
+  "order_effects": {
+    "plain": {
+      "from_withdrawals_last_to_chronological": {
+        "fail -> fail": 5,
+        "pass -> fail": 2,
+        "fail -> pass": 6,
+        "pass -> pass": 11
+      },
+      "failures_fixed": 6,
+      "new_nonpasses": 2,
+      "predeclared_order_help_criterion": false
+    },
+    "json": {
+      "from_withdrawals_last_to_chronological": {
+        "fail -> fail": 7,
+        "fail -> pass": 6,
+        "pass -> pass": 11
+      },
+      "failures_fixed": 6,
+      "new_nonpasses": 0,
+      "predeclared_order_help_criterion": true
+    }
+  },
+  "primary_json_chronological_24_of_24": false,
+  "training_admission": false,
+  "training_labels": 0,
+  "source_hashes": {
+    "captures.json": "20907386e8ff020eff2f21f65180867398b3731eb07cef39ce40234d2bfdd273",
+    "cases.json": "3fdf1c1bd0a47d01382a10f06962c0bb64c08d207086bce920dde7098259038a",
+    "review.json": "bb41629635333fff782be9278a076c24e7e66aea3b0a075eafd652ca25ab95ff",
+    "preflight-freeze.json": "578582a4207a057de146ee14853d40760c0775e08d54bb66a8a8c464f89fdf7c"
+  }
+}

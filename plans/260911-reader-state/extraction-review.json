@@ -1,0 +1,2102 @@
+{
+  "status": "complete",
+  "reviewer": "Codex, experiment author",
+  "model_version": "GPT-6",
+  "reviewed_at": "2026-09-11T05:40:12.807802+00:00",
+  "process_notes": "Unblinded author inspection of all 52 completed extraction outputs while the unchanged answer run continued. Final extraction bytes must match that inspected snapshot. Judgments separate exact categorical matching, semantically preserved positive value surface expansions, wrong owner/property, polarity-value contract violations, incomplete other-owner history, and whole-parse rejection. Semantic state correctness includes signed value interpretation; positive redundant phrasing is allowed, whereas mismatched or double-encoded negation is a state-contract failure. No runtime output or resolved state is repaired. Exact quote location does not establish semantic support. Historical answer controls bypass extraction.",
+  "extractions_sha256": "bf3b414a066337a1cbdc87b9286acf96687e957c18d0e4d13edbea76f1f68b38",
+  "gold_events_sha256": "787aaee50128a55584e94bdd682ffb8d0c5b9c71e20cec48bb22443467388e91",
+  "streams": [
+    {
+      "id": "S001",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The model copies a full affirmative I enjoy sentence/phrase as a value instead of the required minimal activity name. This fails exact categorical matching and the minimal-value convention, but preserves the positive preference meaning, owner, chronology and quoted evidence. It is counted as semantically correct with a disclosed surface/schema deviation; no captured value is repaired. Where withdrawal follows, the current unknown record is exact.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy urban sketching.\", \"I enjoy urban sketching.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of urban sketching\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy urban sketching.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S002",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The model copies a full affirmative I enjoy sentence/phrase as a value instead of the required minimal activity name. This fails exact categorical matching and the minimal-value convention, but preserves the positive preference meaning, owner, chronology and quoted evidence. It is counted as semantically correct with a disclosed surface/schema deviation; no captured value is repaired. Where withdrawal follows, the current unknown record is exact.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy urban sketching\", \"I enjoy urban sketching.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: I enjoy urban sketching.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of urban sketching\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy urban sketching.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: I enjoy urban sketching.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S003",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The later explicit negative uses operation set with the whole negative sentence as its value. The contract requires deny with the activity name. The resolved record consequently has positive polarity with a negated sentence as its value, violating the signed activity-value representation. The negative text remains visible, so a reader may recover the intended answer despite this state-contract failure.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy urban sketching\", \"I enjoy urban sketching.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: I enjoy urban sketching.\"], [4, \"user\", \"set\", \"I do not enjoy urban sketching\", \"Here is my current personal detail for future replies: I do not enjoy urban sketching.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of urban sketching\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy urban sketching.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: I enjoy urban sketching.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: I do not enjoy urban sketching.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S004",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The model copies a full affirmative I enjoy sentence/phrase as a value instead of the required minimal activity name. This fails exact categorical matching and the minimal-value convention, but preserves the positive preference meaning, owner, chronology and quoted evidence. It is counted as semantically correct with a disclosed surface/schema deviation; no captured value is repaired. Where withdrawal follows, the current unknown record is exact.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy urban sketching\", \"I enjoy urban sketching.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: I enjoy urban sketching.\"], [4, \"user\", \"set\", \"I enjoy urban sketching\", \"Here is my current personal detail for future replies: I enjoy urban sketching.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of urban sketching\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy urban sketching.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: I enjoy urban sketching.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: I enjoy urban sketching.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy urban sketching."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S005",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment. The selected quote also drops the surrounding fictional-speaker framing, leaving a first-person sentence that cannot establish its owner by itself.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy urban sketching\", \"I enjoy urban sketching.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of urban sketching\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"I enjoy urban sketching.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Rowan.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Rowan."
+        }
+      ]
+    },
+    {
+      "id": "S006",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The model copies a full affirmative I enjoy sentence/phrase as a value instead of the required minimal activity name. This fails exact categorical matching and the minimal-value convention, but preserves the positive preference meaning, owner, chronology and quoted evidence. It is counted as semantically correct with a disclosed surface/schema deviation; no captured value is repaired. Where withdrawal follows, the current unknown record is exact.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy amateur astronomy.\", \"I enjoy amateur astronomy.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of amateur astronomy\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy amateur astronomy.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S007",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The model copies a full affirmative I enjoy sentence/phrase as a value instead of the required minimal activity name. This fails exact categorical matching and the minimal-value convention, but preserves the positive preference meaning, owner, chronology and quoted evidence. It is counted as semantically correct with a disclosed surface/schema deviation; no captured value is repaired. Where withdrawal follows, the current unknown record is exact.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy amateur astronomy.\", \"I enjoy amateur astronomy.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: I enjoy amateur astronomy.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of amateur astronomy\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy amateur astronomy.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: I enjoy amateur astronomy.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S008",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The later explicit negative uses operation set with the whole negative sentence as its value. The contract requires deny with the activity name. The resolved record consequently has positive polarity with a negated sentence as its value, violating the signed activity-value representation. The negative text remains visible, so a reader may recover the intended answer despite this state-contract failure.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy amateur astronomy.\", \"I enjoy amateur astronomy.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: I enjoy amateur astronomy.\"], [4, \"user\", \"set\", \"I do not enjoy amateur astronomy.\", \"Here is my current personal detail for future replies: I do not enjoy amateur astronomy.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of amateur astronomy\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy amateur astronomy.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: I enjoy amateur astronomy.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: I do not enjoy amateur astronomy.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S009",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The model copies a full affirmative I enjoy sentence/phrase as a value instead of the required minimal activity name. This fails exact categorical matching and the minimal-value convention, but preserves the positive preference meaning, owner, chronology and quoted evidence. It is counted as semantically correct with a disclosed surface/schema deviation; no captured value is repaired. Where withdrawal follows, the current unknown record is exact.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy amateur astronomy.\", \"I enjoy amateur astronomy.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: I enjoy amateur astronomy.\"], [4, \"user\", \"set\", \"I enjoy amateur astronomy.\", \"Here is my current personal detail for future replies: I enjoy amateur astronomy.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of amateur astronomy\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I enjoy amateur astronomy.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: I enjoy amateur astronomy.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: I enjoy amateur astronomy.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S010",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment. The selected quote also drops the surrounding fictional-speaker framing, leaving a first-person sentence that cannot establish its owner by itself.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"I enjoy amateur astronomy\", \"I enjoy amateur astronomy.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of amateur astronomy\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"I enjoy amateur astronomy.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Rowan.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Rowan."
+        }
+      ]
+    },
+    {
+      "id": "S011",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"pears\", \"My preferred breakfast fruit is pears.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred breakfast fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred breakfast fruit is pears.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S012",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"pears\", \"My preferred breakfast fruit is pears.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred breakfast fruit is pears.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred breakfast fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred breakfast fruit is pears.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred breakfast fruit is pears.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S013",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"pears\", \"My preferred breakfast fruit is pears.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred breakfast fruit is pears.\"], [4, \"user\", \"set\", \"plums\", \"Here is my current personal detail for future replies: My preferred breakfast fruit is plums.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred breakfast fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred breakfast fruit is pears.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred breakfast fruit is pears.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred breakfast fruit is plums.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S014",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"pears\", \"My preferred breakfast fruit is pears.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred breakfast fruit is pears.\"], [4, \"user\", \"set\", \"pears\", \"Here is my current personal detail for future replies: My preferred breakfast fruit is pears.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred breakfast fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred breakfast fruit is pears.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred breakfast fruit is pears.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred breakfast fruit is pears.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S015",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"pears\", \"Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred breakfast fruit is pears.\\\"\"]]}\n"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred breakfast fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred breakfast fruit is pears.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Rowan.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Rowan."
+        }
+      ]
+    },
+    {
+      "id": "S016",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"rooibos\", \"My preferred tea is rooibos.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred tea\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred tea is rooibos.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S017",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"rooibos\", \"My preferred tea is rooibos.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred tea is rooibos.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred tea\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred tea is rooibos.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred tea is rooibos.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S018",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"rooibos\", \"My preferred tea is rooibos.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred tea is rooibos.\"], [4, \"user\", \"set\", \"oolong\", \"Here is my current personal detail for future replies: My preferred tea is oolong.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred tea\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred tea is rooibos.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred tea is rooibos.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred tea is oolong.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is oolong."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S019",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"rooibos\", \"My preferred tea is rooibos.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred tea is rooibos.\"], [4, \"user\", \"set\", \"rooibos\", \"Here is my current personal detail for future replies: My preferred tea is rooibos.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred tea\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred tea is rooibos.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred tea is rooibos.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred tea is rooibos.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S020",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"rooibos\", \"Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred tea is rooibos.\\\"\"]]}\n"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred tea\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Rowan: \\\"My preferred tea is rooibos.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Rowan.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Rowan."
+        }
+      ]
+    },
+    {
+      "id": "S021",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"bouldering\", \"My preferred weekend activity is bouldering.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred weekend activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred weekend activity is bouldering.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S022",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"bouldering\", \"My preferred weekend activity is bouldering.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred weekend activity is bouldering.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred weekend activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred weekend activity is bouldering.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred weekend activity is bouldering.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S023",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"bouldering\", \"My preferred weekend activity is bouldering.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred weekend activity is bouldering.\"], [4, \"user\", \"set\", \"kayaking\", \"Here is my current personal detail for future replies: My preferred weekend activity is kayaking.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred weekend activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred weekend activity is bouldering.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred weekend activity is bouldering.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred weekend activity is kayaking.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred weekend activity is kayaking."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S024",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"bouldering\", \"My preferred weekend activity is bouldering.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred weekend activity is bouldering.\"], [4, \"user\", \"set\", \"bouldering\", \"Here is my current personal detail for future replies: My preferred weekend activity is bouldering.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred weekend activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred weekend activity is bouldering.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred weekend activity is bouldering.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred weekend activity is bouldering.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred weekend activity is bouldering."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S025",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"bouldering\", \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred weekend activity is bouldering.\\\"\"]]}\n"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred weekend activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred weekend activity is bouldering.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Vale.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred weekend activity is bouldering.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Vale."
+        }
+      ]
+    },
+    {
+      "id": "S026",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"origami\", \"My preferred evening activity is origami.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred evening activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred evening activity is origami.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S027",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"origami\", \"My preferred evening activity is origami.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred evening activity is origami.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred evening activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred evening activity is origami.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred evening activity is origami.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S028",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"origami\", \"My preferred evening activity is origami.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred evening activity is origami.\"], [4, \"user\", \"set\", \"chess\", \"Here is my current personal detail for future replies: My preferred evening activity is chess.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred evening activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred evening activity is origami.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred evening activity is origami.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred evening activity is chess.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred evening activity is chess."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S029",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"origami\", \"My preferred evening activity is origami.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred evening activity is origami.\"], [4, \"user\", \"set\", \"origami\", \"Here is my current personal detail for future replies: My preferred evening activity is origami.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred evening activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred evening activity is origami.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred evening activity is origami.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred evening activity is origami.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred evening activity is origami."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S030",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"origami\", \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred evening activity is origami.\\\"\"]]}\n"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred evening activity\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred evening activity is origami.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Vale.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred evening activity is origami.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Vale."
+        }
+      ]
+    },
+    {
+      "id": "S031",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"mango\", \"My preferred snack fruit is mango.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred snack fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred snack fruit is mango.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S032",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"mango\", \"My preferred snack fruit is mango.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred snack fruit is mango.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred snack fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred snack fruit is mango.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred snack fruit is mango.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S033",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"mango\", \"My preferred snack fruit is mango.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred snack fruit is mango.\"], [4, \"user\", \"set\", \"kiwi\", \"Here is my current personal detail for future replies: My preferred snack fruit is kiwi.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred snack fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred snack fruit is mango.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred snack fruit is mango.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred snack fruit is kiwi.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred snack fruit is kiwi."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S034",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"mango\", \"My preferred snack fruit is mango.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred snack fruit is mango.\"], [4, \"user\", \"set\", \"mango\", \"Here is my current personal detail for future replies: My preferred snack fruit is mango.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred snack fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred snack fruit is mango.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred snack fruit is mango.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred snack fruit is mango.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred snack fruit is mango."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S035",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"mango\", \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred snack fruit is mango.\\\"\"]]}\n"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred snack fruit\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred snack fruit is mango.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Vale.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred snack fruit is mango.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Vale."
+        }
+      ]
+    },
+    {
+      "id": "S036",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"lemonade\", \"My preferred cold drink is lemonade.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred cold drink\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred cold drink is lemonade.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S037",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"lemonade\", \"My preferred cold drink is lemonade.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred cold drink is lemonade.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred cold drink\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred cold drink is lemonade.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred cold drink is lemonade.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        }
+      ]
+    },
+    {
+      "id": "S038",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"lemonade\", \"My preferred cold drink is lemonade.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred cold drink is lemonade.\"], [4, \"user\", \"set\", \"iced coffee\", \"Here is my current personal detail for future replies: My preferred cold drink is iced coffee.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred cold drink\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred cold drink is lemonade.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred cold drink is lemonade.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred cold drink is iced coffee.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred cold drink is iced coffee."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S039",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"lemonade\", \"My preferred cold drink is lemonade.\"], [2, \"user\", \"withdraw\", null, \"Please forget this personal detail: My preferred cold drink is lemonade.\"], [4, \"user\", \"set\", \"lemonade\", \"Here is my current personal detail for future replies: My preferred cold drink is lemonade.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred cold drink\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred cold drink is lemonade.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget this personal detail: My preferred cold drink is lemonade.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge your request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"Here is my current personal detail for future replies: My preferred cold drink is lemonade.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget this personal detail: My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge your request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Here is my current personal detail for future replies: My preferred cold drink is lemonade."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S040",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The only relevant preference belongs to fictional Rowan/Vale, but the event labels its owner user and the resolver establishes a positive user preference. Exact substring anchoring cannot validate this owner assignment.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"lemonade\", \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred cold drink is lemonade.\\\"\"]]}\n"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred cold drink\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Please copy-edit this fictional first-person line spoken by the character Vale: \\\"My preferred cold drink is lemonade.\\\"\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"This is a line attributed to the fictional character Vale.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Please copy-edit this fictional first-person line spoken by the character Vale: \"My preferred cold drink is lemonade.\""
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "This is a line attributed to the fictional character Vale."
+        }
+      ]
+    },
+    {
+      "id": "S041",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"swimming\", \"When I need exercise, my first choice is swimming.\"], [2, \"user\", \"withdraw\", null, \"Remove my exercise preference from the personal details you use about me.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred exercise\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"When I need exercise, my first choice is swimming.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I will keep swimming in mind for exercise suggestions.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Remove my exercise preference from the personal details you use about me.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"Understood; I have removed your preference for swimming.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "When I need exercise, my first choice is swimming."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "I will keep swimming in mind for exercise suggestions."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Remove my exercise preference from the personal details you use about me."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "Understood; I have removed your preference for swimming."
+        }
+      ]
+    },
+    {
+      "id": "S042",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The event uses deny but places the whole phrase I do not enjoy trail running in value. The contract requires deny with value trail running. This encodes negation in both operator and value; it is not treated as a harmless positive-value surface expansion. The original negative sentence remains visible to the answer generator.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"deny\", \"I do not enjoy trail running\", \"I do not enjoy trail running. Please retain that as a current fact about me.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nenjoyment of trail running\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I do not enjoy trail running. Please retain that as a current fact about me.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I do not enjoy trail running. Please retain that as a current fact about me."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S043",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"espresso\", \"My preferred hot drink is espresso. My usual writing tool is a mechanical pencil.\"], [2, \"user\", \"withdraw\", null, \"Forget only the hot-drink preference. Keep the writing-tool detail.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred hot drink\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My preferred hot drink is espresso. My usual writing tool is a mechanical pencil.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Noted both details.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Forget only the hot-drink preference. Keep the writing-tool detail.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I will retain the writing-tool detail.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My preferred hot drink is espresso. My usual writing tool is a mechanical pencil."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Noted both details."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Forget only the hot-drink preference. Keep the writing-tool detail."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I will retain the writing-tool detail."
+        }
+      ]
+    },
+    {
+      "id": "S044",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The T2 withdrawal concerns breakfast and explicitly retains writing-tool preference. Labeling it as a target-property withdrawal incorrectly clears the user's fountain-pen preference. The full exact quote exposes the relevance error; the resolver itself applies the supplied event as designed.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"fountain pen\", \"For writing, I prefer a fountain pen. For breakfast, I prefer toast.\"], [2, \"user\", \"withdraw\", null, \"Please forget my breakfast preference; leave the writing-tool preference in place.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred writing tool\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"For writing, I prefer a fountain pen. For breakfast, I prefer toast.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Both preferences are noted.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please forget my breakfast preference; leave the writing-tool preference in place.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"The breakfast preference has been removed.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "For writing, I prefer a fountain pen. For breakfast, I prefer toast."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Both preferences are noted."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please forget my breakfast preference; leave the writing-tool preference in place."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "The breakfast preference has been removed."
+        }
+      ]
+    },
+    {
+      "id": "S045",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The emitted user events and their quotes are correct, but the sequence omits the relevant other-owner assertion. The extraction contract requires retaining such events with owner other. This omission leaves the computed current user state correct in this case; event completeness and state correctness therefore receive different scores.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[2, \"user\", \"set\", \"Lenovo\", \"For my own laptop purchases, my preferred brand is Lenovo.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred laptop brand\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"Here is a fictional review by Mira: \\\"My preferred laptop brand is Framework.\\\" Please fix its punctuation.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"The sentence is grammatically fine.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"For my own laptop purchases, my preferred brand is Lenovo.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"Noted your personal preference.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "Here is a fictional review by Mira: \"My preferred laptop brand is Framework.\" Please fix its punctuation."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "The sentence is grammatically fine."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "For my own laptop purchases, my preferred brand is Lenovo."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "Noted your personal preference."
+        }
+      ]
+    },
+    {
+      "id": "S046",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The emitted user events and their quotes are correct, but the sequence omits the relevant other-owner assertion. The extraction contract requires retaining such events with owner other. This omission leaves the computed current user state correct in this case; event completeness and state correctness therefore receive different scores.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"ambient\", \"The music genre I prefer is ambient.\"], [2, \"user\", \"withdraw\", null, \"Forget my music-genre preference.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred music genre\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"The music genre I prefer is ambient.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Forget my music-genre preference.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"I acknowledge that request.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"My friend Eli wrote, \\\"The music genre I prefer is ambient.\\\" Could you shorten Eli's sentence?\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Eli prefers ambient music.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "The music genre I prefer is ambient."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Forget my music-genre preference."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "I acknowledge that request."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "My friend Eli wrote, \"The music genre I prefer is ambient.\" Could you shorten Eli's sentence?"
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Eli prefers ambient music."
+        }
+      ]
+    },
+    {
+      "id": "S047",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"17\", \"My usual bus route is 17.\"], [2, \"user\", \"withdraw\", null, \"Please remove my usual bus route from your personal notes.\"], [4, \"user\", \"set\", \"17\", \"I want to give you that detail again: my usual bus route is 17.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nusual bus route\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My usual bus route is 17.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I have noted that.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please remove my usual bus route from your personal notes.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"Removed.\"}, {\"turn\": 4, \"role\": \"user\", \"content\": \"I want to give you that detail again: my usual bus route is 17.\"}, {\"turn\": 5, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My usual bus route is 17."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "I have noted that."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please remove my usual bus route from your personal notes."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "Removed."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "I want to give you that detail again: my usual bus route is 17."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S048",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [\n  [0, \"user\", \"set\", \"Spanish\", \"The language I am studying is Spanish.\"],\n  [2, \"user\", \"withdraw\", null, \"Forget which language I am studying.\"],\n  [3, \"user\", \"set\", \"German\", \"Here is a new current detail: the language I am studying is German.\"],\n  [5, \"user\", \"withdraw\", null, \"Remove that language-study detail again.\"],\n  [6, \"user\", \"set\", \"Polish\", \"For future answers, the language I am studying is Polish.\"]\n]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\nlanguage currently studying\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"The language I am studying is Spanish.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Forget which language I am studying.\"}, {\"turn\": 3, \"role\": \"user\", \"content\": \"Here is a new current detail: the language I am studying is German.\"}, {\"turn\": 4, \"role\": \"assistant\", \"content\": \"Noted.\"}, {\"turn\": 5, \"role\": \"user\", \"content\": \"Remove that language-study detail again.\"}, {\"turn\": 6, \"role\": \"user\", \"content\": \"For future answers, the language I am studying is Polish.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "The language I am studying is Spanish."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Forget which language I am studying."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "Here is a new current detail: the language I am studying is German."
+        },
+        {
+          "where": "history",
+          "index": 4,
+          "quote": "Noted."
+        },
+        {
+          "where": "history",
+          "index": 5,
+          "quote": "Remove that language-study detail again."
+        },
+        {
+          "where": "history",
+          "index": 6,
+          "quote": "For future answers, the language I am studying is Polish."
+        }
+      ]
+    },
+    {
+      "id": "S049",
+      "schema_and_spans_valid": false,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The model adds a T2 denial with value MAY-ree although that value does not occur in its T2 evidence quote. The source describes the version anaphorically, but the frozen schema requires the value to be copied from the exact cited quote. The whole extraction is rejected, discarding the otherwise correct T0 MAH-ree event and producing an incorrect unknown fallback. This is a source-binding/schema limitation, not proof that the model failed to understand the user's intended pronunciation.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"MAH-ree\", \"My name is pronounced MAH-ree.\"], [2, \"user\", \"deny\", \"MAY-ree\", \"Please use the pronunciation I gave you, rather than your version.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npronunciation of my name\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My name is pronounced MAH-ree.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"I will pronounce your name MAY-ree.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Please use the pronunciation I gave you, rather than your version.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My name is pronounced MAH-ree."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "I will pronounce your name MAY-ree."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Please use the pronunciation I gave you, rather than your version."
+        }
+      ]
+    },
+    {
+      "id": "S050",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": true,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "All relevant user and other-owner events match the reviewed source semantics and order. Their exact quotes support owner, operation and value; the resulting current user state matches the reference.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"paper books\", \"For novels, I prefer paper books.\"], [2, \"user\", \"withdraw\", null, \"Forget my preference about reading format.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred reading format\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"For novels, I prefer paper books.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Noted.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"Forget my preference about reading format.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "For novels, I prefer paper books."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Noted."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "Forget my preference about reading format."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "Understood."
+        }
+      ]
+    },
+    {
+      "id": "S051",
+      "schema_and_spans_valid": true,
+      "semantic_events_correct": false,
+      "quotes_sufficient": true,
+      "resolved_state_correct": true,
+      "reason": "The emitted user events and their quotes are correct, but the sequence omits the relevant other-owner assertion. The extraction contract requires retaining such events with owner other. This omission leaves the computed current user state correct in this case; event completeness and state correctness therefore receive different scores.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [[0, \"user\", \"set\", \"decaf\", \"My default coffee order is decaf.\"]]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\ndefault coffee order\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"My default coffee order is decaf.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Got it.\"}, {\"turn\": 2, \"role\": \"user\", \"content\": \"My coworker Sal says, \\\"My default coffee order is regular.\\\" Help me reply politely to Sal.\"}, {\"turn\": 3, \"role\": \"assistant\", \"content\": \"You could say: Thanks for letting me know, Sal.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "My default coffee order is decaf."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Got it."
+        },
+        {
+          "where": "history",
+          "index": 2,
+          "quote": "My coworker Sal says, \"My default coffee order is regular.\" Help me reply politely to Sal."
+        },
+        {
+          "where": "history",
+          "index": 3,
+          "quote": "You could say: Thanks for letting me know, Sal."
+        }
+      ]
+    },
+    {
+      "id": "S052",
+      "schema_and_spans_valid": false,
+      "semantic_events_correct": false,
+      "quotes_sufficient": false,
+      "resolved_state_correct": false,
+      "reason": "The model uses a dictionary instead of the required five-field array and supplies a sentence instead of null for no_preference. The whole extraction is rejected. Unknown is the wrong fallback because the source explicitly establishes the absence of a dessert preference. The intended no_preference operation is visible in malformed output; format failure is distinguished from a claim that the source was misunderstood.",
+      "evidence": [
+        {
+          "where": "answer",
+          "index": 0,
+          "quote": "{\"events\": [{\"turn_number\": 0, \"owner\": \"user\", \"operation\": \"no_preference\", \"value\": \"I do not have a preferred dessert.\", \"exact_quote\": \"I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything.\"}]}"
+        },
+        {
+          "where": "reader_message",
+          "index": 1,
+          "quote": "TARGET PROPERTY\npreferred dessert\nARCHIVE\n[{\"turn\": 0, \"role\": \"user\", \"content\": \"I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything.\"}, {\"turn\": 1, \"role\": \"assistant\", \"content\": \"Understood.\"}]"
+        },
+        {
+          "where": "history",
+          "index": 0,
+          "quote": "I do not have a preferred dessert. This is an explicit personal fact, not a request to forget anything."
+        },
+        {
+          "where": "history",
+          "index": 1,
+          "quote": "Understood."
+        }
+      ]
+    }
+  ],
+  "training_labels": 0
+}

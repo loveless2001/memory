@@ -1,0 +1,1432 @@
+{
+ "reviewer_model": "claude-opus-5[1m] (Opus 5, 1M context) via Claude Code CLI",
+ "reviewer_version": "Claude Code session, single interactive model pass, 2026-09-10 | recoded 2026-09-10 under clarified criterion definitions",
+ "reviewed_at": "2026-09-10",
+ "prior_verdicts_seen": false,
+ "blinding_notes": "RECODED COPY - not the blind first pass. Identical verdicts to review.json (25 pass / 17 fail); only criterion booleans are restated under the author's clarified definitions of 2026-09-10: task_complete requires a correct AND complete answer, and supported_in_visible_state requires valid evidential support (correct person, chronology and qualification), not mere textual presence. The blind first pass is preserved verbatim in review.json. Independent model audit, not independent human review and not held-out benchmark evidence. Pass 1 (all 21 references) was completed and saved to claude-review/reference-review.json before any file under packet/answers/ was opened. At the time review.json was written I had not opened sealed-map.json, any REPORT.md, CONTEXT-POLICY.md, manual-judgments.json, judgments.json, judgment-summary.json or author_judgments.py, and I ran no repository search for prior verdicts. Blinding is label/score blinding only: the packet exposes full prompt text, the eight short hand-authored control histories are obviously constructed probes, and the two arms of a case are trivially separable because the withdrawal turn is rendered either literally or as a 'topic: UNKNOWN' relabel. Cases C010 and C011 have byte-identical A/B prompts, so those four answers carry no rendering contrast. Criterion convention used: task_complete=false only for answers that fail to deliver an available answer; supported_in_visible_state=false when an assertion has no grounding in that reader's actual_messages; source_consistent and withdrawal_compliant carry factual and withdrawal-rule violations respectively.",
+ "cases": [
+  {
+   "case_id": "C001",
+   "reference_verdict": "accept",
+   "reference_reason": "Withdrawal at turn 2 makes the coffee/tea topic unknown, but turn 4 is an explicit later user statement re-establishing a value ('tea'). Reference reports the post-withdrawal value only, which the frozen withdrawal rule permits.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget my preference for coffee over tea."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "My current drink preference is tea."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C001-A",
+     "verdict": "pass",
+     "reason": "Correct post-withdrawal value. T4 is an explicit later user statement re-establishing the drink preference and is visible in both the archival notes and the supplied evidence block; the answer reports only that value and never the withdrawn coffee-over-tea value.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 4,
+       "quote": "My current drink preference is tea."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "[T4 user]"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C001-B",
+     "verdict": "pass",
+     "reason": "Same correct value under the relabelled withdrawal rendering ('beverage preference: UNKNOWN'); T4 remains visible and is the basis of the answer.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 4,
+       "quote": "My current drink preference is tea."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T2 user withdrawal] beverage preference: UNKNOWN.\", \"archival_recent_dialogue\": \"[T0 user]"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C002",
+   "reference_verdict": "accept",
+   "reference_reason": "User withdraws the AR-mobile-games preference at turn 104. Inspected every later user turn in H011 (turns 105-205) for any restatement of interest in AR/mobile games; only the assistant acknowledges the withdrawal at 105, and an assistant acknowledgment does not re-establish a user fact. Abstain-and-ask is therefore the correct reference.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 104,
+     "quote": "Please forget that I enjoy augmented reality mobile games."
+    },
+    {
+     "where": "history",
+     "index": 105,
+     "quote": "I’ll disregard the fact that you enjoy augmented reality mobile games going forward."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C002-A",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN, which the frozen rules permit when the current value is unknown. No user statement after the T104 withdrawal re-establishes the preference, and the answer neither repeats the withdrawn value nor implies its opposite.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 104,
+       "quote": "Please forget that I enjoy augmented reality mobile games."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T104 user withdrawal] AR-game enjoyment: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C002-B",
+     "verdict": "fail",
+     "reason": "Converts a withdrawal into a definitive negative ('No, I do not enjoy...') and repeats the withdrawn value verbatim while explaining that it was withdrawn. A withdrawal makes the topic unknown; it does not establish a dislike.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 104,
+       "quote": "Please forget that I enjoy augmented reality mobile games."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T104 user withdrawal] Please forget that I enjoy augmented reality mobile games."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C003",
+   "reference_verdict": "accept",
+   "reference_reason": "Withdrawal at turn 64 covers exactly the asked topic (learning blockchain/cryptocurrency). Scanned all later turns for blockchain/crypto: no later user statement re-establishes an interest. Abstention is correct. Caveat noted in REVIEW.md: the question is phrased 'based on my remembered interests', so an answer that reasons from other, non-withdrawn interests without restating the withdrawn preference should not be auto-failed.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 64,
+     "quote": "Please forget my preference about learning blockchain and cryptocurrency."
+    },
+    {
+     "where": "history",
+     "index": 65,
+     "quote": "I’ll set aside your preference for blockchain and cryptocurrency for future answers."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C003-A",
+     "verdict": "fail",
+     "reason": "Infers a negative recommendation ('would not suit me') directly from the withdrawal at T64. Unknown validity is not a definitive negative, and nothing visible supports a negative.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 64,
+       "quote": "Please forget my preference about learning blockchain and cryptocurrency."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T64 user withdrawal] Please forget my preference about learning blockchain and cryptocurrency."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C003-B",
+     "verdict": "fail",
+     "reason": "Same negative inference, plus a false claim about the record: it states no prior expressed preference or engagement with blockchain is present, while the visible evidence block contains the T63 blockchain discussion and the T64 withdrawal of exactly that preference.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 63,
+       "quote": "I’d keep a keen eye on blockchain-driven payment systems"
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "[T63 assistant]"
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C004",
+   "reference_verdict": "accept",
+   "reference_reason": "Withdrawal at turn 2, then turn 4 is an explicit user re-decision restating the same value. The frozen rule allows a later explicit user statement to establish the same or a different value, so the reference correctly reports paper books.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget my preference for paper books over e-readers."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "I have decided again: my current preference is paper books over e-readers."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C004-A",
+     "verdict": "fail",
+     "reason": "Abstains although valid visible information answers the question: the archival notes shown to this reader include the T4 re-declaration. The answer additionally asserts that T0 is the only user statement provided, which its own visible state contradicts.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 4,
+       "quote": "I have decided again: my current preference is paper books over e-readers."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T4:0-74 user quote] I have decided again: my current preference is paper books over e-readers."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C004-B",
+     "verdict": "pass",
+     "reason": "Reports paper books over e-readers, which T4 re-establishes after the T2 withdrawal. The frozen rule explicitly allows a later explicit user statement to establish the same value again, and T4 is visible in this reader's notes.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 4,
+       "quote": "I have decided again: my current preference is paper books over e-readers."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T4:0-74 user quote] I have decided again: my current preference is paper books over e-readers."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C005",
+   "reference_verdict": "accept",
+   "reference_reason": "Writing-instrument preference stated at turn 0 and never withdrawn; the only withdrawal (turn 4) concerns coffee/tea and is an unrelated distractor that must not erase the pen fact.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "My preferred writing instrument is a fountain pen."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "Please forget my preference for coffee over tea."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C005-A",
+     "verdict": "pass",
+     "reason": "Correct: the writing-instrument preference at T0 is never withdrawn, and the only withdrawal in this history concerns beverages. The unrelated withdrawal correctly does not erase the pen fact.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "My preferred writing instrument is a fountain pen."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "My preferred writing instrument is a fountain pen."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C005-B",
+     "verdict": "pass",
+     "reason": "Same correct answer under the literal withdrawal rendering; the beverage withdrawal at T4 is unrelated to the question.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "My preferred writing instrument is a fountain pen."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T4 user withdrawal] Please forget my preference for coffee over tea.\", \"archival_recent_dialogue\": \"[T0 user]"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C006",
+   "reference_verdict": "accept",
+   "reference_reason": "Reading-format preference withdrawn at turn 150. Scanned all turns for paper book / e-reader / reading format: the only post-withdrawal mention is the assistant's acknowledgment at 151. No later user re-establishment, so abstain-and-ask is correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 150,
+     "quote": "Please forget that I prefer paper books over e-readers."
+    },
+    {
+     "where": "history",
+     "index": 151,
+     "quote": "I’ll forget that you prefer paper books over e-readers."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C006-A",
+     "verdict": "fail",
+     "reason": "Repeats the withdrawn reading-format value as a current preference. The withdrawal at T150 makes the topic unknown and no later user statement re-establishes it; the only post-withdrawal support visible to the reader is the assistant's own restatement at T151, which is not a new user fact.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 150,
+       "quote": "Please forget that I prefer paper books over e-readers."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "Got it — I’ll forget that you prefer paper books over e-readers."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C006-B",
+     "verdict": "fail",
+     "reason": "Asserts the negation of the withdrawn value and restates that value while explaining the withdrawal. Withdrawal establishes neither the opposite nor a known absence of preference.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 150,
+       "quote": "Please forget that I prefer paper books over e-readers."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T150 user withdrawal] Please forget that I prefer paper books over e-readers."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C007",
+   "reference_verdict": "accept",
+   "reference_reason": "Fabric preference withdrawn at turn 132. Scanned all turns for fabric/cotton/linen/wool/synthetic: post-withdrawal hits are assistant turns only (133, 177, 197, 211, 221), none a user statement of preference. Abstention correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 132,
+     "quote": "Please forget that I prefer natural fabrics like cotton and linen."
+    },
+    {
+     "where": "history",
+     "index": 131,
+     "quote": "Since you prefer natural fabrics like cotton and linen"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C007-A",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN after the T132 fabric withdrawal. All later fabric mentions in the visible state are assistant prose, not user statements, so abstention is correct.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 132,
+       "quote": "Please forget that I prefer natural fabrics like cotton and linen."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T132 user withdrawal] clothing fabric: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C007-B",
+     "verdict": "fail",
+     "reason": "Recognises that no current fabric preference is established, which is correct at the record level, but repeats the withdrawn value ('natural fabrics like cotton and linen') while explaining the withdrawal, which the frozen rules forbid. Correct-uncertainty-with-forbidden-restatement, not a wrong-value failure; my saved first pass over-read 'You do not have a stated preference' as a known-absence claim.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 132,
+       "quote": "Please forget that I prefer natural fabrics like cotton and linen."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T132 user withdrawal] Please forget that I prefer natural fabrics like cotton and linen."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C008",
+   "reference_verdict": "accept",
+   "reference_reason": "Nordic vacation preference withdrawn at turn 164. Later user turns 166 and 168 mention the Nordic region, but they are questions about Nordic Noir television, not statements of vacation preference; under the frozen rule a later question does not re-establish a value. Abstention correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 164,
+     "quote": "Please forget that I enjoy vacations in Nordic countries."
+    },
+    {
+     "where": "history",
+     "index": 166,
+     "quote": "I’ve noticed that some crime series from the Nordic region place a big emphasis on mood, landscape, and slow-building tension"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C008-A",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN. The later user turns visible to this reader mention the Nordic region only as questions about Nordic Noir television, which do not re-establish a vacation preference.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 166,
+       "quote": "I’ve noticed that some crime series from the Nordic region place a big emphasis on mood, landscape, and slow-building tension"
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T164 user withdrawal] Nordic vacation preference: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C008-B",
+     "verdict": "fail",
+     "reason": "Turns the withdrawal into a definitive negative about Nordic vacations and repeats the withdrawn preference. Nothing visible supports a dislike.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 164,
+       "quote": "Please forget that I enjoy vacations in Nordic countries."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T164 user withdrawal] Please forget that I enjoy vacations in Nordic countries."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C009",
+   "reference_verdict": "accept",
+   "reference_reason": "Meeting day withdrawn at turn 2 and explicitly re-established by the user at turn 4 as Thursday. Reference reports only the post-withdrawal value.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget the meeting day I told you."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "The planning meeting is now on Thursday."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C009-A",
+     "verdict": "pass",
+     "reason": "Correct: T4 explicitly re-establishes the meeting day after the T2 withdrawal, and T4 is in the supplied evidence block.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 4,
+       "quote": "The planning meeting is now on Thursday."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "The planning meeting is now on Thursday."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C009-B",
+     "verdict": "pass",
+     "reason": "Same correct value under the relabelled withdrawal rendering.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 4,
+       "quote": "The planning meeting is now on Thursday."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "The planning meeting is now on Thursday."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C010",
+   "reference_verdict": "accept",
+   "reference_reason": "The only turn is a request to polish a fictional first-person monologue; supplied fictional text does not establish user biography, so the user's own drink preference is not established. Minor label mismatch: mode is 'clarify' but the reference answer contains no clarifying question; the semantic content is nonetheless correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "Please polish a fictional first-person monologue: \"I prefer tea.\""
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C010-A",
+     "verdict": "fail",
+     "reason": "Ownership error: the only visible text is a fictional first-person monologue the user asked to have polished. Supplied fictional text does not establish the user's own drink preference, so 'Tea.' answers as though the draft were biography.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "Please polish a fictional first-person monologue: \"I prefer tea.\""
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "Historical user quotations; drafts and questions are not established personal facts."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": true,
+     "ownership_correct": false,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C010-B",
+     "verdict": "fail",
+     "reason": "Identical prompt and identical ownership error as C010-A; the supplied fictional monologue is treated as the user's personal preference.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "Please polish a fictional first-person monologue: \"I prefer tea.\""
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "Please polish a fictional first-person monologue"
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": true,
+     "ownership_correct": false,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C011",
+   "reference_verdict": "accept",
+   "reference_reason": "The Lantern Stage paragraph is supplied at turn 0 and names exactly two tasks. Turn 2 supplies a different (River Hall) paragraph with different tasks, which is the intended distractor; the reference answers from the requested passage.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "Please translate my Lantern Stage paragraph: I helped carry props and adjust lights backstage."
+    },
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please polish a different paragraph about River Hall: I helped actors run lines and set up chairs."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C011-A",
+     "verdict": "pass",
+     "reason": "Answers from the requested Lantern Stage passage and correctly ignores the River Hall passage at T2, which is the intended distractor.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "I helped carry props and adjust lights backstage."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "I helped carry props and adjust lights backstage."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C011-B",
+     "verdict": "pass",
+     "reason": "Identical prompt and identical correct passage-scoped answer.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "I helped carry props and adjust lights backstage."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "I helped carry props and adjust lights backstage."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C012",
+   "reference_verdict": "accept",
+   "reference_reason": "Turn 8 is the Korean-translation request containing the local-stage reflection; it names helping carry props and adjusting lights. The competing backstage passage in this history (assistant turn 57, 'helping actors run lines ... setting up chairs') belongs to a different piece, so the reference correctly scopes to the requested passage. Note the passage also mentions taking a breather, but that is not a backstage task helped with.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 8,
+     "quote": "helping carry props, adjusting lights"
+    },
+    {
+     "where": "history",
+     "index": 8,
+     "quote": "Could you translate the following piece I wrote into Korean"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C012-A",
+     "verdict": "pass",
+     "reason": "Correctly scopes to the T8 Korean-translation piece and names both backstage tasks. The competing 'run lines / set up chairs' passage visible in the same evidence block belongs to a different piece and is correctly not used.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 8,
+       "quote": "helping carry props, adjusting lights"
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "helping carry props, adjusting lights"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C012-B",
+     "verdict": "pass",
+     "reason": "Same correct passage-scoped answer under the other withdrawal rendering.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 8,
+       "quote": "helping carry props, adjusting lights"
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "helping carry props, adjusting lights"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C013",
+   "reference_verdict": "accept",
+   "reference_reason": "Both requested components are present verbatim in the supplied production notes at turn 72. H004 contains many unrelated withdrawals but none touches rehearsal scheduling or the supplied passage, so they must not erase it.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 72,
+     "quote": "aiming to wrap by 8 p.m. most evenings"
+    },
+    {
+     "where": "history",
+     "index": 72,
+     "quote": "The set design team will have a late-afternoon slot to present concepts"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C013-A",
+     "verdict": "pass",
+     "reason": "Both requested components are correct and taken from the user's own supplied notes at T72 rather than from the assistant's rewrite. The many unrelated withdrawals in this history do not touch the passage.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 72,
+       "quote": "aiming to wrap by 8 p.m. most evenings"
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "The set design team will have a late-afternoon slot to present concepts"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C013-B",
+     "verdict": "pass",
+     "reason": "Same correct two-part answer from the user's supplied notes.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 72,
+       "quote": "The set design team will have a late-afternoon slot to present concepts"
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "aiming to wrap by 8 p.m. most evenings"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C014",
+   "reference_verdict": "accept",
+   "reference_reason": "Absence claim verified by scanning all 271 turns of H004 for 'ticket', 'opening night', 'price', 'pricing', 'cost' and any dollar amount. Opening night is discussed repeatedly (e.g. user turn 36) and one unrelated dollar figure appears in an assistant turn about costumes, but no opening-night ticket price is ever supplied by the user. Abstain-and-ask is correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 36,
+     "quote": "As we move toward opening night, my focus remains on ensuring every note, every light cue, and every step on stage builds that same magic"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C014-A",
+     "verdict": "pass",
+     "reason": "Correct abstention. No opening-night ticket price appears anywhere in the 271-turn source or in this reader's visible state, so declaring the value absent is the complete answer. Not asking for the price is a wording difference from the proposed reference, not a rule violation.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 36,
+       "quote": "As we move toward opening night, my focus remains on ensuring every note, every light cue, and every step on stage builds that same magic"
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "What exact opening-night ticket price did I give you for my production?"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C014-B",
+     "verdict": "pass",
+     "reason": "Same correct abstention; the visible state again contains no ticket price.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 36,
+       "quote": "As we move toward opening night, my focus remains on ensuring every note, every light cue, and every step on stage builds that same magic"
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "What exact opening-night ticket price did I give you for my production?"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C015",
+   "reference_verdict": "accept",
+   "reference_reason": "Snowboarding preference withdrawn at turn 116. Scanned all turns for snowboard/ski: the only post-withdrawal hit is the assistant acknowledgment at 117. No later user re-establishment.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 116,
+     "quote": "Please forget that I enjoy snowboarding trips."
+    },
+    {
+     "where": "history",
+     "index": 117,
+     "quote": "I’ll forget that you enjoy snowboarding trips"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C015-A",
+     "verdict": "fail",
+     "reason": "Definitive negative derived from the withdrawal, plus a verbatim repetition of the withdrawn value.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 116,
+       "quote": "Please forget that I enjoy snowboarding trips."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T116 user withdrawal] Please forget that I enjoy snowboarding trips."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C015-B",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN under the relabelled rendering; no later user statement re-establishes the preference.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 116,
+       "quote": "Please forget that I enjoy snowboarding trips."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T116 user withdrawal] snowboarding enjoyment: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C016",
+   "reference_verdict": "accept",
+   "reference_reason": "Pen preference withdrawn at turn 26. The user's earlier turns 22 and 24 discuss hotel pens but precede the withdrawal; all later pen mentions are assistant turns. No later user statement establishes a pen preference, so abstention is correct.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 26,
+     "quote": "Please forget that I use ballpoint pens from hotel stays."
+    },
+    {
+     "where": "history",
+     "index": 25,
+     "quote": "Since you enjoy collecting ballpoint pens from hotel stays"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C016-A",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN. The user's pre-withdrawal turns about hotel pens precede T26 and all later pen material visible to the reader is assistant prose, so unknown is correct.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 26,
+       "quote": "Please forget that I use ballpoint pens from hotel stays."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T26 user withdrawal] pen type: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C016-B",
+     "verdict": "fail",
+     "reason": "Reaches the right conclusion (UNKNOWN) but gets there by restating the withdrawn value in full, which the frozen rules forbid even when explaining that it was forgotten. Rule-level failure, not a factual one.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 26,
+       "quote": "Please forget that I use ballpoint pens from hotel stays."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T26 user withdrawal] Please forget that I use ballpoint pens from hotel stays."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C017",
+   "reference_verdict": "accept",
+   "reference_reason": "Coffee-over-tea preference withdrawn at turn 80. Later coffee/tea mentions (assistant turns 87 and 99) are assistant suggestions, which are not new user facts. Abstention correct. Note the assistant's turn 81 both denies memory persistence and restates the withdrawn value, which is a source-side flaw, not a reference flaw.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 80,
+     "quote": "Please forget my preference for specialty single-origin coffee over tea from your memory."
+    },
+    {
+     "where": "history",
+     "index": 81,
+     "quote": "your stated preference for single‑origin coffee won’t carry over beyond this thread"
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C017-A",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN after the T80 withdrawal of the coffee-over-tea preference; the later tea mentions visible to the reader are assistant suggestions only.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 80,
+       "quote": "Please forget my preference for specialty single-origin coffee over tea from your memory."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T80 user withdrawal] coffee-versus-tea preference: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C017-B",
+     "verdict": "fail",
+     "reason": "Answers 'Tea.', i.e. the opposite of the withdrawn coffee-over-tea preference. A withdrawal does not establish the opposite value, and the only visible tea material is the assistant's offer at T81 to focus on tea, which is not a user fact.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 80,
+       "quote": "Please forget my preference for specialty single-origin coffee over tea from your memory."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "we can focus only on tea or other beverages from here on out"
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C018",
+   "reference_verdict": "accept",
+   "reference_reason": "Aquarium preference withdrawn at turn 48. The earlier user turn 44 mentions an aquarium visit inside a supplied narrative passage and precedes the withdrawal; nothing after turn 48 re-establishes the preference.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 48,
+     "quote": "Please forget that I like visiting aquariums."
+    },
+    {
+     "where": "history",
+     "index": 49,
+     "quote": "I’ll forget that you like visiting aquariums."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C018-A",
+     "verdict": "fail",
+     "reason": "Answers 'No.' to a yes/no preference question on the strength of a withdrawal, and repeats the withdrawn value. Unknown is not a negative.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 48,
+       "quote": "Please forget that I like visiting aquariums."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T48 user withdrawal] Please forget that I like visiting aquariums."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C018-B",
+     "verdict": "pass",
+     "reason": "Reports the topic as UNKNOWN without asserting a negative or repeating the withdrawn value. The body echoes the archive's relabelled string verbatim, which is stylistically poor but rule-compliant.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 48,
+       "quote": "Please forget that I like visiting aquariums."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T48 user withdrawal] aquarium-visit enjoyment: UNKNOWN."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C019",
+   "reference_verdict": "accept",
+   "reference_reason": "Jigsaw-puzzle preference withdrawn at turn 60; scanned all turns for jigsaw/puzzle and found no later user re-establishment. Reference abstains without asserting a dislike.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 60,
+     "quote": "Please forget that I like solving jigsaw puzzles."
+    },
+    {
+     "where": "history",
+     "index": 61,
+     "quote": "I’ll forget that you like solving jigsaw puzzles."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C019-A",
+     "verdict": "fail",
+     "reason": "Opens with a definitive negative ('are not one of my usual pastimes') even though its own quoted evidence says UNKNOWN, and it also quotes the withdrawn value back. The later hedge does not undo the asserted negative.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 60,
+       "quote": "Please forget that I like solving jigsaw puzzles."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T60 user withdrawal] jigsaw-puzzle enjoyment: UNKNOWN."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C019-B",
+     "verdict": "fail",
+     "reason": "Same definitive negative from a withdrawal, with the withdrawn value restated.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 60,
+       "quote": "Please forget that I like solving jigsaw puzzles."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T60 user withdrawal] Please forget that I like solving jigsaw puzzles."
+      }
+     ],
+     "task_complete": false,
+     "source_consistent": false,
+     "supported_in_visible_state": false,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C020",
+   "reference_verdict": "accept",
+   "reference_reason": "Spiciness enjoyment withdrawn at turn 2. The final assistant turn restates the withdrawn value, which is precisely the trap: an assistant restatement does not re-establish a user fact. Reference correctly reports unknown and asks. Minor: the source only ever established 'enjoys spicy food', not a spiciness level, which the abstention makes moot.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "Please forget that I enjoy spicy food."
+    },
+    {
+     "where": "history",
+     "index": 3,
+     "quote": "You enjoy spicy food, so spicy dishes should suit you."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C020-A",
+     "verdict": "pass",
+     "reason": "Bare UNKNOWN. Crucially it does not follow the assistant's post-withdrawal restatement at T3, which is visible in this reader's state and asserts the withdrawn value.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 3,
+       "quote": "You enjoy spicy food, so spicy dishes should suit you."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "You enjoy spicy food, so spicy dishes should suit you."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C020-B",
+     "verdict": "fail",
+     "reason": "Concludes Unknown correctly but restates the withdrawn value ('stated a preference for spicy food') while explaining the withdrawal, which the frozen rules forbid.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 2,
+       "quote": "Please forget that I enjoy spicy food."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T2 user withdrawal] Please forget that I enjoy spicy food.\", \"archival_recent_dialogue\": \"[T0 user]"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": false,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  },
+  {
+   "case_id": "C021",
+   "reference_verdict": "accept",
+   "reference_reason": "The question explicitly asks about the supplied fictional scene, whose text at turn 0 gives Ari's preference as coffee. The withdrawal at turn 4 targets the user's own drink preference (stated as tea at turn 2) and must not erase a named character's attribute in a passage the question explicitly asks about.",
+   "reference_evidence": [
+    {
+     "where": "history",
+     "index": 0,
+     "quote": "Please polish this fictional scene: Ari prefers coffee to tea."
+    },
+    {
+     "where": "history",
+     "index": 2,
+     "quote": "My own drink preference is tea."
+    },
+    {
+     "where": "history",
+     "index": 4,
+     "quote": "Please forget my drink preference."
+    }
+   ],
+   "reference_revision_if_needed": null,
+   "answers": [
+    {
+     "answer_id": "C021-A",
+     "verdict": "pass",
+     "reason": "Correct: the question explicitly asks about the supplied fictional scene, whose text gives Ari's drink as coffee. The user's own withdrawn drink preference is a different person and topic and correctly does not erase the character's attribute.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "Please polish this fictional scene: Ari prefers coffee to tea."
+      },
+      {
+       "where": "reader_message",
+       "index": 3,
+       "quote": "Please polish this fictional scene: Ari prefers coffee to tea."
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    },
+    {
+     "answer_id": "C021-B",
+     "verdict": "pass",
+     "reason": "Same correct character-scoped answer, and it names Ari explicitly, keeping the attribution unambiguous.",
+     "evidence": [
+      {
+       "where": "history",
+       "index": 0,
+       "quote": "Please polish this fictional scene: Ari prefers coffee to tea."
+      },
+      {
+       "where": "reader_message",
+       "index": 1,
+       "quote": "[T4 user withdrawal] user beverage preference: UNKNOWN.\", \"archival_recent_dialogue\": \"[T0 user]"
+      }
+     ],
+     "task_complete": true,
+     "source_consistent": true,
+     "supported_in_visible_state": true,
+     "withdrawal_compliant": true,
+     "ownership_correct": true,
+     "body_valid": true,
+     "within_90_words": true
+    }
+   ]
+  }
+ ]
+}

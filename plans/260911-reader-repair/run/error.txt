@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/root/modal-reader-repair.py", line 46, in collect
+    result=run(payloads['runtime-config.json'],payloads['inputs.json'],payloads['gate-indices.json'],root,artifacts.commit,deadline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/experiments/context_policy/reader_repair.py", line 83, in run
+    deadline();began=time.monotonic();identity=identities[row['arm']];ids=answer_prefix_ids(tok,row['messages']);n=len(ids)
+    ^^^^^^^^^^
+  File "/root/modal-reader-repair.py", line 43, in deadline
+    if time.monotonic()-started>=1150:raise TimeoutError('diagnostic time ceiling; saving partial artifacts')
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: diagnostic time ceiling; saving partial artifacts

@@ -1,0 +1,126 @@
+{
+  "status": "candidate_rejected_at_grounding_gate",
+  "auditor": "Codex qualitative source inspection; not an independent human review or model-performance evaluation",
+  "dataset_revision": "ed956dea41521fc4499acbc63f966e0fd3c053ba",
+  "selection": "10 SHA256-ranked text-training personas; 5 SHA256-ranked row indices per persona; selected before inspecting their examples",
+  "selection_sha256": "b3c3b4a524c6e455df2920305e8afcde100c1686f7aed83acc51856c986f3bcd",
+  "sample_questions": 50,
+  "sample_personas": 10,
+  "all_50_annotations_screened": true,
+  "required_sound_questions": 48,
+  "confirmed_disqualifying_questions": 4,
+  "maximum_possible_sound_questions": 46,
+  "other_46_questions_certified_sound": false,
+  "gate_passed": false,
+  "reported_accuracy_or_pass_rate": null,
+  "issues_are_a_lower_bound_not_an_exhaustive_dataset_error_estimate": true,
+  "structural_missing_full_snippet_spans": [
+    18198,
+    6773,
+    13957,
+    3792
+  ],
+  "structural_mismatches_counted_as_semantic_failures": false,
+  "confirmed_cases": [
+    {
+      "sample_index": 4,
+      "csv_row_index_zero_based": 4353,
+      "persona_id": "264",
+      "issue": "unsupported_reference_detail",
+      "reason": "The annotated conversation describes wrist stiffness in assistant-written draft text. The reference asserts prior wrist surgery; visible history checks do not establish that surgery.",
+      "history_path": "data/chat_history_32k/chat_history_250913_163134_persona264.json",
+      "history_sha256": "35adf5cd55cf6eb24abf42368221738ef786396e1f0f6649d6bb96f319cd8662",
+      "annotated_support_turns_zero_based_after_system_removal": [
+        96,
+        97
+      ],
+      "contradicting_turns_zero_based_after_system_removal": [],
+      "evidence_turn_hashes": {
+        "96": "e7b441fa55cded92d4a29c716013636cc510bd186fbb6aa82bc59fbbe8ed15f8",
+        "97": "8556b1b79f3d32534e3cdefdc7670b1c4a935340cb744e0523452865254f49a2"
+      },
+      "query_sha256": "cff1eb981341ec6b53ed2a487ae76122e446aa88d941560633820f2af54036d7",
+      "reference_answer_sha256": "d3c1189a9016b143545ed7309d7075200557f22a53081fc37e610aec410868a8"
+    },
+    {
+      "sample_index": 6,
+      "csv_row_index_zero_based": 4266,
+      "persona_id": "424",
+      "issue": "reference_uses_withdrawn_detail",
+      "reason": "The reference reuses a prior basketball wrist fracture although a subsequent user turn withdraws that detail and the assistant acknowledges the request. The current query does not restore it.",
+      "history_path": "data/chat_history_32k/chat_history_250913_163134_persona424.json",
+      "history_sha256": "6067c95d34aa483034f347fa09a27a2a3a21fcba199b9931e71388bfb2b1fccb",
+      "annotated_support_turns_zero_based_after_system_removal": [
+        66,
+        67
+      ],
+      "contradicting_turns_zero_based_after_system_removal": [
+        70,
+        71
+      ],
+      "evidence_turn_hashes": {
+        "66": "3f970cd258063c3a44adcddb88ebf6fcd134abfeb0f3e4b9df957f0f0f58a0c2",
+        "67": "0620bb108e723eee3aba4f90154a2e5313f330f3986190f1022000d5a0df33a0",
+        "70": "d86dd3860b987ba2140e58be178e9dd112b8f5d23ee356f37eaa7013c79c1921",
+        "71": "fbf710819f562ca4446196c7d8e3cc2bfa8d55b6c4ef653d9bb0a5a6a52cf8d4"
+      },
+      "query_sha256": "3203e5c99e795966ca7037493fbdc1fc0c255a01d55bede0ebf96a2b74cbaeb8",
+      "reference_answer_sha256": "6b67ecda6ed05bebb9b738f401a89e8e9ba8218a977f52e84e573400dcc747b6"
+    },
+    {
+      "sample_index": 23,
+      "csv_row_index_zero_based": 12697,
+      "persona_id": "531",
+      "issue": "unsupported_reference_detail",
+      "reason": "The annotated user text concerns recognition at work. The reference introduces a brother receiving academic praise. The visible history does not establish that childhood comparison; the private profile is not reader evidence.",
+      "history_path": "data/chat_history_32k/chat_history_250913_163134_persona531.json",
+      "history_sha256": "4d729480f53e450672e94d636b4956c9caaafc7ccc3949612352911c2b30b6b7",
+      "annotated_support_turns_zero_based_after_system_removal": [
+        178,
+        179,
+        180,
+        181
+      ],
+      "contradicting_turns_zero_based_after_system_removal": [],
+      "evidence_turn_hashes": {
+        "178": "b33a550a4d14092910113b3698707e8730dbe397017e829a877b2f8a3a78bbae",
+        "179": "d7cea622c4df617b2dfbcaaec8e37a7cabe9708e78f187efa261b0b94b0809d9",
+        "180": "84c18c782d4f99386981237b40e2475d8e1b530acbbaadace7ad407d5f83ba6a",
+        "181": "6c1234249fb73a71ef5b8171b08807b01addbadbef46fd01919b2fd2018e8bbc"
+      },
+      "query_sha256": "294c072a17c923e380f65637f3b2bbffd6eabd06e582edb48b20062a7cae320b",
+      "reference_answer_sha256": "14350b1353d691e11610ea5394481b7152f279bc54fcd9e41c412fb427f7b9fb"
+    },
+    {
+      "sample_index": 36,
+      "csv_row_index_zero_based": 1415,
+      "persona_id": "149",
+      "issue": "reference_uses_withdrawn_detail",
+      "reason": "The reference asserts an existing weekend-nap preference after a later user turn explicitly withdraws it. The current query asks for general weekend habits and does not restore the preference.",
+      "history_path": "data/chat_history_32k/chat_history_250913_163134_persona149.json",
+      "history_sha256": "875e2f00e9987631ff0e600b0cff0e483df7e1d3dd2b5b22c34f50dfa739bad0",
+      "annotated_support_turns_zero_based_after_system_removal": [
+        12,
+        13
+      ],
+      "contradicting_turns_zero_based_after_system_removal": [
+        16,
+        17
+      ],
+      "evidence_turn_hashes": {
+        "12": "d036266a9609777873f063a23791d6423e3bd365edd37a980fa93ab11497f310",
+        "13": "e64876779879e34c58c2ea8f30abbba0d0a62e2b2d528e6d91f8a4dac5ccd640",
+        "16": "967f79b76679be30f0fd55ab20e66e5ae9c61c61e65d31d42b4e717152954238",
+        "17": "8404ebaf51969dfed2315159fec6a900e06d80674e12c761024c7314646269ec"
+      },
+      "query_sha256": "534e2c83fa9c8ed728cda7359bf3b24b9547afac562c1452bb2c4a30f6c464b5",
+      "reference_answer_sha256": "4b1ed4931ccbcee604d5a0d03b58cc820690643fbac7acb712eaea3b0e12567d"
+    }
+  ],
+  "limitations": [
+    "Four decisive cases are enough to fail admission; remaining cases have not been fully certified.",
+    "Annotations were inspected and targeted full-history searches checked the decisive cases. This is not an exhaustive semantic proof over all source text.",
+    "No multiple-choice scoring, model inference, action labeling, or LoRA training was performed.",
+    "All-source overlap across the prospective 400-persona split remains unaudited."
+  ]
+}

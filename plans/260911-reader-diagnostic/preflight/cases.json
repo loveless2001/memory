@@ -1,0 +1,806 @@
+[
+  {
+    "id": "D01-baseline",
+    "family": "D01",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "enjoys urban sketching",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D01-withdrawal",
+    "family": "D01",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D01-different",
+    "family": "D01",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I do not enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "does not enjoy urban sketching",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": "does not enjoy urban sketching"
+    }
+  },
+  {
+    "id": "D01-same",
+    "family": "D01",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "enjoys urban sketching",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D01-historical",
+    "family": "D01",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy urban sketching."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: I enjoy urban sketching.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D01-ownership",
+    "family": "D01",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy urban sketching.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "Do I currently enjoy urban sketching?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys urban sketching",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D02-baseline",
+    "family": "D02",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "enjoys amateur astronomy",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D02-withdrawal",
+    "family": "D02",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D02-different",
+    "family": "D02",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I do not enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "does not enjoy amateur astronomy",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": "does not enjoy amateur astronomy"
+    }
+  },
+  {
+    "id": "D02-same",
+    "family": "D02",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "enjoys amateur astronomy",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D02-historical",
+    "family": "D02",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: I enjoy amateur astronomy."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: I enjoy amateur astronomy.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D02-ownership",
+    "family": "D02",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"I enjoy amateur astronomy.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "Do I currently enjoy amateur astronomy?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "enjoys amateur astronomy",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D03-baseline",
+    "family": "D03",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "pears",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "pears",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D03-withdrawal",
+    "family": "D03",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "pears",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D03-different",
+    "family": "D03",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred breakfast fruit is plums."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "plums",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "pears",
+      "new_value": "plums"
+    }
+  },
+  {
+    "id": "D03-same",
+    "family": "D03",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "pears",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "pears",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D03-historical",
+    "family": "D03",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred breakfast fruit is pears."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred breakfast fruit is pears.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "pears",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D03-ownership",
+    "family": "D03",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred breakfast fruit is pears.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "What fruit do I currently prefer for breakfast?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "pears",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D04-baseline",
+    "family": "D04",
+    "kind": "baseline",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "rooibos",
+      "mode": "positive",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D04-withdrawal",
+    "family": "D04",
+    "kind": "withdrawal",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "The current value is unknown.",
+      "mode": "unknown",
+      "evidence_turns": [
+        2
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D04-different",
+    "family": "D04",
+    "kind": "different",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred tea is oolong."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "oolong",
+      "mode": "negative",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "rooibos",
+      "new_value": "oolong"
+    }
+  },
+  {
+    "id": "D04-same",
+    "family": "D04",
+    "kind": "same",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      },
+      {
+        "role": "user",
+        "content": "Here is my current personal detail for future replies: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "rooibos",
+      "mode": "positive",
+      "evidence_turns": [
+        2,
+        4
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D04-historical",
+    "family": "D04",
+    "kind": "historical",
+    "history": [
+      {
+        "role": "user",
+        "content": "My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "Understood."
+      },
+      {
+        "role": "user",
+        "content": "Please forget this personal detail: My preferred tea is rooibos."
+      },
+      {
+        "role": "assistant",
+        "content": "I acknowledge your request."
+      }
+    ],
+    "query": "What personal detail did my original first message state, before I withdrew it?",
+    "reference": {
+      "answer": "The original message stated: My preferred tea is rooibos.",
+      "mode": "historical",
+      "evidence_turns": [
+        0,
+        2
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    }
+  },
+  {
+    "id": "D04-ownership",
+    "family": "D04",
+    "kind": "ownership",
+    "history": [
+      {
+        "role": "user",
+        "content": "Please copy-edit this fictional first-person line spoken by the character Rowan: \"My preferred tea is rooibos.\""
+      },
+      {
+        "role": "assistant",
+        "content": "This is a line attributed to the fictional character Rowan."
+      }
+    ],
+    "query": "What tea do I currently prefer?",
+    "reference": {
+      "answer": "The current user value is unknown; the line concerns fictional Rowan.",
+      "mode": "unknown",
+      "evidence_turns": [
+        0
+      ],
+      "old_value": "rooibos",
+      "new_value": null
+    }
+  }
+]

@@ -1,0 +1,738 @@
+{
+  "status": "review_validated",
+  "author_review_only": true,
+  "questions": 144,
+  "answer_captures": 288,
+  "counts": {
+    "regression": {
+      "base": {
+        "n": 96,
+        "strict_pass": 70,
+        "task_correct": 78
+      },
+      "adapted": {
+        "n": 96,
+        "strict_pass": 93,
+        "task_correct": 93
+      }
+    },
+    "all": {
+      "base": {
+        "n": 144,
+        "strict_pass": 105,
+        "task_correct": 116
+      },
+      "adapted": {
+        "n": 144,
+        "strict_pass": 141,
+        "task_correct": 141
+      }
+    },
+    "test": {
+      "base": {
+        "n": 48,
+        "strict_pass": 35,
+        "task_correct": 38
+      },
+      "adapted": {
+        "n": 48,
+        "strict_pass": 48,
+        "task_correct": 48
+      }
+    }
+  },
+  "counts_by_kind": {
+    "regression": {
+      "baseline": {
+        "base": {
+          "n": 12,
+          "strict_pass": 10,
+          "task_correct": 10
+        },
+        "adapted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "withdrawal": {
+        "base": {
+          "n": 12,
+          "strict_pass": 0,
+          "task_correct": 6
+        },
+        "adapted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "different": {
+        "base": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        },
+        "adapted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "same": {
+        "base": {
+          "n": 12,
+          "strict_pass": 10,
+          "task_correct": 10
+        },
+        "adapted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "historical": {
+        "base": {
+          "n": 12,
+          "strict_pass": 11,
+          "task_correct": 12
+        },
+        "adapted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "ownership": {
+        "base": {
+          "n": 12,
+          "strict_pass": 10,
+          "task_correct": 10
+        },
+        "adapted": {
+          "n": 12,
+          "strict_pass": 12,
+          "task_correct": 12
+        }
+      },
+      "withdrawal_assistant_echo": {
+        "base": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 1
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        }
+      },
+      "explicit_negative": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "selective_withdrawal": {
+        "base": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "unrelated_withdrawal": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "quoted_then_personal": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "quote_after_withdrawal": {
+        "base": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "same_reinstatement": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "multiple_updates": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "assistant_conflict": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        }
+      },
+      "historical_scope": {
+        "base": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "other_person_distractor": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "explicit_no_preference": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 1
+        }
+      }
+    },
+    "test": {
+      "baseline": {
+        "base": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "withdrawal": {
+        "base": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 1
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "assistant_echo": {
+        "base": {
+          "n": 2,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "same": {
+        "base": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "different": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "different_without_withdrawal": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "ownership": {
+        "base": {
+          "n": 4,
+          "strict_pass": 1,
+          "task_correct": 1
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "quote_after_withdrawal": {
+        "base": {
+          "n": 4,
+          "strict_pass": 0,
+          "task_correct": 0
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "other_then_user": {
+        "base": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "unrelated_withdrawal": {
+        "base": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "negative": {
+        "base": {
+          "n": 4,
+          "strict_pass": 3,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "no_preference": {
+        "base": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "historical": {
+        "base": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        },
+        "adapted": {
+          "n": 4,
+          "strict_pass": 4,
+          "task_correct": 4
+        }
+      },
+      "assistant_conflict": {
+        "base": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      },
+      "multiple_updates": {
+        "base": {
+          "n": 2,
+          "strict_pass": 1,
+          "task_correct": 2
+        },
+        "adapted": {
+          "n": 2,
+          "strict_pass": 2,
+          "task_correct": 2
+        }
+      }
+    }
+  },
+  "counts_by_form": {
+    "regression": {
+      "original": {
+        "base": {
+          "n": 24,
+          "strict_pass": 17,
+          "task_correct": 19
+        },
+        "adapted": {
+          "n": 24,
+          "strict_pass": 24,
+          "task_correct": 24
+        }
+      },
+      "binary": {
+        "base": {
+          "n": 36,
+          "strict_pass": 24,
+          "task_correct": 25
+        },
+        "adapted": {
+          "n": 36,
+          "strict_pass": 34,
+          "task_correct": 34
+        }
+      },
+      "open": {
+        "base": {
+          "n": 36,
+          "strict_pass": 29,
+          "task_correct": 34
+        },
+        "adapted": {
+          "n": 36,
+          "strict_pass": 35,
+          "task_correct": 35
+        }
+      }
+    },
+    "test": {
+      "binary": {
+        "base": {
+          "n": 24,
+          "strict_pass": 17,
+          "task_correct": 18
+        },
+        "adapted": {
+          "n": 24,
+          "strict_pass": 24,
+          "task_correct": 24
+        }
+      },
+      "open": {
+        "base": {
+          "n": 24,
+          "strict_pass": 18,
+          "task_correct": 20
+        },
+        "adapted": {
+          "n": 24,
+          "strict_pass": 24,
+          "task_correct": 24
+        }
+      }
+    }
+  },
+  "criteria_pass_counts": {
+    "regression": {
+      "base": {
+        "task_complete": 78,
+        "source_consistent": 77,
+        "supported_in_visible_state": 77,
+        "withdrawal_compliant": 75,
+        "ownership_correct": 94,
+        "body_valid": 96,
+        "within_90_words": 96
+      },
+      "adapted": {
+        "task_complete": 93,
+        "source_consistent": 93,
+        "supported_in_visible_state": 93,
+        "withdrawal_compliant": 95,
+        "ownership_correct": 96,
+        "body_valid": 96,
+        "within_90_words": 96
+      }
+    },
+    "test": {
+      "base": {
+        "task_complete": 38,
+        "source_consistent": 37,
+        "supported_in_visible_state": 37,
+        "withdrawal_compliant": 39,
+        "ownership_correct": 47,
+        "body_valid": 48,
+        "within_90_words": 48
+      },
+      "adapted": {
+        "task_complete": 48,
+        "source_consistent": 48,
+        "supported_in_visible_state": 48,
+        "withdrawal_compliant": 48,
+        "ownership_correct": 48,
+        "body_valid": 48,
+        "within_90_words": 48
+      }
+    }
+  },
+  "matched_effects": {
+    "regression": {
+      "strict_corrections": [
+        "D01-baseline",
+        "D01-withdrawal",
+        "D02-baseline",
+        "D02-withdrawal",
+        "D03-withdrawal",
+        "D03-ownership",
+        "D04-withdrawal",
+        "F01-withdrawal-binary",
+        "F01-withdrawal-open",
+        "F02-withdrawal-binary",
+        "F02-withdrawal-open",
+        "F02-same-binary",
+        "F03-withdrawal-binary",
+        "F03-withdrawal-open",
+        "F03-same-binary",
+        "F03-ownership-binary",
+        "F04-withdrawal-binary",
+        "F04-withdrawal-open",
+        "F04-historical-binary",
+        "N01-2",
+        "N03-1",
+        "N03-2",
+        "N06-1",
+        "N06-2",
+        "N10-1"
+      ],
+      "strict_regressions": [
+        "N09-1",
+        "N12-2"
+      ],
+      "task_corrections": [
+        "D01-baseline",
+        "D01-withdrawal",
+        "D02-baseline",
+        "D02-withdrawal",
+        "D03-ownership",
+        "F01-withdrawal-binary",
+        "F02-withdrawal-binary",
+        "F02-same-binary",
+        "F03-withdrawal-binary",
+        "F03-same-binary",
+        "F03-ownership-binary",
+        "F04-withdrawal-binary",
+        "N03-1",
+        "N03-2",
+        "N06-1",
+        "N06-2",
+        "N10-1"
+      ],
+      "task_regressions": [
+        "N09-1",
+        "N12-2"
+      ]
+    },
+    "test": {
+      "strict_corrections": [
+        "E03-binary",
+        "E03-open",
+        "E04-binary",
+        "E04-open",
+        "E09-binary",
+        "E10-binary",
+        "E10-open",
+        "E11-binary",
+        "E11-open",
+        "E12-binary",
+        "E12-open",
+        "E18-open",
+        "E24-binary"
+      ],
+      "strict_regressions": [],
+      "task_corrections": [
+        "E03-binary",
+        "E04-binary",
+        "E04-open",
+        "E09-binary",
+        "E10-binary",
+        "E10-open",
+        "E11-binary",
+        "E11-open",
+        "E12-binary",
+        "E12-open"
+      ],
+      "task_regressions": []
+    }
+  },
+  "predeclared_trainability_rule": {
+    "heldout_strict_gain": 13,
+    "required_gain": 6,
+    "heldout_gain_pass": true,
+    "regression_strict_pass_to_fail": [
+      "N09-1",
+      "N12-2"
+    ],
+    "regression_preservation_pass": false,
+    "known_current_required_answer_losses": [
+      "N09-1",
+      "N12-2"
+    ],
+    "known_control_preservation_pass": false,
+    "pass": false
+  },
+  "clean_suite_gates": {
+    "base": {
+      "regression": false,
+      "test": false
+    },
+    "adapted": {
+      "regression": false,
+      "test": true
+    }
+  },
+  "failures": {
+    "base": [
+      "D01-baseline",
+      "D01-withdrawal",
+      "D02-baseline",
+      "D02-withdrawal",
+      "D03-withdrawal",
+      "D03-ownership",
+      "D04-withdrawal",
+      "F01-withdrawal-binary",
+      "F01-withdrawal-open",
+      "F02-withdrawal-binary",
+      "F02-withdrawal-open",
+      "F02-same-binary",
+      "F03-withdrawal-binary",
+      "F03-withdrawal-open",
+      "F03-same-binary",
+      "F03-ownership-binary",
+      "F04-withdrawal-binary",
+      "F04-withdrawal-open",
+      "F04-historical-binary",
+      "N01-1",
+      "N01-2",
+      "N03-1",
+      "N03-2",
+      "N06-1",
+      "N06-2",
+      "N10-1",
+      "E03-binary",
+      "E03-open",
+      "E04-binary",
+      "E04-open",
+      "E09-binary",
+      "E10-binary",
+      "E10-open",
+      "E11-binary",
+      "E11-open",
+      "E12-binary",
+      "E12-open",
+      "E18-open",
+      "E24-binary"
+    ],
+    "adapted": [
+      "N01-1",
+      "N09-1",
+      "N12-2"
+    ]
+  },
+  "n01_sensitivity": {
+    "description": "Generously credit N01-1 under an epistemic refusal-to-assert reading; preserve all other judgments and the primary scores.",
+    "counts": {
+      "base": {
+        "regression_strict_pass": 71,
+        "regression_task_correct": 79
+      },
+      "adapted": {
+        "regression_strict_pass": 94,
+        "regression_task_correct": 94
+      }
+    }
+  },
+  "broader_retrieval_admission": false,
+  "source_hashes": {
+    "review.json": "e877a6601d6b5a296d2ece6f07b43b6ef006b4c53ae6a3b6480874854b4ffb82",
+    "preflight/eval-cases.json": "5e9819cb14ae63934c93b2d787d26beb09560efc0861da5913fda8d91a4f5c0b",
+    "preflight/freeze.json": "272b162e6ae23a5c6534425924a156c9beb304ea32f068f91012fbdc26909630",
+    "run/captures.json": "a21e72d31160c512a57e60e6e4dd4999e3865421bd5d42f1794c8606a36afeb6",
+    "run/artifact-verification.json": "e93d9b3613d552b26d4a139665a82f379d294fff553aff7e976384f3a7fee622"
+  }
+}

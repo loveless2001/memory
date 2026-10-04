@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "partial_all_unreviewed",
+      "passed": true,
+      "expected_acceptance": true
+    },
+    {
+      "check": "omitted_answer_rejected",
+      "passed": true,
+      "expected_acceptance": false
+    },
+    {
+      "check": "pass_with_failed_criterion_rejected",
+      "passed": true,
+      "expected_acceptance": false
+    },
+    {
+      "check": "fabricated_quote_rejected",
+      "passed": true,
+      "expected_acceptance": false
+    },
+    {
+      "check": "complete_with_unreviewed_answers_rejected",
+      "passed": true,
+      "expected_acceptance": false
+    }
+  ],
+  "semantic_judgments_created": 0
+}
