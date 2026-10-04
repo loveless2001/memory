@@ -39,8 +39,33 @@ plans/260719-0105-followup2-f4f5/f4-slice-*.npz
 plans/260719-0105-followup2-f4f5/*-pilot.npz
 plans/260719-0105-followup2-f4f5/*.log
 
+# ContextGate capture/checkpoint mirrors (canonical on memsub-artifacts volume)
+plans/260910-context-gate/*/artifacts/capture/*.npz
+plans/260910-context-gate/*/artifacts/smoke/*.npz
+plans/260910-context-gate/*/artifacts/*/seed-*.pt
+plans/260910-context-gate/*/artifacts/dataset.jsonl
+plans/260910-context-gate/*/artifacts/controller-scores.npz
+
+# ContextPolicy disposable adapter mirrors (canonical on memsub-artifacts)
+plans/260910-context-policy/*/artifacts/disposable-preflight-adapter/*.safetensors
+plans/260910-context-policy/*/artifacts/blueprints.private.json
+plans/260910-context-policy/*/artifacts/pilot-blueprints.private.json
+plans/260910-context-policy/*/artifacts/dialogue-captures.json
+
 # LaTeX build aux
 paper/*.aux
 paper/*.blg
 paper/*.log
 paper/*.out
+
+# Reader/ContextPolicy heavy mirrors (>5 MB data, adapters, model files; canonical on memsub-artifacts)
+plans/2609*/**/*.safetensors
+plans/260911-reader-qwen3-8b/model/
+plans/260910-context-policy/20260910-v2-broader-eval-v*/records.jsonl
+plans/260910-context-policy/20260910-v2-broader-eval-v*/reader-bundle.json
+plans/260910-context-policy/20260910-v2-memory-dev/records.jsonl
+plans/260910-context-policy/20260911-v2-broader-reader-preflight/reader-input.json
+plans/260910-context-policy/20260911-v2-broader-reader/captures.json
+plans/260911-reader-decision/preflight/train-inputs.json
+plans/260911-reader-decision/review.json
+plans/260911-reader-decision/run/captures.json
