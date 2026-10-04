@@ -87,7 +87,8 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
                 **(extra_manifest or {})}
     per_example: list[dict] = []
     metrics = {"result_label": pcfg.result_label(), "arm": pcfg.arm,
-               "n_bindings": pcfg.n_bindings, "seed": pcfg.seed, "final": {}}
+               "n_bindings": pcfg.n_bindings, "seed": pcfg.seed, "steps": pcfg.steps,
+               "readout": pcfg.readout, "final": {}}
     interventions = INTERVENTIONS if pcfg.arm != "memory_off" else ("none",)
     for iv in interventions:
         metrics["final"][f"heldout_{iv}"] = evaluate(

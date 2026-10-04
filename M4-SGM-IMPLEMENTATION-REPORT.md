@@ -29,11 +29,12 @@ Scope: P0–P2 only (M4-SGM.md). Research-only; no deployment default,
 | `memsub/sgm/synthetic_pilot_evaluation.py` | evaluation, interventions, bank/β telemetry |
 | `memsub/sgm/synthetic_pilot_run.py` | one run → §21 artifact set |
 | `scripts/sgm-synthetic-pilot.py` | local CLI |
-| `scripts/sgm-p2-grid-summary.py` | grid table + readings R1–R4 |
+| `memsub/sgm/p2_grid_readings.py` | fail-closed R1–R4 decision logic |
+| `scripts/sgm-p2-grid-summary.py` | grid table + readings (registered N/steps from grid.json) |
 | `modal-runners/modal-m4-sgm-synthetic-pilot-grid.py` | Modal CPU grid |
 | `configs/m4_sgm_{tiny,reference,p2_grid}.json` | configs (reference = design only) |
 | `memsub/errors.py` | + `CapacityError`, `NonFiniteStateError` |
-| `tests/test_sgm_{core,runtime,pilot}.py` | 28 SGM tests |
+| `tests/test_sgm_{core,runtime,pilot,grid_readings}.py` | 35 SGM tests |
 
 ## Design decisions worth auditing
 
@@ -64,7 +65,7 @@ Scope: P0–P2 only (M4-SGM.md). Research-only; no deployment default,
 ## Tests actually executed
 
 `pytest tests/test_sgm_core.py tests/test_sgm_runtime.py tests/test_sgm_pilot.py`
-→ **28 passed** (local CPU). Full suite: 590 passed, 53 failed, 2 skipped.
+→ **35 passed** (local CPU; `tests/test_sgm_grid_readings.py` included). Full suite: 597 passed, 53 failed, 2 skipped.
 The 53 failures are the pre-existing MergeCert hash drift (see M4-SGM.md P0);
 no new failures.
 
@@ -81,8 +82,15 @@ SGM-01: with the adapter disabled, the SGM loop matches HF prefill logits
 
 ## Measured synthetic results
 
-_Pending `p2-load-sweep-v1` (49 runs). Sanity (`sanity-v1`, N = 16, 300 steps):
-oracle 0.991 held-out; learned 0.015; single_cell 0.016; chance 0.016._
+No registered grid result exists yet.
+
+- `sanity-v1` (development; final-eval seed base 777_001; N = 16, 300 steps,
+  seed 0): oracle 0.991 held-out, learned 0.015, single_cell 0.016 (chance
+  0.016).
+- `p2-load-sweep-v1`: STOPPED over open audit findings. Only the three
+  memory_off runs (steps = 0) finished. Not evidence.
+- Replacement `p2-load-sweep-v2` (registered horizon: 1500 steps per A1;
+  final-eval seed base 9_100_003): awaiting audit clearance.
 
 ## Not implemented (by phase)
 

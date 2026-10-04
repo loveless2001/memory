@@ -149,6 +149,15 @@ Every finding from codex's audit (21074/21075) is accepted:
      the whole prompt in KV before eviction; the pilot uses 1-token queries.
      `random_fixed` is a fixed coordinate map over *learned* q/k.
 
+7. **Fail-closed readings** (codex 21084): `memsub/sgm/p2_grid_readings.py`.
+   R2 and R3 require the registered seeds {0, 1}, both controls, the
+   registered steps (1500) and the task-head readout. Paired rows must have
+   hash-matched episodes, complete non-duplicated query ids, and at least 2
+   episodes. Anything missing or misaligned is NON-EVALUABLE, never MET.
+   R3 = MET only if some N ≥ N* passes in both seeds; otherwise NON-EVALUABLE
+   if any eligible N is non-evaluable, else NOT MET. Thresholds and seeds are
+   unchanged.
+
 The replacement grid (`p2-load-sweep-v2`, same arms, N, seeds and steps as A1)
 launches only after codex reviews the fix commit.
 
