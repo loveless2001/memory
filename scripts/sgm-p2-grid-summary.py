@@ -8,6 +8,7 @@ episode-paired over hash-matched episodes.
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -17,14 +18,42 @@ from memsub.sgm.p2_grid_readings import (  # noqa: E402
     REGISTERED_QUERIES, REGISTERED_STEPS, NonEvaluable, accuracy, readings)
 
 
-def load(root: Path) -> dict:
-    runs = {}
+ATTEMPT_SUFFIX = re.compile(r"-r\d+$")
+
+
+def load(root: Path) -> tuple[dict, list[str]]:
+    """One selected attempt per logical cell. A cell with several attempts
+    (original + "-rN" retries) needs an explicit selection in the group's
+    attempts.json registry ({"selected": {logical_id: run_dir}}); without
+    one it is AMBIGUOUS and excluded, so its readings fail closed."""
+    registry_file = root / "attempts.json"
+    selected = json.loads(registry_file.read_text()).get("selected", {}) if registry_file.exists() else {}
+    by_cell: dict[str, list[Path]] = {}
     for f in sorted(root.glob("*/metrics.json")):
-        m = json.loads(f.read_text())
-        rows = f.parent / "per_example_results.jsonl"
+        by_cell.setdefault(ATTEMPT_SUFFIX.sub("", f.parent.name), []).append(f.parent)
+    runs, problems = {}, []
+    for logical, dirs in sorted(by_cell.items()):
+        if logical in selected:
+            dirs = [d for d in dirs if d.name == selected[logical]]
+            if len(dirs) != 1:
+                problems.append(f"{logical}: registry selects {selected[logical]!r}, which has no metrics")
+                continue
+        elif len(dirs) > 1:
+            problems.append(f"{logical}: AMBIGUOUS — {len(dirs)} attempts and no registry selection")
+            continue
+        m = json.loads((dirs[0] / "metrics.json").read_text())
+        rows = dirs[0] / "per_example_results.jsonl"
         m["_rows"] = [json.loads(l) for l in rows.read_text().splitlines()] if rows.exists() else []
-        runs[(f.parent.name.split("-")[0], m["arm"], m["n_bindings"], m["seed"])] = m
-    return runs
+        m["_attempt"] = dirs[0].name
+        key = (logical.split("-")[0], m["arm"], m["n_bindings"], m["seed"])
+        if key in runs:
+            problems.append(f"{logical}: duplicate logical key {key}")
+            continue
+        runs[key] = m
+    for logical in selected:
+        if logical not in by_cell:
+            problems.append(f"{logical}: registry entry but no attempt with metrics")
+    return runs, problems
 
 
 def table(runs) -> list[str]:
@@ -64,8 +93,9 @@ def registered_ns(root: Path, runs: dict) -> tuple[list[int], list[str]]:
 
 def main():
     root = Path(sys.argv[1])
-    runs = load(root)
+    runs, problems = load(root)
     ns, notes = registered_ns(root, runs)
+    notes += [f"ATTEMPT PROBLEM (cell excluded): {p}" for p in problems]
     text = [f"# {root.name} — {len(runs)} runs", "", *[f"- {n}" for n in notes], "",
             *table(runs), "", "## Readings", ""]
     for name, r in readings(runs, ns).items():
