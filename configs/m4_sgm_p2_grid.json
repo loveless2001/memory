@@ -1,0 +1,109 @@
+{
+  "_comment": "M4-SGM P2 load-sweep grid (preregistered in M4-SGM.md before launch). Tiny frozen random Qwen3; mechanism evidence only.",
+  "base": {
+    "readout": "taskhead",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 600,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 100,
+    "eval_batches": 4,
+    "sgm": {}
+  },
+  "blocks": [
+    {
+      "tag": "main",
+      "arms": [
+        "learned",
+        "single_cell",
+        "oracle"
+      ],
+      "n_bindings": [
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "seeds": [
+        0,
+        1
+      ]
+    },
+    {
+      "tag": "main",
+      "arms": [
+        "random_fixed"
+      ],
+      "n_bindings": [
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "seeds": [
+        0,
+        1
+      ],
+      "override": {
+        "sgm": {
+          "address_init_spread": 4.0
+        }
+      }
+    },
+    {
+      "tag": "off",
+      "arms": [
+        "memory_off"
+      ],
+      "n_bindings": [
+        4,
+        16,
+        64
+      ],
+      "seeds": [
+        0
+      ],
+      "override": {
+        "steps": 0
+      }
+    },
+    {
+      "tag": "noshift",
+      "arms": [
+        "learned",
+        "oracle"
+      ],
+      "n_bindings": [
+        16
+      ],
+      "seeds": [
+        0,
+        1
+      ],
+      "override": {
+        "sgm": {
+          "feature_shift": 1
+        }
+      }
+    },
+    {
+      "tag": "lmread",
+      "arms": [
+        "learned",
+        "oracle"
+      ],
+      "n_bindings": [
+        16
+      ],
+      "seeds": [
+        0
+      ],
+      "override": {
+        "readout": "lm"
+      }
+    }
+  ]
+}

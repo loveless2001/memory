@@ -30,3 +30,12 @@ class IntegrityError(MemsubError):
 class HydrationError(MemsubError):
     """Checkpoint hydration failed for a non-compatibility reason (missing
     pages, corrupt page table). Resume must fall back to the substrate."""
+
+
+class CapacityError(MemsubError):
+    """An SGM write would exceed a bank's cell budget (M4-SGM §7). Fails
+    closed: the enclosing ingest transaction commits nothing."""
+
+
+class NonFiniteStateError(MemsubError):
+    """An SGM state update produced NaN/Inf (M4-SGM §5.3). Fails closed."""
