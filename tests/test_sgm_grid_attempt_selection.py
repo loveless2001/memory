@@ -121,8 +121,10 @@ def test_validate_rejects_malformed_truncated_or_miscounted_rows(tmp_path):
     (d / "per_example_results.jsonl").write_text("\n".join(lines[:-1]) + "\n")
     assert "queries" in mod.validate(d, d.name, PILOT, LAUNCH, SRC)
     d = _valid_cell(tmp_path / "count" / "main-learned-n4-s0")
-    text = (d / "per_example_results.jsonl").read_text().replace('"correct": false', '"correct": true', 1)
-    (d / "per_example_results.jsonl").write_text(text)
+    rows = [json.loads(l) for l in (d / "per_example_results.jsonl").read_text().splitlines()]
+    wrong = next(r for r in rows if not r["correct"])
+    wrong["pred"], wrong["correct"] = wrong["label"], True    # self-consistent row, metrics now miscounted
+    (d / "per_example_results.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
     assert "metrics" in mod.validate(d, d.name, PILOT, LAUNCH, SRC)
 
 
@@ -150,3 +152,42 @@ def test_failed_retrieval_is_not_reported_as_incomplete_execution(tmp_path, monk
     mod.main()
     cell = json.loads((root / "artifact_validation.json").read_text())["cells"]["main-learned-n4-s0"]
     assert cell == {"status": "retrieval_failed", "reason": "volume unavailable"}
+
+
+def test_validate_requires_score_and_row_consistency(tmp_path):
+    mod = _script("sgm-recover-and-validate-grid-artifacts")
+    d = _valid_cell(tmp_path / "acc" / "main-learned-n4-s0")
+    met = json.loads((d / "metrics.json").read_text())
+    for k in ("heldout_none", "heldout_read_offset"):
+        met["final"][k]["accuracy"] = 1.0                 # correct=2, total=4 kept
+    (d / "metrics.json").write_text(json.dumps(met))
+    assert "accuracy" in mod.validate(d, d.name, PILOT, LAUNCH, SRC)
+    d = _valid_cell(tmp_path / "pred" / "main-learned-n4-s0")
+    rows = [json.loads(l) for l in (d / "per_example_results.jsonl").read_text().splitlines()]
+    (d / "per_example_results.jsonl").write_text("".join(json.dumps({**r, "pred": 99}) + "\n" for r in rows))
+    assert "pred/label" in mod.validate(d, d.name, PILOT, LAUNCH, SRC)
+    d = _valid_cell(tmp_path / "flag" / "main-learned-n4-s0")
+    rows = [json.loads(l) for l in (d / "per_example_results.jsonl").read_text().splitlines()]
+    rows[1]["pred"], rows[2]["pred"] = 1, 2          # swap which rows are right; counts unchanged
+    (d / "per_example_results.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+    assert "correct flag" in mod.validate(d, d.name, PILOT, LAUNCH, SRC)
+
+
+def test_malformed_schemas_are_reasons_not_crashes(tmp_path):
+    mod = _script("sgm-recover-and-validate-grid-artifacts")
+    cases = {"manifest_null": ("run_manifest.json", None), "manifest_list": ("run_manifest.json", []),
+             "metrics_null": ("metrics.json", None), "final_null": ("metrics.json", "final"),
+             "result_list": ("metrics.json", "result")}
+    for name, (fname, how) in cases.items():
+        d = _valid_cell(tmp_path / name / "main-learned-n4-s0")
+        if fname == "run_manifest.json" or how is None:
+            (d / fname).write_text(json.dumps(how))
+        else:
+            met = json.loads((d / "metrics.json").read_text())
+            if how == "final":
+                met["final"] = None
+            else:
+                met["final"]["heldout_none"] = [0.5]
+            (d / "metrics.json").write_text(json.dumps(met))
+        reason = mod.validate(d, d.name, PILOT, LAUNCH, SRC)
+        assert isinstance(reason, str) and "not an object" in reason, (name, reason)

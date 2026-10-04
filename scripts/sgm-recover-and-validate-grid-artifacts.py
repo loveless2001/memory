@@ -22,6 +22,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import math
 import shutil
 import subprocess
 from collections import defaultdict
@@ -33,6 +34,7 @@ REQUIRED = ("run_manifest.json", "metrics.json", "per_example_results.jsonl",
 ROW_FIELDS = {"batch": int, "episode": int, "episode_hash": str, "query": int, "key": int,
               "label": int, "pred": int, "correct": bool, "intervention": str}
 FINAL_SEED_BASE = 9_100_003
+N_VALUE_CLASSES = 64             # synthetic task label space (synthetic_binding_task.N_VALUES)
 RUNNER = Path(__file__).resolve().parents[1] / "modal-runners" / "modal-m4-sgm-synthetic-pilot-grid.py"
 
 
@@ -42,6 +44,34 @@ def registered_cells(grid: dict) -> dict[str, dict]:
     runner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(runner)
     return dict(runner._expand(grid))
+
+
+def schema_problem(man, met) -> str | None:
+    """Type-check manifest / metrics / final results before any field access."""
+    if not isinstance(man, dict):
+        return f"run_manifest is {type(man).__name__}, not an object"
+    if not isinstance(met, dict):
+        return f"metrics is {type(met).__name__}, not an object"
+    final = met.get("final")
+    if not isinstance(final, dict):
+        return f"metrics.final is {type(final).__name__}, not an object"
+    for name in ("final_episodes", "n_queries"):
+        if type(met.get(name)) is not int or met[name] < 1:
+            return f"metrics.{name} is not a positive int"
+    for key, r in final.items():
+        if r is None and key.startswith("heldout_"):
+            continue
+        if not isinstance(r, dict):
+            return f"final.{key} is {type(r).__name__}, not an object"
+        if not key.startswith("heldout_"):
+            continue
+        acc, correct, total = r.get("accuracy"), r.get("correct"), r.get("total")
+        if type(correct) is not int or type(total) is not int or total < 1:
+            return f"final.{key}: correct/total are not ints"
+        if not isinstance(acc, (int, float)) or isinstance(acc, bool) or not math.isfinite(acc) \
+                or not math.isclose(acc, correct / total, rel_tol=0, abs_tol=1e-12):
+            return f"final.{key}: accuracy {acc!r} != correct/total {correct}/{total}"
+    return None
 
 
 def validate_rows(rows_text: str, met: dict) -> str | None:
@@ -60,6 +90,10 @@ def validate_rows(rows_text: str, met: dict) -> str | None:
             return f"row {i}: schema mismatch"
         if row["intervention"] not in evaluated:
             return f"row {i}: unexpected intervention {row['intervention']!r}"
+        if not (0 <= row["pred"] < N_VALUE_CLASSES and 0 <= row["label"] < N_VALUE_CLASSES):
+            return f"row {i}: pred/label outside 0..{N_VALUE_CLASSES - 1}"
+        if row["correct"] != (row["pred"] == row["label"]):
+            return f"row {i}: correct flag disagrees with pred == label"
         key = (row["batch"], row["episode"], row["episode_hash"], row["query"])
         if key in by_iv[row["intervention"]]:
             return f"row {i}: duplicate {key}"
@@ -93,6 +127,9 @@ def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str
         met = json.loads((cell / "metrics.json").read_text())
     except (json.JSONDecodeError, UnicodeDecodeError) as e:
         return f"unparseable manifest/metrics ({e})"
+    problem = schema_problem(man, met)
+    if problem:
+        return problem
     checks = {
         "run_id": man.get("run_id") == run_id,
         "pilot_config": man.get("pilot_config") == pilot,
