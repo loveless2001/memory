@@ -28,7 +28,7 @@ def main() -> None:
         if getattr(args, key) is not None:
             raw[key] = getattr(args, key)
     metrics = run_pilot(PilotConfig(**raw), args.out)
-    print(json.dumps({k: v["accuracy"] for k, v in metrics["final"].items()}, indent=2))
+    print(json.dumps({k: (v["accuracy"] if v else None) for k, v in metrics["final"].items()}, indent=2))
 
 
 if __name__ == "__main__":

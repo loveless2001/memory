@@ -60,7 +60,7 @@ def test_sgm03_sgm15_gradients_reach_read_and_write_paths_not_backbone():
     loss.backward()
     for layer in ("1", "3"):                      # layer 1 reached through frozen layers 2-3
         groups = rt.adapters[layer].param_groups()
-        for name in ("qk_proj", "value", "beta", "address_mlp"):
+        for name in ("q_proj", "k_proj", "value", "beta", "address_mlp"):
             g = sum(float(p.grad.abs().sum()) for p in groups[name] if p.grad is not None)
             assert g > 0, (layer, name)
     assert all(p.grad is None for p in rt.backbone.parameters())
@@ -160,3 +160,21 @@ def test_policy_identity_changes_and_mismatched_state_is_rejected():
     assert a.policy_id != b.policy_id
     with pytest.raises(CompatibilityError):
         b.evaluate_query(a.new_state(), _ids(1))
+
+
+# -- live-state binding to adapter weights (#gravity 21075 P1) -------------------------------
+def test_live_state_rejected_under_other_or_updated_adapter_weights():
+    a = _backend()
+    b = SparseGrowingMemoryBackend(SGMModelRuntime(build_tiny_backbone(0), a.runtime.cfg, seed=7))
+    assert a.policy_id == b.policy_id                       # same config ...
+    st = a.ingest_source(a.new_state(), _ids(4), SRC)
+    with pytest.raises(CompatibilityError):                 # ... different weights
+        b.evaluate_query(st, _ids(1))
+    opt = torch.optim.SGD(a.runtime.adapters.parameters(), lr=0.1)
+    a.evaluate_query(st, _ids(1, start=1001))["reads"][1].sum().backward()
+    opt.step()
+    for call in (lambda: a.evaluate_query(st, _ids(1)),
+                 lambda: a.ingest_source(st, _ids(2), SRC)):
+        with pytest.raises(CompatibilityError):             # stale after an update
+            call()
+    a.ingest_source(a.new_state(), _ids(2), SRC)            # rebuilt state is fine

@@ -50,7 +50,8 @@ class SparseGrowingMemoryBackend:
         `traces` (optional) collects each token step's telemetry trace."""
         if source.kind != AUTHORIZED_SOURCE:
             raise PermissionError(f"persistent writes need an authorized source, got {source.kind!r}")
-        state.check_valid(self.policy_id, state.redaction_generation)
+        state.check_valid(self.policy_id, state.redaction_generation,
+                          self.runtime.weights_identity())
         work = state.fork()
         for t in range(token_ids.shape[1]):
             oracle = None
@@ -66,13 +67,14 @@ class SparseGrowingMemoryBackend:
 
     def evaluate_query(self, state: SGMSessionState, prompt_ids: torch.Tensor, *,
                        enabled: bool = True, oracle_addresses: torch.Tensor | None = None,
-                       detach: bool = False) -> dict:
+                       detach: bool = False, logits: bool = True) -> dict:
         """Read-only query from the pre-query snapshot. detach=True for
         evaluation; training queries keep the graph into the bank and KV."""
-        state.check_valid(self.policy_id, state.redaction_generation)
+        state.check_valid(self.policy_id, state.redaction_generation,
+                          self.runtime.weights_identity())
         scratch = state.detached() if detach else state.fork()
         oracle = None
         if enabled and oracle_addresses is not None:
             oracle = {"read": oracle_addresses, "write": oracle_addresses}
         return self.runtime.step(scratch, prompt_ids, write=False, enabled=enabled,
-                                 oracle=oracle, logits=True)
+                                 oracle=oracle, logits=logits)

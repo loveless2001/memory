@@ -43,6 +43,7 @@ class SGMSessionState:
     shift_features: dict[int, torch.Tensor] = field(default_factory=dict)
     source_refs: tuple[str, ...] = ()
     redaction_generation: int = 0
+    weights_id: str = ""
 
     @property
     def source_cursor(self) -> int:
@@ -55,7 +56,8 @@ class SGMSessionState:
             banks=self.banks.fork(), policy_id=self.policy_id,
             shift_features=dict(self.shift_features),
             source_refs=self.source_refs,
-            redaction_generation=self.redaction_generation)
+            redaction_generation=self.redaction_generation,
+            weights_id=self.weights_id)
 
     def detached(self) -> "SGMSessionState":
         return SGMSessionState(
@@ -63,11 +65,18 @@ class SGMSessionState:
             banks=self.banks.detached(), policy_id=self.policy_id,
             shift_features={l: t.detach() for l, t in self.shift_features.items()},
             source_refs=self.source_refs,
-            redaction_generation=self.redaction_generation)
+            redaction_generation=self.redaction_generation,
+            weights_id=self.weights_id)
 
-    def check_valid(self, policy_id: str, redaction_generation: int) -> None:
-        """Fail closed on a policy change or a newer redaction generation."""
+    def check_valid(self, policy_id: str, redaction_generation: int,
+                    weights_id: str) -> None:
+        """Fail closed on a policy change, different/updated adapter weights
+        (bank AND adapter-influenced recent KV are rejected together), or a
+        newer redaction generation."""
         if policy_id != self.policy_id:
             raise CompatibilityError(f"state policy {self.policy_id} != {policy_id}")
+        if weights_id != self.weights_id:
+            raise CompatibilityError(
+                f"state built under adapter weights {self.weights_id}, live {weights_id}")
         if redaction_generation != self.redaction_generation:
             raise RedactionError("state predates the current redaction generation")

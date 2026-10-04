@@ -109,3 +109,45 @@ perfect write isolation.
 Changes (made before the grid launched): steps 600 → 1500 for every arm;
 added per-token-class write-gate telemetry (`beta_by_token_class`:
 sink / key / value / filler); Modal timeout 4 h → 6 h. Readings R1–R4 are unchanged.
+
+### Grid `p2-load-sweep-v1` — STOPPED (2026-10-05)
+
+I launched it at `080147a` while codex's audit findings (#gravity
+21074/21075) were open. Stopped at codex's request (21077) after ~12 min. Only the
+three `memory_off` (steps = 0) runs completed; they are kept but superseded.
+None of its results are evidence for R1–R4.
+
+### Amendment A2 (audit fixes, before any replacement grid)
+
+Every finding from codex's audit (21074/21075) is accepted:
+
+1. **R4 intervention.** The within-bank coordinate shuffle was a no-op for
+   `single_cell`. The registered memory-use check is now `bank_derange`
+   (episode b queries episode (b+1) mod B's complete banks), which is valid for
+   every arm. `coord_shuffle` remains an extra diagnostic and is N/A for
+   `single_cell`. R4 now reads "bank_derange drops every memory arm toward chance".
+2. **Paired episodes.** Evaluation episodes are pre-generated once, and
+   interventions use their own RNG. A test asserts identical (source, query,
+   label) tuples across all interventions. R3's learned-minus-control gain and
+   read-offset drop are now **episode-paired** intervals computed from aligned
+   per-example rows (checked by episode hash), replacing the per-arm half-widths.
+3. **Live state ↔ weights.** State records `runtime_uuid:Σ param._version`. A
+   different runtime, or any optimizer step, rejects both the bank and its
+   adapter-influenced KV.
+4. **Provenance.** Each run records the git HEAD, the grid sha256, the sha256 of
+   the executed memsub source tree, and the trained adapters + task head
+   (`trained_parameters.safetensors` + sha256). The launcher refuses a dirty
+   tree for memsub, the runner or the grid file.
+5. **Fresh final episodes.** The final-eval seed base changes from 777_001 to
+   9_100_003. sanity-v1 results (seed base 777_001, inspected) are **development** evidence.
+6. Smaller fixes:
+   - a no-logits query path for task-head arms
+   - per-layer q/k/v/β/address/out gradient and update norms, where `None` means
+     no gradient reached that group
+   - known limits, documented: in task-head arms the last selected layer's
+     `out_proj`/α is an expected dead path. Multi-token queries transiently hold
+     the whole prompt in KV before eviction; the pilot uses 1-token queries.
+     `random_fixed` is a fixed coordinate map over *learned* q/k.
+
+The replacement grid (`p2-load-sweep-v2`, same arms, N, seeds and steps as A1)
+launches only after codex reviews the fix commit.

@@ -80,14 +80,21 @@ def build(pcfg: PilotConfig):
     return runtime, SparseGrowingMemoryBackend(runtime), head
 
 
-def _group_norms(runtime, grad: bool) -> dict[str, float]:
-    out: dict[str, float] = {}
-    for adapter in runtime.adapters.values():
+def _group_norms(runtime) -> dict[str, float | None]:
+    """Per-layer, per-group gradient norms; None = no gradient reached the
+    group (e.g. the last layer's out_proj/alpha in the task-head arm)."""
+    out: dict[str, float | None] = {}
+    for layer, adapter in runtime.adapters.items():
         for name, params in adapter.param_groups().items():
-            vals = [p.grad if grad else p.detach() for p in params]
-            sq = sum(float(v.pow(2).sum()) for v in vals if v is not None)
-            out[name] = out.get(name, 0.0) + sq
-    return {k: v ** 0.5 for k, v in out.items()}
+            grads = [p.grad for p in params if p.grad is not None]
+            out[f"L{layer}/{name}"] = (sum(float(g.pow(2).sum()) for g in grads) ** 0.5
+                                       if grads else None)
+    return out
+
+
+def _snapshot(runtime) -> dict[str, list[torch.Tensor]]:
+    return {f"L{l}/{n}": [p.detach().clone() for p in ps]
+            for l, a in runtime.adapters.items() for n, ps in a.param_groups().items()}
 
 
 def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
@@ -118,15 +125,15 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
         opt.zero_grad(set_to_none=True)
         loss.backward()
         logging = step % 10 == 0
-        first = runtime.adapters[str(runtime.cfg.selected_layers[0])].param_groups()
-        before = {k: [p.detach().clone() for p in v] for k, v in first.items()} if logging else {}
-        grads = _group_norms(runtime, grad=True) if logging else {}
+        before = _snapshot(runtime) if logging else {}
+        grads = _group_norms(runtime) if logging else {}
         opt.step()
         if logging:
-            upd = {k: sum(float((p.detach() - b).norm()) for p, b in zip(first[k], before[k]))
-                   for k in first}
+            after = _snapshot(runtime)
+            upd = {k: sum(float((a - b).norm()) for a, b in zip(after[k], before[k]))
+                   for k in after}
             row = {"step": step, "loss": float(loss), "train_acc": hits / (pcfg.batch * spec.n_queries),
-                   "grad_norm": grads, "update_norm_first_layer": upd,
+                   "grad_norm": grads, "update_norm": upd,
                    "alpha": {l: float(torch.sigmoid(a.alpha_logit)) for l, a in runtime.adapters.items()},
                    "sec_per_step": time.monotonic() - t0, **bank_telemetry(state)}
             telemetry.append(row)

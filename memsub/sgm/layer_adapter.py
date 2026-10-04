@@ -86,7 +86,8 @@ class SGMLayerAdapter(nn.Module):
     def param_groups(self) -> dict[str, list[nn.Parameter]]:
         """Named groups for per-group gradient/update telemetry (§8)."""
         return {
-            "qk_proj": [self.q_proj.weight, self.k_proj.weight],
+            "q_proj": [self.q_proj.weight],
+            "k_proj": [self.k_proj.weight],
             "value": [self.v_proj.weight],
             "beta": list(self.beta_proj.parameters()),
             "address_mlp": list(self.address_mlp.parameters()),

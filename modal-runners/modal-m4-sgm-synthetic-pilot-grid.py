@@ -10,7 +10,9 @@ plans/<plan-dir>/runs/<group>/<run-id>/metrics.json.
         --local-out plans/261005-0210-m4-sgm-p0-p2/runs
 """
 
+import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 import modal
@@ -28,7 +30,7 @@ CPUS = 4
 
 @app.function(image=image, cpu=CPUS, memory=8192, timeout=6 * 3600, retries=0,
               volumes={"/artifacts": artifacts}, max_containers=48)
-def run_cell(group: str, run_id: str, pilot: dict) -> dict:
+def run_cell(group: str, run_id: str, pilot: dict, provenance: dict) -> dict:
     import re
     import sys
 
@@ -44,7 +46,8 @@ def run_cell(group: str, run_id: str, pilot: dict) -> dict:
     if out.exists():
         raise FileExistsError(f"{out} exists; no automatic retry")
     metrics = run_pilot(PilotConfig(**pilot), out,
-                        extra_manifest={"modal_group": group, "run_id": run_id, "cpus": CPUS})
+                        extra_manifest={"modal_group": group, "run_id": run_id, "cpus": CPUS,
+                                        **provenance})
     artifacts.commit()
     return {"run_id": run_id, "metrics": metrics}
 
@@ -66,21 +69,42 @@ def _expand(grid: dict) -> list[tuple[str, dict]]:
     return cells
 
 
+def _launch_provenance(grid_path: Path) -> dict:
+    """Bind the launch to a clean, committed tree: the packaged memsub code,
+    this runner and the grid file must have no uncommitted changes."""
+    tracked = ["memsub", "modal-runners/modal-m4-sgm-synthetic-pilot-grid.py", str(grid_path)]
+    dirty = subprocess.run(["git", "status", "--porcelain", "--", *tracked],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    if dirty:
+        raise SystemExit(f"refusing to launch from a dirty tree:\n{dirty}")
+    head = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
+                          check=True).stdout.strip()
+    return {"git_head": head, "grid_file": str(grid_path),
+            "grid_sha256": hashlib.sha256(grid_path.read_bytes()).hexdigest()}
+
+
 @app.local_entrypoint()
 def main(group: str, grid: str, local_out: str):
+    provenance = _launch_provenance(Path(grid))
     spec = json.loads(Path(grid).read_text())
     cells = _expand(spec)
     print(f"launching {len(cells)} runs into m4-sgm/{group}")
     root = Path(local_out) / group
     root.mkdir(parents=True, exist_ok=True)
     (root / "grid.json").write_text(json.dumps(spec, indent=2))
-    args = [(group, rid, pilot) for rid, pilot in cells]
+    (root / "launch_provenance.json").write_text(json.dumps(provenance, indent=2))
+    print("provenance", provenance)
+    args = [(group, rid, pilot, provenance) for rid, pilot in cells]
     for res in run_cell.starmap(args, return_exceptions=True, wrap_returned_exceptions=False):
         if isinstance(res, Exception):
             print("RUN FAILED:", repr(res))
             continue
         d = root / res["run_id"]
         d.mkdir(parents=True, exist_ok=True)
+        rows = res["metrics"].pop("per_example", [])
         (d / "metrics.json").write_text(json.dumps(res["metrics"], indent=2, default=float))
-        print("done", res["run_id"], {k: round(v["accuracy"], 3)
+        with (d / "per_example_results.jsonl").open("w") as f:
+            for row in rows:
+                f.write(json.dumps(row) + "\n")
+        print("done", res["run_id"], {k: (round(v["accuracy"], 3) if v else None)
                                       for k, v in res["metrics"]["final"].items()})

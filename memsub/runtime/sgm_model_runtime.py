@@ -16,6 +16,8 @@ frozen backbone into earlier adapters and memory writes (§5.4).
 
 from __future__ import annotations
 
+import uuid
+
 import torch
 from torch import nn
 
@@ -40,12 +42,22 @@ class SGMModelRuntime(nn.Module):
         self.device = next(model.parameters()).device
         # Diagnostic-only read-address intervention (cells); 0 in every arm.
         self.diag_read_offset = 0.0
+        self.runtime_uuid = uuid.uuid4().hex[:16]
+
+    def weights_identity(self) -> str:
+        """Ephemeral identity of the live adapter weights: this runtime instance
+        plus the summed in-place version counters of its parameters (bumped by
+        every optimizer step or in-place load). Live bank/KV state built under
+        one identity is rejected under any other (#gravity 21075 P1)."""
+        version = sum(p._version for p in self.adapters.parameters())
+        return f"{self.runtime_uuid}:{version}"
 
     def new_state(self, batch: int = 1) -> SGMSessionState:
         c = self.cfg
         banks = SparseBankSet(batch, c.selected_layers, c.memory_heads, c.key_dim,
                               c.value_dim, c.max_cells_per_bank, self.device)
-        return SGMSessionState(CompactedPrefixCache(c.pinned_sink_tokens), banks, c.policy_id)
+        return SGMSessionState(CompactedPrefixCache(c.pinned_sink_tokens), banks, c.policy_id,
+                               weights_id=self.weights_identity())
 
     # -- one forward block ------------------------------------------------------------
     def step(self, state: SGMSessionState, input_ids: torch.Tensor, *, write: bool,
