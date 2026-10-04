@@ -1,67 +1,137 @@
 """Mirror an M4-SGM grid group from the Modal volume, validate every cell's
-artifacts, and recover complete cells whose return stream failed.
+artifacts against its REGISTERED config, and recover complete evidence whose
+return stream failed.
 
     uv run python scripts/sgm-recover-and-validate-grid-artifacts.py \
         --group p2-load-sweep-v2 --local plans/261005-0210-m4-sgm-p0-p2/runs \
         --source-sha a89284ea...
 
-Per registered cell (expanded from the group's local grid.json), status is:
-  stream_ok        local metrics.json returned by the launcher and validated
-  recovered        complete on the volume, missing locally -> copied locally
-  incomplete       missing files or failed provenance/content checks (reason)
+Per registered cell (expanded from the group's grid.json with the launcher's
+own `_expand`), status is one of:
+  stream_ok         launcher-returned metrics + rows identical to the valid volume copy
+  rows_recovered    metrics streamed; per-example rows missing/different -> copied
+  recovered         complete on the volume, nothing local -> metrics + rows copied
+  incomplete        volume artifacts invalid (reason) — execution evidence problem
+  local_mismatch    volume valid but locally streamed metrics disagree (investigate)
+  retrieval_failed  `modal volume get` failed (stderr kept) — NOT execution evidence
 Writes <local>/<group>/artifact_validation.json. Never trains or launches.
-Recovery code is outside memsub/, so the frozen experiment source hash is
-unaffected.
+Lives outside memsub/, so the frozen experiment source hash is unaffected.
 """
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import shutil
 import subprocess
+from collections import defaultdict
 from pathlib import Path
 
 REQUIRED = ("run_manifest.json", "metrics.json", "per_example_results.jsonl",
             "split_manifest.json", "routing_telemetry.jsonl", "report.md",
             "trained_parameters.safetensors")
+ROW_FIELDS = {"batch": int, "episode": int, "episode_hash": str, "query": int, "key": int,
+              "label": int, "pred": int, "correct": bool, "intervention": str}
 FINAL_SEED_BASE = 9_100_003
+RUNNER = Path(__file__).resolve().parents[1] / "modal-runners" / "modal-m4-sgm-synthetic-pilot-grid.py"
 
 
-def expand(grid: dict) -> list[str]:
-    ids = []
-    for block in grid["blocks"]:
-        for arm in block["arms"]:
-            for n in block["n_bindings"]:
-                for seed in block["seeds"]:
-                    ids.append(f"{block.get('tag', 'main')}-{arm.replace('_', '-')}-n{n}-s{seed}")
-    return ids
+def registered_cells(grid: dict) -> dict[str, dict]:
+    """run_id -> pilot config, via the launcher's own expansion."""
+    spec = importlib.util.spec_from_file_location("m4_grid_runner", RUNNER)
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+    return dict(runner._expand(grid))
 
 
-def validate(cell: Path, run_id: str, launch: dict, source_sha: str) -> str | None:
-    """None if complete and consistent, else the first failure reason."""
+def validate_rows(rows_text: str, met: dict) -> str | None:
+    """Parse every row; check schema, unique complete episode/query coverage
+    per intervention, shared episodes, and correct/total vs final metrics."""
+    evaluated = {k[len("heldout_"):]: v for k, v in met["final"].items()
+                 if k.startswith("heldout_") and v}
+    by_iv: dict[str, dict] = defaultdict(dict)
+    for i, line in enumerate(rows_text.splitlines()):
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as e:
+            return f"row {i}: invalid JSON ({e.msg})"
+        if not isinstance(row, dict) or set(row) != set(ROW_FIELDS) or any(
+                type(row[k]) is not t for k, t in ROW_FIELDS.items()):
+            return f"row {i}: schema mismatch"
+        if row["intervention"] not in evaluated:
+            return f"row {i}: unexpected intervention {row['intervention']!r}"
+        key = (row["batch"], row["episode"], row["episode_hash"], row["query"])
+        if key in by_iv[row["intervention"]]:
+            return f"row {i}: duplicate {key}"
+        by_iv[row["intervention"]][key] = row["correct"]
+    episodes_ref = None
+    for iv, result in evaluated.items():
+        rows = by_iv.get(iv, {})
+        episodes = {k[:3] for k in rows}
+        if len(episodes) != met["final_episodes"]:
+            return f"{iv}: {len(episodes)} episodes != final_episodes {met['final_episodes']}"
+        for ep in episodes:
+            if {k[3] for k in rows if k[:3] == ep} != set(range(met["n_queries"])):
+                return f"{iv}: episode {ep} lacks queries 0..{met['n_queries'] - 1}"
+        if episodes_ref is None:
+            episodes_ref = episodes
+        elif episodes != episodes_ref:
+            return f"{iv}: episodes differ from other interventions"
+        if (sum(rows.values()), len(rows)) != (result["correct"], result["total"]):
+            return f"{iv}: rows give {sum(rows.values())}/{len(rows)} != metrics {result['correct']}/{result['total']}"
+    return None
+
+
+def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str) -> str | None:
+    """None if the cell's artifacts are complete, parseable and bound to the
+    registered config and launch provenance; else the first failure reason."""
     missing = [f for f in REQUIRED if not (cell / f).exists()]
     if missing:
         return f"missing {missing}"
-    man = json.loads((cell / "run_manifest.json").read_text())
-    met = json.loads((cell / "metrics.json").read_text())
+    try:
+        man = json.loads((cell / "run_manifest.json").read_text())
+        met = json.loads((cell / "metrics.json").read_text())
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        return f"unparseable manifest/metrics ({e})"
     checks = {
         "run_id": man.get("run_id") == run_id,
+        "pilot_config": man.get("pilot_config") == pilot,
+        "metrics_identity": all(met.get(k) == pilot[k] for k in
+                                ("arm", "n_bindings", "seed", "steps", "readout", "n_queries")),
         "git_head": man.get("git_head") == launch["git_head"],
         "grid_sha256": man.get("grid_sha256") == launch["grid_sha256"],
         "memsub_source_sha256": man.get("memsub_source_sha256") == source_sha,
-        "final_eval_seed": man.get("final_eval_seed") == FINAL_SEED_BASE + met.get("seed", -1),
+        "final_eval_seed": man.get("final_eval_seed") == FINAL_SEED_BASE + pilot["seed"],
         "trained_parameters_sha256": man.get("trained_parameters_sha256") == hashlib.sha256(
             (cell / "trained_parameters.safetensors").read_bytes()).hexdigest(),
     }
     bad = [k for k, ok in checks.items() if not ok]
     if bad:
-        return f"provenance mismatch {bad}"
-    rows = (cell / "per_example_results.jsonl").read_text().splitlines()
-    evaluated = [k for k, v in met["final"].items() if v and k.startswith("heldout_")]
-    expected = len(evaluated) * met["final_episodes"] * met["n_queries"]
-    if len(rows) != expected:
-        return f"per-example rows {len(rows)} != expected {expected}"
-    return None
+        return f"mismatch {bad}"
+    try:
+        return validate_rows((cell / "per_example_results.jsonl").read_text(), met)
+    except (KeyError, TypeError) as e:
+        return f"metrics lack fields needed for row validation ({e})"
+
+
+def reconcile(dest: Path, local: Path) -> str:
+    """Bring valid volume evidence into the local run dir; return status."""
+    vol_met = json.loads((dest / "metrics.json").read_text())
+    vol_rows = (dest / "per_example_results.jsonl").read_bytes()
+    if not (local / "metrics.json").exists():
+        local.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dest / "metrics.json", local / "metrics.json")
+        (local / "per_example_results.jsonl").write_bytes(vol_rows)
+        (local / "recovered_from_volume.json").write_text(json.dumps({"copied": ["metrics", "rows"]}))
+        return "recovered"
+    if json.loads((local / "metrics.json").read_text())["final"] != vol_met["final"]:
+        raise ValueError("local streamed metrics differ from the valid volume metrics")
+    rows = local / "per_example_results.jsonl"
+    if rows.exists() and rows.read_bytes() == vol_rows:
+        return "stream_ok"
+    rows.write_bytes(vol_rows)
+    (local / "recovered_from_volume.json").write_text(json.dumps({"copied": ["rows"]}))
+    return "rows_recovered"
 
 
 def main():
@@ -75,30 +145,24 @@ def main():
     mirror = args.local / f"{args.group}-volume-mirror"
     launch = json.loads((root / "launch_provenance.json").read_text())
     report = {"group": args.group, "launch": launch, "source_sha": args.source_sha, "cells": {}}
-    for run_id in expand(json.loads((root / "grid.json").read_text())):
+    for run_id, pilot in registered_cells(json.loads((root / "grid.json").read_text())).items():
         dest = mirror / run_id
         if dest.exists():
             shutil.rmtree(dest)
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        subprocess.run(["modal", "volume", "get", args.volume,
-                        f"m4-sgm/{args.group}/{run_id}", str(mirror)],
-                       capture_output=True, text=True)
-        reason = validate(dest, run_id, launch, args.source_sha)
-        local = root / run_id
-        if reason is not None:
-            status = "incomplete"
-        elif (local / "metrics.json").exists():
-            same = (json.loads((local / "metrics.json").read_text())["final"]
-                    == json.loads((dest / "metrics.json").read_text())["final"])
-            status, reason = ("stream_ok", None) if same else (
-                "incomplete", "local streamed metrics differ from volume metrics")
+        mirror.mkdir(parents=True, exist_ok=True)
+        got = subprocess.run(["modal", "volume", "get", args.volume,
+                              f"m4-sgm/{args.group}/{run_id}", str(mirror)],
+                             capture_output=True, text=True)
+        if got.returncode != 0:
+            status, reason = "retrieval_failed", (got.stderr or got.stdout).strip()[-500:]
         else:
-            local.mkdir(parents=True, exist_ok=True)
-            for f in ("metrics.json", "per_example_results.jsonl"):
-                shutil.copy2(dest / f, local / f)
-            (local / "recovered_from_volume.json").write_text(json.dumps(
-                {"source": f"{args.volume}:m4-sgm/{args.group}/{run_id}"}, indent=2))
-            status = "recovered"
+            reason = validate(dest, run_id, pilot, launch, args.source_sha)
+            status = "incomplete"
+            if reason is None:
+                try:
+                    status = reconcile(dest, root / run_id)
+                except ValueError as e:
+                    status, reason = "local_mismatch", str(e)
         report["cells"][run_id] = {"status": status, "reason": reason}
         print(f"{run_id}: {status}" + (f" ({reason})" if reason else ""))
     (root / "artifact_validation.json").write_text(json.dumps(report, indent=2))

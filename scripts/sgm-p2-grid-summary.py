@@ -19,20 +19,38 @@ from memsub.sgm.p2_grid_readings import (  # noqa: E402
 
 
 ATTEMPT_SUFFIX = re.compile(r"-r\d+$")
+CELL_NAME = re.compile(r"^(?P<tag>[a-z]+)-(?P<arm>[a-z][a-z-]*?)-n(?P<n>\d+)-s(?P<seed>\d+)$")
 
 
 def load(root: Path) -> tuple[dict, list[str]]:
-    """One selected attempt per logical cell. A cell with several attempts
-    (original + "-rN" retries) needs an explicit selection in the group's
-    attempts.json registry ({"selected": {logical_id: run_dir}}); without
-    one it is AMBIGUOUS and excluded, so its readings fail closed."""
+    """One selected attempt per logical cell, bound to its folder identity.
+
+    * A folder whose metrics (arm, N, seed) disagree with its name is rejected.
+    * Several attempts of one cell (original + "-rN") need an explicit
+      selection in the group's attempts.json ({"selected": {logical: dir}});
+      without one the cell is AMBIGUOUS and excluded.
+    * If two selected folders still claim the same logical key, or a rejected
+      folder's metrics claim it, the WHOLE key is invalidated (no first-wins;
+      a badly named claimant taints that (arm, N, seed) under every tag).
+      Excluded cells fail closed downstream."""
     registry_file = root / "attempts.json"
     selected = json.loads(registry_file.read_text()).get("selected", {}) if registry_file.exists() else {}
     by_cell: dict[str, list[Path]] = {}
     for f in sorted(root.glob("*/metrics.json")):
         by_cell.setdefault(ATTEMPT_SUFFIX.sub("", f.parent.name), []).append(f.parent)
-    runs, problems = {}, []
+    problems: list[str] = []
+    claims: dict[tuple, list[tuple[str, dict]]] = {}
+    tainted: set[tuple] = set()
+
+    def identity(d: Path) -> tuple:
+        m = json.loads((d / "metrics.json").read_text())
+        return (m.get("arm"), m.get("n_bindings"), m.get("seed"))
     for logical, dirs in sorted(by_cell.items()):
+        name = CELL_NAME.match(logical)
+        if name is None:
+            problems.append(f"{logical}: folder name is not a registered cell id")
+            tainted.update(identity(d) for d in dirs)
+            continue
         if logical in selected:
             dirs = [d for d in dirs if d.name == selected[logical]]
             if len(dirs) != 1:
@@ -42,14 +60,22 @@ def load(root: Path) -> tuple[dict, list[str]]:
             problems.append(f"{logical}: AMBIGUOUS — {len(dirs)} attempts and no registry selection")
             continue
         m = json.loads((dirs[0] / "metrics.json").read_text())
+        expected = (name["arm"].replace("-", "_"), int(name["n"]), int(name["seed"]))
+        if (m.get("arm"), m.get("n_bindings"), m.get("seed")) != expected:
+            problems.append(f"{dirs[0].name}: metrics identity {identity(dirs[0])} != folder {expected}")
+            tainted.add(identity(dirs[0]))
+            continue
         rows = dirs[0] / "per_example_results.jsonl"
         m["_rows"] = [json.loads(l) for l in rows.read_text().splitlines()] if rows.exists() else []
         m["_attempt"] = dirs[0].name
-        key = (logical.split("-")[0], m["arm"], m["n_bindings"], m["seed"])
-        if key in runs:
-            problems.append(f"{logical}: duplicate logical key {key}")
+        claims.setdefault((name["tag"], *expected), []).append((dirs[0].name, m))
+    runs = {}
+    for key, claimants in claims.items():
+        if len(claimants) > 1 or key[1:] in tainted:
+            problems.append(f"{key}: conflicting claimants {[c[0] for c in claimants]} "
+                            f"(or a rejected folder claims it) — whole cell invalidated")
             continue
-        runs[key] = m
+        runs[key] = claimants[0][1]
     for logical in selected:
         if logical not in by_cell:
             problems.append(f"{logical}: registry entry but no attempt with metrics")
