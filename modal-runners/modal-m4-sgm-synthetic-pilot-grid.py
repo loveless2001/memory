@@ -26,7 +26,7 @@ artifacts = modal.Volume.from_name("memsub-artifacts")
 CPUS = 4
 
 
-@app.function(image=image, cpu=CPUS, memory=8192, timeout=4 * 3600, retries=0,
+@app.function(image=image, cpu=CPUS, memory=8192, timeout=6 * 3600, retries=0,
               volumes={"/artifacts": artifacts}, max_containers=48)
 def run_cell(group: str, run_id: str, pilot: dict) -> dict:
     import re
@@ -75,7 +75,7 @@ def main(group: str, grid: str, local_out: str):
     root.mkdir(parents=True, exist_ok=True)
     (root / "grid.json").write_text(json.dumps(spec, indent=2))
     args = [(group, rid, pilot) for rid, pilot in cells]
-    for res in run_cell.starmap(args, return_exceptions=True):
+    for res in run_cell.starmap(args, return_exceptions=True, wrap_returned_exceptions=False):
         if isinstance(res, Exception):
             print("RUN FAILED:", repr(res))
             continue

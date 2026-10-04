@@ -90,3 +90,22 @@ Readings (held-out, episode-level 95% intervals, both seeds):
 
 These are mechanism readings on a random backbone. They do not establish
 anything about frozen pretrained Qwen, recovery, or scaling.
+
+### Amendment A1 (pre-launch, 2026-10-05, from the 3-run `sanity-v1` check)
+
+Sanity (N = 16, 300 steps, seed 0, held-out): oracle **0.991** (shuffle
+0.042, read-offset 0.013, query-off 0.013) — the update/readout interface
+learns and generalises to unseen key families. `learned` 0.015 and
+`single_cell` 0.016 (chance 0.016): flat at 300 steps; learned addresses
+spread 1.0 → 1.9 cells and occupancy 43 → 77 cells/bank without task gain.
+
+Reading note: the oracle arm also sends every non-binding token to a junk
+cell, so it isolates filler writes for free. `learned` / `single_cell` /
+`random_fixed` must learn write selectivity themselves (β gate or routing):
+with β ≈ 0.5, 40 filler writes into the same few cells overwrite the
+bindings. R1 therefore tests the interface under perfect addressing AND
+perfect write isolation.
+
+Changes (made before the grid launched): steps 600 → 1500 for every arm;
+added per-token-class write-gate telemetry (`beta_by_token_class`:
+sink / key / value / filler); Modal timeout 4 h → 6 h. Readings R1–R4 are unchanged.

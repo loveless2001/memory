@@ -39,11 +39,25 @@ def query_logits(backend, head, state, batch, q: int, arm: str, readout: str,
     return head(feats), out["trace"]
 
 
-def ingest(backend: SparseGrowingMemoryBackend, batch, arm: str):
+def ingest(backend: SparseGrowingMemoryBackend, batch, arm: str, traces: list | None = None):
     state = backend.new_state(batch.source.shape[0])
     oracle = batch.oracle_source if arm == "oracle" else None
     return backend.ingest_source(state, batch.source, SourceRef("synthetic-episode"),
-                                 enabled=arm != "memory_off", oracle_addresses=oracle)
+                                 enabled=arm != "memory_off", oracle_addresses=oracle,
+                                 traces=traces)
+
+
+def beta_by_token_class(traces: list, n_bindings: int) -> dict:
+    """Mean write gate per source-token class (sink / key / value / filler):
+    shows whether non-binding writes are being gated off."""
+    sums: dict[str, list[float]] = {"sink": [], "key": [], "value": [], "filler": []}
+    for t, tr in enumerate(traces):
+        if "beta" not in tr:
+            return {}
+        cls = ("sink" if t < 4 else "filler" if t >= 4 + 2 * n_bindings
+               else "key" if (t - 4) % 2 == 0 else "value")
+        sums[cls].append(float(torch.stack(list(tr["beta"].values())).mean()))
+    return {k: sum(v) / len(v) for k, v in sums.items() if v}
 
 
 def _shuffle_banks(state, gen: torch.Generator) -> None:
@@ -73,12 +87,14 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
              intervention: str = "none", per_example: list | None = None) -> dict:
     gen = torch.Generator().manual_seed(seed)
     correct = total = 0
-    empty, coords, tele, episode_acc = [], [], [], []
+    empty, coords, tele, episode_acc, betas = [], [], [], [], []
     rt = backend.runtime
     for bi in range(batches):
         batch = sample_batch(spec, split, batch_size, gen)
-        state = ingest(backend, batch, arm).detached()
+        traces: list = []
+        state = ingest(backend, batch, arm, traces).detached()
         tele.append(bank_telemetry(state))
+        betas.append(beta_by_token_class(traces, spec.n_bindings))
         if intervention == "shuffle":
             _shuffle_banks(state, gen)
         rt.diag_read_offset = 3.0 if intervention == "read_offset" else 0.0
@@ -111,6 +127,8 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
            "query_empty_read_weight": sum(empty) / len(empty) if empty else None,
            "query_read_address_std_cells": spread if coords else None}
     out.update({k: sum(t[k] for t in tele) / len(tele) for k in tele[0]})
+    if betas and betas[0]:
+        out["beta_by_token_class"] = {k: sum(b[k] for b in betas) / len(betas) for k in betas[0]}
     # Episode-level (not per-query) normal interval: queries share a source.
     ep = torch.tensor(episode_acc, dtype=torch.float64)
     out["episodes"] = len(episode_acc)

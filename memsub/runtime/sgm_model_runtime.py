@@ -98,6 +98,7 @@ class SGMModelRuntime(nn.Module):
         h = h + adapter.output(r).to(h.dtype)
         if write:
             trace["allocated"] += self._write(state.banks, i, p, oracle)
+            trace.setdefault("beta", {})[i] = p["beta"][:, 0].detach()   # [B, H]
         residual = h
         return residual + layer.mlp(layer.post_attention_layernorm(h))
 
