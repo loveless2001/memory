@@ -18,6 +18,7 @@ CHANCE = 1 / 64
 REGISTERED_SEEDS = (0, 1)
 REGISTERED_STEPS = 1500          # amendment A1
 REGISTERED_READOUT = "taskhead"
+REGISTERED_QUERIES = 4           # queries per episode (grid base n_queries)
 CONTROLS = ("single_cell", "random_fixed")
 MET, NOT_MET, NON_EVALUABLE = "MET", "NOT MET", "NON-EVALUABLE"
 
@@ -51,16 +52,20 @@ def episode_table(m: dict, intervention: str) -> dict[tuple, dict[int, bool]]:
 def paired_difference(m_a: dict, m_b: dict, iv_a: str = "none",
                       iv_b: str = "none") -> tuple[float, float]:
     """Mean per-episode accuracy difference a - b and its 95% half-width,
-    over identical episodes (hash-matched) with identical complete query sets."""
+    over identical hash-matched episodes. Every episode must carry exactly the
+    REGISTERED query ids, and both runs must cover their recorded
+    `final_episodes` count (no inference from observed rows)."""
     a, b = episode_table(m_a, iv_a), episode_table(m_b, iv_b)
     if set(a) != set(b):
         raise NonEvaluable("paired runs cover different episodes or episode hashes")
-    queries = set(next(iter(a.values())))
-    if queries != set(range(len(queries))):
-        raise NonEvaluable("query ids are not a complete 0..Q-1 set")
+    queries = set(range(REGISTERED_QUERIES))
     for key in a:
         if set(a[key]) != queries or set(b[key]) != queries:
-            raise NonEvaluable(f"episode {key} has incomplete or mismatched query ids")
+            raise NonEvaluable(f"episode {key} lacks the registered query ids {sorted(queries)}")
+    for m in (m_a, m_b):
+        if m.get("final_episodes") != len(a):
+            raise NonEvaluable(f"{m.get('arm')}: {len(a)} paired episodes != recorded "
+                               f"final_episodes {m.get('final_episodes')}")
     if len(a) < 2:
         raise NonEvaluable("fewer than 2 paired episodes")
     d = [(sum(a[k].values()) - sum(b[k].values())) / len(queries) for k in a]
@@ -84,8 +89,9 @@ def _complete(main, arm: str, n: int) -> dict[int, dict]:
         raise NonEvaluable(f"{arm}/N={n}: missing registered seeds {missing}")
     for s in REGISTERED_SEEDS:
         m = seeds[s]
-        if m.get("steps") != REGISTERED_STEPS or m.get("readout") != REGISTERED_READOUT:
-            raise NonEvaluable(f"{arm}/N={n}/s{s}: not the registered steps/readout")
+        if (m.get("steps"), m.get("readout"), m.get("n_queries")) != (
+                REGISTERED_STEPS, REGISTERED_READOUT, REGISTERED_QUERIES):
+            raise NonEvaluable(f"{arm}/N={n}/s{s}: not the registered steps/readout/n_queries")
     return seeds
 
 
@@ -142,8 +148,13 @@ def _r3(main, ns, r2: dict) -> dict:
             controls = {arm: _complete(main, arm, n) for arm in CONTROLS}
             seed_ok = []
             for s in REGISTERED_SEEDS:
-                best = max((controls[a][s] for a in CONTROLS), key=accuracy)
-                gain, gh = paired_difference(learned[s], best)
+                # Validate BOTH controls' paired rows before choosing; the
+                # stronger control is the one with the smallest paired gain
+                # (ties: the smaller lower bound).
+                pairs = {a: paired_difference(learned[s], controls[a][s]) for a in CONTROLS}
+                strongest = min(CONTROLS, key=lambda a: (pairs[a][0], pairs[a][0] - pairs[a][1]))
+                best = controls[strongest][s]
+                gain, gh = pairs[strongest]
                 drop, dh = paired_difference(learned[s], learned[s], "none", "read_offset")
                 ok = gain >= 0.05 and gain - gh > 0 and drop - dh > 0
                 seed_ok.append(ok)

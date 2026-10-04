@@ -151,9 +151,11 @@ Every finding from codex's audit (21074/21075) is accepted:
 
 7. **Fail-closed readings** (codex 21084): `memsub/sgm/p2_grid_readings.py`.
    R2 and R3 require the registered seeds {0, 1}, both controls, the
-   registered steps (1500) and the task-head readout. Paired rows must have
-   hash-matched episodes, complete non-duplicated query ids, and at least 2
-   episodes. Anything missing or misaligned is NON-EVALUABLE, never MET.
+   registered steps (1500), the task-head readout and n_queries = 4. Paired rows
+   must have hash-matched episodes, exactly the registered query ids {0,1,2,3}
+   (not inferred from the rows), the recorded `final_episodes` count in both
+   runs, and at least 2 episodes. Both controls' rows are validated before the
+   stronger one is chosen (codex 21088). Anything missing or misaligned is NON-EVALUABLE, never MET.
    R3 = MET only if some N ≥ N* passes in both seeds; otherwise NON-EVALUABLE
    if any eligible N is non-evaluable, else NOT MET. Thresholds and seeds are
    unchanged.

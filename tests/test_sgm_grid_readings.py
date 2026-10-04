@@ -23,7 +23,7 @@ def _run(arm, n, seed, acc_none, acc_offset=None, *, steps=1500, hash_tag="h"):
              (("none", acc_none), ("read_offset", acc_none if acc_offset is None else acc_offset),
               ("bank_derange", 1 / 64))}
     return {"arm": arm, "n_bindings": n, "seed": seed, "steps": steps, "readout": "taskhead",
-            "final": final, "_rows": rows}
+            "n_queries": Q, "final_episodes": EPISODES, "final": final, "_rows": rows}
 
 
 def _grid():
@@ -97,3 +97,30 @@ def test_learned_tied_with_control_is_not_met():
     for s in (0, 1):
         runs[("main", "learned", 16, s)] = _run("learned", 16, s, 0.25, 0.25)
     assert readings(runs, [4, 16])["R3"]["status"] == NOT_MET
+
+
+def test_dropped_query_id_in_every_run_is_non_evaluable():
+    runs = _grid()
+    for m in runs.values():
+        m["_rows"] = [r for r in m["_rows"] if r["query"] != 3]
+    assert readings(runs, [4, 16])["R3"]["status"] == NON_EVALUABLE
+
+
+def test_unselected_control_without_rows_is_non_evaluable():
+    runs = _grid()
+    for s in (0, 1):
+        runs[("main", "random_fixed", 16, s)]["_rows"] = []
+    assert readings(runs, [4, 16])["R3"]["status"] == NON_EVALUABLE
+
+
+def test_identically_truncated_episodes_are_non_evaluable():
+    runs = _grid()
+    for m in runs.values():
+        m["_rows"] = [r for r in m["_rows"] if r["episode"] < 2]
+    assert readings(runs, [4, 16])["R3"]["status"] == NON_EVALUABLE
+
+
+def test_unregistered_query_count_is_non_evaluable():
+    runs = _grid()
+    runs[("main", "learned", 16, 1)]["n_queries"] = 3
+    assert readings(runs, [4, 16])["R3"]["status"] == NON_EVALUABLE

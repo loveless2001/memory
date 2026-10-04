@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from memsub.sgm.p2_grid_readings import (  # noqa: E402
-    REGISTERED_STEPS, NonEvaluable, accuracy, readings)
+    REGISTERED_QUERIES, REGISTERED_STEPS, NonEvaluable, accuracy, readings)
 
 
 def load(root: Path) -> dict:
@@ -54,7 +54,10 @@ def registered_ns(root: Path, runs: dict) -> tuple[list[int], list[str]]:
         return sorted({k[2] for k in runs if k[0] == "main"}), ["grid.json missing: N set inferred"]
     g = json.loads(grid.read_text())
     notes = [f"registered steps (A1): {g['base']['steps']}"
-             + ("" if g["base"]["steps"] == REGISTERED_STEPS else f" ≠ {REGISTERED_STEPS} — MISMATCH")]
+             + ("" if g["base"]["steps"] == REGISTERED_STEPS else f" ≠ {REGISTERED_STEPS} — MISMATCH"),
+             f"registered queries/episode: {g['base']['n_queries']}"
+             + ("" if g["base"]["n_queries"] == REGISTERED_QUERIES
+                else f" ≠ {REGISTERED_QUERIES} — MISMATCH")]
     ns = sorted({n for b in g["blocks"] if b.get("tag", "main") == "main" for n in b["n_bindings"]})
     return ns, notes
 
