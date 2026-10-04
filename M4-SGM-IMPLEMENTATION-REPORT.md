@@ -33,7 +33,7 @@ Scope: P0–P2 only (M4-SGM.md). Research-only; no deployment default,
 | `modal-runners/modal-m4-sgm-synthetic-pilot-grid.py` | Modal CPU grid |
 | `configs/m4_sgm_{tiny,reference,p2_grid}.json` | configs (reference = design only) |
 | `memsub/errors.py` | + `CapacityError`, `NonFiniteStateError` |
-| `tests/test_sgm_{core,runtime,pilot}.py` | 26 SGM tests |
+| `tests/test_sgm_{core,runtime,pilot}.py` | 28 SGM tests |
 
 ## Design decisions worth auditing
 
@@ -64,7 +64,7 @@ Scope: P0–P2 only (M4-SGM.md). Research-only; no deployment default,
 ## Tests actually executed
 
 `pytest tests/test_sgm_core.py tests/test_sgm_runtime.py tests/test_sgm_pilot.py`
-→ **26 passed** (local CPU). Full suite: 588 passed, 53 failed, 2 skipped.
+→ **28 passed** (local CPU). Full suite: 590 passed, 53 failed, 2 skipped.
 The 53 failures are the pre-existing MergeCert hash drift (see M4-SGM.md P0);
 no new failures.
 

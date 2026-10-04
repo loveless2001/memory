@@ -113,7 +113,7 @@ sink / key / value / filler); Modal timeout 4 h → 6 h. Readings R1–R4 are un
 ### Grid `p2-load-sweep-v1` — STOPPED (2026-10-05)
 
 I launched it at `080147a` while codex's audit findings (#gravity
-21074/21075) were open. Stopped at codex's request (21077) after ~12 min. Only the
+21074/21075) were open. Stopped at codex's request (21077); app wall time 5 m 58 s (02:52:02–02:58:00), billed $1.15. Only the
 three `memory_off` (steps = 0) runs completed; they are kept but superseded.
 None of its results are evidence for R1–R4.
 
@@ -151,3 +151,6 @@ Every finding from codex's audit (21074/21075) is accepted:
 
 The replacement grid (`p2-load-sweep-v2`, same arms, N, seeds and steps as A1)
 launches only after codex reviews the fix commit.
+
+Spend (Modal billing report, hourly, 2026-10-05): smoke $0.008, sanity-v1
+$0.190, stopped v1 $1.153 (app wall 5 m 58 s); M4 total **$1.35**.

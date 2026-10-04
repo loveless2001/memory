@@ -47,10 +47,13 @@ class SGMModelRuntime(nn.Module):
     def weights_identity(self) -> str:
         """Ephemeral identity of the live adapter weights: this runtime instance
         plus the summed in-place version counters of its parameters (bumped by
-        every optimizer step or in-place load). Live bank/KV state built under
+        every optimizer step and by load_state_dict's in-place copy) and the
+        identity of the Parameter objects. Live bank/KV state built under
         one identity is rejected under any other (#gravity 21075 P1)."""
-        version = sum(p._version for p in self.adapters.parameters())
-        return f"{self.runtime_uuid}:{version}"
+        params = list(self.adapters.parameters())
+        version = sum(p._version for p in params)          # in-place updates / reloads
+        members = hash(tuple(id(p) for p in params)) & 0xFFFFFFFF  # replaced Parameters
+        return f"{self.runtime_uuid}:{version}:{members:08x}"
 
     def new_state(self, batch: int = 1) -> SGMSessionState:
         c = self.cfg

@@ -178,3 +178,16 @@ def test_live_state_rejected_under_other_or_updated_adapter_weights():
         with pytest.raises(CompatibilityError):             # stale after an update
             call()
     a.ingest_source(a.new_state(), _ids(2), SRC)            # rebuilt state is fine
+
+
+def test_live_state_rejected_after_weight_reload_or_parameter_replacement():
+    a = _backend()
+    st = a.ingest_source(a.new_state(), _ids(3), SRC)
+    a.runtime.adapters.load_state_dict(a.runtime.adapters.state_dict())   # same values, reloaded
+    with pytest.raises(CompatibilityError):
+        a.evaluate_query(st, _ids(1))
+    st = a.ingest_source(a.new_state(), _ids(3), SRC)
+    adapter = a.runtime.adapters["1"]
+    adapter.alpha_logit = torch.nn.Parameter(adapter.alpha_logit.detach().clone())
+    with pytest.raises(CompatibilityError):
+        a.evaluate_query(st, _ids(1))

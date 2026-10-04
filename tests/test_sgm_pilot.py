@@ -83,3 +83,16 @@ def test_bank_derange_is_effective_for_single_cell_and_coord_shuffle_is_na():
         assert bank == before[((b + 1) % 3, l, h)]
         assert not torch.equal(bank[(0, 0)], before[(b, l, h)][(0, 0)])
     assert _rows("single_cell", "coord_shuffle")[0] is None
+
+
+def test_bank_derange_rejects_singleton_batch():
+    import pytest
+    import torch
+    from memsub.sgm.synthetic_pilot import build
+    from memsub.sgm.synthetic_pilot_evaluation import apply_intervention, ingest
+    p = PilotConfig(arm="single_cell", n_bindings=4)
+    _, backend, _ = build(p)
+    batch = sample_batch(p.task_spec(), "train", 1, torch.Generator().manual_seed(0))
+    state = ingest(backend, batch, "single_cell").detached()
+    with pytest.raises(ValueError):
+        apply_intervention(state, "bank_derange", torch.Generator())
