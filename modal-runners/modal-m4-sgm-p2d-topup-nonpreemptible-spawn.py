@@ -32,7 +32,7 @@ V2_RUNS = "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2"
 LOCAL_OUT = "plans/261005-0210-m4-sgm-p0-p2/runs"
 SOURCE_SHA = "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60"   # v1 memsub
 NONPREEMPTIBLE_PRICE_MULTIPLIER = 3.0       # Modal docs: 3x list price for CPU and memory
-TOPUP_CAP_USD = None                        # set from the user's decision before launch
+TOPUP_CAP_USD = 27.0                        # user-approved B1 cap (#gravity 21193)
 MAX_CELL_TIMEOUT_S = 8 * 3600               # backstop only; per-cell watchdog is the real bound
 
 app = modal.App(APP_NAME)

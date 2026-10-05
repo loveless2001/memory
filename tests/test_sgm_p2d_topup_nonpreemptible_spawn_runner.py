@@ -169,3 +169,9 @@ def test_terminal_collect_stops_and_verifies(topup, tmp_path, monkeypatch, stop,
     saved = json.loads((root / "collect_status.json").read_text())
     assert saved["final_shutdown"]["status"] == expected
     assert ("stop_error" in saved["final_shutdown"]) == (stop is not None)
+
+
+def test_registered_cap_admits_the_topup_ledger(topup):
+    assert topup.TOPUP_CAP_USD == 27.0
+    _c, ledger, _p = topup.plan_topup()
+    assert ledger["admitted"] and ledger["cap_usd"] == 27.0

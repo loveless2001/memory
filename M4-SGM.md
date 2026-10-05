@@ -556,8 +556,11 @@ Long-prefix continuity and the budget guard are defined in clarifications
 
   - Expected spend is about $13–17 (v1 cells finished at 0.47–0.78 of
     their timeouts).
-  - **The cap is unset (`TOPUP_CAP_USD = None`) until the user approves
-    one. The launcher refuses without it.**
+  - **Cap: $27.00** (`TOPUP_CAP_USD = 27.0`). The user approved B1 at the
+    proposed $27 (#gravity 21193, 14:25; codex 21194). It is admitted
+    because $26.130 ≤ $27.00. The launcher still refuses a missing or
+    insufficient cap (tests). The cap is separate from the spent v1 $15
+    allowance.
 - **Commands** (project interpreter, CLI 1.5.1):
   1. `.venv/bin/python -m modal deploy modal-runners/modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py`
   2. `.venv/bin/python modal-runners/modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py spawn` (refuses a dirty tree or an existing group dir)
