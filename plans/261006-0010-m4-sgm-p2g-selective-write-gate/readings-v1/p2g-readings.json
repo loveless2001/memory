@@ -1,0 +1,1840 @@
+{
+  "observer": {
+    "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+    "inputs_index_sha256": "8824cd030bb6b3ee7b573e1a8044452b0176f680b514b026c3cb8a269acd37f3",
+    "grid_sha256": "465fa3439ddadccc009ea2b7b5b18cc0c172b7c8d67f7511ec2a8f1515e7e5ee",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a"
+    },
+    "git_head": "2613ced101810bd248c1d82d1c3b83d994076120"
+  },
+  "launch": {
+    "grid_file": "configs/m4_sgm_p2g_grid.json",
+    "grid_sha256": "465fa3439ddadccc009ea2b7b5b18cc0c172b7c8d67f7511ec2a8f1515e7e5ee",
+    "inputs_index_sha256": "8824cd030bb6b3ee7b573e1a8044452b0176f680b514b026c3cb8a269acd37f3",
+    "prereg_sha256": "c2fa7394e9e621766af705743d46715b9584c83e161a90bdfd45d928908925c3",
+    "runner_sha256": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+    "deployed_app": "memsub-m4-sgm-p2g",
+    "nonpreemptible": true,
+    "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+    "artifact_eval_seed_base": 9300011,
+    "readings_seed_base_reserved": 9400011,
+    "git_head": "2613ced101810bd248c1d82d1c3b83d994076120",
+    "deployed_app_id": "ap-S6aKXZB9FPh9MBYkLsVdDN",
+    "ledger": {
+      "cells": 6,
+      "price_multiplier": 3.0,
+      "usd_per_container_hour": 0.757728,
+      "train_timeouts_usd": 8.881414079999999,
+      "startup_teardown_usd": 0.45463679999999995,
+      "replay_allowance_usd": 0.5304096,
+      "cpu_overuse_margin_usd": 0.66332112,
+      "image_build_usd": 0.3,
+      "fixed_margin_usd": 1.5,
+      "reserved_total_usd": 12.329781599999999,
+      "cap_usd": 13.0,
+      "admitted": true,
+      "cell_timeouts_s": {
+        "gateclosed-learned-n16-s0": 6106,
+        "gateclosed-learned-n16-s1": 4640,
+        "gateclosed-learned-n32-s0": 8773,
+        "gateclosed-learned-n32-s1": 6952,
+        "filleroff-learned-n32-s0": 8773,
+        "filleroff-learned-n32-s1": 6952
+      }
+    }
+  },
+  "artifact_eval_seed_base": 9300011,
+  "readings_seed_base": 9400011,
+  "limits": [
+    "Evidence class tiny-random-lm+taskhead, synthetic; no R3, scaling, pretrained or P3 claim.",
+    "Cohorts differ in source/host (v2 1d62903/a89284ea, P2D 31aa4c8/d4effd0c, P2G new source); same episode hashes make evaluations paired, not training histories identical.",
+    "The Step 2 seed-0 prefix (continuity) discrepancy is unresolved and inherited.",
+    "Q1 compares the gate recipe to historical v2; Q2 reports registered recipe/setting contrasts, not a unique causal blocker.",
+    "Suppression headline is pooled class-mean filler suppression only; AUROCs are descriptive."
+  ],
+  "p2g_cells": {
+    "gateclosed-learned-n16-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n16-s0",
+      "run_manifest_sha256": "2047167673a5f8185c689c06610aa4fb1f95969378e7ed58b00762bda35e8b2a",
+      "trained_parameters_sha256": "e6beeacd55fd8a75caad57d9ae793404f44592bfc2c79a29b24fe92cca1a2f31",
+      "rows_sha256": "77b36136dc1b16f6412ace866931e78c4728470e21c9f6b5ef6ca91f98a39443"
+    },
+    "gateclosed-learned-n16-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n16-s1",
+      "run_manifest_sha256": "8749b3138223b7da3075e56ef65d74c45a58c7d9d80ebe6ef46d2a8c494e3b18",
+      "trained_parameters_sha256": "076a74b350d9d92ae7cc86973c66c841d85abb9d39ef95e71e9e8cd42ff4a312",
+      "rows_sha256": "292e542e34a06d06c4da941fa31160ac6dbeba3139edbdd95bb6072ae7252e62"
+    },
+    "gateclosed-learned-n32-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n32-s0",
+      "run_manifest_sha256": "28ecc509f3fc430d0adf9bb3d9e935f4afee3841ff713bd5d5c384c09dfdf606",
+      "trained_parameters_sha256": "277053ce1dd2cb4f61bcb5d5a5b415270b8dcc94c5dd751eca3f7bd117943472",
+      "rows_sha256": "48197ed53682fbbb4772565e45be190ed436a3da6f648e9c0d652a0f45cf3ef2"
+    },
+    "gateclosed-learned-n32-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n32-s1",
+      "run_manifest_sha256": "b5b1004d7547b2c7b7012e57ebb6526169d39089eaecf1daeb3413ee5065767c",
+      "trained_parameters_sha256": "46b2bb4483b2e8baab6c98076f3e645e021b58e2df66e5ccb83cb60accc88e93",
+      "rows_sha256": "a775f3ada818d71db99b9312e7173e6fca54726820aff7519a30a8e00bac0143"
+    },
+    "filleroff-learned-n32-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s0",
+      "run_manifest_sha256": "c62ff42ff52d9fd70be819fb28108eea28bd539cdcf100ecc3374c3fce31593f",
+      "trained_parameters_sha256": "cabb432b14934a0fad294dc5b84bae384bd05ef9f3c38a6291cf28bc5fcd4c1a",
+      "rows_sha256": "49768782ee2ff3dd57f4ff531120ddb8548449e291832e0f50c0e7edb7e3399f"
+    },
+    "filleroff-learned-n32-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s1",
+      "run_manifest_sha256": "23aaeddb5593b04d69f14e5a68ffc89b47a1b6fb048c841e4615a31ea2c518ac",
+      "trained_parameters_sha256": "828eb8c1eb82ec12f46127326cc7d58baeb6824bbc51ef51d289e5e0037dceeb",
+      "rows_sha256": "b492c6d490b9e91f8de48c52ac4febaba1054f05cac0ce7d71b0e29c98cd481e"
+    }
+  },
+  "parity": {
+    "P-on:v2-n16-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "ded44fe3c99e7ea608843010d0fa4d880ac5243ea58f8c59a9130c420c8fcd20",
+      "reference_sha256": "ded44fe3c99e7ea608843010d0fa4d880ac5243ea58f8c59a9130c420c8fcd20",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n16-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "b139bd8e9314809b258d50f6bd96f033bd40fd4db669fd59e8395e7fbd87182a",
+      "reference_sha256": "b139bd8e9314809b258d50f6bd96f033bd40fd4db669fd59e8395e7fbd87182a",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n32-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "reference_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n32-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "reference_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n16-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "reference_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n16-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "reference_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "pass": true
+  },
+  "n": {
+    "16": {
+      "seeds": {
+        "0": {
+          "corners": {
+            "Ton-Eon": {
+              "rows_sha256": "283fc387f9c79c7dd0b113d2925cc85448c08b6c0134ee5155dc37e4183f9424",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n16-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.8733566413946713,
+                "auroc_mean_defined": 0.5617618560791016,
+                "auroc_min_defined": 0.4708518981933594,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.4708518981933594,
+                    "binding_projected_mean": 0.3836419960450712,
+                    "binding_effective_mean": 0.3836419960450712,
+                    "filler_projected_mean": 0.40981018379711714,
+                    "filler_effective_mean": 0.40981018379711714,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.5038923263549805,
+                    "binding_projected_mean": 0.41180626236632634,
+                    "binding_effective_mean": 0.41180626236632634,
+                    "filler_projected_mean": 0.40471961615839974,
+                    "filler_effective_mean": 0.40471961615839974,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.6794973373413086,
+                    "binding_projected_mean": 0.25828859485864086,
+                    "binding_effective_mean": 0.25828859485864086,
+                    "filler_projected_mean": 0.13941825259630605,
+                    "filler_effective_mean": 0.13941825259630605,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.5928058624267578,
+                    "binding_projected_mean": 0.17246892930415925,
+                    "binding_effective_mean": 0.17246892930415925,
+                    "filler_projected_mean": 0.11696691137590279,
+                    "filler_effective_mean": 0.11696691137590279,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.0556640625,
+              "memory_use": {
+                "derange_accuracy": 0.01171875,
+                "none_minus_derange": {
+                  "diff": 0.0439453125,
+                  "lo": 0.02895569625933162,
+                  "hi": 0.05893492874066838,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.041015625,
+                  "lo": 0.02554072788138233,
+                  "hi": 0.05649052211861767,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Ton-Eoff": {
+              "rows_sha256": "7700b011c748c06e71d28f86b74e293f778ad34d581702c71c8e33ffd320da0f",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n16-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.3836419960450712,
+                    "binding_effective_mean": 0.3836419960450712,
+                    "filler_projected_mean": 0.40981018379711714,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.41180626236632634,
+                    "binding_effective_mean": 0.41180626236632634,
+                    "filler_projected_mean": 0.40471961615839974,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.25828859485864086,
+                    "binding_effective_mean": 0.25828859485864086,
+                    "filler_projected_mean": 0.1657152843334643,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.17246892930415925,
+                    "binding_effective_mean": 0.17246892930415925,
+                    "filler_projected_mean": 0.138458832629658,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.0576171875,
+              "memory_use": {
+                "derange_accuracy": 0.0107421875,
+                "none_minus_derange": {
+                  "diff": 0.046875,
+                  "lo": 0.031413106218392085,
+                  "hi": 0.062336893781607915,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.041015625,
+                  "lo": 0.02554072788138233,
+                  "hi": 0.05649052211861767,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Toff-Eoff": {
+              "rows_sha256": "d4ddc8347dbedcd3db55bc7be5776293bce84d17b0054c8335b08465d881df29",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7886246321974593,
+                    "binding_effective_mean": 0.7886246321974593,
+                    "filler_projected_mean": 0.670668711704144,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7736223070828565,
+                    "binding_effective_mean": 0.7736223070828565,
+                    "filler_projected_mean": 0.6538252158854021,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.26154468314450696,
+                    "binding_effective_mean": 0.26154468314450696,
+                    "filler_projected_mean": 0.3261087965163824,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.4111287914527679,
+                    "binding_effective_mean": 0.4111287914527679,
+                    "filler_projected_mean": 0.4391468432610964,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.9482421875,
+              "memory_use": {
+                "derange_accuracy": 0.0126953125,
+                "none_minus_derange": {
+                  "diff": 0.935546875,
+                  "lo": 0.9198507386783638,
+                  "hi": 0.9512430113216362,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.9296875,
+                  "lo": 0.9129959247099992,
+                  "hi": 0.9463790752900008,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Toff-Eon": {
+              "rows_sha256": "6c9a8dcf1b80e16c3d943c92e63697df950c9a66560a6073750fbb6c9eb34715",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.9350245593205317,
+                "auroc_mean_defined": 0.5274670362472534,
+                "auroc_min_defined": 0.4023120880126953,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.6099136352539063,
+                    "binding_projected_mean": 0.7886246321974593,
+                    "binding_effective_mean": 0.7886246321974593,
+                    "filler_projected_mean": 0.670668711704144,
+                    "filler_effective_mean": 0.670668711704144,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.6238924026489258,
+                    "binding_projected_mean": 0.7736223070828565,
+                    "binding_effective_mean": 0.7736223070828565,
+                    "filler_projected_mean": 0.6538252158854021,
+                    "filler_effective_mean": 0.6538252158854021,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.4023120880126953,
+                    "binding_projected_mean": 0.26154468314450696,
+                    "binding_effective_mean": 0.26154468314450696,
+                    "filler_projected_mean": 0.3290476630258127,
+                    "filler_effective_mean": 0.3290476630258127,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.47375001907348635,
+                    "binding_projected_mean": 0.4111287914527679,
+                    "binding_effective_mean": 0.4111287914527679,
+                    "filler_projected_mean": 0.43616388448699583,
+                    "filler_effective_mean": 0.43616388448699583,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.873046875,
+              "memory_use": {
+                "derange_accuracy": 0.013671875,
+                "none_minus_derange": {
+                  "diff": 0.859375,
+                  "lo": 0.8374246396139282,
+                  "hi": 0.8813253603860718,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.8564453125,
+                  "lo": 0.8338680277874069,
+                  "hi": 0.8790225972125931,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Tgate-Eon": {
+              "rows_sha256": "106035df7b6d717e3fcbce1bb2933f9ea08a7065a4057d91301d36fb032cc064",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n16-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.6191913576032781,
+                "auroc_mean_defined": 0.6118663787841797,
+                "auroc_min_defined": 0.543453598022461,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.6551681518554687,
+                    "binding_projected_mean": 0.5342665779798657,
+                    "binding_effective_mean": 0.5342665779798657,
+                    "filler_projected_mean": 0.3140805065362505,
+                    "filler_effective_mean": 0.3140805065362505,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.6304243087768555,
+                    "binding_projected_mean": 0.49701213069495487,
+                    "binding_effective_mean": 0.49701213069495487,
+                    "filler_projected_mean": 0.31337055053007584,
+                    "filler_effective_mean": 0.31337055053007584,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.6184194564819336,
+                    "binding_projected_mean": 0.12634225634485574,
+                    "binding_effective_mean": 0.12634225634485574,
+                    "filler_projected_mean": 0.08106075613245593,
+                    "filler_effective_mean": 0.08106075613245593,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.543453598022461,
+                    "binding_projected_mean": 0.0803429477592914,
+                    "binding_effective_mean": 0.0803429477592914,
+                    "filler_projected_mean": 0.05802474261869293,
+                    "filler_effective_mean": 0.05802474261869293,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.80859375,
+              "memory_use": {
+                "derange_accuracy": 0.0087890625,
+                "none_minus_derange": {
+                  "diff": 0.7998046875,
+                  "lo": 0.7753317362184369,
+                  "hi": 0.8242776387815631,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.7978515625,
+                  "lo": 0.7733199750290557,
+                  "hi": 0.8223831499709443,
+                  "n": 256
+                },
+                "pass": true
+              }
+            }
+          },
+          "q2": {
+            "C_T|off": {
+              "diff": 0.890625,
+              "lo": 0.8707869995399007,
+              "hi": 0.9104630004600993,
+              "n": 256
+            },
+            "C_T|on": {
+              "diff": 0.8173828125,
+              "lo": 0.7914815332385993,
+              "hi": 0.8432840917614007,
+              "n": 256
+            },
+            "C_E|Ton": {
+              "diff": 0.001953125,
+              "lo": -0.011874335311376194,
+              "hi": 0.015780585311376195,
+              "n": 256
+            },
+            "C_E|Toff": {
+              "diff": 0.0751953125,
+              "lo": 0.05701754680923934,
+              "hi": 0.09337307819076066,
+              "n": 256
+            },
+            "interaction_descriptive": {
+              "diff": 0.0732421875,
+              "lo": 0.05046722501994848,
+              "hi": 0.09601714998005152,
+              "n": 256
+            }
+          },
+          "q1": {
+            "gate_vs_v2": {
+              "diff": 0.7529296875,
+              "lo": 0.7257423892180193,
+              "hi": 0.7801169857819807,
+              "n": 256
+            },
+            "oracle_vs_v2": {
+              "diff": 0.892578125,
+              "lo": 0.8737157479402533,
+              "hi": 0.9114405020597467,
+              "n": 256
+            },
+            "half_oracle": {
+              "diff": 0.306640625,
+              "lo": 0.28128055382843387,
+              "hi": 0.33200069617156613,
+              "n": 256
+            },
+            "rho": 0.6191913576032781,
+            "memory_use_pass": true
+          }
+        },
+        "1": {
+          "corners": {
+            "Ton-Eon": {
+              "rows_sha256": "b8e93d22f69df7b05e90f308d91550ee59d26850a78c3bbf30f51fff6e13ff33",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n16-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.816004074212544,
+                "auroc_mean_defined": 0.5440656423568726,
+                "auroc_min_defined": 0.47516689300537107,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.5745256423950196,
+                    "binding_projected_mean": 0.4943471257281544,
+                    "binding_effective_mean": 0.4943471257281544,
+                    "filler_projected_mean": 0.41232105499721,
+                    "filler_effective_mean": 0.41232105499721,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.6481213569641113,
+                    "binding_projected_mean": 0.6526002208960631,
+                    "binding_effective_mean": 0.6526002208960631,
+                    "filler_projected_mean": 0.44383793232929314,
+                    "filler_effective_mean": 0.44383793232929314,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.47844867706298827,
+                    "binding_projected_mean": 0.2110592918123757,
+                    "binding_effective_mean": 0.2110592918123757,
+                    "filler_projected_mean": 0.22693918553341064,
+                    "filler_effective_mean": 0.22693918553341064,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.47516689300537107,
+                    "binding_projected_mean": 0.13877606615011473,
+                    "binding_effective_mean": 0.13877606615011473,
+                    "filler_projected_mean": 0.13828261229371036,
+                    "filler_effective_mean": 0.13828261229371036,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.560546875,
+              "memory_use": {
+                "derange_accuracy": 0.0126953125,
+                "none_minus_derange": {
+                  "diff": 0.5478515625,
+                  "lo": 0.5177950326799262,
+                  "hi": 0.5779080923200738,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.5419921875,
+                  "lo": 0.5124194694460215,
+                  "hi": 0.5715649055539785,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Ton-Eoff": {
+              "rows_sha256": "471051de4e9d52c2b690fe8f3ebcd72170fe55765d4b314a689635bbde851434",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n16-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.4943471257281544,
+                    "binding_effective_mean": 0.4943471257281544,
+                    "filler_projected_mean": 0.41232105499721,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.6526002208960631,
+                    "binding_effective_mean": 0.6526002208960631,
+                    "filler_projected_mean": 0.44383793232929314,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.2110592918123757,
+                    "binding_effective_mean": 0.2110592918123757,
+                    "filler_projected_mean": 0.2354552790073285,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.13877606615011473,
+                    "binding_effective_mean": 0.13877606615011473,
+                    "filler_projected_mean": 0.1483086260262553,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.6455078125,
+              "memory_use": {
+                "derange_accuracy": 0.009765625,
+                "none_minus_derange": {
+                  "diff": 0.6357421875,
+                  "lo": 0.6049657971738592,
+                  "hi": 0.6665185778261408,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.630859375,
+                  "lo": 0.6001828137788281,
+                  "hi": 0.6615359362211719,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Toff-Eoff": {
+              "rows_sha256": "3f32b350ca93fe378ba58124eff5213361c1aac16aebffdec5e621cb090f2880",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7693509759161161,
+                    "binding_effective_mean": 0.7693509759161161,
+                    "filler_projected_mean": 0.650483715644446,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7963208228664804,
+                    "binding_effective_mean": 0.7963208228664804,
+                    "filler_projected_mean": 0.6669619523377435,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.8061968077768142,
+                    "binding_effective_mean": 0.8061968077768142,
+                    "filler_projected_mean": 0.6755698137616492,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.07104613737563881,
+                    "binding_effective_mean": 0.07104613737563881,
+                    "filler_projected_mean": 0.21046389619241382,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.9619140625,
+              "memory_use": {
+                "derange_accuracy": 0.013671875,
+                "none_minus_derange": {
+                  "diff": 0.9482421875,
+                  "lo": 0.9352310890404303,
+                  "hi": 0.9612532859595697,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.951171875,
+                  "lo": 0.9381315473749153,
+                  "hi": 0.9642122026250847,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Toff-Eon": {
+              "rows_sha256": "c5c315eb5e5b842d4e8b0ed30583fd0813df0fbd9eddc314e73af3500809989d",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.898724787830234,
+                "auroc_mean_defined": 0.5258973598480224,
+                "auroc_min_defined": 0.20933313369750978,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.6150081634521485,
+                    "binding_projected_mean": 0.7693509759161161,
+                    "binding_effective_mean": 0.7693509759161161,
+                    "filler_projected_mean": 0.650483715644446,
+                    "filler_effective_mean": 0.650483715644446,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.6247448921203613,
+                    "binding_projected_mean": 0.7963208228664804,
+                    "binding_effective_mean": 0.7963208228664804,
+                    "filler_projected_mean": 0.6669619523377435,
+                    "filler_effective_mean": 0.6669619523377435,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.6545032501220703,
+                    "binding_projected_mean": 0.8061968077768142,
+                    "binding_effective_mean": 0.8061968077768142,
+                    "filler_projected_mean": 0.6628675458117869,
+                    "filler_effective_mean": 0.6628675458117869,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.20933313369750978,
+                    "binding_projected_mean": 0.07104613737563881,
+                    "binding_effective_mean": 0.07104613737563881,
+                    "filler_projected_mean": 0.2151948211364015,
+                    "filler_effective_mean": 0.2151948211364015,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.8916015625,
+              "memory_use": {
+                "derange_accuracy": 0.0087890625,
+                "none_minus_derange": {
+                  "diff": 0.8828125,
+                  "lo": 0.8604677280673848,
+                  "hi": 0.9051572719326152,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.87890625,
+                  "lo": 0.856382163712603,
+                  "hi": 0.901430336287397,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Tgate-Eon": {
+              "rows_sha256": "c7c8b08c348e909b1a93be7970f0cd4a9d10bed9c3da3c40908940eb904db14f",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n16-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 2048
+                },
+                "rho_pooled_effective": 0.595544263644569,
+                "auroc_mean_defined": 0.5597310304641724,
+                "auroc_min_defined": 0.4882350921630859,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.6355379104614258,
+                    "binding_projected_mean": 0.4486507280584033,
+                    "binding_effective_mean": 0.4486507280584033,
+                    "filler_projected_mean": 0.23054623763368332,
+                    "filler_effective_mean": 0.23054623763368332,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.5713106155395508,
+                    "binding_projected_mean": 0.39086967232851966,
+                    "binding_effective_mean": 0.39086967232851966,
+                    "filler_projected_mean": 0.25584051254985996,
+                    "filler_effective_mean": 0.25584051254985996,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.5438405036926269,
+                    "binding_projected_mean": 0.061331059254243314,
+                    "binding_effective_mean": 0.061331059254243314,
+                    "filler_projected_mean": 0.04250017151471184,
+                    "filler_effective_mean": 0.04250017151471184,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.4882350921630859,
+                    "binding_projected_mean": 0.02489925285465233,
+                    "binding_effective_mean": 0.02489925285465233,
+                    "filler_projected_mean": 0.022438604693502385,
+                    "filler_effective_mean": 0.022438604693502385,
+                    "binding_applied_events": 2048,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.8095703125,
+              "memory_use": {
+                "derange_accuracy": 0.013671875,
+                "none_minus_derange": {
+                  "diff": 0.7958984375,
+                  "lo": 0.77028497775719,
+                  "hi": 0.82151189724281,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.791015625,
+                  "lo": 0.765492915203789,
+                  "hi": 0.816538334796211,
+                  "n": 256
+                },
+                "pass": true
+              }
+            }
+          },
+          "q2": {
+            "C_T|off": {
+              "diff": 0.31640625,
+              "lo": 0.28560536109724666,
+              "hi": 0.34720713890275334,
+              "n": 256
+            },
+            "C_T|on": {
+              "diff": 0.3310546875,
+              "lo": 0.29674300975252704,
+              "hi": 0.36536636524747296,
+              "n": 256
+            },
+            "C_E|Ton": {
+              "diff": 0.0849609375,
+              "lo": 0.06074529898723077,
+              "hi": 0.10917657601276923,
+              "n": 256
+            },
+            "C_E|Toff": {
+              "diff": 0.0703125,
+              "lo": 0.05096730035287165,
+              "hi": 0.08965769964712836,
+              "n": 256
+            },
+            "interaction_descriptive": {
+              "diff": -0.0146484375,
+              "lo": -0.04605146346840062,
+              "hi": 0.016754588468400618,
+              "n": 256
+            }
+          },
+          "q1": {
+            "gate_vs_v2": {
+              "diff": 0.2490234375,
+              "lo": 0.21444979971958192,
+              "hi": 0.2835970752804181,
+              "n": 256
+            },
+            "oracle_vs_v2": {
+              "diff": 0.4013671875,
+              "lo": 0.3710953700623236,
+              "hi": 0.4316390049376764,
+              "n": 256
+            },
+            "half_oracle": {
+              "diff": 0.04833984375,
+              "lo": 0.021171906936769028,
+              "hi": 0.07550778056323097,
+              "n": 256
+            },
+            "rho": 0.595544263644569,
+            "memory_use_pass": true
+          }
+        }
+      },
+      "q2_labels": {
+        "C_T|off": "reproducible gain",
+        "C_T|on": "reproducible gain",
+        "C_E|Ton": "neither",
+        "C_E|Toff": "reproducible gain"
+      },
+      "q2_reading": "reproducible gain for the no-filler-write training recipe at both eval settings; eval-setting conjunction not met",
+      "q1_flags": {
+        "gate_vs_v2": "reproducible gain",
+        "oracle_vs_v2": "reproducible gain",
+        "suppression": false,
+        "memory_use": true,
+        "half": true
+      },
+      "q1_reading": "reproducible gain without registered pooled suppression; mechanism unresolved"
+    },
+    "32": {
+      "seeds": {
+        "0": {
+          "corners": {
+            "Ton-Eon": {
+              "rows_sha256": "50515a6de438d95ec7759dfa92bd9e79b8777487a5b27e46ff3db55353126a88",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 1.1635996678190514,
+                "auroc_mean_defined": 0.42918025255203246,
+                "auroc_min_defined": 0.3864921569824219,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.4391464710235596,
+                    "binding_projected_mean": 0.3239736992700841,
+                    "binding_effective_mean": 0.3239736992700841,
+                    "filler_projected_mean": 0.37285476681763613,
+                    "filler_effective_mean": 0.37285476681763613,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.460858154296875,
+                    "binding_projected_mean": 0.3373048195709316,
+                    "binding_effective_mean": 0.3373048195709316,
+                    "filler_projected_mean": 0.37249119714997503,
+                    "filler_effective_mean": 0.37249119714997503,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.3864921569824219,
+                    "binding_projected_mean": 0.12040532391078784,
+                    "binding_effective_mean": 0.12040532391078784,
+                    "filler_projected_mean": 0.15952318785693934,
+                    "filler_effective_mean": 0.15952318785693934,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.4302242279052734,
+                    "binding_projected_mean": 0.15847938133802586,
+                    "binding_effective_mean": 0.15847938133802586,
+                    "filler_projected_mean": 0.1891044634220634,
+                    "filler_effective_mean": 0.1891044634220634,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.0234375,
+              "memory_use": {
+                "derange_accuracy": 0.0087890625,
+                "none_minus_derange": {
+                  "diff": 0.0146484375,
+                  "lo": 0.003779147663921888,
+                  "hi": 0.025517727336078114,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.0,
+                  "lo": -0.01328699054139269,
+                  "hi": 0.01328699054139269,
+                  "n": 256
+                },
+                "pass": false
+              }
+            },
+            "Ton-Eoff": {
+              "rows_sha256": "5ef9f28e58d7226fd2c40924b947c3dabf6c1ef4d5176c544f29a7abf198ac64",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.3239736992700841,
+                    "binding_effective_mean": 0.3239736992700841,
+                    "filler_projected_mean": 0.37285476681763613,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.3373048195709316,
+                    "binding_effective_mean": 0.3373048195709316,
+                    "filler_projected_mean": 0.37249119714997503,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.12040532391078784,
+                    "binding_effective_mean": 0.12040532391078784,
+                    "filler_projected_mean": 0.1609826196189715,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.15847938133802586,
+                    "binding_effective_mean": 0.15847938133802586,
+                    "filler_projected_mean": 0.19104201428704073,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.0234375,
+              "memory_use": {
+                "derange_accuracy": 0.0107421875,
+                "none_minus_derange": {
+                  "diff": 0.0126953125,
+                  "lo": 0.0014568949299511042,
+                  "hi": 0.023933730070048898,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.0009765625,
+                  "lo": -0.011598799848460687,
+                  "hi": 0.013551924848460687,
+                  "n": 256
+                },
+                "pass": false
+              }
+            },
+            "Toff-Eoff": {
+              "rows_sha256": "1ddef3ee9e0041a8d1ceb7f578067c8bc7edaa1d552353243067b0477f8affaa",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7015765755038856,
+                    "binding_effective_mean": 0.7015765755038856,
+                    "filler_projected_mean": 0.6219488478356296,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7296972942261242,
+                    "binding_effective_mean": 0.7296972942261242,
+                    "filler_projected_mean": 0.6312750166979864,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.2366745011686362,
+                    "binding_effective_mean": 0.2366745011686362,
+                    "filler_projected_mean": 0.34349541215924545,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.1281761734862208,
+                    "binding_effective_mean": 0.1281761734862208,
+                    "filler_projected_mean": 0.21967799911933525,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.8447265625,
+              "memory_use": {
+                "derange_accuracy": 0.0166015625,
+                "none_minus_derange": {
+                  "diff": 0.828125,
+                  "lo": 0.8055143312640631,
+                  "hi": 0.8507356687359369,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.82421875,
+                  "lo": 0.80125,
+                  "hi": 0.8471875,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Toff-Eon": {
+              "rows_sha256": "56bbbecb9120fe65cb04ae0e46430cb30ee7ab94d10a662091155f48d5593dad",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 1.0172691333299402,
+                "auroc_mean_defined": 0.4670008063316345,
+                "auroc_min_defined": 0.35005745887756345,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.5741823673248291,
+                    "binding_projected_mean": 0.7015765755038856,
+                    "binding_effective_mean": 0.7015765755038856,
+                    "filler_projected_mean": 0.6219488478356296,
+                    "filler_effective_mean": 0.6219488478356296,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.587009859085083,
+                    "binding_projected_mean": 0.7296972942261242,
+                    "binding_effective_mean": 0.7296972942261242,
+                    "filler_projected_mean": 0.6312750166979864,
+                    "filler_effective_mean": 0.6312750166979864,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.3567535400390625,
+                    "binding_projected_mean": 0.2366745011686362,
+                    "binding_effective_mean": 0.2366745011686362,
+                    "filler_projected_mean": 0.3470778005211287,
+                    "filler_effective_mean": 0.3470778005211287,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.35005745887756345,
+                    "binding_projected_mean": 0.1281761734862208,
+                    "binding_effective_mean": 0.1281761734862208,
+                    "filler_projected_mean": 0.2268403935642823,
+                    "filler_effective_mean": 0.2268403935642823,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.7744140625,
+              "memory_use": {
+                "derange_accuracy": 0.017578125,
+                "none_minus_derange": {
+                  "diff": 0.7568359375,
+                  "lo": 0.7319185054180407,
+                  "hi": 0.7817533695819593,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.7578125,
+                  "lo": 0.733725057490631,
+                  "hi": 0.781899942509369,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Tgate-Eon": {
+              "rows_sha256": "f443d76d45846dd5864fc0fe18e4ca7f9a398b67f115918c5e722e3d32c48902",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n32-s0",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 1.0569513413358382,
+                "auroc_mean_defined": 0.4459439396858215,
+                "auroc_min_defined": 0.39946751594543456,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.49547243118286133,
+                    "binding_projected_mean": 0.0846627385037575,
+                    "binding_effective_mean": 0.0846627385037575,
+                    "filler_projected_mean": 0.08172828721179712,
+                    "filler_effective_mean": 0.08172828721179712,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.47043933868408205,
+                    "binding_projected_mean": 0.0799728542998821,
+                    "binding_effective_mean": 0.0799728542998821,
+                    "filler_projected_mean": 0.08556074223304222,
+                    "filler_effective_mean": 0.08556074223304222,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.4183964729309082,
+                    "binding_projected_mean": 0.021030087348407278,
+                    "binding_effective_mean": 0.021030087348407278,
+                    "filler_projected_mean": 0.023101492270092193,
+                    "filler_effective_mean": 0.023101492270092193,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.39946751594543456,
+                    "binding_projected_mean": 0.011108693115860824,
+                    "binding_effective_mean": 0.011108693115860824,
+                    "filler_projected_mean": 0.017590416051102408,
+                    "filler_effective_mean": 0.017590416051102408,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.0380859375,
+              "memory_use": {
+                "derange_accuracy": 0.015625,
+                "none_minus_derange": {
+                  "diff": 0.0224609375,
+                  "lo": 0.009605360191148514,
+                  "hi": 0.035316514808851486,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.0205078125,
+                  "lo": 0.0057422371437835275,
+                  "hi": 0.035273387856216476,
+                  "n": 256
+                },
+                "pass": true
+              }
+            }
+          },
+          "q2": {
+            "C_T|off": {
+              "diff": 0.8212890625,
+              "lo": 0.7962703560000798,
+              "hi": 0.8463077689999202,
+              "n": 256
+            },
+            "C_T|on": {
+              "diff": 0.7509765625,
+              "lo": 0.7261932608209127,
+              "hi": 0.7757598641790873,
+              "n": 256
+            },
+            "C_E|Ton": {
+              "diff": 0.0,
+              "lo": -0.010504288339978667,
+              "hi": 0.010504288339978667,
+              "n": 256
+            },
+            "C_E|Toff": {
+              "diff": 0.0703125,
+              "lo": 0.05059071612553326,
+              "hi": 0.09003428387446674,
+              "n": 256
+            },
+            "interaction_descriptive": {
+              "diff": 0.0703125,
+              "lo": 0.047001025097447115,
+              "hi": 0.09362397490255289,
+              "n": 256
+            }
+          },
+          "q1": {
+            "gate_vs_v2": {
+              "diff": 0.0146484375,
+              "lo": -0.0002218526843952573,
+              "hi": 0.029518727684395257,
+              "n": 256
+            },
+            "oracle_vs_v2": {
+              "diff": 0.8212890625,
+              "lo": 0.7981014878940689,
+              "hi": 0.8444766371059311,
+              "n": 256
+            },
+            "half_oracle": {
+              "diff": -0.39599609375,
+              "lo": -0.4122629755628209,
+              "hi": -0.3797292119371791,
+              "n": 256
+            },
+            "rho": 1.0569513413358382,
+            "memory_use_pass": true
+          }
+        },
+        "1": {
+          "corners": {
+            "Ton-Eon": {
+              "rows_sha256": "24adc3614ffd5c551829d867238f5c95f8730bfb790c0f1dbdecc2b1c5c00e64",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 1.0881289552000308,
+                "auroc_mean_defined": 0.44176924228668213,
+                "auroc_min_defined": 0.3630199432373047,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.4985316276550293,
+                    "binding_projected_mean": 0.4179655421206121,
+                    "binding_effective_mean": 0.4179655421206121,
+                    "filler_projected_mean": 0.416972738001914,
+                    "filler_effective_mean": 0.416972738001914,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.5056611061096191,
+                    "binding_projected_mean": 0.3822399821849558,
+                    "binding_effective_mean": 0.3822399821849558,
+                    "filler_projected_mean": 0.37838246837336553,
+                    "filler_effective_mean": 0.37838246837336553,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.39986429214477537,
+                    "binding_projected_mean": 0.1966045631503448,
+                    "binding_effective_mean": 0.1966045631503448,
+                    "filler_projected_mean": 0.2552955889419536,
+                    "filler_effective_mean": 0.2552955889419536,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.3630199432373047,
+                    "binding_projected_mean": 0.10628002299870687,
+                    "binding_effective_mean": 0.10628002299870687,
+                    "filler_projected_mean": 0.14965349406323866,
+                    "filler_effective_mean": 0.14965349406323866,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.0205078125,
+              "memory_use": {
+                "derange_accuracy": 0.0146484375,
+                "none_minus_derange": {
+                  "diff": 0.005859375,
+                  "lo": -0.004620264995474207,
+                  "hi": 0.01633901499547421,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.0048828125,
+                  "lo": -0.0064472760194009045,
+                  "hi": 0.016212901019400906,
+                  "n": 256
+                },
+                "pass": false
+              }
+            },
+            "Ton-Eoff": {
+              "rows_sha256": "bd1c0f98b9daff4cd37f60db0c26ab787487f5f6e2177b1f7ea904647d5e1cf5",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.4179655421206121,
+                    "binding_effective_mean": 0.4179655421206121,
+                    "filler_projected_mean": 0.416972738001914,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.3822399821849558,
+                    "binding_effective_mean": 0.3822399821849558,
+                    "filler_projected_mean": 0.37838246837336553,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.1966045631503448,
+                    "binding_effective_mean": 0.1966045631503448,
+                    "filler_projected_mean": 0.25532641186418914,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.10628002299870687,
+                    "binding_effective_mean": 0.10628002299870687,
+                    "filler_projected_mean": 0.1505861202055371,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.0224609375,
+              "memory_use": {
+                "derange_accuracy": 0.0185546875,
+                "none_minus_derange": {
+                  "diff": 0.00390625,
+                  "lo": -0.008213577675591326,
+                  "hi": 0.016026077675591326,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.0068359375,
+                  "lo": -0.0047994438014289115,
+                  "hi": 0.01847131880142891,
+                  "n": 256
+                },
+                "pass": false
+              }
+            },
+            "Toff-Eoff": {
+              "rows_sha256": "0696927f01565c34875afd158477107287cb0ed0a617bd9ad5733a53021fd760",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 0.0,
+                "auroc_mean_defined": null,
+                "auroc_min_defined": null,
+                "auroc_defined_heads": 0,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.6328786604585517,
+                    "binding_effective_mean": 0.6328786604585517,
+                    "filler_projected_mean": 0.5581965422284327,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L1h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.7742166651968532,
+                    "binding_effective_mean": 0.7742166651968532,
+                    "filler_projected_mean": 0.65553056676128,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h0": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.20893417006533355,
+                    "binding_effective_mean": 0.20893417006533355,
+                    "filler_projected_mean": 0.3510235812438623,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  },
+                  "L3h1": {
+                    "auroc_applied": null,
+                    "binding_projected_mean": 0.13690311182228854,
+                    "binding_effective_mean": 0.13690311182228854,
+                    "filler_projected_mean": 0.24158688161301142,
+                    "filler_effective_mean": 0.0,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 0
+                  }
+                }
+              },
+              "accuracy_none": 0.8076171875,
+              "memory_use": {
+                "derange_accuracy": 0.015625,
+                "none_minus_derange": {
+                  "diff": 0.7919921875,
+                  "lo": 0.7657120518353752,
+                  "hi": 0.8182723231646248,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.7919921875,
+                  "lo": 0.7655724688138926,
+                  "hi": 0.8184119061861074,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Toff-Eon": {
+              "rows_sha256": "e5f6c62f1de8d9c65a2378de0ec3f7feb42334a2c5bd0b97201a90e5a2d5595f",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 1.0324253488681532,
+                "auroc_mean_defined": 0.450825035572052,
+                "auroc_min_defined": 0.30738306045532227,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.571125841140747,
+                    "binding_projected_mean": 0.6328786604585517,
+                    "binding_effective_mean": 0.6328786604585517,
+                    "filler_projected_mean": 0.5581965422284327,
+                    "filler_effective_mean": 0.5581965422284327,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.6071519374847412,
+                    "binding_projected_mean": 0.7742166651968532,
+                    "binding_effective_mean": 0.7742166651968532,
+                    "filler_projected_mean": 0.65553056676128,
+                    "filler_effective_mean": 0.65553056676128,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.30738306045532227,
+                    "binding_projected_mean": 0.20893417006533355,
+                    "binding_effective_mean": 0.20893417006533355,
+                    "filler_projected_mean": 0.3549278030191999,
+                    "filler_effective_mean": 0.3549278030191999,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.31763930320739747,
+                    "binding_projected_mean": 0.13690311182228854,
+                    "binding_effective_mean": 0.13690311182228854,
+                    "filler_projected_mean": 0.24111714687605854,
+                    "filler_effective_mean": 0.24111714687605854,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.7373046875,
+              "memory_use": {
+                "derange_accuracy": 0.01171875,
+                "none_minus_derange": {
+                  "diff": 0.7255859375,
+                  "lo": 0.6963395517778453,
+                  "hi": 0.7548323232221547,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.7216796875,
+                  "lo": 0.6923606873781848,
+                  "hi": 0.7509986876218152,
+                  "n": 256
+                },
+                "pass": true
+              }
+            },
+            "Tgate-Eon": {
+              "rows_sha256": "7a5c0922fa1f47682ff980489acf79cced58a3be523e9a83378ae386b3aee0fe",
+              "source_cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/gateclosed-learned-n32-s1",
+              "gate": {
+                "episodes": 64,
+                "events_per_head": {
+                  "filler": 2560,
+                  "binding": 4096
+                },
+                "rho_pooled_effective": 0.842717252462837,
+                "auroc_mean_defined": 0.5207194089889526,
+                "auroc_min_defined": 0.4726431846618652,
+                "auroc_defined_heads": 4,
+                "per_head": {
+                  "L1h0": {
+                    "auroc_applied": 0.5440080165863037,
+                    "binding_projected_mean": 0.10602128670088717,
+                    "binding_effective_mean": 0.10602128670088717,
+                    "filler_projected_mean": 0.07897078792997263,
+                    "filler_effective_mean": 0.07897078792997263,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L1h1": {
+                    "auroc_applied": 0.4750244140625,
+                    "binding_projected_mean": 0.0765886418702948,
+                    "binding_effective_mean": 0.0765886418702948,
+                    "filler_projected_mean": 0.0794130434432759,
+                    "filler_effective_mean": 0.0794130434432759,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h0": {
+                    "auroc_applied": 0.5912020206451416,
+                    "binding_projected_mean": 0.18685245295709763,
+                    "binding_effective_mean": 0.18685245295709763,
+                    "filler_projected_mean": 0.14200835214578547,
+                    "filler_effective_mean": 0.14200835214578547,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  },
+                  "L3h1": {
+                    "auroc_applied": 0.4726431846618652,
+                    "binding_projected_mean": 0.06153534650043824,
+                    "binding_effective_mean": 0.06153534650043824,
+                    "filler_projected_mean": 0.06281703766305213,
+                    "filler_effective_mean": 0.06281703766305213,
+                    "binding_applied_events": 4096,
+                    "filler_applied_events": 2560
+                  }
+                }
+              },
+              "accuracy_none": 0.0185546875,
+              "memory_use": {
+                "derange_accuracy": 0.015625,
+                "none_minus_derange": {
+                  "diff": 0.0029296875,
+                  "lo": -0.008081433065532178,
+                  "hi": 0.013940808065532178,
+                  "n": 256
+                },
+                "none_minus_read_offset": {
+                  "diff": 0.0029296875,
+                  "lo": -0.007391783630840027,
+                  "hi": 0.013251158630840027,
+                  "n": 256
+                },
+                "pass": false
+              }
+            }
+          },
+          "q2": {
+            "C_T|off": {
+              "diff": 0.78515625,
+              "lo": 0.7581064327623196,
+              "hi": 0.8122060672376804,
+              "n": 256
+            },
+            "C_T|on": {
+              "diff": 0.716796875,
+              "lo": 0.6867487114466746,
+              "hi": 0.7468450385533254,
+              "n": 256
+            },
+            "C_E|Ton": {
+              "diff": 0.001953125,
+              "lo": -0.007039015186477969,
+              "hi": 0.01094526518647797,
+              "n": 256
+            },
+            "C_E|Toff": {
+              "diff": 0.0703125,
+              "lo": 0.05003895137384531,
+              "hi": 0.09058604862615469,
+              "n": 256
+            },
+            "interaction_descriptive": {
+              "diff": 0.068359375,
+              "lo": 0.04543695952092086,
+              "hi": 0.09128179047907914,
+              "n": 256
+            }
+          },
+          "q1": {
+            "gate_vs_v2": {
+              "diff": -0.001953125,
+              "lo": -0.013133224040037023,
+              "hi": 0.009226974040037023,
+              "n": 256
+            },
+            "oracle_vs_v2": {
+              "diff": 0.787109375,
+              "lo": 0.7599630626845694,
+              "hi": 0.8142556873154306,
+              "n": 256
+            },
+            "half_oracle": {
+              "diff": -0.3955078125,
+              "lo": -0.4111796737162838,
+              "hi": -0.3798359512837162,
+              "n": 256
+            },
+            "rho": 0.842717252462837,
+            "memory_use_pass": false
+          }
+        }
+      },
+      "q2_labels": {
+        "C_T|off": "reproducible gain",
+        "C_T|on": "reproducible gain",
+        "C_E|Ton": "positive gain >=5pp excluded",
+        "C_E|Toff": "reproducible gain"
+      },
+      "q2_reading": "reproducible gain for the no-filler-write training recipe at both eval settings; eval-setting conjunction not met",
+      "q1_flags": {
+        "gate_vs_v2": "positive gain >=5pp excluded",
+        "oracle_vs_v2": "reproducible gain",
+        "suppression": false,
+        "memory_use": false,
+        "half": false
+      },
+      "q1_reading": "no reproducible gain and no registered pooled suppression; gate-v2 contrast is positive gain >=5pp excluded"
+    }
+  },
+  "observer_end": {
+    "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+    "inputs_index_sha256": "8824cd030bb6b3ee7b573e1a8044452b0176f680b514b026c3cb8a269acd37f3",
+    "grid_sha256": "465fa3439ddadccc009ea2b7b5b18cc0c172b7c8d67f7511ec2a8f1515e7e5ee",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a"
+    },
+    "git_head": "2613ced101810bd248c1d82d1c3b83d994076120"
+  }
+}
