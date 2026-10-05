@@ -1,6 +1,6 @@
 # M4-SGM — Sparse Growing Memory (research-only)
 
-Status: **P0–P2 IN PROGRESS** (started 2026-10-05). Authorized in #gravity
+Status: **P0–P2 complete; P2D and P2G diagnostics CLOSED (2026-10-06); P3 not authorized** (started 2026-10-05). Authorized in #gravity
 msg 21068 ("commit the changes first then go, use modal for compute").
 Design brief: [plans/261005-0210-m4-sgm-p0-p2/m4-sgm-design-spec-v0.1.md](plans/261005-0210-m4-sgm-p0-p2/m4-sgm-design-spec-v0.1.md).
 Reviews: claude msg 21059 / [report](plans/reports/claude-261005-0155-m4-sgm-spec-review.md),
@@ -772,3 +772,99 @@ This closes the registered Step 2 readings. The narrow N16 effects do not
 establish a reproducible higher-load rescue, a unique causal blocker, an R3
 pass, pretrained-model behavior or scaling. Further training, causal
 localization and compute remain deferred.
+
+## P2G — selective-write gate and filler train×eval 2×2 (2026-10-06, CLOSED)
+
+**Registration and gates.** Prereg v0.2
+`plans/261006-0010-m4-sgm-p2g-selective-write-gate/prereg.md` (`25fdbc5`,
+SHA256 `c2fa7394…`), amended per codex audits of v0.1/v0.2 and cleared for
+implementation (#gravity 21306). Drafting authorized by the user (21289).
+Implementation `dc9e0bb` was held by codex (21309/21312/21315: the reserved
+seed was reachable from training eval; NaN/partial-telemetry/interval inputs
+did not fail closed; only memsub was end-checked), fixed at `e71784b`, then
+the recovery CLI seed selection at `0726161` (21323). Code audit PASS (21329);
+final implementation/preflight gate PASS (21340). User approval "ok go"
+(21341), scoped by codex to exactly six cells, $13 cap, no retries (21342);
+cap bound at `2613ced`; launch clearance (21346).
+
+**Design.** Six new 1500-step cells (P2 v2 `learned` recipe), group
+`p2g-selective-write-v1`: `gateclosed` N16/N32 s0/s1 (`beta_proj.bias`
+shifted 0 → −3 at init only; `W_beta` and every other draw unchanged; memsub
+source `5c3b5420…`) and `filleroff` N32 s0/s1. Reused checkpoints: v2
+`learned` N16/N32 (1d62903 / a89284ea) and P2D `filleroff` N16 (31aa4c8 /
+d4effd0c), hash-bound in `configs/m4_sgm_p2g_inputs.json`. Training-artifact
+eval used the published population 9_300_011+s; the registered population
+9_400_011+s was consumed only by the single readings run. One common observer
+(P2G source; eval-write E=off = existing tail-filler write mask) evaluated
+every corner after the parity gates passed: P-on (v2, E=on) and P-off (P2D
+filler-off N16, E=off) reproduced the complete legacy files, parsed and
+byte-equal, in preflights r1/r2/r3 and again at readings time (6/6 each;
+30,720 rows; produced hashes identical across runs).
+
+**Run.** App `ap-S6aKXZB9FPh9MBYkLsVdDN` (deploy + spawn, non-preemptible,
+`2613ced`), spawned 01:24, all six `done` by 02:25, app stopped with zero
+containers (`stopped_verified`). No failures, replays, untracked calls or
+allowance exhaustion. Recovery/validation CLI: 6/6 `stream_ok` against the
+group's grid, launch, source and artifact seed. App-filtered spend
+**$3.44816365** (provisional pending backfill), under the approved $13 cap
+(reservation $12.32978160). Codex training-artifact and billing audit PASS
+(21364).
+
+**Registered readings** (single run at `2613ced`; report
+`plans/261006-0010-m4-sgm-p2g-selective-write-gate/readings-v1/p2g-readings.json`,
+SHA256 `03d47be48fcfcc311fde34a0d25733bc085caa3259b89f8f0a7687debd125818`).
+Heldout accuracy (intervention none), s0 / s1:
+
+| N | X(on,on) v2 | X(on,off) | X(off,off) filler-off | X(off,on) | gate (E=on) |
+|---|---|---|---|---|---|
+| 16 | 5.6% / 56.1% | 5.8% / 64.6% | 94.8% / 96.2% | 87.3% / 89.2% | 80.9% / 81.0% |
+| 32 | 2.3% / 2.1% | 2.3% / 2.2% | 84.5% / 80.8% | 77.4% / 73.7% | 3.8% / 1.9% |
+
+Q2 contrasts (paired, percentage points, s0 / s1) and labels:
+
+| contrast | N16 | N32 |
+|---|---|---|
+| C_T\|E=off | +89.06 / +31.64 — reproducible gain | +82.13 / +78.52 — reproducible gain |
+| C_T\|E=on | +81.74 / +33.11 — reproducible gain | +75.10 / +71.68 — reproducible gain |
+| C_E\|T=on | +0.20 / +8.50 — neither | +0.00 / +0.20 — positive gain ≥5pp excluded |
+| C_E\|T=off | +7.52 / +7.03 — reproducible gain | +7.03 / +7.03 — reproducible gain |
+
+- **Q2, both N:** "reproducible gain for the no-filler-write training recipe
+  at both eval settings; eval-setting conjunction not met". The eval
+  conjunction fails because C_E|T=on fails (N32 ≥5pp excluded; N16
+  seed-specific +8.5). Eval-time filler-write damage is **not** absent:
+  C_E|T=off is a reproducible ≈7-point gain at both N. Descriptive
+  interaction (C_T|off − C_T|on): N16 +7.32 / −1.46, N32 +7.03 / +6.84.
+- **Q1, N16:** "reproducible gain without registered pooled suppression;
+  mechanism unresolved". Gate − v2 +75.29 / +24.90 (reproducible gain);
+  memory use passes both seeds; half-oracle **true** (+30.66 / +4.83, oracle
+  gain reproducible); pooled ρ 0.619 / 0.596 (> 0.20; v2 0.873 / 0.816);
+  gate AUROC mean 0.612 / 0.560 (descriptive).
+- **Q1, N32:** "no reproducible gain and no registered pooled suppression;
+  gate−v2 contrast is positive gain ≥5pp excluded". Gate − v2 +1.46 / −0.20;
+  ρ 1.057 / 0.843; half-oracle false (oracle gain reproducible). Memory use
+  passes for seed 0 despite near-chance accuracy and fails for seed 1, so the
+  both-seed memory conjunction fails; this does not turn the excluded
+  contrast into a gain or establish a mechanism.
+
+**Interpretation limits** (accepted #gravity 21370/21371/21378): the readings
+are registered contrasts between training recipes and evaluation settings
+across cohorts that differ in source and host (v2, P2D, P2G). Same episode
+hashes make evaluations paired, not training histories identical, and the
+Step 2 seed-0 prefix discrepancy remains unresolved. "Filler writes during
+training prevent learning usable addresses" is a hypothesis: P2G registered
+no address-learning mechanism test. The suppression headline is pooled class
+means only; AUROCs are descriptive. Evidence class: tiny random backbone +
+task head, synthetic. No R3, pretrained, scaling or P3 claim.
+
+**Audit.** Codex numerical results audit PASS (#gravity 21379): an independent
+standard-library recomputation agrees on every saved-row statistic,
+interval, classifier and Q1/Q2 reading; a dev-4242 replay agrees on all 20
+corners' four-head populations, means, skipped/applied counts, pooled ρ and
+AUROCs; zero reserved-seed evaluations by the audit (audit JSON SHA256
+`8dd87079…`). Source, input and parity bindings pass. Codex keeps the audited
+`RESULTS.md` and consumed inputs with the readings bundle.
+
+This closes the registered P2G study. Follow-up training, a curriculum
+variant or a P3 run is not authorized by it; any of these needs its own
+registration and user approval.
