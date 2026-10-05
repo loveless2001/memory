@@ -55,14 +55,15 @@ def _versions() -> dict:
 
 
 def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
-              final_batch_size: int = 16, extra_manifest: dict | None = None) -> dict:
+              final_batch_size: int = 16, extra_manifest: dict | None = None,
+              final_seed_base: int = EVAL_SEED_FINAL) -> dict:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=False)
     started = time.time()
     spec = pcfg.task_spec()
     (out_dir / "split_manifest.json").write_text(json.dumps(split_manifest(
         spec, {"train": pcfg.seed, "dev_eval": EVAL_SEED_DEV,
-               "final_eval": EVAL_SEED_FINAL + pcfg.seed}), indent=2))
+               "final_eval": final_seed_base + pcfg.seed}), indent=2))
     tele_f = (out_dir / "routing_telemetry.jsonl").open("w")
 
     def log(row):
@@ -70,7 +71,8 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
 
     def dev_eval(backend, head, step):
         return evaluate(backend, head, spec, pcfg.arm, pcfg.readout, split="heldout",
-                        batches=pcfg.eval_batches, batch_size=pcfg.batch, seed=EVAL_SEED_DEV)
+                        batches=pcfg.eval_batches, batch_size=pcfg.batch, seed=EVAL_SEED_DEV,
+                        filler_writes=pcfg.filler_writes)
 
     result = train(pcfg, log=log, evaluate_fn=dev_eval)
     backend, head = result["backend"], result["head"]
@@ -80,7 +82,7 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
                 "backbone": "tiny-qwen3-random-v1 (frozen, random init seed 0)",
                 "ingest": "token_serial_full_gradient", "state_horizon_tokens": spec.source_len(),
                 "gradient_horizon_tokens": spec.source_len(), "versions": _versions(),
-                "final_eval_seed": EVAL_SEED_FINAL + pcfg.seed,
+                "final_eval_seed": final_seed_base + pcfg.seed,
                 "memsub_source_sha256": source_tree_sha256(Path(__file__).resolve().parents[1]),
                 "trained_parameters_sha256": save_trained_parameters(
                     result["runtime"], head, out_dir / "trained_parameters.safetensors"),
@@ -91,15 +93,31 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
                "readout": pcfg.readout, "n_queries": pcfg.n_queries,
                "final_episodes": final_batches * final_batch_size, "final": {}}
     interventions = INTERVENTIONS if pcfg.arm != "memory_off" else ("none",)
-    for iv in interventions:
-        metrics["final"][f"heldout_{iv}"] = evaluate(
+    def final_eval(rows: list) -> dict:
+        out = {f"heldout_{iv}": evaluate(
             backend, head, spec, pcfg.arm, pcfg.readout, split="heldout",
-            batches=final_batches, batch_size=final_batch_size,
-            seed=EVAL_SEED_FINAL + pcfg.seed, intervention=iv, per_example=per_example)
-    metrics["final"]["train_split_none"] = evaluate(
-        backend, head, spec, pcfg.arm, pcfg.readout, split="train",
-        batches=max(2, final_batches // 4), batch_size=final_batch_size,
-        seed=EVAL_SEED_TRAIN + pcfg.seed)
+            batches=final_batches, batch_size=final_batch_size, seed=final_seed_base + pcfg.seed,
+            intervention=iv, per_example=rows, filler_writes=pcfg.filler_writes)
+            for iv in interventions}
+        out["train_split_none"] = evaluate(
+            backend, head, spec, pcfg.arm, pcfg.readout, split="train",
+            batches=max(2, final_batches // 4), batch_size=final_batch_size,
+            seed=EVAL_SEED_TRAIN + pcfg.seed, filler_writes=pcfg.filler_writes)
+        return out
+
+    metrics["final"] = final_eval(per_example)
+    # Fixed-endpoint intermediate checkpoints (P2D learned_long): no selection.
+    metrics["checkpoints"], manifest["checkpoint_parameters_sha256"] = {}, {}
+    for step, ckpt in sorted(result["checkpoints"].items()):
+        result["runtime"].adapters.load_state_dict(ckpt["adapters"])
+        head.load_state_dict(ckpt["head"])
+        rows: list = []
+        metrics["checkpoints"][str(step)] = final_eval(rows)
+        with (out_dir / f"per_example_results_step{step}.jsonl").open("w") as f:
+            for row in rows:
+                f.write(json.dumps(row) + "\n")
+        manifest["checkpoint_parameters_sha256"][str(step)] = save_trained_parameters(
+            result["runtime"], head, out_dir / f"trained_parameters_step{step}.safetensors")
     train_rows = [r for r in result["telemetry"] if "loss" in r]
     metrics["train_last"] = train_rows[-1] if train_rows else None
     metrics["wall_seconds"] = time.time() - started

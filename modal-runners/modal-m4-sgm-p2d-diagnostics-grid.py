@@ -1,0 +1,122 @@
+"""M4-SGM P2D Step 2 diagnostics grid on Modal CPU, behind the launch guard
+(memsub/sgm/p2d_launch_guard.py). 12 cells; launch refuses unless the
+admission ledger fits the $15 cap and the tree is clean.
+
+    modal run --detach modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py \
+        --group p2d-diagnostics-v1 --grid configs/m4_sgm_p2d_grid.json \
+        --v2-runs plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2 \
+        --local-out plans/261005-0210-m4-sgm-p0-p2/runs
+"""
+
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+import modal
+
+app = modal.App("memsub-m4-sgm-p2d")
+image = (modal.Image.debian_slim(python_version="3.12")
+         .pip_install("torch==2.7.1", index_url="https://download.pytorch.org/whl/cpu")
+         .pip_install("transformers==4.55.2", "safetensors==0.5.3", "numpy==2.2.6")
+         .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
+         .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"]))
+artifacts = modal.Volume.from_name("memsub-artifacts")
+MAX_CELL_TIMEOUT_S = 8 * 3600     # backstop only; per-cell watchdog is the real bound
+
+
+@app.function(image=image, cpu=(4.0, 4.0), memory=(8192, 8192), timeout=MAX_CELL_TIMEOUT_S,
+              startup_timeout=300, retries=0, scaledown_window=2, max_containers=12,
+              volumes={"/artifacts": artifacts})
+def run_cell(group: str, run_id: str, pilot: dict, provenance: dict, timeout_s: int,
+             final_seed_base: int) -> dict:
+    import re
+    import sys
+    import torch
+    sys.path.insert(0, "/root/repo")
+    from memsub.sgm.p2d_launch_guard import AttemptLedger, ReplayRefused, start_watchdog
+    try:   # FIRST action: count the attempt (replays exit before any training)
+        attempt = AttemptLedger(modal.Dict.from_name(f"m4-sgm-{group}-attempts",
+                                                     create_if_missing=True)).begin(run_id)
+    except ReplayRefused as e:
+        return {"run_id": run_id, "status": "replay_refused", "reason": str(e)}
+    start_watchdog(timeout_s)
+    from memsub.sgm.synthetic_pilot import PilotConfig
+    from memsub.sgm.synthetic_pilot_run import run_pilot
+    for name in (group, run_id):
+        if re.fullmatch(r"[a-z0-9][a-z0-9-]{0,79}", name) is None:
+            raise ValueError(f"invalid id {name!r}")
+    torch.set_num_threads(4)
+    out = Path("/artifacts/m4-sgm") / group / run_id
+    if out.exists():
+        raise FileExistsError(f"{out} exists; no automatic retry")
+    metrics = run_pilot(PilotConfig(**pilot), out, final_seed_base=final_seed_base,
+                        extra_manifest={"modal_group": group, "run_id": run_id, "attempt": attempt,
+                                        "cell_timeout_s": timeout_s, **provenance})
+    artifacts.commit()
+    return {"run_id": run_id, "status": "done", "metrics": metrics}
+
+
+def expand(grid: dict) -> list[tuple[str, str, dict]]:
+    cells = []
+    for block in grid["blocks"]:
+        for n in block["n_bindings"]:
+            for seed in block["seeds"]:
+                pilot = {**grid["base"], **block.get("override", {}), "n_bindings": n, "seed": seed}
+                cells.append((f"{block['tag']}-learned-n{n}-s{seed}", block["tag"], pilot))
+    return cells
+
+
+def plan(grid_path: Path, v2_runs: Path) -> tuple[list, dict, dict]:
+    """(cells with timeouts, admission ledger, provenance) — local, no Modal."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from memsub.sgm.p2d_launch_guard import admission_ledger, cell_timeout_seconds
+    grid = json.loads(grid_path.read_text())
+    cells, timeouts = [], {}
+    for run_id, tag, pilot in expand(grid):
+        v2 = json.loads((v2_runs / f"main-learned-n{pilot['n_bindings']}-s{pilot['seed']}"
+                         / "metrics.json").read_text())
+        timeouts[run_id] = cell_timeout_seconds(tag, v2["wall_seconds"])
+        cells.append((run_id, pilot, timeouts[run_id]))
+    if max(timeouts.values()) > MAX_CELL_TIMEOUT_S:
+        raise ValueError("a cell timeout exceeds the Modal backstop")
+    ledger = admission_ledger(timeouts)
+    ledger["cell_timeouts_s"] = timeouts
+    return cells, ledger, {"grid_file": str(grid_path),
+                           "grid_sha256": hashlib.sha256(grid_path.read_bytes()).hexdigest()}
+
+
+@app.local_entrypoint()
+def main(group: str, grid: str, v2_runs: str, local_out: str):
+    tracked = ["memsub", "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py", grid]
+    dirty = subprocess.run(["git", "status", "--porcelain", "--", *tracked],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    if dirty:
+        raise SystemExit(f"refusing to launch from a dirty tree:\n{dirty}")
+    cells, ledger, provenance = plan(Path(grid), Path(v2_runs))   # raises if over the cap
+    provenance["git_head"] = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                                            text=True, check=True).stdout.strip()
+    spec = json.loads(Path(grid).read_text())
+    root = Path(local_out) / group
+    root.mkdir(parents=True, exist_ok=False)
+    (root / "grid.json").write_text(json.dumps(spec, indent=2))
+    (root / "launch_provenance.json").write_text(json.dumps({**provenance, "ledger": ledger}, indent=2))
+    print("ledger", json.dumps(ledger))
+    args = [(group, rid, pilot, provenance, t, spec["final_seed_base"]) for rid, pilot, t in cells]
+    for res in run_cell.starmap(args, return_exceptions=True, wrap_returned_exceptions=False):
+        if isinstance(res, Exception):
+            print("RUN FAILED:", repr(res))
+            continue
+        if res["status"] != "done":
+            print("REPLAY REFUSED:", res)
+            continue
+        d = root / res["run_id"]
+        d.mkdir(parents=True, exist_ok=True)
+        rows = res["metrics"].pop("per_example", [])
+        (d / "metrics.json").write_text(json.dumps(res["metrics"], indent=2, default=float))
+        with (d / "per_example_results.jsonl").open("w") as f:
+            for row in rows:
+                f.write(json.dumps(row) + "\n")
+        print("done", res["run_id"], {k: (round(v["accuracy"], 3) if v else None)
+                                      for k, v in res["metrics"]["final"].items()})

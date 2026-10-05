@@ -38,11 +38,14 @@ N_VALUE_CLASSES = 64             # synthetic task label space (synthetic_binding
 RUNNER = Path(__file__).resolve().parents[1] / "modal-runners" / "modal-m4-sgm-synthetic-pilot-grid.py"
 
 
-def registered_cells(grid: dict) -> dict[str, dict]:
-    """run_id -> pilot config, via the launcher's own expansion."""
-    spec = importlib.util.spec_from_file_location("m4_grid_runner", RUNNER)
+def registered_cells(grid: dict, runner_path: Path = RUNNER) -> dict[str, dict]:
+    """run_id -> pilot config, via the launcher's own expansion (v2 `_expand`
+    -> (id, pilot); P2D `expand` -> (id, tag, pilot))."""
+    spec = importlib.util.spec_from_file_location("m4_grid_runner", runner_path)
     runner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(runner)
+    if hasattr(runner, "expand"):
+        return {rid: pilot for rid, _tag, pilot in runner.expand(grid)}
     return dict(runner._expand(grid))
 
 
@@ -116,10 +119,14 @@ def validate_rows(rows_text: str, met: dict) -> str | None:
     return None
 
 
-def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str) -> str | None:
+def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str,
+             final_seed_base: int = FINAL_SEED_BASE) -> str | None:
     """None if the cell's artifacts are complete, parseable and bound to the
     registered config and launch provenance; else the first failure reason."""
-    missing = [f for f in REQUIRED if not (cell / f).exists()]
+    steps = [str(s) for s in pilot.get("checkpoint_steps", [])]
+    required = list(REQUIRED) + [f for s in steps for f in (f"per_example_results_step{s}.jsonl",
+                                                             f"trained_parameters_step{s}.safetensors")]
+    missing = [f for f in required if not (cell / f).exists()]
     if missing:
         return f"missing {missing}"
     try:
@@ -138,7 +145,11 @@ def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str
         "git_head": man.get("git_head") == launch["git_head"],
         "grid_sha256": man.get("grid_sha256") == launch["grid_sha256"],
         "memsub_source_sha256": man.get("memsub_source_sha256") == source_sha,
-        "final_eval_seed": man.get("final_eval_seed") == FINAL_SEED_BASE + pilot["seed"],
+        "final_eval_seed": man.get("final_eval_seed") == final_seed_base + pilot["seed"],
+        "checkpoint_parameters_sha256": all(
+            (man.get("checkpoint_parameters_sha256") or {}).get(s) == hashlib.sha256(
+                (cell / f"trained_parameters_step{s}.safetensors").read_bytes()).hexdigest()
+            for s in steps),
         "trained_parameters_sha256": man.get("trained_parameters_sha256") == hashlib.sha256(
             (cell / "trained_parameters.safetensors").read_bytes()).hexdigest(),
     }
@@ -146,7 +157,14 @@ def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str
     if bad:
         return f"mismatch {bad}"
     try:
-        return validate_rows((cell / "per_example_results.jsonl").read_text(), met)
+        reason = validate_rows((cell / "per_example_results.jsonl").read_text(), met)
+        for s in steps:
+            if reason is None:
+                ck = (met.get("checkpoints") or {}).get(s)
+                problem = schema_problem(man, {**met, "final": ck})
+                reason = (f"checkpoint {s}: {problem}" if problem else validate_rows(
+                    (cell / f"per_example_results_step{s}.jsonl").read_text(), {**met, "final": ck}))
+        return reason
     except (KeyError, TypeError) as e:
         return f"metrics lack fields needed for row validation ({e})"
 
@@ -154,20 +172,23 @@ def validate(cell: Path, run_id: str, pilot: dict, launch: dict, source_sha: str
 def reconcile(dest: Path, local: Path) -> str:
     """Bring valid volume evidence into the local run dir; return status."""
     vol_met = json.loads((dest / "metrics.json").read_text())
-    vol_rows = (dest / "per_example_results.jsonl").read_bytes()
     if not (local / "metrics.json").exists():
         local.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dest / "metrics.json", local / "metrics.json")
-        (local / "per_example_results.jsonl").write_bytes(vol_rows)
+        for f in dest.glob("per_example_results*.jsonl"):
+            shutil.copy2(f, local / f.name)
         (local / "recovered_from_volume.json").write_text(json.dumps({"copied": ["metrics", "rows"]}))
         return "recovered"
     if json.loads((local / "metrics.json").read_text())["final"] != vol_met["final"]:
         raise ValueError("local streamed metrics differ from the valid volume metrics")
-    rows = local / "per_example_results.jsonl"
-    if rows.exists() and rows.read_bytes() == vol_rows:
+    copied = []
+    for f in sorted(p.name for p in dest.glob("per_example_results*.jsonl")):
+        if not (local / f).exists() or (local / f).read_bytes() != (dest / f).read_bytes():
+            shutil.copy2(dest / f, local / f)
+            copied.append(f)
+    if not copied:
         return "stream_ok"
-    rows.write_bytes(vol_rows)
-    (local / "recovered_from_volume.json").write_text(json.dumps({"copied": ["rows"]}))
+    (local / "recovered_from_volume.json").write_text(json.dumps({"copied": copied}))
     return "rows_recovered"
 
 
@@ -177,12 +198,15 @@ def main():
     ap.add_argument("--local", type=Path, required=True)
     ap.add_argument("--source-sha", required=True)
     ap.add_argument("--volume", default="memsub-artifacts")
+    ap.add_argument("--runner", type=Path, default=RUNNER)
     args = ap.parse_args()
     root = args.local / args.group
     mirror = args.local / f"{args.group}-volume-mirror"
     launch = json.loads((root / "launch_provenance.json").read_text())
     report = {"group": args.group, "launch": launch, "source_sha": args.source_sha, "cells": {}}
-    for run_id, pilot in registered_cells(json.loads((root / "grid.json").read_text())).items():
+    grid = json.loads((root / "grid.json").read_text())
+    seed_base = grid.get("final_seed_base", FINAL_SEED_BASE)
+    for run_id, pilot in registered_cells(grid, args.runner).items():
         dest = mirror / run_id
         if dest.exists():
             shutil.rmtree(dest)
@@ -193,7 +217,7 @@ def main():
         if got.returncode != 0:
             status, reason = "retrieval_failed", (got.stderr or got.stdout).strip()[-500:]
         else:
-            reason = validate(dest, run_id, pilot, launch, args.source_sha)
+            reason = validate(dest, run_id, pilot, launch, args.source_sha, seed_base)
             status = "incomplete"
             if reason is None:
                 try:

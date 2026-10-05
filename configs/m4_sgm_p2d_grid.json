@@ -1,0 +1,13 @@
+{
+  "_comment": "M4-SGM P2D Step 2 diagnostics (preregistered in M4-SGM.md before launch). Tiny frozen random Qwen3; diagnostic effects only.",
+  "final_seed_base": 9300011,
+  "v2_baseline_group": "p2-load-sweep-v2",
+  "base": {"arm": "learned", "readout": "taskhead", "n_queries": 4, "filler_len": 40, "steps": 1500,
+           "batch": 16, "lr": 0.003, "eval_every": 100, "eval_batches": 4, "sgm": {},
+           "filler_writes": true, "aux_address_lambda": 0.0, "checkpoint_steps": []},
+  "blocks": [
+    {"tag": "filleroff", "n_bindings": [16, 64], "seeds": [0, 1], "override": {"filler_writes": false}},
+    {"tag": "long", "n_bindings": [16, 32], "seeds": [0, 1], "override": {"steps": 4500, "checkpoint_steps": [1500]}},
+    {"tag": "addrsup", "n_bindings": [32, 64], "seeds": [0, 1], "override": {"aux_address_lambda": 0.1}}
+  ]
+}

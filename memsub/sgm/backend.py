@@ -43,11 +43,14 @@ class SparseGrowingMemoryBackend:
     def ingest_source(self, state: SGMSessionState, token_ids: torch.Tensor,
                       source: SourceRef, *, enabled: bool = True,
                       oracle_addresses: torch.Tensor | None = None,
-                      traces: list | None = None) -> SGMSessionState:
+                      traces: list | None = None,
+                      write_mask: list[bool] | None = None) -> SGMSessionState:
         """Token-serial ingest of token_ids [B, T]; returns the new committed
         state. `state` itself is never modified. oracle_addresses [B, T, 2]
         only for the diagnostic oracle arm (read = write = token's address).
-        `traces` (optional) collects each token step's telemetry trace."""
+        `traces` (optional) collects each token step's telemetry trace.
+        `write_mask` (optional, P2D filler_off): per-token False skips that
+        step's write entirely (no update, no allocation); reads unchanged."""
         if source.kind != AUTHORIZED_SOURCE:
             raise PermissionError(f"persistent writes need an authorized source, got {source.kind!r}")
         state.check_valid(self.policy_id, state.redaction_generation,
@@ -58,7 +61,8 @@ class SparseGrowingMemoryBackend:
             if enabled and oracle_addresses is not None:
                 a = oracle_addresses[:, t:t + 1]
                 oracle = {"read": a, "write": a}
-            out = self.runtime.step(work, token_ids[:, t:t + 1], write=enabled,
+            write = enabled and (write_mask is None or write_mask[t])
+            out = self.runtime.step(work, token_ids[:, t:t + 1], write=write,
                                     enabled=enabled, oracle=oracle)
             if traces is not None:
                 traces.append(out["trace"])

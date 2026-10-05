@@ -24,6 +24,7 @@ from ..runtime.sgm_model_runtime import SGMModelRuntime
 from .backend import SparseGrowingMemoryBackend
 from .config import SGMConfig
 from .synthetic_binding_task import N_VALUES, BindingTaskSpec, sample_batch
+from .address_supervision import address_pair_loss, bound_value_positions
 from .synthetic_pilot_evaluation import bank_telemetry, ingest, query_logits
 
 ARMS = ("learned", "single_cell", "random_fixed", "oracle", "memory_off")
@@ -43,11 +44,19 @@ class PilotConfig:
     eval_batches: int = 8
     seed: int = 0
     sgm: dict = field(default_factory=dict)  # SGMConfig overrides
+    # P2D diagnostic switches (defaults = P2 v2 behaviour)
+    filler_writes: bool = True                # False: tail-filler steps never write
+    aux_address_lambda: float = 0.0           # >0: AddressMLP-only pair loss
+    checkpoint_steps: tuple = ()              # extra fixed-endpoint checkpoints
 
     def result_label(self) -> str:
         if self.arm == "oracle":
             return "DIAGNOSTIC-oracle-address"
-        return "tiny-random-lm+taskhead" if self.readout == "taskhead" else "tiny-random-lm+lm-readout"
+        base = "tiny-random-lm+taskhead" if self.readout == "taskhead" else "tiny-random-lm+lm-readout"
+        flags = [f for f, on in (("filler-off", not self.filler_writes),
+                                 (f"aux-addr-lambda{self.aux_address_lambda:g}", self.aux_address_lambda > 0),
+                                 (f"steps{self.steps}", bool(self.checkpoint_steps))) if on]
+        return base + ("+DIAGNOSTIC-" + "+".join(flags) if flags else "")
 
     def task_spec(self) -> BindingTaskSpec:
         return BindingTaskSpec(self.n_bindings, self.n_queries, self.filler_len)
@@ -105,8 +114,11 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
     ids_before = [id(p) for p in params]
     opt = torch.optim.AdamW(params, lr=pcfg.lr, weight_decay=0.0)
     spec, gen = pcfg.task_spec(), torch.Generator().manual_seed(pcfg.seed)
-    telemetry = []
+    telemetry, checkpoints = [], {}
     for step in range(pcfg.steps + 1):
+        if step in pcfg.checkpoint_steps:      # state after exactly `step` updates
+            checkpoints[step] = {"adapters": {k: v.detach().clone() for k, v in runtime.adapters.state_dict().items()},
+                                 "head": {k: v.detach().clone() for k, v in head.state_dict().items()}}
         if evaluate_fn and step % pcfg.eval_every == 0:
             telemetry.append({"step": step, "eval": evaluate_fn(backend, head, step)})
             log(telemetry[-1])
@@ -114,14 +126,22 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
             continue  # memory_off has no trainable path that sees the bindings
         t0 = time.monotonic()
         batch = sample_batch(spec, "train", pcfg.batch, gen)
-        state = ingest(backend, batch, pcfg.arm)          # graph kept into the bank
-        loss, hits = 0.0, 0
+        src_traces: list = []
+        state = ingest(backend, batch, pcfg.arm, src_traces,       # graph kept into the bank
+                       pcfg.filler_writes, spec.n_bindings)
+        loss, hits, q_traces = 0.0, 0, []
         for q in range(spec.n_queries):
-            logits, _ = query_logits(backend, head, state, batch, q, pcfg.arm,
-                                     pcfg.readout, detach=False)
+            logits, qtrace = query_logits(backend, head, state, batch, q, pcfg.arm,
+                                          pcfg.readout, detach=False)
+            q_traces.append(qtrace)
             loss = loss + nn.functional.cross_entropy(logits, batch.labels[:, q])
             hits += int((logits.argmax(-1) == batch.labels[:, q]).sum())
         loss = loss / spec.n_queries
+        aux = None
+        if pcfg.aux_address_lambda > 0:        # training split only; AddressMLP-only graph
+            aux = address_pair_loss(runtime, src_traces, q_traces,
+                                    bound_value_positions(batch.source, batch.query_keys, spec.n_bindings))
+            loss = loss + pcfg.aux_address_lambda * aux
         opt.zero_grad(set_to_none=True)
         loss.backward()
         logging = step % 10 == 0
@@ -133,6 +153,7 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
             upd = {k: sum(float((a - b).norm()) for a, b in zip(after[k], before[k]))
                    for k in after}
             row = {"step": step, "loss": float(loss), "train_acc": hits / (pcfg.batch * spec.n_queries),
+                   "aux_address_mse": None if aux is None else float(aux),
                    "grad_norm": grads, "update_norm": upd,
                    "alpha": {l: float(torch.sigmoid(a.alpha_logit)) for l, a in runtime.adapters.items()},
                    "sec_per_step": time.monotonic() - t0, **bank_telemetry(state)}
@@ -141,5 +162,6 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
     if [id(p) for p in params] != ids_before:
         raise RuntimeError("optimizer parameter identity changed")
     return {"telemetry": telemetry, "runtime": runtime, "backend": backend, "head": head,
+            "checkpoints": checkpoints,
             "config": asdict(pcfg), "sgm_config": runtime.cfg.to_json(),
             "policy_id": runtime.cfg.policy_id}

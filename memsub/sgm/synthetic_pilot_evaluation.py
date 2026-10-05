@@ -47,12 +47,17 @@ def query_logits(backend, head, state, batch, q: int, arm: str, readout: str,
     return head(feats), out["trace"]
 
 
-def ingest(backend: SparseGrowingMemoryBackend, batch, arm: str, traces: list | None = None):
+def ingest(backend: SparseGrowingMemoryBackend, batch, arm: str, traces: list | None = None,
+           filler_writes: bool = True, n_bindings: int | None = None):
     state = backend.new_state(batch.source.shape[0])
     oracle = batch.oracle_source if arm == "oracle" else None
+    mask = None
+    if not filler_writes:   # P2D learned_filler_off: tail-filler steps never write
+        tail = 4 + 2 * n_bindings
+        mask = [t < tail for t in range(batch.source.shape[1])]
     return backend.ingest_source(state, batch.source, SourceRef("synthetic-episode"),
                                  enabled=arm != "memory_off", oracle_addresses=oracle,
-                                 traces=traces)
+                                 traces=traces, write_mask=mask)
 
 
 def episode_hash(batch, b: int) -> str:
@@ -105,7 +110,8 @@ def apply_intervention(state, intervention: str, gen: torch.Generator) -> None:
 @torch.no_grad()
 def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
              split: str, batches: int, batch_size: int, seed: int,
-             intervention: str = "none", per_example: list | None = None) -> dict | None:
+             intervention: str = "none", per_example: list | None = None,
+             filler_writes: bool = True) -> dict | None:
     if intervention == "coord_shuffle" and arm == "single_cell":
         return None  # not applicable: one coordinate per bank
     data_gen = torch.Generator().manual_seed(seed)
@@ -115,7 +121,7 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
     empty, coords, tele, episode_acc, betas = [], [], [], [], []
     for bi, batch in enumerate(episodes):
         traces: list = []
-        state = ingest(backend, batch, arm, traces).detached()
+        state = ingest(backend, batch, arm, traces, filler_writes, spec.n_bindings).detached()
         tele.append(bank_telemetry(state))
         betas.append(beta_by_token_class(traces, spec.n_bindings))
         iv_gen = torch.Generator().manual_seed(seed + INTERVENTION_RNG_OFFSET + bi)

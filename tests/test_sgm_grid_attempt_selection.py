@@ -145,7 +145,7 @@ def test_failed_retrieval_is_not_reported_as_incomplete_execution(tmp_path, monk
     root.mkdir()
     (root / "launch_provenance.json").write_text(json.dumps(LAUNCH))
     (root / "grid.json").write_text("{}")
-    monkeypatch.setattr(mod, "registered_cells", lambda grid: {"main-learned-n4-s0": PILOT})
+    monkeypatch.setattr(mod, "registered_cells", lambda grid, *a: {"main-learned-n4-s0": PILOT})
     monkeypatch.setattr(mod.subprocess, "run", lambda *a, **k: subprocess.CompletedProcess(
         a, 1, stdout="", stderr="volume unavailable"))
     monkeypatch.setattr(sys, "argv", ["x", "--group", "grp", "--local", str(tmp_path), "--source-sha", SRC])
@@ -191,3 +191,24 @@ def test_malformed_schemas_are_reasons_not_crashes(tmp_path):
             (d / "metrics.json").write_text(json.dumps(met))
         reason = mod.validate(d, d.name, PILOT, LAUNCH, SRC)
         assert isinstance(reason, str) and "not an object" in reason, (name, reason)
+
+
+def test_validate_p2d_checkpoint_artifacts_end_to_end(tmp_path):
+    """P2D: checkpoint rows/params and the grid's own final seed are validated."""
+    from dataclasses import asdict
+    from memsub.sgm.synthetic_pilot import PilotConfig
+    from memsub.sgm.synthetic_pilot_run import run_pilot, source_tree_sha256
+    mod = _script("sgm-recover-and-validate-grid-artifacts")
+    p = PilotConfig(arm="learned", n_bindings=4, steps=2, batch=2, eval_every=2, eval_batches=1,
+                    checkpoint_steps=(1,))
+    d = tmp_path / "long-learned-n4-s0"
+    run_pilot(p, d, final_batches=1, final_batch_size=2, final_seed_base=9_300_011,
+              extra_manifest={"run_id": d.name, **LAUNCH})
+    pilot = json.loads(json.dumps(asdict(p)))
+    src = source_tree_sha256(ROOT / "memsub")
+    assert mod.validate(d, d.name, pilot, LAUNCH, src, 9_300_011) is None
+    assert "final_eval_seed" in mod.validate(d, d.name, pilot, LAUNCH, src, 9_100_003)
+    (d / "trained_parameters_step1.safetensors").write_bytes(b"tampered")
+    assert "checkpoint_parameters_sha256" in mod.validate(d, d.name, pilot, LAUNCH, src, 9_300_011)
+    (d / "per_example_results_step1.jsonl").unlink()
+    assert "missing" in mod.validate(d, d.name, pilot, LAUNCH, src, 9_300_011)

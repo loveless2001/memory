@@ -150,6 +150,7 @@ class SGMModelRuntime(nn.Module):
     def _write(self, banks: SparseBankSet, i, p, oracle, trace) -> int:
         idx, w, coords = self._stencil(p, "write", 0, oracle)
         trace.setdefault("write_coords", {})[i] = coords.detach()  # telemetry only
+        trace.setdefault("write_k", {})[i] = p["k"][:, 0].detach()  # telemetry only
         cells, _ = banks.gather(i, idx)
         new = delta_update(cells, w, p["beta"][:, 0], p["k"][:, 0], p["v"][:, 0].float())
         return banks.scatter(i, idx, new, w)

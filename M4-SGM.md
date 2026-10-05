@@ -392,7 +392,7 @@ pretrained or scaling claim):**
   - the query read-address spread is ≥ 1 cell.
 - `learned_addr_supervised`:
   - **Reproducible gain + non-collapsed alignment + memory use**
-    (bank_derange to chance, positive paired read-offset drop) supports the
+    (the memory-use rule in clarification 3) supports the
     usefulness of this supervised routing-training recipe. It does not show
     credit assignment was the unique original blocker.
   - **Alignment improves, accuracy does not:** alignment alone was insufficient.
@@ -403,17 +403,8 @@ pretrained or scaling claim):**
 - `learned_long`: a reproducible 4500-step gain over its own 1500-step
   checkpoint (and over v2) is a budget effect for this recipe.
 
-Descriptive check: whether the 1500-step `learned_long` checkpoint matches
-v2's parameter hash. A mismatch would indicate machine nondeterminism.
-
-**Budget and stop policy:**
-
-- Estimate: ~1,800 container-minutes ≈ $8 plus auxiliary/evaluation overhead.
-- **Hard cap $15** for the group: billing is checked hourly and the app is
-  stopped if exceeded.
-- Function timeout 8 h; the long N = 32 run extrapolates to ~4.4 h.
-- No retries except a preemption-only re-run under the cleared attempt
-  policy. The fresh-set re-evaluation of baselines is local and costs $0.
+Long-prefix continuity and the budget guard are defined in clarifications
+4 and 5 below; these replace all earlier wording.
 
 **Registration clarifications (codex 21132, committed before implementation):**
 
@@ -456,13 +447,42 @@ v2's parameter hash. A mismatch would indicate machine nondeterminism.
    - An unexplained tensor mismatch is labelled a *continuity discrepancy*
      (possible causes: serialization, code drift, RNG/order, checkpoint
      timing), not machine nondeterminism.
-5. **Enforceable budget.**
-   - Each cell's Modal timeout = 1.5 × its v2-extrapolated duration:
-     filler_off N16 / N64 ≈ 73 / 140 min; long N16 / N32 ≈ 218 / 313 min
-     (**~5.2 h**, correcting 4.4 h); supervised N32 / N64 ≈ 115 / 155 min
-     including about 10% overhead.
-   - Expected ≈ 2,030 container-min ≈ **$8.9**. Worst case if every cell hits
-     its timeout ≈ 3,040 container-min ≈ **$13.4 < $15**, so the cap holds by
-     construction at $0.0044 / container-min.
-   - Billing is also checked hourly. A timed-out cell is reported as
-     incomplete, not re-run.
+5. **Budget guard** (codex 21133 / 21135; `memsub/sgm/p2d_launch_guard.py`,
+   `modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py`). Billing is
+   reconciliation only, never the control.
+   - **Cap scope:** all Modal compute for group `p2d-diagnostics-v1`,
+     including image build, startup, idle and replays. Baseline
+     re-evaluation and telemetry are local.
+   - **Resources:** `cpu=(4, 4)` and `memory=(8192, 8192)`. CPU limits are
+     soft (throttling) and memory is hard, so a CPU-overuse margin is
+     reserved. `startup_timeout=300 s`, `scaledown_window=2`, `retries=0`,
+     `max_containers=12`, and an 8 h backstop function timeout.
+   - **Per-cell wall budget:** 1.4 × arm factor × that cell's OWN
+     seed-specific v2 wall time. The arm factor is filler_off 1.0, long 3.0
+     (the N32 s0 cell is ~7.3 h) and addr_supervised 1.1. It is enforced by
+     an in-process watchdog that calls `os._exit` (kills even a hung step);
+     an expired cell is reported incomplete and not re-run.
+   - **Attempts:** the first action of every attempt increments a per-cell
+     counter in a Modal Dict. Any replay of a started cell (including one
+     interrupted before artifacts commit) exits before training. The
+     reserved allowance is 1 replay × (startup + 60 s) per cell. Further
+     replays are also refused; their residual startup cost is covered by the
+     fixed margin. Any re-run is a new reviewed launch charged to the same cap.
+   - **Admission ledger** (refuses launch if over the cap), at $0.252576 per
+     container-hour (4 cores × $0.0000131/s + 8 GiB × $0.00000222/s), per
+     dry run 2026-10-05:
+
+     | component | USD |
+     |---|---|
+     | cell timeouts | 10.870 |
+     | startup + teardown | 0.303 |
+     | replay allowance | 0.303 |
+     | image build | 0.300 |
+     | CPU-overuse margin (10%) | 0.812 |
+     | fixed margin | 1.500 |
+     | **reserved total** | **14.088 ≤ 15.00** |
+
+     A configuration using rounded worst-seed durations (3,042 timeout-min)
+     is rejected (test).
+   - **Shutdown verification:** app state `stopped` and 0 containers via the
+     CLI, plus billing reconciliation.
