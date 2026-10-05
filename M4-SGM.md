@@ -541,6 +541,29 @@ Long-prefix continuity and the budget guard are defined in clarifications
        (stop and verify on allowance exhaustion).
      - Once every cell is terminal, `collect` stops the app by its
        spawn-time ID and verifies zero containers (`collect_status.json`).
+- **Audit fixes (codex 21196):**
+  - **Early watchdog.** The 120 s early watchdog starts BEFORE the torch
+    import, the source hashing and the claim RPCs. Only the guard module is
+    imported before it, and that module is stdlib-only.
+  - **Exact scope.** `plan_topup` and `collect` both require exactly the 6
+    authorized IDs (`TOPUP_IDS`): nothing missing, nothing extra.
+  - **Collector coverage.** Coverage is bound to the SAVED registered grid.
+    - A registered cell with no saved call ID is `untracked`. This happens
+      if spawn was interrupted, or if the host died between server
+      acceptance and persistence.
+    - The run is terminal, and the app is stopped, only when all 6 are
+      tracked AND terminal. A `calls.json` with unregistered IDs is
+      rejected.
+  - **Untracked recovery.** An untracked cell is never respawned
+    automatically.
+    - The collector reports its attempts-Dict claim (`<id>#attempt1`).
+      The volume dir is validated like any other cell.
+    - A claimed cell is running or has run: wait for it.
+    - An unclaimed cell after the startup window is reported to
+      codex/user. Any respawn is a reviewed decision; a duplicate of an
+      accepted call is refused by the claim rule.
+  - **Atomic writes.** `grid.json`, `launch_provenance.json`, `calls.json`
+    and `collect_status.json` are written atomically (tmp file + `os.replace`).
 - **Ledger** (dry run): the 1× v1 formula on the 6 cells' own timeouts, with
   the rate-based parts ×3.
 

@@ -34,6 +34,8 @@ SOURCE_SHA = "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60" 
 NONPREEMPTIBLE_PRICE_MULTIPLIER = 3.0       # Modal docs: 3x list price for CPU and memory
 TOPUP_CAP_USD = 27.0                        # user-approved B1 cap (#gravity 21193)
 MAX_CELL_TIMEOUT_S = 8 * 3600               # backstop only; per-cell watchdog is the real bound
+TOPUP_IDS = frozenset({"filleroff-learned-n64-s1", "long-learned-n16-s0", "long-learned-n16-s1",
+                       "long-learned-n32-s0", "long-learned-n32-s1", "addrsup-learned-n64-s0"})
 
 app = modal.App(APP_NAME)
 image = (modal.Image.debian_slim(python_version="3.12")
@@ -56,9 +58,9 @@ def run_cell(group: str, run_id: str, pilot: dict, provenance: dict, timeout_s: 
     sys.path.insert(0, "/root/repo")
     from memsub.sgm.p2d_launch_guard import (EARLY_DEADLINE_S, AllowanceExhausted, AttemptLedger,
                                              ReplayRefused, Watchdog)
-    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
-    early = Watchdog(EARLY_DEADLINE_S)
+    early = Watchdog(EARLY_DEADLINE_S)   # bounds the heavy imports, source hashing and claim RPCs
     try:   # identity before the claim: a mismatched deploy exits without claiming or training
+        from memsub.sgm.synthetic_pilot_run import source_tree_sha256   # imports torch
         got = {"runner": file_sha(__file__), "memsub": source_tree_sha256(Path("/root/repo/memsub"))}
         if got != {"runner": runner_sha, "memsub": SOURCE_SHA}:
             return {"run_id": run_id, "status": "identity_mismatch", "reason": got}
@@ -108,6 +110,14 @@ def v1_runner():
     return mod
 
 
+def atomic_write(path: Path, text: str) -> None:
+    """Write-then-rename: an interruption never leaves truncated JSON."""
+    import os
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
+
+
 def nonpreemptible_ledger(ledger_1x: dict, cap) -> dict:
     """Scale every rate-based reservation by the non-preemptible multiplier;
     image build and the fixed margin are flat. Refuses a missing or exceeded cap."""
@@ -132,6 +142,9 @@ def plan_topup(cap=TOPUP_CAP_USD) -> tuple[list, dict, dict]:
     if topup_grid["final_seed_base"] != v1_grid["final_seed_base"]:
         raise ValueError("top-up final_seed_base differs from v1")
     cells, ledger_1x, provenance = v1.plan(Path(GRID), Path(V2_RUNS))   # 1x ledger, $15 v1 cap
+    ids = [rid for rid, _p, _t in cells]
+    if len(ids) != len(TOPUP_IDS) or set(ids) != TOPUP_IDS:
+        raise ValueError(f"top-up must be exactly the 6 authorized cells, got {sorted(ids)}")
     for rid, pilot, _t in cells:
         if registered.get(rid) != pilot:
             raise ValueError(f"{rid}: pilot config differs from the v1 registered cell")
@@ -156,14 +169,15 @@ def spawn() -> None:
     provenance["deployed_app_id"] = modal.App.lookup(APP_NAME).app_id   # stop/verify target
     root = Path(LOCAL_OUT) / GROUP
     root.mkdir(parents=True, exist_ok=False)           # a second spawn refuses here
-    (root / "grid.json").write_text(Path(GRID).read_text())
-    (root / "launch_provenance.json").write_text(json.dumps({**provenance, "ledger": ledger}, indent=2))
+    atomic_write(root / "grid.json", Path(GRID).read_text())
+    atomic_write(root / "launch_provenance.json", json.dumps({**provenance, "ledger": ledger}, indent=2))
     seed_base = json.loads(Path(GRID).read_text())["final_seed_base"]
     calls = {}
-    for rid, pilot, t in cells:
+    atomic_write(root / "calls.json", "{}")
+    for rid, pilot, t in cells:   # a crash here leaves later cells UNTRACKED; see collect()
         calls[rid] = fn.spawn(GROUP, rid, pilot, provenance, t, seed_base,
                               provenance["runner_sha256"]).object_id
-        (root / "calls.json").write_text(json.dumps(calls, indent=2))   # after every spawn
+        atomic_write(root / "calls.json", json.dumps(calls, indent=2))   # after every spawn
         print("spawned", rid, calls[rid])
 
 
@@ -196,29 +210,62 @@ def shutdown(v1, app_id: str) -> dict:
     return evidence
 
 
-def collect(poller=poll) -> dict:
-    """Write finished cells exactly as v1 `consume` does (which stops + verifies
-    on allowance exhaustion); once every cell is terminal, stop + verify the app."""
+def lookup_claims(run_ids) -> dict:
+    """run_id -> whether attempt 1 was claimed (i.e. a container started it)."""
+    try:
+        d = modal.Dict.from_name(f"m4-sgm-{GROUP}-attempts")
+        return {rid: bool(d.get(f"{rid}#attempt1", False)) for rid in run_ids}
+    except Exception as e:                              # no Dict yet = nothing claimed
+        return {rid: f"lookup failed: {e!r}" for rid in run_ids}
+
+
+UNTRACKED_RECOVERY = (
+    "untracked = registered cell with no saved call ID (spawn interrupted, or the host died "
+    "between server acceptance and persistence). Never respawned automatically and the app is "
+    "never auto-stopped while any cell is untracked. Evidence: `claimed` (attempts Dict) and "
+    "the volume dir m4-sgm/<group>/<run_id>, validated from the volume like any cell. A claimed "
+    "cell is running/ran: wait, then validate. An unclaimed cell after the startup window is "
+    "reported to codex/user; any respawn is a reviewed decision (a duplicate of an accepted "
+    "call is replay-refused by the claim rule).")
+
+
+def collect(poller=poll, claims=lookup_claims) -> dict:
+    """Write finished cells exactly as v1 `consume` does (which stops + verifies on
+    allowance exhaustion). Coverage is bound to the SAVED registered grid: the app
+    is stopped only when all 6 registered cells are tracked AND terminal."""
     v1, root = v1_runner(), Path(LOCAL_OUT) / GROUP
-    calls = json.loads((root / "calls.json").read_text())
+    expected = [rid for rid, _t, _p in v1.expand(json.loads((root / "grid.json").read_text()))]
+    if len(expected) != len(TOPUP_IDS) or set(expected) != TOPUP_IDS:
+        raise SystemExit(f"saved grid is not the authorized 6-cell top-up: {sorted(expected)}")
+    calls_path = root / "calls.json"
+    calls = json.loads(calls_path.read_text()) if calls_path.exists() else {}
+    if set(calls) - TOPUP_IDS:
+        raise SystemExit(f"calls.json has unregistered cells: {sorted(set(calls) - TOPUP_IDS)}")
     app_id = json.loads((root / "launch_provenance.json").read_text())["deployed_app_id"]
-    states, ready = {}, []
-    for rid, cid in calls.items():
-        kind, payload = poller(cid)
-        states[rid] = {"call_id": cid, "poll": kind}
+    untracked = [rid for rid in expected if rid not in calls]
+    states = {rid: {"poll": "untracked", "claimed": c} for rid, c in claims(untracked).items()} \
+        if untracked else {}
+    ready = []
+    for rid in expected:
+        if rid in untracked:
+            continue
+        kind, payload = poller(calls[rid])
+        states[rid] = {"call_id": calls[rid], "poll": kind}
         if kind == "result":
             states[rid]["status"] = payload["status"]
             ready.append(payload)
         elif kind == "failed":
             states[rid]["error"] = payload
-    terminal = all(s["poll"] != "pending" for s in states.values())
+    terminal = not untracked and all(s["poll"] != "pending" for s in states.values())
     status = v1.consume(ready, root, lambda: v1.stop_app(app_id), lambda: v1.verify_stopped(app_id))
-    report = {"terminal": terminal, "consume_status": status, "cells": states}
+    report = {"terminal": terminal, "consume_status": status, "untracked": untracked, "cells": states}
+    if untracked:
+        report["untracked_recovery"] = UNTRACKED_RECOVERY
     if terminal and status == "complete":
         report["final_shutdown"] = shutdown(v1, app_id)
-    (root / "collect_status.json").write_text(json.dumps(report, indent=2, default=str))
-    print(json.dumps({k: v for k, v in report.items() if k != "cells"}, default=str),
-          {rid: s.get("status", s["poll"]) for rid, s in states.items()})
+    atomic_write(root / "collect_status.json", json.dumps(report, indent=2, default=str))
+    print(json.dumps({k: v for k, v in report.items() if k not in ("cells", "untracked_recovery")},
+                     default=str), {rid: s.get("status", s["poll"]) for rid, s in states.items()})
     return report
 
 

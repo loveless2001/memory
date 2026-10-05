@@ -100,12 +100,18 @@ def test_poll_maps_pending_expired_failed_and_result(topup, monkeypatch):
     assert topup.poll("r") == ("result", {"status": "done"})
 
 
-def _setup_root(topup, tmp_path, monkeypatch, calls):
+IDS = sorted(LOST)
+
+
+def _setup_root(topup, tmp_path, monkeypatch, calls, grid=None):
+    """A saved group root: registered grid, provenance with the spawn-time app ID, calls."""
     monkeypatch.setattr(topup, "LOCAL_OUT", str(tmp_path))
     root = tmp_path / topup.GROUP
-    root.mkdir()
-    (root / "calls.json").write_text(json.dumps(calls))
+    root.mkdir(parents=True)
+    (root / "grid.json").write_text(grid if grid is not None else (ROOT / topup.GRID).read_text())
     (root / "launch_provenance.json").write_text(json.dumps({"deployed_app_id": "ap-spawned"}))
+    if calls is not None:
+        (root / "calls.json").write_text(json.dumps(calls))
     return root
 
 
@@ -123,52 +129,120 @@ def _fake_v1(monkeypatch, topup, stop=None, verified=True):
     return seen
 
 
+def _no_claims(rids):
+    return {r: False for r in rids}
+
+
 def test_collect_writes_done_cells_and_is_not_terminal_while_pending(topup, tmp_path, monkeypatch):
-    root = _setup_root(topup, tmp_path, monkeypatch, {"a": "c1", "b": "c2", "c": "c3", "d": "c4"})
-    done = {"run_id": "a", "status": "done",
+    root = _setup_root(topup, tmp_path, monkeypatch, {r: f"c-{r}" for r in IDS})
+    a, b, c, d = IDS[:4]
+    done = {"run_id": a, "status": "done",
             "metrics": {"final": {"none": {"accuracy": 0.5}}, "per_example": [{"x": 1}, {"x": 2}]}}
-    polls = {"c1": ("result", done), "c2": ("pending", None),
-             "c3": ("result", {"run_id": "c", "status": "replay_refused"}), "c4": ("failed", "RuntimeError()")}
-    report = topup.collect(poller=lambda cid: polls[cid])
-    assert report["terminal"] is False and report["consume_status"] == "complete"
-    assert json.loads((root / "a" / "metrics.json").read_text()) == {"final": {"none": {"accuracy": 0.5}}}
-    assert (root / "a" / "per_example_results.jsonl").read_text().splitlines() == ['{"x": 1}', '{"x": 2}']
-    assert not (root / "c").exists()
+    polls = {f"c-{a}": ("result", done), f"c-{b}": ("pending", None),
+             f"c-{c}": ("result", {"run_id": c, "status": "replay_refused"}),
+             f"c-{d}": ("failed", "RuntimeError()")}
+    seen = _fake_v1(monkeypatch, topup)
+    report = topup.collect(poller=lambda cid: polls.get(cid, ("pending", None)), claims=_no_claims)
+    assert report["terminal"] is False and report["consume_status"] == "complete" and seen == []
+    assert json.loads((root / a / "metrics.json").read_text()) == {"final": {"none": {"accuracy": 0.5}}}
+    assert (root / a / "per_example_results.jsonl").read_text().splitlines() == ['{"x": 1}', '{"x": 2}']
+    assert not (root / c).exists()
     saved = json.loads((root / "collect_status.json").read_text())["cells"]
-    assert saved["b"]["poll"] == "pending" and saved["d"]["error"] == "RuntimeError()"
-    assert saved["c"]["status"] == "replay_refused"
+    assert saved[b]["poll"] == "pending" and saved[d]["error"] == "RuntimeError()"
+    assert saved[c]["status"] == "replay_refused" and set(saved) == LOST
 
 
 def test_collect_on_exhaustion_stops_and_verifies_the_spawn_time_app_id(topup, tmp_path, monkeypatch):
-    root = _setup_root(topup, tmp_path, monkeypatch, {"a": "c1"})
+    root = _setup_root(topup, tmp_path, monkeypatch, {r: f"c-{r}" for r in IDS})
     seen = _fake_v1(monkeypatch, topup)
-    report = topup.collect(poller=lambda cid: ("result", {"run_id": "a", "status": "allowance_exhausted"}))
+    report = topup.collect(poller=lambda cid: ("result", {"run_id": cid[2:], "status": "allowance_exhausted"}),
+                           claims=_no_claims)
     assert report["consume_status"] == "halted" and "final_shutdown" not in report
     assert seen == [("stop", "ap-spawned"), ("verify", "ap-spawned")]
     assert json.loads((root / "shutdown.json").read_text())["status"] == "halted"
-
-
-def test_pending_cells_never_trigger_shutdown(topup, tmp_path, monkeypatch):
-    _setup_root(topup, tmp_path, monkeypatch, {"a": "c1"})
-    seen = _fake_v1(monkeypatch, topup)
-    assert "final_shutdown" not in topup.collect(poller=lambda cid: ("pending", None))
-    assert seen == []
 
 
 @pytest.mark.parametrize("stop,verified,expected", [
     (None, True, "stopped_verified"),
     (RuntimeError("already stopped"), True, "stopped_verified"),
     (None, False, "shutdown_unresolved")])
-def test_terminal_collect_stops_and_verifies(topup, tmp_path, monkeypatch, stop, verified, expected):
-    root = _setup_root(topup, tmp_path, monkeypatch, {"a": "c1", "b": "c2"})
+def test_all_six_tracked_and_terminal_stops_and_verifies(topup, tmp_path, monkeypatch, stop, verified,
+                                                          expected):
+    root = _setup_root(topup, tmp_path, monkeypatch, {r: f"c-{r}" for r in IDS})
     seen = _fake_v1(monkeypatch, topup, stop=stop, verified=verified)
-    polls = {"c1": ("result", {"run_id": "a", "status": "replay_refused"}), "c2": ("expired", None)}
-    report = topup.collect(poller=lambda cid: polls[cid])
+    report = topup.collect(poller=lambda cid: ("result", {"run_id": cid[2:], "status": "replay_refused"})
+                           if cid.endswith("s0") else ("expired", None), claims=_no_claims)
     assert report["terminal"] is True and report["final_shutdown"]["status"] == expected
     assert seen == [("stop", "ap-spawned"), ("verify", "ap-spawned")]
     saved = json.loads((root / "collect_status.json").read_text())
     assert saved["final_shutdown"]["status"] == expected
     assert ("stop_error" in saved["final_shutdown"]) == (stop is not None)
+
+
+@pytest.mark.parametrize("recorded", [1, 0, None])   # 1 call saved / empty calls.json / no calls.json
+def test_partial_spawn_never_reports_terminal_or_stops(topup, tmp_path, monkeypatch, recorded):
+    calls = None if recorded is None else {r: f"c-{r}" for r in IDS[:recorded]}
+    root = _setup_root(topup, tmp_path, monkeypatch, calls)
+    seen, asked = _fake_v1(monkeypatch, topup), []
+    report = topup.collect(poller=lambda cid: ("result", {"run_id": cid[2:], "status": "replay_refused"}),
+                           claims=lambda rids: asked.extend(rids) or {r: True for r in rids})
+    missing = IDS[(recorded or 0):]
+    assert report["terminal"] is False and "final_shutdown" not in report and seen == []
+    assert sorted(report["untracked"]) == missing and sorted(asked) == missing
+    assert all(report["cells"][r] == {"poll": "untracked", "claimed": True} for r in missing)
+    saved = json.loads((root / "collect_status.json").read_text())
+    assert sorted(saved["untracked"]) == missing and "never respawned" in saved["untracked_recovery"].lower()
+
+
+def test_collect_rejects_unregistered_calls_and_a_shrunken_saved_grid(topup, tmp_path, monkeypatch):
+    _fake_v1(monkeypatch, topup)
+    _setup_root(topup, tmp_path / "x", monkeypatch, {**{r: f"c-{r}" for r in IDS}, "rogue-cell": "c"})
+    with pytest.raises(SystemExit, match="unregistered"):
+        topup.collect(poller=lambda cid: ("pending", None), claims=_no_claims)
+    grid = json.loads((ROOT / topup.GRID).read_text())
+    grid["blocks"] = grid["blocks"][:1]
+    _setup_root(topup, tmp_path / "y", monkeypatch, {IDS[0]: "c"}, grid=json.dumps(grid))
+    with pytest.raises(SystemExit, match="not the authorized 6-cell"):
+        topup.collect(poller=lambda cid: ("pending", None), claims=_no_claims)
+
+
+@pytest.mark.parametrize("edit", ["drop", "extra"])
+def test_plan_enforces_exactly_the_six_authorized_cells(topup, tmp_path, monkeypatch, edit):
+    grid = json.loads((ROOT / topup.GRID).read_text())
+    if edit == "drop":
+        grid["blocks"] = grid["blocks"][:1]                       # 1-cell top-up
+    else:
+        grid["blocks"][0]["seeds"] = [0, 1]                       # adds v1-identical filleroff N64 s0
+    path = tmp_path / "grid.json"
+    path.write_text(json.dumps(grid))
+    monkeypatch.setattr(topup, "GRID", str(path))
+    with pytest.raises(ValueError, match="exactly the 6 authorized cells"):
+        topup.plan_topup(cap=1e9)
+
+
+def test_atomic_write_never_leaves_truncated_state(topup, tmp_path, monkeypatch):
+    import os
+    target = tmp_path / "calls.json"
+    topup.atomic_write(target, '{"a": 1}')
+    assert json.loads(target.read_text()) == {"a": 1} and not list(tmp_path.glob("*.tmp"))
+    monkeypatch.setattr(os, "replace", lambda *a: (_ for _ in ()).throw(OSError("host died")))
+    with pytest.raises(OSError):
+        topup.atomic_write(target, '{"a": 1, "b": 2}')
+    assert json.loads(target.read_text()) == {"a": 1}            # previous complete state intact
+
+
+def test_heavy_imports_hashing_and_claim_run_under_the_early_watchdog(topup):
+    fn = next(n for n in ast.parse(TOPUP.read_text()).body
+              if isinstance(n, ast.FunctionDef) and n.name == "run_cell")
+    i_early = next(i for i, st in enumerate(fn.body) if isinstance(st, ast.Assign)
+                   and getattr(st.targets[0], "id", None) == "early")
+    before = [st for st in fn.body[:i_early] if isinstance(st, (ast.Import, ast.ImportFrom))]
+    assert [st.module for st in before] == ["memsub.sgm.p2d_launch_guard"]   # stdlib-only module
+    guarded = fn.body[i_early + 1]
+    assert isinstance(guarded, ast.Try)
+    inner = ast.dump(ast.Module(body=guarded.body, type_ignores=[]))
+    for name in ("synthetic_pilot_run", "source_tree_sha256", "AttemptLedger"):
+        assert name in inner
 
 
 def test_registered_cap_admits_the_topup_ledger(topup):
