@@ -112,7 +112,7 @@ class SGMModelRuntime(nn.Module):
         reads[i] = r
         h = h + adapter.output(r).to(h.dtype)
         if write:
-            trace["allocated"] += self._write(state.banks, i, p, oracle)
+            trace["allocated"] += self._write(state.banks, i, p, oracle, trace)
             trace.setdefault("beta", {})[i] = p["beta"][:, 0].detach()   # [B, H]
         residual = h
         return residual + layer.mlp(layer.post_attention_layernorm(h))
@@ -146,8 +146,9 @@ class SGMModelRuntime(nn.Module):
         trace["empty_read_weight"].append(float((w * ~present).sum(-1).mean()))
         return read_memory(cells, w, p["q"][:, t])
 
-    def _write(self, banks: SparseBankSet, i, p, oracle) -> int:
-        idx, w, _ = self._stencil(p, "write", 0, oracle)
+    def _write(self, banks: SparseBankSet, i, p, oracle, trace) -> int:
+        idx, w, coords = self._stencil(p, "write", 0, oracle)
+        trace.setdefault("write_coords", {})[i] = coords.detach()  # telemetry only
         cells, _ = banks.gather(i, idx)
         new = delta_update(cells, w, p["beta"][:, 0], p["k"][:, 0], p["v"][:, 0].float())
         return banks.scatter(i, idx, new, w)

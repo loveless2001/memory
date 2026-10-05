@@ -191,3 +191,19 @@ def test_live_state_rejected_after_weight_reload_or_parameter_replacement():
     adapter.alpha_logit = torch.nn.Parameter(adapter.alpha_logit.detach().clone())
     with pytest.raises(CompatibilityError):
         a.evaluate_query(st, _ids(1))
+
+
+def test_write_coordinate_trace_is_telemetry_only():
+    """P2D: write_coords are recorded per written layer and change nothing."""
+    be = _backend()
+    traces: list = []
+    with torch.no_grad():
+        st = be.ingest_source(be.new_state(), _ids(6), SRC, traces=traces)
+        out = be.evaluate_query(st, _ids(1, start=1003), detach=True)
+    assert all(set(t["write_coords"]) == {1, 3} for t in traces)
+    assert traces[0]["write_coords"][1].shape == (1, 2, 2)
+    ref = SparseGrowingMemoryBackend(SGMModelRuntime(build_tiny_backbone(0), be.runtime.cfg))
+    with torch.no_grad():
+        st2 = ref.ingest_source(ref.new_state(), _ids(6), SRC)
+        out2 = ref.evaluate_query(st2, _ids(1, start=1003), detach=True)
+    torch.testing.assert_close(out["logits"], out2["logits"], rtol=0, atol=0)

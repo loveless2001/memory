@@ -236,3 +236,43 @@ reproduced the paired intervals: N = 4 +0.325 [0.290, 0.360] / +0.402
 
 Spend (Modal billing, hourly): v2 **$12.72**. M4 total: smoke $0.008, sanity
 $0.190, stopped v1 $1.153, v2 $12.722, for **$14.07**.
+
+## P2D — diagnosing learned failure at N ≥ 16 (user chose option (a), #gravity 21113)
+
+Preregistered before any P2D measurement. P2 results stay frozen under
+their identity. Candidate causes: filler-write interference, address
+learning / collisions, optimization budget, representation.
+
+### Step 1 — local, $0, descriptive
+
+Reload each v2 `learned` and `random_fixed` cell's saved adapters and task
+head. A reload must reproduce that run's last logged dev evaluation exactly.
+Then measure on **dev** episodes only (seed 4242, 4 batches × 16):
+
+- **Alignment:** distance (cells) from each query's read coordinate to the
+  write coordinate of its binding's value token. Report the median, the
+  fraction < 1 cell, and the fraction < 3 cells (read stencil reaches the write).
+- **Binding-pair collision rate:** the fraction of distinct binding pairs
+  whose write stencils overlap (|dx| < 3 and |dy| < 3).
+- **Filler hits:** the fraction of filler writes whose stencil overlaps any
+  binding's write stencil.
+
+Descriptive reading:
+- Low alignment and few collisions in failing runs mean the read misses the
+  write.
+- High alignment with many collisions or filler hits means the content was
+  overwritten.
+
+Tooling: `scripts/sgm-p2d-address-telemetry-from-saved-runs.py`. It needs a
+telemetry-only `write_coords` runtime trace, which is a new memsub source hash
+with no behavior change; the reload-reproduction check enforces that.
+
+### Step 2 — Modal CPU (pending design review)
+
+Proposed in #gravity 21114, about $8:
+- `oracle_nojunk` at N ∈ {16, 64}
+- `learned_oraclegate` at N ∈ {16, 64}
+- `learned_long` (4500 steps) at N ∈ {16, 32}
+
+2 seeds each. The reading matrix is in 21114. This section is finalized only
+after codex's design review, and before any Step 2 implementation or launch.
