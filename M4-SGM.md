@@ -326,27 +326,91 @@ Narrowed descriptive readings (per codex 21128):
   ~0.61–0.63-cell median distance and near-perfect stencil intersection, yet
   the pre-filler read scores 0.055.
 
-### Step 2 — Modal CPU (design revised per codex 21118; final prereg after Step 1)
+### Step 2 — FINAL PREREGISTRATION (draft for codex audit; nothing implemented or launched)
 
-Arms (2 seeds each, about $7–8 planning estimate, not a cap):
-- `learned_filler_off` at N ∈ {16, 64}: tail-filler write steps skipped
-  (no update, no allocation). Learned β stays on value/key/sink tokens, and
-  all reads are kept.
-- `oracle_nojunk` at N ∈ {16, 64}: only tail-filler WRITE addresses change.
-  They go to an active binding anchor chosen by a fixed hash of (token id,
-  position), independent of the episode RNG. The induced collision load is
-  measured. Value addresses, key/sink junk and source READ addresses are
-  unchanged.
-- `learned_long` at N ∈ {16, 32}: one continuous run from the original init,
-  data stream, optimizer and LR, with checkpoints at 1500 and 4500 steps;
-  both are evaluated (fixed endpoints, no best-checkpoint selection).
+Design per codex 21118 / 21129 and the Step 1 results. Experiment group
+`p2d-diagnostics-v1`; a new memsub source identity is recorded at launch.
+Everything not listed below is identical to the v2 recipe: the tiny frozen
+random Qwen3; SGM at layers (1, 3), 2 heads, d_k = d_v = 8,
+`feature_shift = 2`; recent window 32 + 4 sinks; filler 40; 4 queries;
+batch 16; AdamW lr 3e-3; train seed = cell seed; held-out key and filler
+families. No adaptive λ, no checkpoint selection, no held-out supervision,
+no post-hoc repair.
 
-Other rules:
-- Use a fresh final seed. Frozen v2 checkpoints are re-evaluated on the
-  same fresh set, with paired intervals and both seeds reported.
-- Readings are registered diagnostic effects. No R3 pass is conferred on
-  privileged or budget-unmatched arms.
-- Softened matrix: `oracle_nojunk` success means tolerance of that collision
-  policy; its failure means degradation under that policy/budget, not the
-  learned arm's cause. A `learned_long` improvement means a budget effect
-  for this recipe, not the sole cause.
+**Arms (12 cells, seeds {0, 1}):**
+
+| arm | N | steps | change vs v2 `learned` |
+|---|---|---|---|
+| `learned_filler_off` | 16, 64 | 1500 | Tail-filler write steps are skipped in training and evaluation: no delta update, no allocation. Reads, residual contribution and learned β on sink/key/value tokens are unchanged. |
+| `learned_long` | 16, 32 | 4500 | One continuous run (same init, data stream, optimizer, lr). Checkpoints after 1500 and 4500 updates; both are evaluated as fixed endpoints. |
+| `learned_addr_supervised` | 32, 64 | 1500 | Ongoing auxiliary pair loss (details below). |
+
+**Auxiliary loss (`learned_addr_supervised`), registered exactly:**
+
+- For each training query q with bound value token v, at each selected
+  layer l and head h:
+  - a_r = scale · AddressMLP_l(q_{l,h}.detach()), where q is the query
+    token's read query vector;
+  - a_w = scale · AddressMLP_l(k_{l,h}.detach()), where k is the value
+    token's write key at ingest.
+- L_aux = λ · mean over (batch, query, layer, head, coordinate) of
+  (a_r − a_w)², with **λ = 0.1** fixed, active at every step (ongoing
+  supervision, not warm-up), using training-split binding pairs only.
+  Total loss = task CE (unchanged, full gradient) + L_aux.
+- Graph: q and k are captured as detached telemetry, and the auxiliary
+  coordinates are recomputed through the live AddressMLP parameters. So L_aux
+  sends gradient **only into AddressMLP**, not into q/k/v/β/out projections
+  or upstream features. A test asserts the gradient destinations.
+- Evaluation uses no auxiliary signal.
+
+**Evaluation (all arms):**
+
+- Fresh common final set, seed base **9_300_011**: 16 batches × 16 episodes
+  × 4 queries, held-out families.
+- The frozen v2 `learned` checkpoints for N ∈ {16, 32, 64} × {0, 1} are
+  re-evaluated on the same fresh set (local CPU) as same-N, same-seed
+  baselines.
+- Interventions as in v2: bank_derange, coord_shuffle, read_offset, query_off.
+- Step 1 observer telemetry on dev seed 4242:
+  - pooled read→bound-write distance
+  - target spatial coupling vs mean other-binding spatial coupling
+  - query read-address spread (std across keys)
+  - occupancy and effective cells
+  - β by token class
+- Episode-paired 95% intervals throughout.
+
+**Registered readings (diagnostic effects; no R3 pass conferred; no
+pretrained or scaling claim):**
+
+- *Reproducible gain:* in both seeds, the paired accuracy difference vs the
+  same-N, same-seed frozen v2 learned checkpoint is ≥ 0.05, with a 95%
+  lower bound > 0.
+- *Alignment improved, not collapsed:*
+  - the pooled median read→bound-write distance falls vs the baseline at
+    both layers;
+  - target coupling ≥ 2 × mean other-binding coupling;
+  - the query read-address spread is ≥ 1 cell.
+- `learned_addr_supervised`:
+  - **Reproducible gain + non-collapsed alignment + memory use**
+    (bank_derange to chance, positive paired read-offset drop) supports the
+    usefulness of this supervised routing-training recipe. It does not show
+    credit assignment was the unique original blocker.
+  - **Alignment improves, accuracy does not:** alignment alone was insufficient.
+  - **Alignment does not improve, or collapses:** the probe failed to
+    establish the intended intervention, and the cause remains unresolved.
+- `learned_filler_off`: a reproducible gain supports harm from tail-filler
+  writes for this recipe. It does not establish filler as the sole cause.
+- `learned_long`: a reproducible 4500-step gain over its own 1500-step
+  checkpoint (and over v2) is a budget effect for this recipe.
+
+Descriptive check: whether the 1500-step `learned_long` checkpoint matches
+v2's parameter hash. A mismatch would indicate machine nondeterminism.
+
+**Budget and stop policy:**
+
+- Estimate: ~1,800 container-minutes ≈ $8 plus auxiliary/evaluation overhead.
+- **Hard cap $15** for the group: billing is checked hourly and the app is
+  stopped if exceeded.
+- Function timeout 8 h; the long N = 32 run extrapolates to ~4.4 h.
+- No retries except a preemption-only re-run under the cleared attempt
+  policy. The fresh-set re-evaluation of baselines is local and costs $0.
