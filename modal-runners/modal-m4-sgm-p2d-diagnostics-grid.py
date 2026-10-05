@@ -145,11 +145,18 @@ def verify_stopped(app_id: str, timeout_s: int = 120) -> dict:
                           capture_output=True, text=True).stdout
     conts = subprocess.run([*MODAL_CLI, "container", "list", "--json"], check=True, timeout=timeout_s,
                            capture_output=True, text=True).stdout
-    listed = [a for a in json.loads(apps) if a.get("App ID") == app_id]      # CLI JSON columns
-    running = [c for c in json.loads(conts) if c.get("App ID") == app_id]
+    app_rows, container_rows = json.loads(apps), json.loads(conts)
+    # Modal 1.5.1 converts table headings to snake_case in JSON output.
+    # An unknown schema must not turn an existing app into an "unlisted" app.
+    for rows in (app_rows, container_rows):
+        if not isinstance(rows, list) or any(
+                not isinstance(row, dict) or not isinstance(row.get("app_id"), str) for row in rows):
+            raise ValueError("Modal CLI JSON must contain lists of rows with an app_id field")
+    listed = [a for a in app_rows if a["app_id"] == app_id]
+    running = [c for c in container_rows if c["app_id"] == app_id]
     if listed:   # still listed: require an explicit stopped state and zero tasks
-        state, tasks = listed[0].get("State"), listed[0].get("Tasks")
-        stopped = isinstance(state, str) and state.lower().startswith("stopped") and str(tasks) == "0"
+        state, tasks = listed[0].get("state"), listed[0].get("tasks")
+        stopped = isinstance(state, str) and state.lower() == "stopped" and str(tasks) == "0"
     else:        # `modal app list` drops stopped apps
         state, stopped = "not listed (stopped apps drop out)", True
     return {"app_state": state, "app_containers": len(running), "verified": stopped and not running}

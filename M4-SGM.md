@@ -501,7 +501,10 @@ Long-prefix continuity and the budget guard are defined in clarifications
      - Then, even if the stop errored (e.g. the app was already stopped), it
        verifies via `app list --json` / `container list --json`. The app is
        verified only if it is unlisted or listed with an explicit "stopped"
-       State and 0 Tasks, AND no container carries its App ID.
+       state and 0 tasks, AND no container carries its app ID. The 1.5.1 CLI
+       emits snake_case JSON keys (`app_id`, `state`, `tasks`), rather than
+       the table headings; unknown row schemas fail verification. Tests
+       generate responses through the installed CLI's JSON formatter.
      - Evidence goes to `shutdown.json`; any unverified state is
        `shutdown_unresolved` and the launcher exits non-zero.
      - Billing is reconciliation only.

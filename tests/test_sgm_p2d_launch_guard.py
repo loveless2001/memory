@@ -10,6 +10,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -157,8 +158,8 @@ def test_launcher_requests_completion_order_outputs():
 
 def test_verify_stopped_parses_cli_json(monkeypatch):
     runner = _runner()
-    outs = {"app": [{"App ID": "ap-x", "State": "running", "Tasks": "3"}],
-            "container": [{"Container ID": "ta-1", "App ID": "ap-x"}]}
+    outs = {"app": [{"app_id": "ap-x", "state": "running", "tasks": "3"}],
+            "container": [{"container_id": "ta-1", "app_id": "ap-x"}]}
 
     def fake_run(cmd, **kw):
         key = "app" if cmd[3] == "app" else "container"   # [python, -m, modal, <group>, ...]
@@ -167,12 +168,47 @@ def test_verify_stopped_parses_cli_json(monkeypatch):
     assert runner.verify_stopped("ap-x")["verified"] is False
     outs["app"], outs["container"] = [], []                      # stopped apps drop out of the list
     assert runner.verify_stopped("ap-x")["verified"] is True
-    outs["app"] = [{"App ID": "ap-x", "Status": "stopped"}]       # listed without a State column
+    outs["app"] = [{"app_id": "ap-x", "status": "stopped"}]       # listed without a state field
     assert runner.verify_stopped("ap-x")["verified"] is False
-    outs["app"] = [{"App ID": "ap-x", "State": "stopped", "Tasks": "0"}]
+    outs["app"] = [{"app_id": "ap-x", "state": "stopped", "tasks": "0"}]
     assert runner.verify_stopped("ap-x")["verified"] is True
-    outs["container"] = [{"Container ID": "ta-9", "App ID": "ap-other"}]   # other apps' containers ok
+    outs["container"] = [{"container_id": "ta-9", "app_id": "ap-other"}]   # other apps' containers ok
     assert runner.verify_stopped("ap-x")["verified"] is True
+
+
+@pytest.mark.parametrize("state,tasks,container_app,expected", [
+    ("ephemeral (detached)", "3", "ap-x", False),
+    ("stopping...", "0", None, False),
+    ("stopped", "0", "ap-x", False),
+    ("stopped", "0", None, True),
+    (None, None, "ap-x", False),
+    (None, None, "ap-other", True),
+])
+def test_verify_stopped_uses_installed_cli_json_formatter(
+        monkeypatch, state, tasks, container_app, expected):
+    """Generate responses through Modal's real formatter, not table-heading mocks."""
+    from modal.cli import utils as cli_utils
+    runner, captured = _runner(), []
+    monkeypatch.setattr(cli_utils.OutputManager, "get",
+                        lambda: SimpleNamespace(print_json=captured.append))
+    cli_utils.display_table(["App ID", "State", "Tasks"],
+                            [["ap-x", state, tasks]] if state is not None else [], json=True)
+    cli_utils.display_table(["Container ID", "App ID"],
+                            [["ta-1", container_app]] if container_app is not None else [], json=True)
+
+    def fake_run(cmd, **kw):
+        return subprocess.CompletedProcess(cmd, 0, stdout=captured[0 if cmd[3] == "app" else 1])
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+    assert runner.verify_stopped("ap-x")["verified"] is expected
+
+
+def test_verify_stopped_rejects_unknown_cli_schema(monkeypatch):
+    runner = _runner()
+    def fake_run(cmd, **kw):
+        return subprocess.CompletedProcess(cmd, 0, stdout='[{"unexpected_id": "ap-x"}]')
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+    with pytest.raises(ValueError, match="app_id"):
+        runner.verify_stopped("ap-x")
 
 
 def test_shutdown_commands_use_launch_interpreter_noninteractive_and_bounded(monkeypatch):
