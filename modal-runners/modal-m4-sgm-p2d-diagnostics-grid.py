@@ -121,14 +121,54 @@ def main(group: str, grid: str, v2_runs: str, local_out: str):
     (root / "launch_provenance.json").write_text(json.dumps({**provenance, "ledger": ledger}, indent=2))
     print("ledger", json.dumps(ledger))
     args = [(group, rid, pilot, provenance, t, spec["final_seed_base"]) for rid, pilot, t in cells]
-    for res in run_cell.starmap(args, return_exceptions=True, wrap_returned_exceptions=False):
+    results = run_cell.starmap(args, order_outputs=False,        # completion order: prompt HALT
+                               return_exceptions=True, wrap_returned_exceptions=False)
+    status = consume(results, root, lambda: stop_app(app.app_id), lambda: verify_stopped(app.app_id))
+    if status != "complete":
+        raise SystemExit(f"launch ended with status {status}; see {root / 'shutdown.json'}")
+
+
+def stop_app(app_id: str, timeout_s: int = 120) -> None:
+    """Checked, bounded `modal app stop` (raises on failure or timeout)."""
+    subprocess.run(["modal", "app", "stop", app_id], check=True, timeout=timeout_s,
+                   capture_output=True, text=True)
+
+
+def verify_stopped(app_id: str, timeout_s: int = 120) -> dict:
+    """Evidence that the app is stopped with zero running containers."""
+    apps = subprocess.run(["modal", "app", "list", "--json"], check=True, timeout=timeout_s,
+                          capture_output=True, text=True).stdout
+    conts = subprocess.run(["modal", "container", "list", "--json"], check=True, timeout=timeout_s,
+                           capture_output=True, text=True).stdout
+    state = next((a.get("State") or a.get("state") for a in json.loads(apps)
+                  if app_id in json.dumps(a)), None)
+    running = [c for c in json.loads(conts) if app_id in json.dumps(c)]
+    # `modal app list` drops stopped apps, so "not listed" also counts as stopped
+    stopped = state is None or str(state).lower() == "stopped"
+    return {"app_state": state if state is not None else "not listed (stopped apps drop out)",
+            "app_containers": len(running), "verified": stopped and not running}
+
+
+def consume(results, root: Path, stop, verify) -> str:
+    """Write each completed cell; on allowance exhaustion stop the app and
+    VERIFY shutdown. Returns 'complete', 'halted' or 'shutdown_unresolved'."""
+    for res in results:
         if isinstance(res, Exception):
             print("RUN FAILED:", repr(res))
             continue
         if res["status"] == "allowance_exhausted":
             print("ALLOWANCE EXHAUSTED — stopping app:", res)
-            subprocess.run(["modal", "app", "stop", app.app_id], check=False)
-            break
+            evidence = {"trigger": res}
+            try:
+                stop()
+                evidence["verification"] = verify()
+            except Exception as e:                     # surfaced, never swallowed
+                evidence["error"] = repr(e)
+            ok = evidence.get("verification", {}).get("verified", False)
+            evidence["status"] = "halted" if ok else "shutdown_unresolved"
+            (root / "shutdown.json").write_text(json.dumps(evidence, indent=2, default=str))
+            print("SHUTDOWN", evidence["status"], evidence)
+            return evidence["status"]
         if res["status"] != "done":
             print("REPLAY REFUSED:", res)
             continue
@@ -141,3 +181,4 @@ def main(group: str, grid: str, v2_runs: str, local_out: str):
                 f.write(json.dumps(row) + "\n")
         print("done", res["run_id"], {k: (round(v["accuracy"], 3) if v else None)
                                       for k, v in res["metrics"]["final"].items()})
+    return "complete"

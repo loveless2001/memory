@@ -212,3 +212,20 @@ def test_validate_p2d_checkpoint_artifacts_end_to_end(tmp_path):
     assert "checkpoint_parameters_sha256" in mod.validate(d, d.name, pilot, LAUNCH, src, 9_300_011)
     (d / "per_example_results_step1.jsonl").unlink()
     assert "missing" in mod.validate(d, d.name, pilot, LAUNCH, src, 9_300_011)
+
+
+def test_reconcile_rejects_stale_local_checkpoint_scores(tmp_path):
+    """codex 21141 #1: checkpoint metrics are reconciled, not just final."""
+    mod = _script("sgm-recover-and-validate-grid-artifacts")
+    vol = _valid_cell(tmp_path / "vol" / "long-learned-n4-s0")
+    met = json.loads((vol / "metrics.json").read_text())
+    met["checkpoints"] = {"1500": {"heldout_none": {"accuracy": 0.8}}}
+    (vol / "metrics.json").write_text(json.dumps(met))
+    local = tmp_path / "local" / "long-learned-n4-s0"
+    assert mod.reconcile(vol, local) == "recovered"
+    stale = json.loads((local / "metrics.json").read_text())
+    stale["checkpoints"]["1500"]["heldout_none"]["accuracy"] = 0.1
+    (local / "metrics.json").write_text(json.dumps(stale))
+    import pytest
+    with pytest.raises(ValueError, match="checkpoints"):
+        mod.reconcile(vol, local)

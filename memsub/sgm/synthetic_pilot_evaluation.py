@@ -67,15 +67,22 @@ def episode_hash(batch, b: int) -> str:
     return h.hexdigest()[:16]
 
 
-def beta_by_token_class(traces: list, n_bindings: int) -> dict:
-    """Mean write gate per source-token class (sink / key / value / filler)."""
+def beta_by_token_class(traces: list, n_bindings: int, effective: bool = False) -> dict:
+    """Mean gate per source-token class (sink / key / value / filler).
+    effective=False: raw projected beta (recorded on every step).
+    effective=True: the beta actually applied — 0 on skipped-write steps
+    (P2D filler_off). Steps without telemetry make the result empty."""
     sums: dict[str, list[float]] = {"sink": [], "key": [], "value": [], "filler": []}
     for t, tr in enumerate(traces):
-        if "beta" not in tr:
+        if "beta_projected" not in tr:
             return {}
         cls = ("sink" if t < 4 else "filler" if t >= 4 + 2 * n_bindings
                else "key" if (t - 4) % 2 == 0 else "value")
-        sums[cls].append(float(torch.stack(list(tr["beta"].values())).mean()))
+        if effective and "beta" not in tr:
+            sums[cls].append(0.0)
+            continue
+        src = tr["beta"] if effective else tr["beta_projected"]
+        sums[cls].append(float(torch.stack(list(src.values())).mean()))
     return {k: sum(v) / len(v) for k, v in sums.items() if v}
 
 
@@ -118,12 +125,13 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
     episodes = [sample_batch(spec, split, batch_size, data_gen) for _ in range(batches)]
     rt = backend.runtime
     correct = total = 0
-    empty, coords, tele, episode_acc, betas = [], [], [], [], []
+    empty, coords, tele, episode_acc, betas, eff_betas = [], [], [], [], [], []
     for bi, batch in enumerate(episodes):
         traces: list = []
         state = ingest(backend, batch, arm, traces, filler_writes, spec.n_bindings).detached()
         tele.append(bank_telemetry(state))
         betas.append(beta_by_token_class(traces, spec.n_bindings))
+        eff_betas.append(beta_by_token_class(traces, spec.n_bindings, effective=True))
         iv_gen = torch.Generator().manual_seed(seed + INTERVENTION_RNG_OFFSET + bi)
         apply_intervention(state, intervention, iv_gen)
         rt.diag_read_offset = 3.0 if intervention == "read_offset" else 0.0
@@ -156,6 +164,8 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
     out.update({k: sum(t[k] for t in tele) / len(tele) for k in tele[0]})
     if betas and betas[0]:
         out["beta_by_token_class"] = {k: sum(b[k] for b in betas) / len(betas) for k in betas[0]}
+        out["effective_beta_by_token_class"] = {k: sum(b[k] for b in eff_betas) / len(eff_betas)
+                                                for k in eff_betas[0]}
     ep = torch.tensor(episode_acc, dtype=torch.float64)
     out["episodes"] = len(episode_acc)
     out["accuracy_ci95_halfwidth_episode"] = float(1.96 * ep.std() / math.sqrt(len(ep)))

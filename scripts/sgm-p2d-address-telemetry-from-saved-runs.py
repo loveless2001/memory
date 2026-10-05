@@ -54,9 +54,12 @@ def load_frozen_memsub(commit: str = FROZEN_COMMIT, name: str = "memsub_frozen")
     tar = subprocess.run(["git", "archive", commit, "memsub"], capture_output=True, check=True,
                          cwd=Path(__file__).resolve().parents[1]).stdout
     subprocess.run(["tar", "-x", "-C", str(tmp)], input=tar, check=True)
+    frozen_sha = source_tree_sha256(tmp / "memsub")     # hashed under its original name
     shutil.move(str(tmp / "memsub"), str(tmp / name))
     sys.path.insert(0, str(tmp))
-    return importlib.import_module(name)
+    mod = importlib.import_module(name)
+    mod.FROZEN_COMMIT, mod.FROZEN_SOURCE_SHA256 = commit, frozen_sha
+    return mod
 
 
 def dev_logits(pkg: str, pcfg, tensors: dict):

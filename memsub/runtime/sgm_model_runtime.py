@@ -111,6 +111,8 @@ class SGMModelRuntime(nn.Module):
                          for t in range(x.shape[1])], dim=1)       # [B, n, H, dv]
         reads[i] = r
         h = h + adapter.output(r).to(h.dtype)
+        # raw projected gate for this step, recorded whether or not it writes
+        trace.setdefault("beta_projected", {})[i] = p["beta"][:, -1].detach()   # [B, H]
         if write:
             trace["allocated"] += self._write(state.banks, i, p, oracle, trace)
             trace.setdefault("beta", {})[i] = p["beta"][:, 0].detach()   # [B, H]

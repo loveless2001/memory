@@ -87,3 +87,15 @@ def test_p2d_labels_and_checkpoint_artifacts(tmp_path):
     assert man["final_eval_seed"] == 9_300_011 and set(man["checkpoint_parameters_sha256"]) == {"1"}
     assert (tmp_path / "r" / "per_example_results_step1.jsonl").exists()
     assert set(m["checkpoints"]["1"]) >= {"heldout_none", "heldout_bank_derange"}
+
+
+def test_filler_off_keeps_projected_beta_and_reports_effective_zero():
+    """codex 21141 #5: gate telemetry survives skipped writes."""
+    from memsub.sgm.synthetic_pilot_evaluation import evaluate
+    p = PilotConfig(arm="learned", n_bindings=4)
+    _, backend, head = build(p)
+    r = evaluate(backend, head, p.task_spec(), "learned", "taskhead", split="heldout", batches=1,
+                 batch_size=2, seed=3, filler_writes=False)
+    raw, eff = r["beta_by_token_class"], r["effective_beta_by_token_class"]
+    assert set(raw) == set(eff) == {"sink", "key", "value", "filler"}
+    assert raw["filler"] > 0 and eff["filler"] == 0.0 and eff["value"] == raw["value"]

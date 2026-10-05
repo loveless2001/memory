@@ -179,8 +179,10 @@ def reconcile(dest: Path, local: Path) -> str:
             shutil.copy2(f, local / f.name)
         (local / "recovered_from_volume.json").write_text(json.dumps({"copied": ["metrics", "rows"]}))
         return "recovered"
-    if json.loads((local / "metrics.json").read_text())["final"] != vol_met["final"]:
-        raise ValueError("local streamed metrics differ from the valid volume metrics")
+    local_met = json.loads((local / "metrics.json").read_text())
+    for key in ("final", "checkpoints"):      # checkpoint scores too (codex 21141 #1)
+        if local_met.get(key) != vol_met.get(key):
+            raise ValueError(f"local streamed metrics.{key} differ from the valid volume metrics")
     copied = []
     for f in sorted(p.name for p in dest.glob("per_example_results*.jsonl")):
         if not (local / f).exists() or (local / f).read_bytes() != (dest / f).read_bytes():

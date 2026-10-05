@@ -113,3 +113,50 @@ def test_cancelled_watchdog_never_fires():
     proc = subprocess.run([sys.executable, "-c", code], cwd=ROOT, timeout=30,
                           capture_output=True, text=True)
     assert proc.returncode == 0 and "alive" in proc.stdout
+
+
+def _done(rid):
+    return {"run_id": rid, "status": "done",
+            "metrics": {"final": {"heldout_none": {"accuracy": 0.5}}, "per_example": []}}
+
+
+def test_exhaustion_from_a_later_cell_stops_and_verifies(tmp_path):
+    """codex 21142: completion-order results; checked stop + verified shutdown."""
+    calls = []
+    results = iter([_done("a"), {"run_id": "z", "status": "allowance_exhausted", "reason": "x"},
+                    _done("never-written")])
+    status = _runner().consume(results, tmp_path, lambda: calls.append("stop"),
+                               lambda: {"app_state": "stopped", "app_containers": 0, "verified": True})
+    assert status == "halted" and calls == ["stop"]
+    assert (tmp_path / "a" / "metrics.json").exists() and not (tmp_path / "never-written").exists()
+    assert json.loads((tmp_path / "shutdown.json").read_text())["status"] == "halted"
+
+
+def test_failed_or_unverified_stop_is_surfaced_as_unresolved(tmp_path):
+    def boom():
+        raise subprocess.CalledProcessError(1, ["modal", "app", "stop"])
+    ex = {"run_id": "z", "status": "allowance_exhausted", "reason": "x"}
+    assert _runner().consume(iter([ex]), tmp_path, boom, lambda: {"verified": True}) == "shutdown_unresolved"
+    assert "CalledProcessError" in json.loads((tmp_path / "shutdown.json").read_text())["error"]
+    (tmp_path / "shutdown.json").unlink()
+    assert _runner().consume(iter([ex]), tmp_path, lambda: None,
+                             lambda: {"app_state": "running", "app_containers": 3, "verified": False}
+                             ) == "shutdown_unresolved"
+
+
+def test_launcher_requests_completion_order_outputs():
+    src = (ROOT / "modal-runners" / "modal-m4-sgm-p2d-diagnostics-grid.py").read_text()
+    assert "order_outputs=False" in src and 'check=True' in src
+
+
+def test_verify_stopped_parses_cli_json(monkeypatch):
+    runner = _runner()
+    outs = {"app": [{"App ID": "ap-x", "State": "running"}], "container": [{"App ID": "ap-x", "id": "ta-1"}]}
+
+    def fake_run(cmd, **kw):
+        key = "app" if cmd[1] == "app" else "container"
+        return subprocess.CompletedProcess(cmd, 0, stdout=json.dumps(outs[key]), stderr="")
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+    assert runner.verify_stopped("ap-x")["verified"] is False
+    outs["app"], outs["container"] = [], []                      # stopped apps drop out of the list
+    assert runner.verify_stopped("ap-x")["verified"] is True
