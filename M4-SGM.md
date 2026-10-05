@@ -508,3 +508,62 @@ Long-prefix continuity and the budget guard are defined in clarifications
      - Evidence goes to `shutdown.json`; any unverified state is
        `shutdown_unresolved` and the launcher exits non-zero.
      - Billing is reconciliation only.
+
+### Step 2 run `p2d-diagnostics-v1` — INCOMPLETE (2026-10-05; #gravity 21168, codex 21169/21174)
+
+- 6/12 cells done and validated: filleroff N16 s0/s1, N64 s0; addrsup N32
+  s0/s1, N64 s1.
+- Lost:
+  - 3 cells preempted, then their restarts refused as registered: long N32
+    s0, filleroff N64 s1, addrsup N64 s0.
+  - 3 cells cancelled at 13:15:19 after the launch host died (last activity
+    13:09:45): long N16 s0/s1, N32 s1. `--detach` did not protect in-flight
+    starmap inputs. App stopped 13:16:42.
+- Spend $5.12 (Modal billing, app-filtered).
+- Readings: option (a) partial readings (codex) cover only the complete pairs.
+
+### Amendment T1 — Step 2 top-up `p2d-diagnostics-v1-topup` (user option b, #gravity 21178)
+
+- **Scope:** exactly the 6 lost cells (`configs/m4_sgm_p2d_topup_grid.json`).
+  - The launcher asserts each pilot config equals the v1 registered cell
+    (v1 `expand`).
+  - Same `final_seed_base` 9_300_011 and the same 1-attempt / no-retrain
+    claim rule, using a fresh attempts Dict for the new group.
+  - memsub unchanged (source `d4effd0c…`). The container checks the memsub
+    and runner hashes BEFORE claiming, and exits as `identity_mismatch`
+    without training on any mismatch.
+  - The training wrapper is AST-identical to v1 (test).
+- **Survival changes only** (none touch training):
+  1. `nonpreemptible=True` (Modal: 3× CPU/memory list price).
+  2. A deployed app plus `.spawn()` with call IDs saved after every spawn.
+     - In-flight calls no longer depend on the local client.
+     - `collect` is idempotent and writes cells exactly as v1 `consume` does
+       (stop and verify on allowance exhaustion).
+     - Once every cell is terminal, `collect` stops the app by its
+       spawn-time ID and verifies zero containers (`collect_status.json`).
+- **Ledger** (dry run): the 1× v1 formula on the 6 cells' own timeouts, with
+  the rate-based parts ×3.
+
+  | component | USD |
+  |---|---|
+  | cell timeouts (28.7 container-h) | 21.723 |
+  | startup + teardown | 0.455 |
+  | replay allowance | 0.530 |
+  | CPU-overuse margin | 1.622 |
+  | image build | 0.300 |
+  | fixed margin | 1.500 |
+  | **reserved total** | **26.130** |
+
+  - Expected spend is about $13–17 (v1 cells finished at 0.47–0.78 of
+    their timeouts).
+  - **The cap is unset (`TOPUP_CAP_USD = None`) until the user approves
+    one. The launcher refuses without it.**
+- **Commands** (project interpreter, CLI 1.5.1):
+  1. `.venv/bin/python -m modal deploy modal-runners/modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py`
+  2. `.venv/bin/python modal-runners/modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py spawn` (refuses a dirty tree or an existing group dir)
+  3. `… collect` (re-run until terminal)
+- **Validation:** `scripts/sgm-recover-and-validate-grid-artifacts.py --group p2d-diagnostics-v1-topup --runner modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py --source-sha d4effd0c…`.
+  How the top-up is merged with v1 for the readings is decided in codex's
+  readings work.
+- **Claims:** none added. Same registered readings, with no R3 / scaling /
+  pretrained claims.
