@@ -54,7 +54,9 @@ def episode_geometry(write_coords: torch.Tensor, val_pos: list[int], fill_pos: l
     a_hit, a_coup = stencil_relation(read_coords, bound)                 # [B, Q, H]
     dist = (read_coords - bound).norm(dim=-1)
     return {
-        "align_distance_median": _per_head(dist, "median"),
+        # raw per-query distances [n, H]: callers pool across batches before
+        # taking the median (a mean of batch medians is not the median)
+        "_align_distances": dist.reshape(-1, dist.shape[-1]),
         "align_within_1_cell": _per_head(dist < 1, "mean"),
         "align_stencil_intersects": _per_head(a_hit, "mean"),
         "align_spatial_coupling_mean": _per_head(a_coup, "mean"),

@@ -125,7 +125,7 @@ def compatibility_replay_old_final(cell: Path, man: dict, pcfg, backend, head) -
 
 
 @torch.no_grad()
-def dev_diagnostics(pcfg, backend, head) -> dict:
+def dev_diagnostics(pcfg, backend, head, dev_correct: int) -> dict:
     spec, gen = pcfg.task_spec(), torch.Generator().manual_seed(EVAL_SEED_DEV)
     layers = backend.runtime.cfg.selected_layers
     n_bind = 4 + 2 * spec.n_bindings
@@ -156,6 +156,8 @@ def dev_diagnostics(pcfg, backend, head) -> dict:
                     bank, l, out["trace"]["read_q"][l][-1], out["trace"]["read_coords"][l][-1]
                 ).flatten(1) for l in layers], -1)
             feats["actual"] = torch.cat([out["reads"][l][:, -1].flatten(1) for l in layers], -1)
+            if not torch.equal(feats["post_filler"], feats["actual"]):
+                raise SystemExit("invariant: reconstructed post-filler reads != actual reads")
             ok = {}
             for name, f in feats.items():
                 ok[name] = head(f).argmax(-1) == b.labels[:, q]
@@ -173,8 +175,17 @@ def dev_diagnostics(pcfg, backend, head) -> dict:
         for l in layers:
             w = torch.stack([traces[t]["write_coords"][l] for t in range(len(traces))], 1)
             geo[l].append(episode_geometry(w, val_pos, fill_pos, torch.stack(reads_q[l], 1), q_bind))
-    per_layer = {str(l): {k: [sum(g[k][h] for g in geo[l]) / len(geo[l])
-                              for h in range(len(geo[l][0][k]))] for k in geo[l][0]} for l in layers}
+    per_layer = {}
+    for l in layers:
+        agg = {k: [sum(g[k][h] for g in geo[l]) / len(geo[l]) for h in range(len(geo[l][0][k]))]
+               for k in geo[l][0] if not k.startswith("_")}   # equal-size batches: pooled means
+        pooled = torch.cat([g["_align_distances"] for g in geo[l]])
+        agg["align_distance_median_pooled"] = pooled.median(0).values.tolist()
+        per_layer[str(l)] = agg
+    if sum(trans.values()) != total:
+        raise SystemExit("invariant: transitions do not sum to total queries")
+    if hits["actual"] != dev_correct:
+        raise SystemExit(f"invariant: diagnostic actual correct {hits['actual']} != dev check {dev_correct}")
     rc = torch.tensor(rel_change)
     return {"dev_episodes": episodes, "dev_queries": total,
             "fixed_query_accuracy": {k: v / total for k, v in hits.items()},
@@ -204,13 +215,16 @@ def main():
     for name in cells:
         cell = args.mirror / name
         man, pcfg, backend, head = load_cell(cell)
+        if pcfg.eval_batches != DEV_BATCHES:
+            raise SystemExit(f"{name}: eval_batches {pcfg.eval_batches} != DEV_BATCHES")
+        equiv = dev_equivalence(cell, pcfg)
         report["cells"][name] = {
             "run_manifest_sha256": sha(cell / "run_manifest.json"),
             "trained_parameters_sha256": man["trained_parameters_sha256"],
-            "dev_equivalence": dev_equivalence(cell, pcfg),
+            "dev_equivalence": equiv,
             "compatibility_check_old_final_set_rows": compatibility_replay_old_final(
                 cell, man, pcfg, backend, head),
-            **dev_diagnostics(pcfg, backend, head)}
+            **dev_diagnostics(pcfg, backend, head, equiv["dev_correct"])}
         print(name, report["cells"][name]["fixed_query_accuracy"])
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2))

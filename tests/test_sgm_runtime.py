@@ -236,3 +236,15 @@ def test_stencil_relation_uses_true_supports():
     assert bool(hit) and 0 < float(c) < 1e-6          # distance > 3, shares a cell
     hit, c = stencil_relation(origin, origin)
     assert abs(float(c) - 0.3525390625) < 1e-9
+
+
+def test_alignment_distances_are_returned_raw_for_pooled_medians():
+    """Codex 21123: pool per-query distances before the median."""
+    from memsub.sgm.p2d_address_diagnostics import episode_geometry
+    w = torch.zeros(1, 6, 1, 2)                       # T=6, H=1, every write at origin
+    reads = torch.tensor([[[[0.0, 0.0]], [[0.0, 0.0]], [[100.0, 0.0]], [[100.0, 0.0]]]])  # [1,4,1,2]
+    g1 = episode_geometry(w, [1, 3], [4, 5], reads, torch.zeros(1, 4, dtype=torch.long))
+    g2 = episode_geometry(w, [1, 3], [4, 5], torch.full((1, 4, 1, 2), 0.0) + torch.tensor([10.0, 0.0]),
+                          torch.zeros(1, 4, dtype=torch.long))
+    pooled = torch.cat([g1["_align_distances"], g2["_align_distances"]])
+    assert float(pooled.median(0).values[0]) == 10.0  # mean of batch medians would give 5 (or 55)
