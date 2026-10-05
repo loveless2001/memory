@@ -1,0 +1,43 @@
+{
+  "result_label": "tiny-random-lm+taskhead",
+  "arm": "memory_off",
+  "n_bindings": 16,
+  "seed": 0,
+  "steps": 0,
+  "readout": "taskhead",
+  "n_queries": 4,
+  "final_episodes": 256,
+  "final": {
+    "heldout_none": {
+      "accuracy": 0.021484375,
+      "correct": 22,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": null,
+      "query_read_address_std_cells": null,
+      "occupancy_mean": 0.0,
+      "occupancy_max": 0.0,
+      "effective_cells_mean": 0.0,
+      "neural_bytes": 0.0,
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.009017667960157138
+    },
+    "train_split_none": {
+      "accuracy": 0.01171875,
+      "correct": 3,
+      "total": 256,
+      "chance": 0.015625,
+      "query_empty_read_weight": null,
+      "query_read_address_std_cells": null,
+      "occupancy_mean": 0.0,
+      "occupancy_max": 0.0,
+      "effective_cells_mean": 0.0,
+      "neural_bytes": 0.0,
+      "episodes": 64,
+      "accuracy_ci95_halfwidth_episode": 0.013048824080959682
+    }
+  },
+  "train_last": null,
+  "wall_seconds": 13.361296653747559,
+  "run_manifest_sha256": "dcfcf559e7ab734c3469d61b879fd8089e617156a695025154d71479a48fb808"
+}

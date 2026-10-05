@@ -82,15 +82,18 @@ SGM-01: with the adapter disabled, the SGM loop matches HF prefill logits
 
 ## Measured synthetic results
 
-No registered grid result exists yet.
+`p2-load-sweep-v2` is complete: 49 of 49 cells, all `stream_ok` after the
+validation pass. Readings and the full table are in M4-SGM.md (§ "P2 result").
+Summary:
+- R1: oracle ≥ 0.999 at every N.
+- R2: N* = 4.
+- R3: MET at N = 4 and N = 8 (both seeds). NOT MET at N = 16 (seed-unstable), 32 and 64.
+- R4: bank_derange gives chance for every memory arm.
+- Spend: v2 $12.72; M4 total $14.07.
 
-- `sanity-v1` (development; final-eval seed base 777_001; N = 16, 300 steps,
-  seed 0): oracle 0.991 held-out, learned 0.015, single_cell 0.016 (chance
-  0.016).
-- `p2-load-sweep-v1`: STOPPED over open audit findings. Only the three
-  memory_off runs (steps = 0) finished. Not evidence.
-- Replacement `p2-load-sweep-v2` (registered horizon: 1500 steps per A1;
-  final-eval seed base 9_100_003): awaiting audit clearance.
+Development and stopped runs: `sanity-v1` (development; oracle 0.991, learned
+and single_cell at chance after 300 steps) and `p2-load-sweep-v1` (stopped,
+not evidence).
 
 ## Not implemented (by phase)
 

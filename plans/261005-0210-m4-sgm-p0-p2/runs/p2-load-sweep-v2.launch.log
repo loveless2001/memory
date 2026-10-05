@@ -1,0 +1,63 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/syntracts/main/ap-x299g630mcI7eabiyB7kOL
+✓ Created objects.
+├── 🔨 Created mount 
+│   /home/lenovo/projects/memory/modal-runners/modal-m4-sgm-synthetic-pilot-grid
+│   .py
+├── 🔨 Created mount /home/lenovo/projects/memory/memsub
+└── 🔨 Created function run_cell.
+launching 49 runs into m4-sgm/p2-load-sweep-v2
+provenance {'git_head': '1d62903e3e093ee625642b5ef4c86b3b6cae6d2b', 'grid_file': 'configs/m4_sgm_p2_grid.json', 'grid_sha256': '5d01e67da9ef49d35edca6b5e2e8f6219528490b6482ff2471c7c8d0c1d8bf34'}
+Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption
+done main-learned-n4-s0 {'heldout_none': 0.882, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.227, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.019, 'train_split_none': 0.906}
+done main-learned-n4-s1 {'heldout_none': 0.926, 'heldout_bank_derange': 0.02, 'heldout_coord_shuffle': 0.181, 'heldout_read_offset': 0.016, 'heldout_query_off': 0.014, 'train_split_none': 0.953}
+done main-learned-n8-s0 {'heldout_none': 0.877, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.115, 'heldout_read_offset': 0.015, 'heldout_query_off': 0.019, 'train_split_none': 0.898}
+done main-learned-n8-s1 {'heldout_none': 0.903, 'heldout_bank_derange': 0.012, 'heldout_coord_shuffle': 0.144, 'heldout_read_offset': 0.014, 'heldout_query_off': 0.018, 'train_split_none': 0.918}
+done main-learned-n16-s0 {'heldout_none': 0.052, 'heldout_bank_derange': 0.008, 'heldout_coord_shuffle': 0.034, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.018, 'train_split_none': 0.062}
+done main-learned-n16-s1 {'heldout_none': 0.593, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.077, 'heldout_read_offset': 0.016, 'heldout_query_off': 0.022, 'train_split_none': 0.582}
+done main-learned-n32-s0 {'heldout_none': 0.021, 'heldout_bank_derange': 0.02, 'heldout_coord_shuffle': 0.019, 'heldout_read_offset': 0.013, 'heldout_query_off': 0.015, 'train_split_none': 0.039}
+done main-learned-n32-s1 {'heldout_none': 0.021, 'heldout_bank_derange': 0.014, 'heldout_coord_shuffle': 0.015, 'heldout_read_offset': 0.016, 'heldout_query_off': 0.017, 'train_split_none': 0.039}
+done main-learned-n64-s0 {'heldout_none': 0.02, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.02, 'heldout_read_offset': 0.021, 'heldout_query_off': 0.018, 'train_split_none': 0.016}
+done main-learned-n64-s1 {'heldout_none': 0.018, 'heldout_bank_derange': 0.021, 'heldout_coord_shuffle': 0.012, 'heldout_read_offset': 0.02, 'heldout_query_off': 0.018, 'train_split_none': 0.023}
+done main-single-cell-n4-s0 {'heldout_none': 0.557, 'heldout_bank_derange': 0.014, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.557, 'heldout_query_off': 0.027, 'train_split_none': 0.625}
+done main-single-cell-n4-s1 {'heldout_none': 0.523, 'heldout_bank_derange': 0.012, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.523, 'heldout_query_off': 0.017, 'train_split_none': 0.504}
+done main-single-cell-n8-s0 {'heldout_none': 0.111, 'heldout_bank_derange': 0.011, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.111, 'heldout_query_off': 0.019, 'train_split_none': 0.102}
+done main-single-cell-n8-s1 {'heldout_none': 0.075, 'heldout_bank_derange': 0.015, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.075, 'heldout_query_off': 0.021, 'train_split_none': 0.066}
+done main-single-cell-n16-s0 {'heldout_none': 0.038, 'heldout_bank_derange': 0.013, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.038, 'heldout_query_off': 0.017, 'train_split_none': 0.055}
+done main-single-cell-n16-s1 {'heldout_none': 0.038, 'heldout_bank_derange': 0.015, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.038, 'heldout_query_off': 0.021, 'train_split_none': 0.051}
+done main-single-cell-n32-s0 {'heldout_none': 0.021, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.021, 'heldout_query_off': 0.016, 'train_split_none': 0.02}
+done main-single-cell-n32-s1 {'heldout_none': 0.017, 'heldout_bank_derange': 0.013, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.014, 'train_split_none': 0.051}
+done main-single-cell-n64-s0 {'heldout_none': 0.02, 'heldout_bank_derange': 0.021, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.02, 'heldout_query_off': 0.021, 'train_split_none': 0.012}
+done main-single-cell-n64-s1 {'heldout_none': 0.017, 'heldout_bank_derange': 0.023, 'heldout_coord_shuffle': None, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.018, 'train_split_none': 0.023}
+done main-oracle-n4-s0 {'heldout_none': 1.0, 'heldout_bank_derange': 0.017, 'heldout_coord_shuffle': 0.144, 'heldout_read_offset': 0.016, 'heldout_query_off': 0.016, 'train_split_none': 1.0}
+done main-oracle-n4-s1 {'heldout_none': 0.999, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.134, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.017, 'train_split_none': 1.0}
+done main-oracle-n8-s0 {'heldout_none': 1.0, 'heldout_bank_derange': 0.018, 'heldout_coord_shuffle': 0.098, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.017, 'train_split_none': 0.996}
+done main-oracle-n8-s1 {'heldout_none': 1.0, 'heldout_bank_derange': 0.013, 'heldout_coord_shuffle': 0.084, 'heldout_read_offset': 0.013, 'heldout_query_off': 0.013, 'train_split_none': 1.0}
+done main-oracle-n16-s0 {'heldout_none': 1.0, 'heldout_bank_derange': 0.015, 'heldout_coord_shuffle': 0.041, 'heldout_read_offset': 0.013, 'heldout_query_off': 0.012, 'train_split_none': 0.996}
+done main-oracle-n16-s1 {'heldout_none': 1.0, 'heldout_bank_derange': 0.013, 'heldout_coord_shuffle': 0.063, 'heldout_read_offset': 0.014, 'heldout_query_off': 0.013, 'train_split_none': 1.0}
+done main-oracle-n32-s0 {'heldout_none': 0.999, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.035, 'heldout_read_offset': 0.016, 'heldout_query_off': 0.018, 'train_split_none': 1.0}
+done main-oracle-n32-s1 {'heldout_none': 0.999, 'heldout_bank_derange': 0.012, 'heldout_coord_shuffle': 0.039, 'heldout_read_offset': 0.011, 'heldout_query_off': 0.011, 'train_split_none': 1.0}
+done main-oracle-n64-s0 {'heldout_none': 1.0, 'heldout_bank_derange': 0.016, 'heldout_coord_shuffle': 0.039, 'heldout_read_offset': 0.01, 'heldout_query_off': 0.017, 'train_split_none': 1.0}
+done main-oracle-n64-s1 {'heldout_none': 1.0, 'heldout_bank_derange': 0.015, 'heldout_coord_shuffle': 0.027, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.017, 'train_split_none': 1.0}
+done main-random-fixed-n4-s0 {'heldout_none': 0.079, 'heldout_bank_derange': 0.014, 'heldout_coord_shuffle': 0.073, 'heldout_read_offset': 0.02, 'heldout_query_off': 0.018, 'train_split_none': 0.059}
+done main-random-fixed-n4-s1 {'heldout_none': 0.1, 'heldout_bank_derange': 0.012, 'heldout_coord_shuffle': 0.089, 'heldout_read_offset': 0.06, 'heldout_query_off': 0.011, 'train_split_none': 0.102}
+done main-random-fixed-n8-s0 {'heldout_none': 0.045, 'heldout_bank_derange': 0.019, 'heldout_coord_shuffle': 0.051, 'heldout_read_offset': 0.027, 'heldout_query_off': 0.021, 'train_split_none': 0.055}
+done main-random-fixed-n8-s1 {'heldout_none': 0.043, 'heldout_bank_derange': 0.021, 'heldout_coord_shuffle': 0.046, 'heldout_read_offset': 0.029, 'heldout_query_off': 0.021, 'train_split_none': 0.047}
+done main-random-fixed-n16-s0 {'heldout_none': 0.022, 'heldout_bank_derange': 0.011, 'heldout_coord_shuffle': 0.03, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.011, 'train_split_none': 0.027}
+done main-random-fixed-n16-s1 {'heldout_none': 0.025, 'heldout_bank_derange': 0.018, 'heldout_coord_shuffle': 0.034, 'heldout_read_offset': 0.022, 'heldout_query_off': 0.019, 'train_split_none': 0.023}
+done main-random-fixed-n32-s0 {'heldout_none': 0.02, 'heldout_bank_derange': 0.022, 'heldout_coord_shuffle': 0.016, 'heldout_read_offset': 0.021, 'heldout_query_off': 0.023, 'train_split_none': 0.027}
+done main-random-fixed-n32-s1 {'heldout_none': 0.014, 'heldout_bank_derange': 0.015, 'heldout_coord_shuffle': 0.018, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.007, 'train_split_none': 0.02}
+done main-random-fixed-n64-s0 {'heldout_none': 0.019, 'heldout_bank_derange': 0.021, 'heldout_coord_shuffle': 0.018, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.021, 'train_split_none': 0.008}
+done main-random-fixed-n64-s1 {'heldout_none': 0.015, 'heldout_bank_derange': 0.02, 'heldout_coord_shuffle': 0.011, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.018, 'train_split_none': 0.027}
+done off-memory-off-n4-s0 {'heldout_none': 0.019, 'train_split_none': 0.008}
+done off-memory-off-n16-s0 {'heldout_none': 0.021, 'train_split_none': 0.012}
+done off-memory-off-n64-s0 {'heldout_none': 0.012, 'train_split_none': 0.016}
+done noshift-learned-n16-s0 {'heldout_none': 0.065, 'heldout_bank_derange': 0.015, 'heldout_coord_shuffle': 0.048, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.021, 'train_split_none': 0.055}
+done noshift-learned-n16-s1 {'heldout_none': 0.061, 'heldout_bank_derange': 0.014, 'heldout_coord_shuffle': 0.045, 'heldout_read_offset': 0.018, 'heldout_query_off': 0.018, 'train_split_none': 0.098}
+done noshift-oracle-n16-s0 {'heldout_none': 0.99, 'heldout_bank_derange': 0.018, 'heldout_coord_shuffle': 0.04, 'heldout_read_offset': 0.014, 'heldout_query_off': 0.015, 'train_split_none': 1.0}
+done noshift-oracle-n16-s1 {'heldout_none': 0.995, 'heldout_bank_derange': 0.014, 'heldout_coord_shuffle': 0.059, 'heldout_read_offset': 0.017, 'heldout_query_off': 0.015, 'train_split_none': 0.988}
+done lmread-learned-n16-s0 {'heldout_none': 0.047, 'heldout_bank_derange': 0.009, 'heldout_coord_shuffle': 0.037, 'heldout_read_offset': 0.023, 'heldout_query_off': 0.022, 'train_split_none': 0.055}
+done lmread-oracle-n16-s0 {'heldout_none': 0.898, 'heldout_bank_derange': 0.013, 'heldout_coord_shuffle': 0.037, 'heldout_read_offset': 0.011, 'heldout_query_off': 0.011, 'train_split_none': 0.922}
+✓ App completed. View run at 
+https://modal.com/apps/syntracts/main/ap-x299g630mcI7eabiyB7kOL

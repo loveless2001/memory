@@ -165,3 +165,67 @@ launches only after codex reviews the fix commit.
 
 Spend (Modal billing report, hourly, 2026-10-05): smoke $0.008, sanity-v1
 $0.190, stopped v1 $1.153 (app wall 5 m 58 s); M4 total **$1.35**.
+
+## P2 result — `p2-load-sweep-v2` (2026-10-05)
+
+App `ap-x299g630mcI7eabiyB7kOL`, launched 03:53 from `1d62903` (clean tree).
+Grid sha `5d01e67d…`; executed memsub source sha `a89284ea…`; final-eval seed
+base 9_100_003. **49 of 49 cells returned.** One container was preempted;
+Modal restarted that input and it completed. The serial validation pass
+(`c75d9f9`, cleared in #gravity 21105) marked **all 49 cells `stream_ok`**:
+complete artifacts, provenance bound to the registered config, schema-valid
+rows consistent with the metrics, and local copies identical to the volume.
+No recovery or retry was needed, and no `attempts.json` selection is required.
+Files: `runs/p2-load-sweep-v2/summary.md` and `artifact_validation.json`.
+Per-example rows are in `runs/p2-load-sweep-v2-per-example-results.tar.gz`.
+
+Held-out accuracy (chance 0.016), seeds 0 / 1:
+
+| N | oracle (diag.) | learned | single_cell | random_fixed |
+|---|---|---|---|---|
+| 4 | 1.000 / 0.999 | **0.882 / 0.926** | 0.557 / 0.523 | 0.079 / 0.100 |
+| 8 | 1.000 / 1.000 | **0.877 / 0.903** | 0.111 / 0.075 | 0.045 / 0.043 |
+| 16 | 1.000 / 1.000 | 0.052 / 0.593 | 0.038 / 0.038 | 0.022 / 0.025 |
+| 32 | 0.999 / 0.999 | 0.021 / 0.021 | 0.021 / 0.017 | 0.020 / 0.014 |
+| 64 | 1.000 / 1.000 | 0.020 / 0.018 | 0.020 / 0.017 | 0.019 / 0.015 |
+
+Preregistered readings:
+
+- **R1 interface:** oracle ≥ 0.999 at every N. Under perfect addressing and
+  write isolation, the update/readout path stores and retrieves up to 64
+  bindings, and it generalizes to held-out key families.
+- **R2:** MET, with **N\* = 4**: single_cell is 0.46 below oracle already at
+  N = 4.
+- **R3 learned routing: MET at N = 4 and N = 8 (both seeds).** The paired
+  gain over the stronger control (single_cell) is +0.33 / +0.40 at N = 4
+  and +0.77 / +0.83 at N = 8. The read-offset diagnostic drops learned
+  accuracy by 0.86–0.91 (paired), so the learned addresses are used. **It is
+  NOT MET at N = 16** (seed 0 fails, seed 1 passes: 0.593), and NOT MET at N = 32 and 64, where
+  learned is at chance.
+- **R4 memory use:** bank_derange drops every memory arm above 4× chance to
+  0.011–0.020, i.e. chance.
+
+Mechanism notes (descriptive, not registered):
+
+- Learned write gating emerges where routing works. At N = 4, mean β is 0.83–0.85
+  on value tokens and 0.25–0.37 on filler. At N ≥ 32, β on value tokens is at or
+  below β on filler. Learned banks spread to 30–48 occupied cells and 16–25
+  effective cells at N ≤ 8: well beyond one 3×3 neighbourhood, and no
+  single-cell collapse.
+- The failure at large N is in **learning**, not capacity. The oracle stores 64
+  bindings at d_k = 8 per cell perfectly, while learned, single_cell and
+  random_fixed all sit at chance from N = 32. random_fixed (a frozen coordinate
+  map over learned q/k) is worse than single_cell at N ≤ 8.
+- Ablations at N = 16. `noshift`: learned 0.065 / 0.061 and oracle 0.990 / 0.995;
+  with oracle addresses the key shift is unnecessary, and the learned
+  comparison is inconclusive given the seed spread of the main N = 16 learned
+  cells. `lmread` (frozen random LM head): oracle 0.898, learned 0.047.
+
+Scope: mechanism evidence on a frozen RANDOM tiny backbone with a task head
+and `feature_shift = 2`. It says nothing about frozen pretrained Qwen,
+recovery, or long-history scaling. The headline is that learned sparse
+routing works and is used at small loads, but stops learning beyond about
+16 bindings per episode within 1500 steps.
+
+Spend (Modal billing, hourly): v2 **$12.72**. M4 total: smoke $0.008, sanity
+$0.190, stopped v1 $1.153, v2 $12.722, for **$14.07**.
