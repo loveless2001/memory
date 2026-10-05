@@ -153,18 +153,46 @@ def _toy(tmp: Path, name: str, **over):
     return d, {"pilot_config": pilot, "run_id": name, "modal_group": "toy"}
 
 
-def test_readings_pipeline_smoke_and_artifact_seed_guard(tmp_path, monkeypatch):
+DEV_BASE = 777_000          # smoke evaluations never use the reserved readings seed values (codex 21390)
+
+
+def test_readings_pipeline_smoke_on_dev_seeds_only(tmp_path, monkeypatch):
     rd = _load(ROOT / "scripts" / "sgm-p2c-readings.py", "p2c_readings")
     monkeypatch.setattr(rd.OBS, "FINAL_BATCHES", 1)
     monkeypatch.setattr(rd.P2D, "N_EPISODES", 16)
+    monkeypatch.setattr(rd, "READINGS_BASE", DEV_BASE)
+    seeds, real = [], rd.OBS.eval_rows
+    monkeypatch.setattr(rd.OBS, "eval_rows", lambda b, h, p, seed, ivs, w: seeds.append(seed) or real(b, h, p, seed, ivs, w))
     models = {"v2": _toy(tmp_path, "v2"), "reference": _toy(tmp_path, "ref", filler_writes=False),
               "curriculum": _toy(tmp_path, "cur", filler_len_schedule=[[0, 0], [1, 40]])}
     per_seed = {s: rd.evaluate_seed(4, s, models, tmp_path) for s in (0, 1)}
+    assert seeds == [DEV_BASE] * 3 + [DEV_BASE + 1] * 3
     assert set(per_seed[0]["corners"]) == {"v2", "reference", "curriculum"}
     assert per_seed[0]["curriculum_dev_curve_descriptive"] == [[0, 0.1]]
     out = rd.read_n(per_seed)
     assert out["flags"]["half"] in (True, False, None) and isinstance(out["reading"], str)
+
+
+def test_readings_reject_training_artifacts_on_the_reserved_seed(tmp_path):
+    rd = _load(ROOT / "scripts" / "sgm-p2c-readings.py", "p2c_readings_guard")
+    assert rd.READINGS_BASE == 9_500_011
     (tmp_path / "split_manifest.json").write_text(json.dumps({"seeds": {"final_eval": 9_300_012}}))
     assert rd.artifact_seed_problem(tmp_path, {"final_eval_seed": 9_300_012}, 1) is None
     (tmp_path / "split_manifest.json").write_text(json.dumps({"seeds": {"final_eval": 9_500_012}}))
     assert rd.artifact_seed_problem(tmp_path, {"final_eval_seed": 9_500_012}, 1)
+
+
+def test_prereg_file_is_bound_at_validation_and_in_the_identity(monkeypatch):
+    index = json.loads(PRE2C.INPUTS.read_text())
+    ident = PRE2C.PRE.observer_identity()
+    assert ident["prereg_sha256"] == index["prereg"]["sha256"] == hashlib.sha256(
+        (ROOT / index["prereg"]["path"]).read_bytes()).hexdigest()
+    bad = json.loads(json.dumps(index))
+    bad["prereg"]["sha256"] = "0" * 64
+    with pytest.raises(SystemExit, match="prereg"):
+        PRE2C.PRE.validate_inputs(bad)
+    drifted = {**ident, "prereg_sha256": "0" * 64}
+    assert PRE2C.PRE.identity_drift(ident, drifted) == ["prereg_sha256"]
+    monkeypatch.setattr(PRE2C.PRE, "observer_identity", lambda: drifted)
+    with pytest.raises(SystemExit, match="identity changed"):
+        PRE2C.PRE.finish_identity(ident, index)

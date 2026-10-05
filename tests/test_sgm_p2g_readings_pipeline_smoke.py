@@ -34,9 +34,13 @@ def test_corner_evaluation_and_readings_are_well_formed(tmp_path, monkeypatch):
     rd = _load(ROOT / "scripts" / "sgm-p2g-readings.py", "p2g_readings")
     monkeypatch.setattr(rd.OBS, "FINAL_BATCHES", 1)            # 16 episodes instead of 256
     monkeypatch.setattr(rd.P2D, "N_EPISODES", 16)
+    monkeypatch.setattr(rd, "READINGS_BASE", 777_000)          # never the reserved seed values (codex 21390)
+    seeds, real = [], rd.OBS.eval_rows
+    monkeypatch.setattr(rd.OBS, "eval_rows", lambda b, h, p, seed, ivs, w: seeds.append(seed) or real(b, h, p, seed, ivs, w))
     models = {"T_on": _cell(tmp_path, "on"), "T_off": _cell(tmp_path, "off", filler_writes=False),
               "gate": _cell(tmp_path, "gate", beta_bias_init=-3.0)}
     per_seed = {s: rd.evaluate_cell(4, s, models, tmp_path) for s in (0, 1)}
+    assert set(seeds) == {777_000, 777_001}
     one = per_seed[0]
     assert set(one["corners"]) == {"Ton-Eon", "Ton-Eoff", "Toff-Eoff", "Toff-Eon", "Tgate-Eon"}
     assert one["corners"]["Toff-Eoff"]["gate"]["rho_pooled_effective"] == 0.0   # skipped filler writes

@@ -41,6 +41,21 @@ def _private_p2g_preflight():
     mod.ANALYSIS_FILES = mod.ANALYSIS_FILES + tuple(f"scripts/{f}" for f in (
         "sgm-p2c-preflight.py", "sgm-p2c-readings.py", "sgm-p2c-decision-rules.py")) + (
         "modal-runners/modal-m4-sgm-p2c-nonpreemptible-spawn.py",)
+    # Bind the registered prereg file itself (codex 21390): its hash joins the executed
+    # identity (so finish_identity aborts on drift), and inputs validation requires it to
+    # equal the index's prereg sha before any work. Module globals are rebound on THIS
+    # private instance, so the module's own finish_identity/validate calls use the wrappers.
+    base_identity, base_validate = mod.observer_identity, mod.validate_inputs
+
+    def observer_identity() -> dict:
+        index = json.loads(mod.INPUTS.read_text())
+        return {**base_identity(), "prereg_sha256": mod.sha(ROOT / index["prereg"]["path"])}
+
+    def validate_inputs(index: dict) -> dict:
+        if mod.sha(ROOT / index["prereg"]["path"]) != index["prereg"]["sha256"]:
+            raise SystemExit("registered prereg file does not match the inputs index")
+        return base_validate(index)
+    mod.observer_identity, mod.validate_inputs = observer_identity, validate_inputs
     return mod
 
 
