@@ -459,15 +459,21 @@ Long-prefix continuity and the budget guard are defined in clarifications
      `max_containers=12`, and an 8 h backstop function timeout.
    - **Per-cell wall budget:** 1.4 × arm factor × that cell's OWN
      seed-specific v2 wall time. The arm factor is filler_off 1.0, long 3.0
-     (the N32 s0 cell is ~7.3 h) and addr_supervised 1.1. It is enforced by
-     an in-process watchdog that calls `os._exit` (kills even a hung step);
-     an expired cell is reported incomplete and not re-run.
-   - **Attempts:** the first action of every attempt increments a per-cell
-     counter in a Modal Dict. Any replay of a started cell (including one
-     interrupted before artifacts commit) exits before training. The
-     reserved allowance is 1 replay × (startup + 60 s) per cell. Further
-     replays are also refused; their residual startup cost is covered by the
-     fixed margin. Any re-run is a new reviewed launch charged to the same cap.
+     (the N32 s0 cell is ~7.3 h) and addr_supervised 1.1.
+   - **Watchdogs** (codex 21139): an *independent sleeper process* SIGKILLs
+     the cell process at its deadline, so it fires even while a C call holds
+     the GIL (tested with a GIL-holding `usleep`). An early 120 s watchdog
+     starts before any import or Dict RPC and bounds every attempt's claim
+     phase. Both are cancelled in `finally` (process-group kill), and
+     containers are `single_use_containers`. An expired cell is reported
+     incomplete and not re-run.
+   - **Attempts:** atomic claims via `Dict.put(..., skip_if_exists=True)`.
+     Only `attempt1` of a cell may train. A replay claims the single reserved
+     replay slot and exits within the early deadline. A further replay finds
+     the slots exhausted: it sets a global HALT key, every later attempt of
+     every cell refuses, and the launcher stops the app. A concurrent-claim
+     test admits exactly one trainer. Any re-run is a new reviewed launch
+     charged to the same cap.
    - **Admission ledger** (refuses launch if over the cap), at $0.252576 per
      container-hour (4 cores × $0.0000131/s + 8 GiB × $0.00000222/s), per
      dry run 2026-10-05:
@@ -476,13 +482,14 @@ Long-prefix continuity and the budget guard are defined in clarifications
      |---|---|
      | cell timeouts | 10.870 |
      | startup + teardown | 0.303 |
-     | replay allowance | 0.303 |
+     | replay allowance (1 × (300 s + 120 s)) | 0.354 |
      | image build | 0.300 |
      | CPU-overuse margin (10%) | 0.812 |
      | fixed margin | 1.500 |
-     | **reserved total** | **14.088 ≤ 15.00** |
+     | **reserved total** | **14.139 ≤ 15.00** |
 
      A configuration using rounded worst-seed durations (3,042 timeout-min)
-     is rejected (test).
+     is rejected (test). Duplicate run IDs are rejected before the ledger is
+     built (test).
    - **Shutdown verification:** app state `stopped` and 0 containers via the
      CLI, plus billing reconciliation.

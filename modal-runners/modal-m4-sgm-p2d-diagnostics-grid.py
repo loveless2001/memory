@@ -27,20 +27,34 @@ MAX_CELL_TIMEOUT_S = 8 * 3600     # backstop only; per-cell watchdog is the real
 
 @app.function(image=image, cpu=(4.0, 4.0), memory=(8192, 8192), timeout=MAX_CELL_TIMEOUT_S,
               startup_timeout=300, retries=0, scaledown_window=2, max_containers=12,
-              volumes={"/artifacts": artifacts})
+              single_use_containers=True, volumes={"/artifacts": artifacts})
 def run_cell(group: str, run_id: str, pilot: dict, provenance: dict, timeout_s: int,
              final_seed_base: int) -> dict:
-    import re
     import sys
-    import torch
     sys.path.insert(0, "/root/repo")
-    from memsub.sgm.p2d_launch_guard import AttemptLedger, ReplayRefused, start_watchdog
-    try:   # FIRST action: count the attempt (replays exit before any training)
-        attempt = AttemptLedger(modal.Dict.from_name(f"m4-sgm-{group}-attempts",
-                                                     create_if_missing=True)).begin(run_id)
-    except ReplayRefused as e:
-        return {"run_id": run_id, "status": "replay_refused", "reason": str(e)}
-    start_watchdog(timeout_s)
+    from memsub.sgm.p2d_launch_guard import (EARLY_DEADLINE_S, AllowanceExhausted, AttemptLedger,
+                                             ReplayRefused, Watchdog)
+    early = Watchdog(EARLY_DEADLINE_S)          # bounds imports + claim RPCs before anything else
+    try:
+        try:   # atomic claim: only attempt 1 of a cell may train
+            AttemptLedger(modal.Dict.from_name(f"m4-sgm-{group}-attempts",
+                                               create_if_missing=True)).begin(run_id)
+        except AllowanceExhausted as e:
+            return {"run_id": run_id, "status": "allowance_exhausted", "reason": str(e)}
+        except ReplayRefused as e:
+            return {"run_id": run_id, "status": "replay_refused", "reason": str(e)}
+    finally:
+        early.cancel()
+    watchdog = Watchdog(timeout_s)
+    try:
+        return _train_cell(group, run_id, pilot, provenance, timeout_s, final_seed_base)
+    finally:
+        watchdog.cancel()
+
+
+def _train_cell(group, run_id, pilot, provenance, timeout_s, final_seed_base) -> dict:
+    import re
+    import torch
     from memsub.sgm.synthetic_pilot import PilotConfig
     from memsub.sgm.synthetic_pilot_run import run_pilot
     for name in (group, run_id):
@@ -51,7 +65,7 @@ def run_cell(group: str, run_id: str, pilot: dict, provenance: dict, timeout_s: 
     if out.exists():
         raise FileExistsError(f"{out} exists; no automatic retry")
     metrics = run_pilot(PilotConfig(**pilot), out, final_seed_base=final_seed_base,
-                        extra_manifest={"modal_group": group, "run_id": run_id, "attempt": attempt,
+                        extra_manifest={"modal_group": group, "run_id": run_id, "attempt": 1,
                                         "cell_timeout_s": timeout_s, **provenance})
     artifacts.commit()
     return {"run_id": run_id, "status": "done", "metrics": metrics}
@@ -64,6 +78,9 @@ def expand(grid: dict) -> list[tuple[str, str, dict]]:
             for seed in block["seeds"]:
                 pilot = {**grid["base"], **block.get("override", {}), "n_bindings": n, "seed": seed}
                 cells.append((f"{block['tag']}-learned-n{n}-s{seed}", block["tag"], pilot))
+    ids = [c[0] for c in cells]
+    if len(ids) != len(set(ids)):
+        raise ValueError("duplicate run ids in grid")      # ledger must reserve every launch
     return cells
 
 
@@ -108,6 +125,10 @@ def main(group: str, grid: str, v2_runs: str, local_out: str):
         if isinstance(res, Exception):
             print("RUN FAILED:", repr(res))
             continue
+        if res["status"] == "allowance_exhausted":
+            print("ALLOWANCE EXHAUSTED — stopping app:", res)
+            subprocess.run(["modal", "app", "stop", app.app_id], check=False)
+            break
         if res["status"] != "done":
             print("REPLAY REFUSED:", res)
             continue
