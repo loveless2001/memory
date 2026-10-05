@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -115,25 +116,119 @@ def _readings():
     return m
 
 
-def test_partial_mode_skips_missing_cells_but_rejects_invalid_complete_inputs(tmp_path, monkeypatch):
+def _group(tmp_path, name, cells, launch=None):
+    """A launched group whose mirror cells carry a manifest naming the group."""
+    runs, mirror = tmp_path / name, tmp_path / f"{name}-mirror"
+    for rid in cells:
+        (mirror / rid).mkdir(parents=True, exist_ok=True)
+        (mirror / rid / "run_manifest.json").write_text(json.dumps({"modal_group": name, "git_head": name}))
+    return {"name": name, "runs": runs, "mirror": mirror, "registered": {rid: {"cfg": rid} for rid in cells},
+            "launch": launch or {"git_head": name, "grid_sha256": f"grid-{name}"},
+            "launch_provenance_sha256": f"lp-{name}", "grid_snapshot_sha256": f"gs-{name}"}
+
+
+def _validator(problems):
+    """problems[(group, rid)] -> validation reason (default None = valid)."""
+    return SimpleNamespace(validate=lambda path, rid, *_a: problems.get((path.parent.name, rid)))
+
+
+UNIVERSE = {rid: {"cfg": rid} for rid in ("a", "b")}
+
+
+@pytest.fixture
+def readings(monkeypatch):
     m = _readings()
-    args = SimpleNamespace(mirror=tmp_path, source_sha="source", partial=True)
-    problems = {"done": None, "lost": "missing ['metrics.json']"}
-    validator = SimpleNamespace(validate=lambda _path, rid, *_args: problems[rid])
-    monkeypatch.setattr(m, "bind_treatment", lambda rid, *_args: tmp_path / rid)
-    available, coverage = m.select_treatments({"done": {}, "lost": {}}, args, {}, validator)
-    assert set(available) == {"done"} and coverage["lost"]["status"] == "incomplete"
-    problems["lost"] = "mismatch ['trained_parameters_sha256']"
+    monkeypatch.setattr(m, "bind_treatment", lambda rid, pilot, g, *_a: g["mirror"] / rid)
+    return m
+
+
+def test_partial_mode_skips_missing_cells_but_rejects_invalid_complete_inputs(tmp_path, readings):
+    v1 = _group(tmp_path, "v1", ["a", "b"])
+    problems = {("v1-mirror", "b"): "missing ['metrics.json']"}
+    available, coverage, index = readings.select_treatments(UNIVERSE, [v1], True, _validator(problems), "src")
+    assert set(available) == {"a"} and coverage["b"]["status"] == "incomplete" and set(index) == {"a"}
+    assert coverage["b"]["incomplete_in"] == [{"group": "v1", "reason": "missing ['metrics.json']"}]
+    problems[("v1-mirror", "b")] = "mismatch ['trained_parameters_sha256']"
     with pytest.raises(SystemExit, match="parameter"):
-        m.select_treatments({"done": {}, "lost": {}}, args, {}, validator)
+        readings.select_treatments(UNIVERSE, [v1], True, _validator(problems), "src")
 
 
-def test_full_mode_does_not_accept_missing_cells(tmp_path):
+def test_full_mode_does_not_accept_missing_cells(tmp_path, readings):
+    v1 = _group(tmp_path, "v1", ["a", "b"])
+    problems = {("v1-mirror", "b"): "missing ['metrics.json']"}
+    with pytest.raises(SystemExit, match="no group holds a valid complete cell"):
+        readings.select_treatments(UNIVERSE, [v1], False, _validator(problems), "src")
+
+
+def test_topup_completes_the_index_with_per_cell_group_provenance(tmp_path, readings):
+    v1, topup = _group(tmp_path, "v1", ["a", "b"]), _group(tmp_path, "v1-topup", ["b"])
+    problems = {("v1-mirror", "b"): "missing ['metrics.json']"}
+    available, coverage, index = readings.select_treatments(UNIVERSE, [v1, topup], False,
+                                                           _validator(problems), "src")
+    assert available == {"a": v1["mirror"] / "a", "b": topup["mirror"] / "b"}
+    assert index["a"]["group"] == "v1" and index["b"]["group"] == "v1-topup"
+    assert index["b"]["manifest_modal_group"] == "v1-topup" and index["b"]["launch_git_head"] == "v1-topup"
+    assert coverage["b"] == {"status": "valid_complete", "group": "v1-topup",
+                             "incomplete_in": [{"group": "v1", "reason": "missing ['metrics.json']"}]}
+
+
+def test_a_cell_valid_in_two_groups_is_ambiguous(tmp_path, readings):
+    v1, topup = _group(tmp_path, "v1", ["a", "b"]), _group(tmp_path, "v1-topup", ["b"])
+    with pytest.raises(SystemExit, match="valid in several groups"):
+        readings.select_treatments(UNIVERSE, [v1, topup], False, _validator({}), "src")
+
+
+@pytest.mark.parametrize("stray", ["unregistered", "config"])
+def test_topup_cells_must_be_registered_with_identical_configs(tmp_path, readings, stray):
+    v1 = _group(tmp_path, "v1", ["a", "b"])
+    topup = _group(tmp_path, "v1-topup", ["c"] if stray == "unregistered" else ["b"])
+    if stray == "config":
+        topup["registered"]["b"] = {"cfg": "b", "steps": 4000}
+    with pytest.raises(SystemExit, match="not a registered cell"):
+        readings.select_treatments(UNIVERSE, [v1, topup], True, _validator({}), "src")
+
+
+@pytest.mark.parametrize("key", ["name", "mirror"])
+def test_duplicate_group_identities_are_rejected(tmp_path, readings, key):
+    v1, other = _group(tmp_path, "v1", ["a"]), _group(tmp_path, "v1-topup", ["b"])
+    other[key] = v1[key]
+    with pytest.raises(SystemExit, match=f"duplicate group {key}"):
+        readings.select_treatments(UNIVERSE, [v1, other], True, _validator({}), "src")
+
+
+def test_bind_rejects_a_manifest_from_another_group(tmp_path):
     m = _readings()
-    args = SimpleNamespace(mirror=tmp_path, source_sha="source", partial=False)
-    validator = SimpleNamespace(validate=lambda *_args: "missing ['metrics.json']")
-    with pytest.raises(SystemExit, match="artifact validation failed"):
-        m.select_treatments({"lost": {}}, args, {}, validator)
+    topup = _group(tmp_path, "v1-topup", ["b"])
+    (topup["mirror"] / "b" / "run_manifest.json").write_text(json.dumps({"modal_group": "v1"}))
+    with pytest.raises(SystemExit, match="modal_group is not this group"):
+        m.bind_treatment("b", {}, topup, _validator({}), "src")
+
+
+def _launched(tmp_path, name, grid, launch_extra=None):
+    runs = tmp_path / name
+    runs.mkdir()
+    registered = tmp_path / f"{name}-registered.json"
+    registered.write_text(json.dumps(grid))
+    (runs / "grid.json").write_text(json.dumps(grid))
+    import hashlib
+    (runs / "launch_provenance.json").write_text(json.dumps({
+        "grid_file": str(registered), "grid_sha256": hashlib.sha256(registered.read_bytes()).hexdigest(),
+        "git_head": "h", **(launch_extra or {})}))
+    return runs
+
+
+def test_load_group_checks_its_own_grid_and_launch_source(tmp_path):
+    m = _readings()
+    validator = SimpleNamespace(registered_cells=lambda grid, _runner: {"a": {}})
+    grid = {"final_seed_base": m.FINAL_BASE, "blocks": []}
+    ok = m.load_group(_launched(tmp_path, "ok", grid, {"memsub_source_sha256": "src"}), tmp_path, validator, "src")
+    assert ok["name"] == "ok" and ok["registered"] == {"a": {}}
+    with pytest.raises(SystemExit, match="memsub source"):
+        m.load_group(_launched(tmp_path, "src", grid, {"memsub_source_sha256": "other"}), tmp_path, validator, "src")
+    runs = _launched(tmp_path, "edited", grid)
+    (runs / "grid.json").write_text(json.dumps({**grid, "extra": 1}))
+    with pytest.raises(SystemExit, match="grid identity"):
+        m.load_group(runs, tmp_path, validator, "src")
 
 
 @pytest.mark.parametrize("seeds", [{}, {"0": {}}, {"1": {}}])

@@ -16,7 +16,18 @@ Decision rules: scripts/sgm-p2d-step2-decision-rules.py (fail closed).
 Use --partial for an interrupted grid: only complete seed pairs receive
 registered readings; single seeds retain saved descriptive results, and
 missing cells are explicitly unevaluable. Invalid complete inputs still abort.
+
+Two-group index (Amendment T1; codex 21198/21242): `--add-group RUNS MIRROR`
+adds a launched top-up group. Every group is preflighted against ITS OWN
+registered grid/launch (and each manifest's `modal_group`) before any
+evaluation; a group's cells must be registered cells of the primary grid with
+identical configs. Each registered cell is then indexed to exactly one group
+holding it valid and complete: duplicates abort, and so do missing cells
+outside --partial. Per-cell group/launch/manifest/input hashes are reported;
+top-up cells are never relabelled as primary-group cells.
 """
+
+from collections import defaultdict
 
 import argparse
 import hashlib
@@ -71,18 +82,22 @@ def load_into(pkg: str, pilot: dict, params: Path):
     return pcfg, backend, head
 
 
-def bind_treatment(rid: str, pilot: dict, args, launch: dict, validator) -> Path:
-    """Validate the mirror copy and require local == mirror; return the cell."""
-    cell = args.mirror / rid
-    reason = validator.validate(cell, rid, pilot, launch, args.source_sha, FINAL_BASE)
+def bind_treatment(rid: str, pilot: dict, group: dict, validator, source_sha: str) -> Path:
+    """Validate the group's mirror copy against ITS launch, require the manifest
+    to name this group, and require local == mirror; return the cell."""
+    cell = group["mirror"] / rid
+    reason = validator.validate(cell, rid, pilot, group["launch"], source_sha, FINAL_BASE)
     if reason is not None:
-        raise SystemExit(f"{rid}: artifact validation failed: {reason}")
-    local, mirror = (json.loads((d / "metrics.json").read_text()) for d in (args.runs / rid, cell))
+        raise SystemExit(f"{group['name']}/{rid}: artifact validation failed: {reason}")
+    if json.loads((cell / "run_manifest.json").read_text()).get("modal_group") != group["name"]:
+        raise SystemExit(f"{group['name']}/{rid}: manifest modal_group is not this group")
+    runs = group["runs"]
+    local, mirror = (json.loads((d / "metrics.json").read_text()) for d in (runs / rid, cell))
     if any(local.get(k) != mirror.get(k) for k in ("final", "checkpoints")):
-        raise SystemExit(f"{rid}: local metrics differ from the validated mirror")
+        raise SystemExit(f"{group['name']}/{rid}: local metrics differ from the validated mirror")
     for f in cell.glob("per_example_results*.jsonl"):
-        if not (args.runs / rid / f.name).exists() or sha(args.runs / rid / f.name) != sha(f):
-            raise SystemExit(f"{rid}: local {f.name} differs from the validated mirror")
+        if not (runs / rid / f.name).exists() or sha(runs / rid / f.name) != sha(f):
+            raise SystemExit(f"{group['name']}/{rid}: local {f.name} differs from the validated mirror")
     return cell
 
 
@@ -168,19 +183,61 @@ def tensors_equal(a: Path, b: Path) -> dict:
             "label": None if same else "continuity discrepancy (uninvestigated)"}
 
 
-def select_treatments(registered: dict, args, launch: dict, validator) -> tuple[dict, dict]:
-    """Preflight all cells before any evaluation; partial means missing, not invalid."""
-    available, coverage = {}, {}
-    for rid, pilot in registered.items():
-        reason = validator.validate(args.mirror / rid, rid, pilot, launch, args.source_sha, FINAL_BASE)
-        if reason is not None:
-            if not args.partial or not reason.startswith("missing ["):
-                raise SystemExit(f"{rid}: artifact validation failed: {reason}")
-            coverage[rid] = {"status": "incomplete", "reason": reason}
+def load_group(runs: Path, mirror: Path, validator, source_sha: str) -> dict:
+    """One launched group with its OWN registered grid and launch, checked before use."""
+    launch = json.loads((runs / "launch_provenance.json").read_text())
+    grid = json.loads((runs / "grid.json").read_text())
+    registered_grid = ROOT / launch["grid_file"]
+    if (sha(registered_grid) != launch["grid_sha256"]
+            or json.loads(registered_grid.read_text()) != grid or grid["final_seed_base"] != FINAL_BASE):
+        raise SystemExit(f"{runs.name}: registered grid identity/seed mismatch")
+    if launch.get("memsub_source_sha256", source_sha) != source_sha:
+        raise SystemExit(f"{runs.name}: launch memsub source differs from --source-sha")
+    return {"name": runs.name, "runs": runs, "mirror": mirror, "launch": launch,
+            "launch_provenance_sha256": sha(runs / "launch_provenance.json"),
+            "grid_snapshot_sha256": sha(runs / "grid.json"),
+            "registered": validator.registered_cells(grid, RUNNER)}
+
+
+def select_treatments(universe: dict, groups: list, partial: bool, validator,
+                      source_sha: str) -> tuple[dict, dict, dict]:
+    """Preflight every group's cells before any evaluation, then index each
+    registered cell to exactly one valid group. 'missing' = incomplete, never invalid."""
+    for key in ("name", "runs", "mirror"):
+        if len({str(g[key]) for g in groups}) != len(groups):
+            raise SystemExit(f"duplicate group {key}")
+    valid, incomplete = defaultdict(list), defaultdict(list)
+    for g in groups:
+        for rid, pilot in g["registered"].items():
+            if universe.get(rid) != pilot:
+                raise SystemExit(f"{g['name']}/{rid}: not a registered cell with its registered config")
+            reason = validator.validate(g["mirror"] / rid, rid, pilot, g["launch"], source_sha, FINAL_BASE)
+            if reason is None:
+                valid[rid].append((g, bind_treatment(rid, pilot, g, validator, source_sha)))
+            elif reason.startswith("missing ["):
+                incomplete[rid].append({"group": g["name"], "reason": reason})
+            else:
+                raise SystemExit(f"{g['name']}/{rid}: artifact validation failed: {reason}")
+    available, coverage, index = {}, {}, {}
+    for rid in universe:
+        found = valid.get(rid, [])
+        if len(found) > 1:
+            raise SystemExit(f"{rid}: valid in several groups {[g['name'] for g, _c in found]}")
+        if not found:
+            if not partial:
+                raise SystemExit(f"{rid}: artifact validation failed: no group holds a valid complete cell")
+            coverage[rid] = {"status": "incomplete", "group": None, "incomplete_in": incomplete.get(rid, [])}
             continue
-        available[rid] = bind_treatment(rid, pilot, args, launch, validator)
-        coverage[rid] = {"status": "valid_complete", "reason": None}
-    return available, coverage
+        g, cell = found[0]
+        available[rid] = cell
+        coverage[rid] = {"status": "valid_complete", "group": g["name"], "incomplete_in": incomplete.get(rid, [])}
+        man = json.loads((cell / "run_manifest.json").read_text())
+        index[rid] = {"group": g["name"], "runs": str(g["runs"]), "mirror": str(g["mirror"]),
+                      "launch_git_head": g["launch"]["git_head"], "launch_grid_sha256": g["launch"]["grid_sha256"],
+                      "launch_provenance_sha256": g["launch_provenance_sha256"],
+                      "manifest_modal_group": man["modal_group"], "manifest_git_head": man["git_head"],
+                      "run_manifest_sha256": sha(cell / "run_manifest.json")}
+    return available, coverage, index
 
 
 def summarize_cell(tag: str, seeds: dict) -> dict:
@@ -215,19 +272,16 @@ def main():
         ap.add_argument(a, type=Path, required=True)
     ap.add_argument("--source-sha", required=True)
     ap.add_argument("--partial", action="store_true", help="read only complete seed pairs in an interrupted grid")
+    ap.add_argument("--add-group", nargs=2, type=Path, action="append", default=[], metavar=("RUNS", "MIRROR"),
+                    help="a launched top-up group, validated against its own grid/launch")
     args = ap.parse_args()
     torch.set_num_threads(4)
     validator = script("sgm-recover-and-validate-grid-artifacts")
-    launch = json.loads((args.runs / "launch_provenance.json").read_text())
-    grid = json.loads((args.runs / "grid.json").read_text())
-    registered_grid = ROOT / launch["grid_file"]
-    if (sha(registered_grid) != launch["grid_sha256"]
-            or json.loads(registered_grid.read_text()) != grid or grid["final_seed_base"] != FINAL_BASE):
-        raise SystemExit("registered grid identity/seed mismatch")
     if source_tree_sha256(ROOT / "memsub") != args.source_sha:
         raise SystemExit("analysis runtime differs from the launch source")
-    registered = validator.registered_cells(grid, RUNNER)
-    available, coverage = select_treatments(registered, args, launch, validator)
+    groups = [load_group(r, m, validator, args.source_sha) for r, m in [(args.runs, args.mirror), *args.add_group]]
+    launch, registered = groups[0]["launch"], groups[0]["registered"]   # primary = the full registered grid
+    available, coverage, index = select_treatments(registered, groups, args.partial, validator, args.source_sha)
     pairs = {(tag, n) for tag, ns in CELLS.items() for n in ns
              if all(f"{tag}-learned-n{n}-s{s}" in available for s in (0, 1))}
     args.out.mkdir(parents=True, exist_ok=False)
@@ -237,11 +291,18 @@ def main():
                            "rules_sha256": sha(ROOT / "scripts" / "sgm-p2d-step2-decision-rules.py")},
               "final_seed_base": FINAL_BASE, "dev_seed": DEV_SEED, "launch": launch,
               "grid_snapshot_sha256": sha(args.runs / "grid.json"),
+              "groups": {g["name"]: {"runs": str(g["runs"]), "mirror": str(g["mirror"]), "launch": g["launch"],
+                                     "launch_provenance_sha256": g["launch_provenance_sha256"],
+                                     "grid_snapshot_sha256": g["grid_snapshot_sha256"],
+                                     "cells": sorted(g["registered"])} for g in groups},
+              "index": index,
               "report_status": "partial" if len(available) != len(registered) else "complete",
               "partial_mode": args.partial, "coverage": coverage,
               "limits": ["No R3, pretrained-model or scaling claim.",
                          "Missing seed pairs are unevaluable; single seeds are descriptive only.",
-                         "Interrupted cells are preserved without replacement or retraining."],
+                         "Interrupted cells are preserved without replacement or retraining.",
+                         "Each cell is read from the one group indexed for it (see `index`); top-up cells "
+                         "keep their own group/manifest and are not relabelled as primary-group cells."],
               "baselines": {}, "arms": {}}
     base_rows, base_geo = {}, {}
     for (n, seed) in sorted({(n, s) for _tag, n in pairs for s in (0, 1)}):
@@ -268,7 +329,8 @@ def main():
                     continue
                 mc = available[rid]
                 treat = rows_of(mc / "per_example_results.jsonl")
-                r = {"run_id": rid, "rows_sha256": sha(mc / "per_example_results.jsonl"),
+                r = {"run_id": rid, "group": index[rid]["group"],
+                     "rows_sha256": sha(mc / "per_example_results.jsonl"),
                      "trained_parameters_sha256": sha(mc / "trained_parameters.safetensors"),
                      "run_manifest_sha256": sha(mc / "run_manifest.json"),
                      "metrics_sha256": sha(mc / "metrics.json"),
