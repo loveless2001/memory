@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -30,6 +31,7 @@ LEGACY_IVS = ("none", "bank_derange", "coord_shuffle", "read_offset", "query_off
 FINAL_IVS = ("none", "bank_derange", "read_offset")                                 # P2G final protocol
 FINAL_BATCHES = FINAL_BATCH_SIZE = 16
 DEV_SEED, DEV_BATCHES, DEV_BATCH_SIZE, SINKS = 4242, 4, 16, 4
+REGISTERED_HEADS = frozenset({(1, 0), (1, 1), (3, 0), (3, 1)})    # layers {1,3} x heads {0,1}
 
 _spec = importlib.util.spec_from_file_location("p2g_rules", ROOT / "scripts" / "sgm-p2g-decision-rules.py")
 RULES = importlib.util.module_from_spec(_spec)
@@ -101,15 +103,38 @@ def gate_events(backend, pcfg, filler_writes: bool) -> dict:
     return ev
 
 
+def check_gate_events(ev: dict, want: dict) -> None:
+    """Fail closed unless telemetry covers exactly the registered heads with the
+    expected populations, every beta is finite and in [0, 1], and applied events
+    are all-or-none per class: all applied (== effective) or all skipped (effective 0)."""
+    if not isinstance(ev, dict) or set(ev) != REGISTERED_HEADS:
+        raise SystemExit(f"gate telemetry heads {sorted(ev) if isinstance(ev, dict) else ev} != registered")
+    for (l, h), cls in ev.items():
+        if set(cls) != set(want):
+            raise SystemExit(f"L{l}h{h}: classes {sorted(cls)} != {sorted(want)}")
+        for c, n in want.items():
+            arr = cls[c]
+            if set(arr) != {"projected", "effective", "applied"}:
+                raise SystemExit(f"L{l}h{h} {c}: malformed event record")
+            if len(arr["projected"]) != n or len(arr["effective"]) != n:
+                raise SystemExit(f"L{l}h{h} {c}: {len(arr['effective'])} events != {n}")
+            for k in ("projected", "effective", "applied"):
+                if not all(isinstance(x, float) and math.isfinite(x) and 0.0 <= x <= 1.0 for x in arr[k]):
+                    raise SystemExit(f"L{l}h{h} {c} {k}: non-finite or out-of-range beta")
+            if arr["applied"] != (arr["effective"] if arr["applied"] else []) or len(arr["applied"]) not in (0, n):
+                raise SystemExit(f"L{l}h{h} {c}: partial or inconsistent applied events")
+            if not arr["applied"] and any(x != 0.0 for x in arr["effective"]):
+                raise SystemExit(f"L{l}h{h} {c}: skipped events must have effective beta 0")
+
+
 def gate_summary(ev: dict, n_bindings: int) -> dict:
-    """Registered pooled rho + descriptive per-(layer, head) means and AUROCs."""
+    """Registered pooled rho + descriptive per-(layer, head) means and AUROCs.
+    Validation runs BEFORE any AUROC or rho computation."""
     episodes = DEV_BATCHES * DEV_BATCH_SIZE
     want = {"filler": episodes * 40, "binding": episodes * 2 * n_bindings}
+    check_gate_events(ev, want)
     per_head, fill_eff, bind_eff, aucs = {}, [], [], []
     for (l, h), cls in sorted(ev.items()):
-        for c, n in want.items():
-            if len(cls[c]["effective"]) != n or len(cls[c]["projected"]) != n:
-                raise SystemExit(f"L{l}h{h} {c}: {len(cls[c]['effective'])} events != {n}")
         auc = RULES.auroc(cls["binding"]["applied"], cls["filler"]["applied"])
         aucs.append(auc)
         fill_eff += cls["filler"]["effective"]

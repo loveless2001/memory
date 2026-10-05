@@ -28,7 +28,10 @@ _spec.loader.exec_module(PRE)
 OBS, VALIDATOR = PRE.OBS, PRE.load_script("sgm-recover-and-validate-grid-artifacts")
 RULES = OBS.RULES
 P2D = RULES.P2D
-GROUP, FINAL_BASE = "p2g-selective-write-v1", 9_400_011
+GROUP = "p2g-selective-write-v1"
+# training artifacts were evaluated on the published P2D population; the
+# registered population 9_400_011+s is consumed ONLY by this readings run
+ARTIFACT_BASE, READINGS_BASE = 9_300_011, 9_400_011
 V1_RUNNER = ROOT / "modal-runners" / "modal-m4-sgm-p2d-diagnostics-grid.py"
 LIMITS = ["Evidence class tiny-random-lm+taskhead, synthetic; no R3, scaling, pretrained or P3 claim.",
           "Cohorts differ in source/host (v2 1d62903/a89284ea, P2D 31aa4c8/d4effd0c, P2G new source); "
@@ -49,22 +52,33 @@ def rel(p: Path) -> str:
     return str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)
 
 
+def artifact_seed_problem(cell: Path, man: dict, seed: int) -> str | None:
+    """Training-time eval must be on the artifact population, never the reserved one."""
+    split = json.loads((cell / "split_manifest.json").read_text())["seeds"]["final_eval"]
+    want, reserved = ARTIFACT_BASE + seed, READINGS_BASE + seed
+    if man.get("final_eval_seed") != want or split != want or reserved in (man.get("final_eval_seed"), split):
+        return f"training eval seeds manifest={man.get('final_eval_seed')} split={split}, want {want}"
+    return None
+
+
 def load_p2g_group(runs: Path, mirror: Path, source: str) -> tuple[dict, dict]:
     """Bind the launched group to the committed grid; validate all six cells."""
     launch = json.loads((runs / "launch_provenance.json").read_text())
     grid = json.loads((runs / "grid.json").read_text())
     if (launch["grid_sha256"] != sha(PRE.GRID) or grid != json.loads(PRE.GRID.read_text())
-            or grid["final_seed_base"] != FINAL_BASE or launch["memsub_source_sha256"] != source
+            or grid["artifact_eval_seed_base"] != ARTIFACT_BASE or grid["readings_seed_base"] != READINGS_BASE
+            or launch["artifact_eval_seed_base"] != ARTIFACT_BASE or launch["memsub_source_sha256"] != source
             or launch["inputs_index_sha256"] != sha(PRE.INPUTS)):
-        raise SystemExit("P2G launch does not bind the committed grid/inputs/source/seed")
+        raise SystemExit("P2G launch does not bind the committed grid/inputs/source/seeds")
     registered = VALIDATOR.registered_cells(grid, V1_RUNNER)
     cells = {}
     for rid, pilot in registered.items():
         cell = mirror / rid
-        reason = VALIDATOR.validate(cell, rid, pilot, launch, source, FINAL_BASE)
+        reason = VALIDATOR.validate(cell, rid, pilot, launch, source, ARTIFACT_BASE)
+        man = json.loads((cell / "run_manifest.json").read_text()) if reason is None else {}
+        reason = reason or artifact_seed_problem(cell, man, pilot["seed"])
         if reason is not None:
             raise SystemExit(f"{rid}: artifact validation failed: {reason}")
-        man = json.loads((cell / "run_manifest.json").read_text())
         if man.get("modal_group") != GROUP:
             raise SystemExit(f"{rid}: manifest modal_group is not {GROUP}")
         local, mirrored = (json.loads((d / "metrics.json").read_text()) for d in (runs / rid, cell))
@@ -81,8 +95,9 @@ def corner(template: str, s: int, bound: dict, p2g: dict) -> tuple:
 
 
 def evaluate_cell(n: int, s: int, models: dict, out: Path) -> dict:
-    """Rows + dev gate telemetry for X(T,E) and the gate arm (E=on)."""
-    seed, rows, dev, cross = FINAL_BASE + s, {}, {}, {}
+    """Rows + dev gate telemetry for X(T,E) and the gate arm (E=on), all on the
+    reserved readings population with the common observer."""
+    seed, rows, dev = READINGS_BASE + s, {}, {}
     plan = {("on", "on"): ("T_on", True), ("on", "off"): ("T_on", False),
             ("off", "off"): ("T_off", False), ("off", "on"): ("T_off", True), ("gate", "on"): ("gate", True)}
     for (t, e), (role, writes) in plan.items():
@@ -97,12 +112,9 @@ def evaluate_cell(n: int, s: int, models: dict, out: Path) -> dict:
                              "gate": OBS.gate_summary(OBS.gate_events(backend, pcfg, writes), n),
                              "accuracy_none": sum(P2D.episode_scores(r, "none").values()) / P2D.N_EPISODES,
                              "memory_use": P2D.memory_use(r)}
-        if man.get("modal_group") == GROUP and pcfg.filler_writes == writes:   # descriptive cross-host check
-            modal = [x for x in saved_rows(cell) if x["intervention"] in OBS.FINAL_IVS]
-            cross[f"T{t}-E{e}"] = modal == r
     on_on, on_off, off_off, off_on, gate = (rows[k] for k in (("on", "on"), ("on", "off"), ("off", "off"),
                                                                 ("off", "on"), ("gate", "on")))
-    return {"corners": dev, "cross_host_rows_equal_descriptive": cross,
+    return {"corners": dev,
             "q2": {"C_T|off": P2D.paired(off_off, on_off), "C_T|on": P2D.paired(off_on, on_on),
                    "C_E|Ton": P2D.paired(on_off, on_on), "C_E|Toff": P2D.paired(off_off, off_on),
                    "interaction_descriptive": RULES.interaction(off_off, on_off, off_on, on_on)},
@@ -110,11 +122,6 @@ def evaluate_cell(n: int, s: int, models: dict, out: Path) -> dict:
                    "half_oracle": RULES.half_oracle(gate, on_on, off_off),
                    "rho": dev["Tgate-Eon"]["gate"]["rho_pooled_effective"],
                    "memory_use_pass": dev["Tgate-Eon"]["memory_use"]["pass"]}}
-
-
-def saved_rows(cell: Path) -> list:
-    """The training run's own final-eval rows (Modal), for the cross-host check."""
-    return [json.loads(l) for l in (cell / "per_example_results.jsonl").read_text().splitlines()]
 
 
 def read_n(per_seed: dict) -> dict:
@@ -144,7 +151,8 @@ def main():
     launch, p2g = load_p2g_group(args.runs, args.mirror, identity["memsub_source_sha256"])
     args.out.mkdir(parents=True, exist_ok=False)
     (args.out / "parity").mkdir()
-    report = {"observer": identity, "launch": launch, "final_seed_base": FINAL_BASE, "limits": LIMITS,
+    report = {"observer": identity, "launch": launch, "artifact_eval_seed_base": ARTIFACT_BASE,
+              "readings_seed_base": READINGS_BASE, "limits": LIMITS,
               "p2g_cells": {rid: {"cell": rel(c), "run_manifest_sha256": sha(c / "run_manifest.json"),
                                   "trained_parameters_sha256": sha(c / "trained_parameters.safetensors"),
                                   "rows_sha256": sha(c / "per_example_results.jsonl")} for rid, (c, _m) in p2g.items()},
@@ -160,8 +168,13 @@ def main():
             per_seed[s] = evaluate_cell(n, s, models, args.out)
         report["n"][str(n)] = {"seeds": {str(s): v for s, v in per_seed.items()}, **read_n(per_seed)}
         print(f"N{n}", report["n"][str(n)]["q1_reading"], "|", report["n"][str(n)]["q2_reading"], flush=True)
-    if PRE.observer_identity()["memsub_source_sha256"] != identity["memsub_source_sha256"]:
-        raise SystemExit("memsub changed during readings")
+    report["observer_end"] = PRE.finish_identity(identity, index)
+    for rid, (c, _m) in p2g.items():                       # consumed P2G evidence unchanged
+        now = {"run_manifest_sha256": sha(c / "run_manifest.json"),
+               "trained_parameters_sha256": sha(c / "trained_parameters.safetensors"),
+               "rows_sha256": sha(c / "per_example_results.jsonl")}
+        if any(report["p2g_cells"][rid][k] != v for k, v in now.items()):
+            raise SystemExit(f"{rid}: P2G evidence changed during readings")
     (args.out / "p2g-readings.json").write_text(json.dumps(report, indent=2, default=str))
     print("READINGS DONE", sha(args.out / "p2g-readings.json"))
 

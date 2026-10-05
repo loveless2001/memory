@@ -34,6 +34,9 @@ PROPOSED_CAP_USD = 13.0          # prereg v0.2 request; NOT approved
 P2G_CAP_USD = None               # bound only after the user approves a cap (fail closed until then)
 ARM_WALL_FACTOR = {"gateclosed": 1.0, "filleroff": 1.0}   # x own seed-specific v2 wall (codex 21303)
 MAX_CELL_TIMEOUT_S = 8 * 3600    # backstop only; per-cell watchdog is the real bound
+# Training-artifact eval runs on the PUBLISHED P2D population; the registered
+# readings population is reserved until all six cells validate (codex 21309).
+ARTIFACT_EVAL_SEED_BASE, READINGS_SEED_BASE = 9_300_011, 9_400_011
 P2G_IDS = frozenset({"gateclosed-learned-n16-s0", "gateclosed-learned-n16-s1",
                      "gateclosed-learned-n32-s0", "gateclosed-learned-n32-s1",
                      "filleroff-learned-n32-s0", "filleroff-learned-n32-s1"})
@@ -51,6 +54,11 @@ def file_sha(p) -> str:
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
+def artifact_seed_ok(final_seed_base: int) -> bool:
+    """Training may only evaluate on the artifact population, never the reserved one."""
+    return final_seed_base == ARTIFACT_EVAL_SEED_BASE != READINGS_SEED_BASE
+
+
 @app.function(image=image, cpu=(4.0, 4.0), memory=(8192, 8192), timeout=MAX_CELL_TIMEOUT_S,
               startup_timeout=300, retries=0, scaledown_window=2, max_containers=6,
               single_use_containers=True, nonpreemptible=True, volumes={"/artifacts": artifacts})
@@ -63,8 +71,10 @@ def run_cell(group: str, run_id: str, pilot: dict, provenance: dict, timeout_s: 
     try:   # identity before the claim: a mismatched deploy exits without claiming or training
         from memsub.sgm.synthetic_pilot_run import source_tree_sha256   # imports torch
         got = {"runner": file_sha(__file__), "memsub": source_tree_sha256(Path("/root/repo/memsub"))}
-        if got != {"runner": runner_sha, "memsub": SOURCE_SHA} or group != GROUP or run_id not in P2G_IDS:
-            return {"run_id": run_id, "status": "identity_mismatch", "reason": got}
+        if (got != {"runner": runner_sha, "memsub": SOURCE_SHA} or group != GROUP or run_id not in P2G_IDS
+                or not artifact_seed_ok(final_seed_base)):
+            return {"run_id": run_id, "status": "identity_mismatch",
+                    "reason": {**got, "final_seed_base": final_seed_base}}
         try:   # atomic claim: only attempt 1 of a cell may train
             AttemptLedger(modal.Dict.from_name(f"m4-sgm-{group}-attempts",
                                                create_if_missing=True)).begin(run_id)
@@ -129,6 +139,10 @@ def plan(cap=P2G_CAP_USD) -> tuple[list, dict, dict]:
     inputs = json.loads(Path(INPUTS).read_text())
     if inputs["new_group"]["grid_sha256"] != file_sha(GRID) or inputs["new_group"]["group"] != GROUP:
         raise ValueError("inputs index does not bind this grid/group")
+    seeds = [(d["artifact_eval_seed_base"], d["readings_seed_base"]) for d in (grid, inputs)]
+    if "final_seed_base" in grid or any(x != (ARTIFACT_EVAL_SEED_BASE, READINGS_SEED_BASE) for x in seeds) \
+            or not artifact_seed_ok(grid["artifact_eval_seed_base"]):
+        raise ValueError("grid/inputs must bind artifact 9_300_011 and reserved readings 9_400_011 seeds")
     cells, timeouts = [], {}
     for run_id, tag, pilot in v1_runner().expand(grid):
         wall = json.loads((Path(V2_RUNS) / f"main-learned-n{pilot['n_bindings']}-s{pilot['seed']}"
@@ -146,7 +160,8 @@ def plan(cap=P2G_CAP_USD) -> tuple[list, dict, dict]:
         raise ValueError(f"not admitted: reserved ${ledger['reserved_total_usd']:.8f} vs cap {cap}")
     provenance = {"grid_file": GRID, "grid_sha256": file_sha(GRID), "inputs_index_sha256": file_sha(INPUTS),
                   "prereg_sha256": inputs["prereg"]["sha256"], "runner_sha256": file_sha(__file__),
-                  "deployed_app": APP_NAME, "nonpreemptible": True, "memsub_source_sha256": SOURCE_SHA}
+                  "deployed_app": APP_NAME, "nonpreemptible": True, "memsub_source_sha256": SOURCE_SHA,
+                  "artifact_eval_seed_base": ARTIFACT_EVAL_SEED_BASE, "readings_seed_base_reserved": READINGS_SEED_BASE}
     return cells, ledger, provenance
 
 
@@ -174,7 +189,9 @@ def spawn() -> None:
     root.mkdir(parents=True, exist_ok=False)               # a second spawn refuses here
     tu.atomic_write(root / "grid.json", Path(GRID).read_text())
     tu.atomic_write(root / "launch_provenance.json", json.dumps({**provenance, "ledger": ledger}, indent=2))
-    seed_base = json.loads(Path(GRID).read_text())["final_seed_base"]
+    seed_base = json.loads(Path(GRID).read_text())["artifact_eval_seed_base"]
+    if not artifact_seed_ok(seed_base):                    # belt and braces: never the reserved seed
+        raise SystemExit(f"refusing training eval seed base {seed_base}")
     calls = {}
     tu.atomic_write(root / "calls.json", "{}")
     for rid, pilot, t in cells:   # a crash here leaves later cells UNTRACKED; see collect()

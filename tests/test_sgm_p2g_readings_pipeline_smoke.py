@@ -41,7 +41,6 @@ def test_corner_evaluation_and_readings_are_well_formed(tmp_path, monkeypatch):
     assert set(one["corners"]) == {"Ton-Eon", "Ton-Eoff", "Toff-Eoff", "Toff-Eon", "Tgate-Eon"}
     assert one["corners"]["Toff-Eoff"]["gate"]["rho_pooled_effective"] == 0.0   # skipped filler writes
     assert one["corners"]["Tgate-Eon"]["gate"]["rho_pooled_effective"] > 0
-    assert one["cross_host_rows_equal_descriptive"] == {}       # toy cells are not P2G-group cells
     assert len(list(tmp_path.glob("rows-n4-s0-*.jsonl"))) == 5
     out = rd.read_n(per_seed)
     classes = {rd.RULES.GAIN, rd.RULES.LOSS, rd.RULES.EXCLUDED, rd.RULES.NEITHER}

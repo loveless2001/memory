@@ -23,9 +23,23 @@ GAIN, LOSS, EXCLUDED, NEITHER = ("reproducible gain", "reproducible loss",
 Q2_KEYS = ("C_T|off", "C_T|on", "C_E|Ton", "C_E|Toff")
 
 
+def check_interval(x: dict) -> dict:
+    """A paired interval: finite floats, lo <= diff <= hi, the registered episode count."""
+    if not isinstance(x, dict) or set(x) != {"diff", "lo", "hi", "n"}:
+        raise SystemExit(f"malformed interval {x!r:.80}")
+    vals = [x["diff"], x["lo"], x["hi"]]
+    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) for v in vals):
+        raise SystemExit(f"non-finite interval {x!r:.80}")
+    if not x["lo"] <= x["diff"] <= x["hi"] or type(x["n"]) is not int or x["n"] != P2D.N_EPISODES:
+        raise SystemExit(f"misordered interval or episode count != {P2D.N_EPISODES}: {x!r:.80}")
+    return x
+
+
 def _seeds(per_seed: dict) -> dict:
-    if set(per_seed) != set(SEEDS):
-        raise SystemExit(f"rule needs seeds {SEEDS}, got {sorted(per_seed)}")
+    if not isinstance(per_seed, dict) or set(per_seed) != set(SEEDS):
+        raise SystemExit(f"rule needs seeds {SEEDS}, got {sorted(per_seed) if isinstance(per_seed, dict) else per_seed}")
+    for x in per_seed.values():
+        check_interval(x)
     return per_seed
 
 
@@ -63,7 +77,11 @@ def interaction(off_off: list, on_off: list, off_on: list, on_on: list) -> dict:
 
 
 def half_status(oracle_label: str, half_per_seed: dict) -> bool | None:
-    """None (unavailable) unless the oracle-vs-v2 contrast is a reproducible gain."""
+    """None (unavailable) unless the oracle-vs-v2 contrast is a reproducible gain.
+    The half-oracle intervals are validated either way (fail closed, never coerced)."""
+    _seeds(half_per_seed)
+    if oracle_label not in (GAIN, LOSS, EXCLUDED, NEITHER):
+        raise SystemExit(f"unknown oracle label {oracle_label!r}")
     if oracle_label != GAIN:
         return None
     return all(x["lo"] > 0 for x in _seeds(half_per_seed).values())
@@ -118,7 +136,10 @@ def suppression_ratio(filler_effective: list, binding_effective: list) -> float:
 
 
 def auroc(positives: list, negatives: list) -> float | None:
-    """P(pos > neg) + 0.5 P(tie) via average ranks; None if a class is empty."""
+    """P(pos > neg) + 0.5 P(tie) via average ranks; None if a class is empty.
+    Non-finite scores fail closed BEFORE ranking (NaN would never close a tie block)."""
+    if not all(isinstance(x, (int, float)) and math.isfinite(x) for x in [*positives, *negatives]):
+        raise SystemExit("auroc: non-finite score")
     if not positives or not negatives:
         return None
     scored = sorted([(x, 1) for x in positives] + [(x, 0) for x in negatives])

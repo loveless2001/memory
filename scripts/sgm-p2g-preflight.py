@@ -31,8 +31,12 @@ from memsub.sgm.synthetic_pilot_run import source_tree_sha256  # noqa: E402
 INPUTS = ROOT / "configs" / "m4_sgm_p2g_inputs.json"
 GRID = ROOT / "configs" / "m4_sgm_p2g_grid.json"
 RUNNER = ROOT / "modal-runners" / "modal-m4-sgm-p2g-nonpreemptible-spawn.py"
-ANALYSIS_FILES = ("sgm-p2g-preflight.py", "sgm-p2g-readings.py", "sgm-p2g-decision-rules.py",
-                  "sgm-p2g-common-observer-evaluation.py", "sgm-p2d-step2-decision-rules.py")
+# every executed or read analysis/launcher file (repo-relative), bound before AND after work
+ANALYSIS_FILES = tuple(f"scripts/{f}" for f in (
+    "sgm-p2g-preflight.py", "sgm-p2g-readings.py", "sgm-p2g-decision-rules.py",
+    "sgm-p2g-common-observer-evaluation.py", "sgm-p2d-step2-decision-rules.py",
+    "sgm-recover-and-validate-grid-artifacts.py")) + (
+    "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py", "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py")
 
 
 def load_script(name: str):
@@ -63,9 +67,28 @@ def observer_identity() -> dict:
     if src != p2g_source_sha():
         raise SystemExit(f"memsub source {src[:8]} != P2G runner SOURCE_SHA")
     return {"memsub_source_sha256": src, "inputs_index_sha256": sha(INPUTS), "grid_sha256": sha(GRID),
-            "analysis_sha256": {f: sha(ROOT / "scripts" / f) for f in ANALYSIS_FILES},
+            "analysis_sha256": {f: sha(ROOT / f) for f in ANALYSIS_FILES},
             "git_head": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
                                        text=True, cwd=ROOT).stdout.strip()}
+
+
+def identity_drift(start: dict, end: dict) -> list:
+    """Changed executed-identity fields (git_head is provenance, not an executed
+    input: a concurrent docs commit must not abort; it is persisted at both ends)."""
+    keys = (set(start) | set(end)) - {"git_head"}
+    return sorted(k for k in keys if start.get(k) != end.get(k))
+
+
+def finish_identity(start: dict, index: dict) -> dict:
+    """End-of-run gate: identical executed sources/inputs, re-bound input files."""
+    end = observer_identity()
+    drift = identity_drift(start, end)
+    if drift:
+        raise SystemExit(f"executed identity changed during the run: {drift}")
+    if json.loads(INPUTS.read_text()) != index:
+        raise SystemExit("inputs index changed during the run")
+    validate_inputs(index)
+    return end
 
 
 def validate_inputs(index: dict) -> dict:
@@ -154,8 +177,7 @@ def main():
         (args.out / "preflight.json").write_text(json.dumps(report, indent=2))
         raise SystemExit("PARITY FAILED: stop; no fresh-seed use of the common observer")
     report["step0_gate_telemetry"] = step0_telemetry(json.loads(GRID.read_text()))
-    if observer_identity()["memsub_source_sha256"] != identity["memsub_source_sha256"]:
-        raise SystemExit("memsub changed during preflight")
+    report["observer_end"] = finish_identity(identity, index)
     (args.out / "preflight.json").write_text(json.dumps(report, indent=2))
     print("PREFLIGHT PASS", sha(args.out / "preflight.json"))
 
