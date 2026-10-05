@@ -1,0 +1,24 @@
+baseline N16-s0 fresh evaluation
+baseline N16-s1 fresh evaluation
+baseline N32-s0 fresh evaluation
+baseline N32-s1 fresh evaluation
+baseline N64-s0 fresh evaluation
+baseline N64-s1 fresh evaluation
+treatment filleroff-learned-n16-s0 dev telemetry
+treatment filleroff-learned-n16-s1 dev telemetry
+filleroff N16 supports harm from tail-filler writes for this recipe
+treatment filleroff-learned-n64-s0 dev telemetry
+treatment filleroff-learned-n64-s1 dev telemetry
+filleroff N64 no registered reproducible filler-off gain
+treatment long-learned-n16-s0 dev telemetry
+treatment long-learned-n16-s1 dev telemetry
+long N16 {'4500_vs_own_1500': 'reproducible gain', '4500_vs_v2': 'reproducible gain', 'overall': 'budget effect for this recipe'}
+treatment long-learned-n32-s0 dev telemetry
+treatment long-learned-n32-s1 dev telemetry
+long N32 {'4500_vs_own_1500': 'no registered reproducible gain', '4500_vs_v2': 'no registered reproducible gain', 'overall': 'budget effect not established (both registered contrasts required)'}
+treatment addrsup-learned-n32-s0 dev telemetry
+treatment addrsup-learned-n32-s1 dev telemetry
+addrsup N32 probe did not establish the intended alignment; cause unresolved
+treatment addrsup-learned-n64-s0 dev telemetry
+treatment addrsup-learned-n64-s1 dev telemetry
+addrsup N64 probe did not establish the intended alignment; cause unresolved

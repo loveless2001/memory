@@ -1,0 +1,268 @@
+{
+  "checked_at_utc": "2026-10-05T16:47:54.590884+00:00",
+  "readings_sha256": "a8ad11020a1c7c45a0ab4428614f61bfabb3b4aeb617084ab07797d7cc7fac16",
+  "verification": "passed",
+  "method": "independent standard-library episode statistics and rule decisions; checkpoint tensor equality; no evaluation rerun",
+  "cells_verified": 12,
+  "baselines_verified": 6,
+  "partial_baselines_byte_identical": {
+    "N16-s0": true,
+    "N16-s1": true,
+    "N32-s0": true,
+    "N32-s1": true
+  },
+  "aborted_attempt_preserved": true,
+  "partial_artifacts_unchanged": true,
+  "resume_provenance_sha256": "35ce20692c759a5cedd73f5103d6242abd24ed5252de3d5a7a3543923e6e2442",
+  "input_evidence": "original bound mirrors",
+  "summary": {
+    "filleroff-N16": {
+      "reading": "supports harm from tail-filler writes for this recipe",
+      "gain_vs_v2": true,
+      "alignment": false,
+      "memory_use": true,
+      "seeds": {
+        "0": {
+          "accuracy": 0.94921875,
+          "baseline_accuracy": 0.0625,
+          "vs_v2": {
+            "diff": 0.88671875,
+            "lo": 0.8674032801993111,
+            "hi": 0.9060342198006889,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true
+        },
+        "1": {
+          "accuracy": 0.9541015625,
+          "baseline_accuracy": 0.5908203125,
+          "vs_v2": {
+            "diff": 0.36328125,
+            "lo": 0.3297640921010772,
+            "hi": 0.3967984078989228,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true
+        }
+      }
+    },
+    "filleroff-N64": {
+      "reading": "no registered reproducible filler-off gain",
+      "gain_vs_v2": false,
+      "alignment": false,
+      "memory_use": false,
+      "seeds": {
+        "0": {
+          "accuracy": 0.025390625,
+          "baseline_accuracy": 0.0205078125,
+          "vs_v2": {
+            "diff": 0.0048828125,
+            "lo": -0.005778280129441815,
+            "hi": 0.015543905129441815,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": false
+        },
+        "1": {
+          "accuracy": 0.0126953125,
+          "baseline_accuracy": 0.0166015625,
+          "vs_v2": {
+            "diff": -0.00390625,
+            "lo": -0.014043024313077346,
+            "hi": 0.0062305243130773465,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": false
+        }
+      }
+    },
+    "long-N16": {
+      "reading": {
+        "4500_vs_own_1500": "reproducible gain",
+        "4500_vs_v2": "reproducible gain",
+        "overall": "budget effect for this recipe"
+      },
+      "gain_vs_v2": true,
+      "alignment": false,
+      "memory_use": true,
+      "seeds": {
+        "0": {
+          "accuracy": 0.76171875,
+          "baseline_accuracy": 0.0625,
+          "vs_v2": {
+            "diff": 0.69921875,
+            "lo": 0.6699171511161381,
+            "hi": 0.7285203488838619,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true,
+          "own_1500_accuracy": 0.0546875,
+          "vs_own_1500": {
+            "diff": 0.70703125,
+            "lo": 0.6783000531037356,
+            "hi": 0.7357624468962644,
+            "n": 256
+          },
+          "continuity": {
+            "file_hash_equal": false,
+            "tensors_equal": false,
+            "label": "continuity discrepancy (uninvestigated)"
+          }
+        },
+        "1": {
+          "accuracy": 0.947265625,
+          "baseline_accuracy": 0.5908203125,
+          "vs_v2": {
+            "diff": 0.3564453125,
+            "lo": 0.32420611061883264,
+            "hi": 0.38868451438116736,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true,
+          "own_1500_accuracy": 0.5908203125,
+          "vs_own_1500": {
+            "diff": 0.3564453125,
+            "lo": 0.32420611061883264,
+            "hi": 0.38868451438116736,
+            "n": 256
+          },
+          "continuity": {
+            "file_hash_equal": true,
+            "tensors_equal": true,
+            "label": null
+          }
+        }
+      }
+    },
+    "long-N32": {
+      "reading": {
+        "4500_vs_own_1500": "no registered reproducible gain",
+        "4500_vs_v2": "no registered reproducible gain",
+        "overall": "budget effect not established (both registered contrasts required)"
+      },
+      "gain_vs_v2": false,
+      "alignment": false,
+      "memory_use": true,
+      "seeds": {
+        "0": {
+          "accuracy": 0.03125,
+          "baseline_accuracy": 0.0244140625,
+          "vs_v2": {
+            "diff": 0.0068359375,
+            "lo": -0.006562499999999999,
+            "hi": 0.020234375,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true,
+          "own_1500_accuracy": 0.0185546875,
+          "vs_own_1500": {
+            "diff": 0.0126953125,
+            "lo": -0.0014419460213113914,
+            "hi": 0.02683257102131139,
+            "n": 256
+          },
+          "continuity": {
+            "file_hash_equal": false,
+            "tensors_equal": false,
+            "label": "continuity discrepancy (uninvestigated)"
+          }
+        },
+        "1": {
+          "accuracy": 0.3193359375,
+          "baseline_accuracy": 0.0283203125,
+          "vs_v2": {
+            "diff": 0.291015625,
+            "lo": 0.2605043663957386,
+            "hi": 0.3215268836042614,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true,
+          "own_1500_accuracy": 0.0283203125,
+          "vs_own_1500": {
+            "diff": 0.291015625,
+            "lo": 0.2605043663957386,
+            "hi": 0.3215268836042614,
+            "n": 256
+          },
+          "continuity": {
+            "file_hash_equal": true,
+            "tensors_equal": true,
+            "label": null
+          }
+        }
+      }
+    },
+    "addrsup-N32": {
+      "reading": "probe did not establish the intended alignment; cause unresolved",
+      "gain_vs_v2": false,
+      "alignment": false,
+      "memory_use": false,
+      "seeds": {
+        "0": {
+          "accuracy": 0.029296875,
+          "baseline_accuracy": 0.0244140625,
+          "vs_v2": {
+            "diff": 0.0048828125,
+            "lo": -0.008528486474043702,
+            "hi": 0.018294111474043702,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": false
+        },
+        "1": {
+          "accuracy": 0.1171875,
+          "baseline_accuracy": 0.0283203125,
+          "vs_v2": {
+            "diff": 0.0888671875,
+            "lo": 0.06728414715034325,
+            "hi": 0.11045022784965675,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": true
+        }
+      }
+    },
+    "addrsup-N64": {
+      "reading": "probe did not establish the intended alignment; cause unresolved",
+      "gain_vs_v2": false,
+      "alignment": false,
+      "memory_use": false,
+      "seeds": {
+        "0": {
+          "accuracy": 0.0166015625,
+          "baseline_accuracy": 0.0205078125,
+          "vs_v2": {
+            "diff": -0.00390625,
+            "lo": -0.01439959066807256,
+            "hi": 0.006587090668072559,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": false
+        },
+        "1": {
+          "accuracy": 0.0185546875,
+          "baseline_accuracy": 0.0166015625,
+          "vs_v2": {
+            "diff": 0.001953125,
+            "lo": -0.009551248926772267,
+            "hi": 0.013457498926772267,
+            "n": 256
+          },
+          "alignment": false,
+          "memory_use": false
+        }
+      }
+    }
+  }
+}

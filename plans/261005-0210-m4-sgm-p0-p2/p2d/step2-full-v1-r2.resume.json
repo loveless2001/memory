@@ -1,0 +1,46 @@
+{
+  "authorization": "#gravity user 21265 @codex resume; cleared local scope in 21250",
+  "started_at_utc": "2026-10-05T16:29:49.170223+00:00",
+  "command": [
+    "/home/lenovo/projects/memory/.venv/bin/python",
+    "/home/lenovo/projects/memory/scripts/sgm-p2d-step2-readings.py",
+    "--runs",
+    "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1",
+    "--mirror",
+    "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror",
+    "--add-group",
+    "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1-topup",
+    "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1-topup-volume-mirror",
+    "--v2-mirror",
+    "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror",
+    "--source-sha",
+    "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+    "--out",
+    "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2"
+  ],
+  "cwd": "/home/lenovo/projects/memory",
+  "git_head": "ac495380b898d14e847e99eefa8274adb9d19582",
+  "readings_sha256": "7c4bb0ccd40a758327f3e68425a7f136fe1893236ec3d610056d8e611bbdc4bf",
+  "rules_sha256": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+  "source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+  "preflight": {
+    "tests_passed": 63,
+    "indexed_cells": 12,
+    "v1_cells": 6,
+    "topup_cells": 6,
+    "baselines_bound": 6
+  },
+  "aborted_attempt": {
+    "out": "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1",
+    "out_empty": true,
+    "log": "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1.log",
+    "log_sha256": "16d2dd6292658ad7301fcbac6d035af7e418b12d69dafde20c26eac8764cfa4c",
+    "reason": "user-requested stop (#gravity 21255-21257); no report produced; preserved unchanged"
+  },
+  "log": "/home/lenovo/projects/memory/plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2.log",
+  "state": "completed",
+  "supervisor_pid": 4896,
+  "child_pid": 4897,
+  "returncode": 0,
+  "finished_at_utc": "2026-10-05T16:47:46.261931+00:00"
+}
