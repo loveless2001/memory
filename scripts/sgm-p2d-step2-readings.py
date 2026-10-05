@@ -13,6 +13,9 @@ their manifests (1d62903, source a89284ea…) and are re-evaluated with the
 frozen code on the fresh set. Baseline rows, raw geometry, provenance and
 input hashes are persisted so the readings can be reproduced from disk.
 Decision rules: scripts/sgm-p2d-step2-decision-rules.py (fail closed).
+Use --partial for an interrupted grid: only complete seed pairs receive
+registered readings; single seeds retain saved descriptive results, and
+missing cells are explicitly unevaluable. Invalid complete inputs still abort.
 """
 
 import argparse
@@ -107,19 +110,23 @@ def baseline_rows(cell: Path, man: dict, seed: int) -> list:
 
 
 @torch.no_grad()
-def dev_geometry(pilot: dict, params: Path) -> dict:
+def dev_geometry(pilot: dict, params: Path, telemetry: dict | None = None) -> dict:
     """Clarification-2 quantities per layer/head on dev 4242 (observer code;
     bitwise-equivalent to 1d62903 on v2 checkpoints, P2D Step 1)."""
     pcfg, backend, head = load_into("memsub", pilot, params)
     from memsub.sgm.synthetic_binding_task import sample_batch
-    from memsub.sgm.synthetic_pilot_evaluation import ingest
+    from memsub.sgm.synthetic_pilot_evaluation import bank_telemetry, beta_by_token_class, ingest
     spec, gen = pcfg.task_spec(), torch.Generator().manual_seed(DEV_SEED)
     layers, N = backend.runtime.cfg.selected_layers, spec.n_bindings
     acc = {l: {"dist": [], "target": [], "other": [], "spread": []} for l in layers}
+    banks, projected, effective = [], [], []
     for _ in range(DEV_BATCHES):
         b = sample_batch(spec, "heldout", pcfg.batch, gen)
         tr: list = []
         st = ingest(backend, b, "learned", tr, pcfg.filler_writes, N).detached()
+        banks.append(bank_telemetry(st))
+        projected.append(beta_by_token_class(tr, N))
+        effective.append(beta_by_token_class(tr, N, effective=True))
         keys = b.source[:, 4:4 + 2 * N:2]
         j = torch.stack([(keys == b.query_keys[:, q:q + 1]).float().argmax(1) for q in range(spec.n_queries)], 1)
         reads = {l: [] for l in layers}
@@ -137,6 +144,14 @@ def dev_geometry(pilot: dict, params: Path) -> dict:
             acc[l]["target"].append(tgt.reshape(-1, r.shape[2]))
             acc[l]["other"].append(((coup.sum(2) - tgt) / (N - 1)).reshape(-1, r.shape[2]))
             acc[l]["spread"].append(r.std(1, unbiased=True).mean(-1))                        # [B,H]
+    if telemetry is not None:
+        telemetry.update({"episodes": DEV_BATCHES * pcfg.batch,
+                          "bank": {k: (max(b[k] for b in banks) if k == "occupancy_max"
+                                        else sum(b[k] for b in banks) / len(banks)) for k in banks[0]},
+                          "beta_by_token_class": {k: sum(b[k] for b in projected) / len(projected)
+                                                 for k in projected[0]},
+                          "effective_beta_by_token_class": {k: sum(b[k] for b in effective) / len(effective)
+                                                           for k in effective[0]}})
     return {str(l): {"median_distance": torch.cat(a["dist"]).median(0).values.tolist(),
                      "target_coupling": torch.cat(a["target"]).mean(0).tolist(),
                      "other_coupling": torch.cat(a["other"]).mean(0).tolist(),
@@ -153,69 +168,134 @@ def tensors_equal(a: Path, b: Path) -> dict:
             "label": None if same else "continuity discrepancy (uninvestigated)"}
 
 
+def select_treatments(registered: dict, args, launch: dict, validator) -> tuple[dict, dict]:
+    """Preflight all cells before any evaluation; partial means missing, not invalid."""
+    available, coverage = {}, {}
+    for rid, pilot in registered.items():
+        reason = validator.validate(args.mirror / rid, rid, pilot, launch, args.source_sha, FINAL_BASE)
+        if reason is not None:
+            if not args.partial or not reason.startswith("missing ["):
+                raise SystemExit(f"{rid}: artifact validation failed: {reason}")
+            coverage[rid] = {"status": "incomplete", "reason": reason}
+            continue
+        available[rid] = bind_treatment(rid, pilot, args, launch, validator)
+        coverage[rid] = {"status": "valid_complete", "reason": None}
+    return available, coverage
+
+
+def summarize_cell(tag: str, seeds: dict) -> dict:
+    """Never feed empty or single-seed coverage into the registered pair rules."""
+    if not set(seeds) <= {"0", "1"}:
+        raise SystemExit("unexpected seed coverage")
+    if set(seeds) != {"0", "1"}:
+        return {"evaluation_status": "descriptive_single_seed" if seeds else "unevaluable",
+                "reproducible_gain_vs_v2": None, "alignment_both_seeds": None,
+                "memory_use_both_seeds": None,
+                "reading": "descriptive only: incomplete seed pair" if seeds
+                           else "unevaluable: no completed seed pair"}
+    gain = RULES.reproducible({k: v["vs_v2"] for k, v in seeds.items()})
+    align = all(v["alignment"]["pass"] for v in seeds.values())
+    mem = all(v["memory_use"]["pass"] for v in seeds.values())
+    result = {"evaluation_status": "paired", "reproducible_gain_vs_v2": gain,
+              "alignment_both_seeds": align, "memory_use_both_seeds": mem}
+    if tag == "addrsup":
+        result["reading"] = RULES.addrsup_reading(gain, align, mem)
+    elif tag == "filleroff":
+        result["reading"] = ("supports harm from tail-filler writes for this recipe" if gain
+                             else "no registered reproducible filler-off gain")
+    else:
+        result["reading"] = RULES.long_reading(
+            RULES.reproducible({k: v["vs_own_1500"] for k, v in seeds.items()}), gain)
+    return result
+
+
 def main():
     ap = argparse.ArgumentParser()
     for a in ("--runs", "--mirror", "--v2-mirror", "--out"):
         ap.add_argument(a, type=Path, required=True)
     ap.add_argument("--source-sha", required=True)
+    ap.add_argument("--partial", action="store_true", help="read only complete seed pairs in an interrupted grid")
     args = ap.parse_args()
     torch.set_num_threads(4)
     validator = script("sgm-recover-and-validate-grid-artifacts")
     launch = json.loads((args.runs / "launch_provenance.json").read_text())
-    registered = validator.registered_cells(json.loads((args.runs / "grid.json").read_text()), RUNNER)
+    grid = json.loads((args.runs / "grid.json").read_text())
+    registered_grid = ROOT / launch["grid_file"]
+    if (sha(registered_grid) != launch["grid_sha256"]
+            or json.loads(registered_grid.read_text()) != grid or grid["final_seed_base"] != FINAL_BASE):
+        raise SystemExit("registered grid identity/seed mismatch")
+    if source_tree_sha256(ROOT / "memsub") != args.source_sha:
+        raise SystemExit("analysis runtime differs from the launch source")
+    registered = validator.registered_cells(grid, RUNNER)
+    available, coverage = select_treatments(registered, args, launch, validator)
+    pairs = {(tag, n) for tag, ns in CELLS.items() for n in ns
+             if all(f"{tag}-learned-n{n}-s{s}" in available for s in (0, 1))}
     args.out.mkdir(parents=True, exist_ok=False)
     head_rev = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
     report = {"analysis": {"git_head": head_rev, "memsub_source_sha256": source_tree_sha256(ROOT / "memsub"),
                            "readings_sha256": sha(Path(__file__)),
                            "rules_sha256": sha(ROOT / "scripts" / "sgm-p2d-step2-decision-rules.py")},
               "final_seed_base": FINAL_BASE, "dev_seed": DEV_SEED, "launch": launch,
+              "grid_snapshot_sha256": sha(args.runs / "grid.json"),
+              "report_status": "partial" if len(available) != len(registered) else "complete",
+              "partial_mode": args.partial, "coverage": coverage,
+              "limits": ["No R3, pretrained-model or scaling claim.",
+                         "Missing seed pairs are unevaluable; single seeds are descriptive only.",
+                         "Interrupted cells are preserved without replacement or retraining."],
               "baselines": {}, "arms": {}}
     base_rows, base_geo = {}, {}
-    for (n, seed) in sorted({(n, s) for ns in CELLS.values() for n in ns for s in (0, 1)}):
+    for (n, seed) in sorted({(n, s) for _tag, n in pairs for s in (0, 1)}):
         cell, man = bind_baseline(args.v2_mirror, n, seed)
+        print("baseline", f"N{n}-s{seed}", "fresh evaluation", flush=True)
         rows = baseline_rows(cell, man, seed)
         path = args.out / f"baseline-v2-learned-n{n}-s{seed}-fresh-rows.jsonl"
         path.write_text("".join(json.dumps(r) + "\n" for r in rows))
         base_rows[(n, seed)] = rows
-        base_geo[(n, seed)] = dev_geometry(man["pilot_config"], cell / "trained_parameters.safetensors")
+        diagnostics = {}
+        base_geo[(n, seed)] = dev_geometry(man["pilot_config"], cell / "trained_parameters.safetensors", diagnostics)
         report["baselines"][f"N{n}-s{seed}"] = {
             "frozen_commit": V2_COMMIT, "frozen_source_sha256": V2_SOURCE,
             "trained_parameters_sha256": man["trained_parameters_sha256"],
             "final_eval_seed": FINAL_BASE + seed, "rows_file": path.name, "rows_sha256": sha(path),
-            "geometry": base_geo[(n, seed)]}
+            "geometry": base_geo[(n, seed)], "dev_telemetry": diagnostics}
     for tag, ns in CELLS.items():
         arm = report["arms"][tag] = {}
         for n in ns:
             cell = arm[f"N{n}"] = {"seeds": {}}
             for seed in (0, 1):
                 rid = f"{tag}-learned-n{n}-s{seed}"
-                mc = bind_treatment(rid, registered[rid], args, launch, validator)
+                if rid not in available:
+                    continue
+                mc = available[rid]
                 treat = rows_of(mc / "per_example_results.jsonl")
-                geo = dev_geometry(registered[rid], mc / "trained_parameters.safetensors")
-                r = {"rows_sha256": sha(mc / "per_example_results.jsonl"), "geometry": geo,
-                     "vs_v2": RULES.paired(treat, base_rows[(n, seed)]), "memory_use": RULES.memory_use(treat),
-                     "alignment": RULES.alignment_ok(geo, base_geo[(n, seed)])}
+                r = {"run_id": rid, "rows_sha256": sha(mc / "per_example_results.jsonl"),
+                     "trained_parameters_sha256": sha(mc / "trained_parameters.safetensors"),
+                     "run_manifest_sha256": sha(mc / "run_manifest.json"),
+                     "metrics_sha256": sha(mc / "metrics.json"),
+                     "saved_final": json.loads((mc / "metrics.json").read_text())["final"]}
+                if (tag, n) not in pairs:
+                    r["evaluation_status"] = "descriptive_single_seed"
+                    cell["seeds"][str(seed)] = r
+                    continue
+                print("treatment", rid, "dev telemetry", flush=True)
+                diagnostics = {}
+                geo = dev_geometry(registered[rid], mc / "trained_parameters.safetensors", diagnostics)
+                r.update({"geometry": geo, "dev_telemetry": diagnostics,
+                          "vs_v2": RULES.paired(treat, base_rows[(n, seed)]),
+                          "memory_use": RULES.memory_use(treat),
+                          "alignment": RULES.alignment_ok(geo, base_geo[(n, seed)]),
+                          "final_accuracy": sum(RULES.episode_scores(treat, "none").values()) / RULES.N_EPISODES,
+                          "baseline_accuracy": sum(RULES.episode_scores(base_rows[(n, seed)], "none").values()) / RULES.N_EPISODES})
                 if tag == "long":
                     r["vs_own_1500"] = RULES.paired(treat, rows_of(mc / "per_example_results_step1500.jsonl"))
                     r["continuity_1500_vs_v2"] = tensors_equal(
                         mc / "trained_parameters_step1500.safetensors",
                         args.v2_mirror / f"main-learned-n{n}-s{seed}" / "trained_parameters.safetensors")
                 cell["seeds"][str(seed)] = r
-            sd = cell["seeds"]
-            gain = RULES.reproducible({k: v["vs_v2"] for k, v in sd.items()})
-            align = all(v["alignment"]["pass"] for v in sd.values())
-            mem = all(v["memory_use"]["pass"] for v in sd.values())
-            cell.update({"reproducible_gain_vs_v2": gain, "alignment_both_seeds": align,
-                         "memory_use_both_seeds": mem})
-            if tag == "addrsup":
-                cell["reading"] = RULES.addrsup_reading(gain, align, mem)
-            elif tag == "filleroff":
-                cell["reading"] = ("supports harm from tail-filler writes for this recipe" if gain
-                                   else "no registered reproducible filler-off gain")
-            else:
-                cell["reading"] = RULES.long_reading(
-                    RULES.reproducible({k: v["vs_own_1500"] for k, v in sd.items()}), gain)
-            print(tag, f"N{n}", cell["reading"])
+            cell.update(summarize_cell(tag, cell["seeds"]))
+            print(tag, f"N{n}", cell["reading"], flush=True)
+    if source_tree_sha256(ROOT / "memsub") != args.source_sha:
+        raise SystemExit("analysis runtime changed during evaluation")
     (args.out / "step2-readings.json").write_text(json.dumps(report, indent=2))
 
 

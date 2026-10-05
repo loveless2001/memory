@@ -522,6 +522,63 @@ Long-prefix continuity and the budget guard are defined in clarifications
 - Spend $5.12 (Modal billing, app-filtered).
 - Readings: option (a) partial readings (codex) cover only the complete pairs.
 
+#### Validated partial readings — option (a), 2026-10-05
+
+Six completed v1 cells pass the registered config, launch/source, parameter
+hash, fresh-seed and prediction-row checks. Only filler-off N16 and address
+supervision N32 have both seeds. Frozen v2 baselines for these four cells
+were re-evaluated locally on seed 9_300_011 + cell seed using code 1d62903.
+Geometry and gate/bank diagnostics use dev 4242 (64 episodes). The runtime
+is isolated at 31aa4c8 with memsub source d4effd0c…; the analysis script and
+decision-rule hashes are recorded in the report. The report is **partial**
+and contains no top-up data.
+
+Accuracies and paired gains below are percentages / percentage points.
+Each 95% interval uses the registered 256 episode differences, with four
+queries per episode and matching treatment/baseline episode hashes.
+
+| complete pair | seed | frozen v2 accuracy | treatment accuracy | paired gain [95% interval] |
+|---|---|---|---|---|
+| filler-off N16 | 0 | 6.25% | 94.92% | +88.67 [86.74, 90.60] |
+| filler-off N16 | 1 | 59.08% | 95.41% | +36.33 [32.98, 39.68] |
+| address supervision N32 | 0 | 2.44% | 2.93% | +0.49 [-0.85, 1.83] |
+| address supervision N32 | 1 | 2.83% | 11.72% | +8.89 [6.73, 11.05] |
+
+- **Filler-off N16 passes the registered reproducible-gain rule and
+  memory-use checks in both seeds.** This supports harm from tail-filler
+  writes for this recipe. The intervention changes training and evaluation
+  together; it does not isolate those phases or establish filler as the
+  sole cause. The address-alignment conjunction fails at layer 3 in both
+  seeds; that conjunction is not a prerequisite for the filler-off reading.
+  Projected filler beta remains positive, while effective filler beta is
+  exactly zero, as registered.
+- **Address supervision N32 fails the registered both-seed gain and
+  non-collapsed alignment rules.** Preserve the seed-1 gain; seed 0 has no
+  established paired gain. Read-address spread is 0.02–0.43 cells across
+  all four heads and both seeds, below the 1-cell floor, and no head meets
+  target coupling >= 2 times other-binding coupling. Small pair distances
+  therefore do not establish selective addressing. Seed 0 also fails
+  memory use; seed 1 passes. Registered reading: **probe did not establish
+  the intended alignment; cause unresolved**.
+- **N64 is descriptive only:** filler-off seed 0 accuracy 2.54%; address
+  supervision seed 1 accuracy 1.86%. Their missing partners prevent paired
+  arm readings. **All long-arm readings and continuity contrasts remain
+  unevaluable.** Missing results are recorded as missing, rather than as
+  failed scientific endpoints.
+- No R3 pass, pretrained-model or scaling claim follows from this partial
+  diagnostic. The top-up remains a separately identified execution group.
+
+Artifacts: `plans/261005-0210-m4-sgm-p0-p2/p2d/step2-partial-v1/` contains
+`step2-readings.json`, `readings-verification.json` (independent standard
+library recomputation of paired intervals and rule decisions), four saved
+fresh-baseline row files, raw geometry, dev occupancy/effective-cell and
+projected/effective gate diagnostics. The sibling `step2-partial-v1.log`
+records the local evaluation. Original v1 evidence and incomplete cells
+are preserved; the status-audit directory holds the volume mirror and
+artifact/billing checks. `scripts/sgm-p2d-step2-readings.py --partial`
+implements the explicit incomplete-grid report; the full-grid default
+still rejects missing cells. Twelve focused tests pass.
+
 ### Amendment T1 — Step 2 top-up `p2d-diagnostics-v1-topup` (user option b, #gravity 21178)
 
 - **Scope:** exactly the 6 lost cells (`configs/m4_sgm_p2d_topup_grid.json`).

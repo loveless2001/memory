@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -105,3 +106,52 @@ def test_registered_reading_wording():
     r = m.long_reading(True, False)
     assert r["4500_vs_own_1500"] == "reproducible gain" and "not established" in r["overall"]
     assert m.long_reading(True, True)["overall"] == "budget effect for this recipe"
+
+
+def _readings():
+    spec = importlib.util.spec_from_file_location("p2d_readings", ROOT / "scripts" / "sgm-p2d-step2-readings.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_partial_mode_skips_missing_cells_but_rejects_invalid_complete_inputs(tmp_path, monkeypatch):
+    m = _readings()
+    args = SimpleNamespace(mirror=tmp_path, source_sha="source", partial=True)
+    problems = {"done": None, "lost": "missing ['metrics.json']"}
+    validator = SimpleNamespace(validate=lambda _path, rid, *_args: problems[rid])
+    monkeypatch.setattr(m, "bind_treatment", lambda rid, *_args: tmp_path / rid)
+    available, coverage = m.select_treatments({"done": {}, "lost": {}}, args, {}, validator)
+    assert set(available) == {"done"} and coverage["lost"]["status"] == "incomplete"
+    problems["lost"] = "mismatch ['trained_parameters_sha256']"
+    with pytest.raises(SystemExit, match="parameter"):
+        m.select_treatments({"done": {}, "lost": {}}, args, {}, validator)
+
+
+def test_full_mode_does_not_accept_missing_cells(tmp_path):
+    m = _readings()
+    args = SimpleNamespace(mirror=tmp_path, source_sha="source", partial=False)
+    validator = SimpleNamespace(validate=lambda *_args: "missing ['metrics.json']")
+    with pytest.raises(SystemExit, match="artifact validation failed"):
+        m.select_treatments({"lost": {}}, args, {}, validator)
+
+
+@pytest.mark.parametrize("seeds", [{}, {"0": {}}, {"1": {}}])
+def test_missing_pairs_never_receive_gain_or_alignment_readings(seeds):
+    m = _readings()
+    r = m.summarize_cell("addrsup", seeds)
+    assert r["reproducible_gain_vs_v2"] is None
+    assert r["alignment_both_seeds"] is None and r["memory_use_both_seeds"] is None
+    assert r["evaluation_status"] == ("descriptive_single_seed" if seeds else "unevaluable")
+
+
+def test_complete_pair_keeps_registered_both_seed_threshold():
+    m = _readings()
+    def seed(diff):
+        return {"vs_v2": {"diff": diff, "lo": 0.01}, "alignment": {"pass": True},
+                "memory_use": {"pass": True}}
+    fail = m.summarize_cell("addrsup", {"0": seed(0.1), "1": seed(0.04)})
+    assert not fail["reproducible_gain_vs_v2"]
+    assert fail["reading"] == "alignment improved; no registered reproducible gain"
+    success = m.summarize_cell("addrsup", {"0": seed(0.1), "1": seed(0.1)})
+    assert success["reproducible_gain_vs_v2"] and success["reading"].startswith("SUPPORTS")
