@@ -194,6 +194,17 @@ def reconcile(dest: Path, local: Path) -> str:
     return "rows_recovered"
 
 
+def training_eval_seed_base(grid: dict) -> int:
+    """Seed base the cells' OWN final eval used: P2G `artifact_eval_seed_base`
+    (its `readings_seed_base` is reserved and never a training seed), else the
+    legacy `final_seed_base` (P2D), else the v2 default."""
+    if "artifact_eval_seed_base" in grid:
+        if "final_seed_base" in grid and grid["final_seed_base"] != grid["artifact_eval_seed_base"]:
+            raise SystemExit("grid has conflicting final_seed_base / artifact_eval_seed_base")
+        return grid["artifact_eval_seed_base"]
+    return grid.get("final_seed_base", FINAL_SEED_BASE)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--group", required=True)
@@ -207,7 +218,7 @@ def main():
     launch = json.loads((root / "launch_provenance.json").read_text())
     report = {"group": args.group, "launch": launch, "source_sha": args.source_sha, "cells": {}}
     grid = json.loads((root / "grid.json").read_text())
-    seed_base = grid.get("final_seed_base", FINAL_SEED_BASE)
+    seed_base = training_eval_seed_base(grid)
     for run_id, pilot in registered_cells(grid, args.runner).items():
         dest = mirror / run_id
         if dest.exists():
