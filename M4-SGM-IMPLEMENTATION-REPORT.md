@@ -87,8 +87,13 @@ validation pass. Readings and the full table are in M4-SGM.md (§ "P2 result").
 Summary:
 - R1: oracle ≥ 0.999 at every N.
 - R2: N* = 4.
-- R3: MET at N = 4 and N = 8 (both seeds). NOT MET at N = 16 (seed-unstable), 32 and 64.
-- R4: bank_derange gives chance for every memory arm.
+- R3: MET at N = 4 and N = 8 (both seeds). NOT MET at N = 16 (seed-sensitive), 32 and 64.
+- R4: bank_derange gives chance for every main memory arm that started above
+  4× chance.
+- Interpretation: learned routing is useful at N = 4–8, seed-sensitive at
+  N = 16, and not demonstrated at N = 32–64 within 1500 steps. The cause is
+  unresolved (optimization, representation, address collisions, filler-write
+  interference). Audit PASS: #gravity 21110.
 - Spend: v2 $12.72; M4 total $14.07.
 
 Development and stopped runs: `sanity-v1` (development; oracle 0.991, learned

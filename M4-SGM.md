@@ -202,8 +202,8 @@ Preregistered readings:
   accuracy by 0.86–0.91 (paired), so the learned addresses are used. **It is
   NOT MET at N = 16** (seed 0 fails, seed 1 passes: 0.593), and NOT MET at N = 32 and 64, where
   learned is at chance.
-- **R4 memory use:** bank_derange drops every memory arm above 4× chance to
-  0.011–0.020, i.e. chance.
+- **R4 memory use:** bank_derange drops every main memory arm that started
+  above 4× chance to 0.011–0.020, i.e. chance.
 
 Mechanism notes (descriptive, not registered):
 
@@ -212,10 +212,13 @@ Mechanism notes (descriptive, not registered):
   below β on filler. Learned banks spread to 30–48 occupied cells and 16–25
   effective cells at N ≤ 8: well beyond one 3×3 neighbourhood, and no
   single-cell collapse.
-- The failure at large N is in **learning**, not capacity. The oracle stores 64
-  bindings at d_k = 8 per cell perfectly, while learned, single_cell and
-  random_fixed all sit at chance from N = 32. random_fixed (a frozen coordinate
-  map over learned q/k) is worse than single_cell at N ≤ 8.
+- The cause of the large-N failure is **unresolved**. The oracle supplies both
+  correct addressing AND isolation of filler writes. Its 64-binding success
+  shows this backend works under that oracle policy; it does not isolate
+  optimisation or credit assignment as the cause of the learned arm's failure.
+  Learned, single_cell and random_fixed all sit at chance from N = 32.
+  random_fixed (a frozen coordinate map over learned q/k) is worse than
+  single_cell at N ≤ 8.
 - Ablations at N = 16. `noshift`: learned 0.065 / 0.061 and oracle 0.990 / 0.995;
   with oracle addresses the key shift is unnecessary, and the learned
   comparison is inconclusive given the seed spread of the main N = 16 learned
@@ -223,9 +226,13 @@ Mechanism notes (descriptive, not registered):
 
 Scope: mechanism evidence on a frozen RANDOM tiny backbone with a task head
 and `feature_shift = 2`. It says nothing about frozen pretrained Qwen,
-recovery, or long-history scaling. The headline is that learned sparse
-routing works and is used at small loads, but stops learning beyond about
-16 bindings per episode within 1500 steps.
+recovery, or long-history scaling. **Learned routing is useful at N = 4–8,
+seed-sensitive at N = 16, and not demonstrated at N = 32–64 within 1500
+steps. The relative roles of optimization, representation, address
+collisions and filler-write interference remain unresolved.** (Wording per
+codex's completed-result audit, #gravity 21110, which independently
+reproduced the paired intervals: N = 4 +0.325 [0.290, 0.360] / +0.402
+[0.369, 0.435]; N = 8 +0.766 [0.739, 0.792] / +0.828 [0.806, 0.850].)
 
 Spend (Modal billing, hourly): v2 **$12.72**. M4 total: smoke $0.008, sanity
 $0.190, stopped v1 $1.153, v2 $12.722, for **$14.07**.
