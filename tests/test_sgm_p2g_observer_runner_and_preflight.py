@@ -97,9 +97,13 @@ def test_bound_cap_is_the_user_approved_13_and_admits_exactly_the_reservation(ru
     assert ledger["reserved_total_usd"] == pytest.approx(12.32978160, abs=1e-8)
 
 
-def test_runner_source_sha_is_the_current_memsub(runner):
-    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
-    assert runner.SOURCE_SHA == source_tree_sha256(ROOT / "memsub")
+def test_runner_pins_the_launched_p2g_source(runner):
+    """P2G is closed: its runner stays pinned to the source it launched (later memsub
+    changes, e.g. P2C, must not move it); the launch provenance records the same."""
+    assert runner.SOURCE_SHA == "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2"
+    launch = ROOT / "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1/launch_provenance.json"
+    if launch.exists():
+        assert json.loads(launch.read_text())["memsub_source_sha256"] == runner.SOURCE_SHA
 
 
 def test_extra_cell_in_the_grid_is_refused(runner, tmp_path, monkeypatch):

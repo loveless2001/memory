@@ -51,6 +51,9 @@ class PilotConfig:
     # P2G gate arm: init-only shift of every adapter's beta_proj.bias (default None =
     # unchanged build). beta = sigmoid(W_beta x + b): W_beta draws are untouched.
     beta_bias_init: float | None = None
+    # P2C label-free curriculum: ((start_update, filler_len), ...) sorted, first start 0.
+    # Only TRAINING episodes change; filler_len (dev/final evals) is untouched. () = unchanged.
+    filler_len_schedule: tuple = ()
 
     def result_label(self) -> str:
         if self.arm == "oracle":
@@ -60,11 +63,23 @@ class PilotConfig:
                                  (f"aux-addr-lambda{self.aux_address_lambda:g}", self.aux_address_lambda > 0),
                                  (f"steps{self.steps}", bool(self.checkpoint_steps)),
                                  (f"beta-bias{self.beta_bias_init:g}" if self.beta_bias_init is not None else "",
-                                  self.beta_bias_init is not None)) if on]
+                                  self.beta_bias_init is not None),
+                                 ("filler-len-schedule", bool(self.filler_len_schedule))) if on]
         return base + ("+DIAGNOSTIC-" + "+".join(flags) if flags else "")
 
     def task_spec(self) -> BindingTaskSpec:
         return BindingTaskSpec(self.n_bindings, self.n_queries, self.filler_len)
+
+    def training_filler_len(self, update: int) -> int:
+        """Filler length of TRAINING episodes at optimizer update `update`
+        (the last schedule entry with start <= update; filler_len if no schedule)."""
+        if not self.filler_len_schedule:
+            return self.filler_len
+        starts = [int(a) for a, _f in self.filler_len_schedule]
+        lens = [int(f) for _a, f in self.filler_len_schedule]
+        if starts[0] != 0 or starts != sorted(set(starts)) or min(lens) < 0:
+            raise ValueError(f"invalid filler_len_schedule {self.filler_len_schedule!r}")
+        return [f for a, f in zip(starts, lens) if a <= update][-1]
 
 
 TINY_SGM_DEFAULTS = dict(selected_layers=(1, 3), memory_heads=2, key_dim=8, value_dim=8,
@@ -134,10 +149,12 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
         if step == pcfg.steps or pcfg.arm == "memory_off":
             continue  # memory_off has no trainable path that sees the bindings
         t0 = time.monotonic()
-        batch = sample_batch(spec, "train", pcfg.batch, gen)
+        train_spec = (spec if not pcfg.filler_len_schedule else   # same generator/model/optimizer across phases
+                      BindingTaskSpec(spec.n_bindings, spec.n_queries, pcfg.training_filler_len(step)))
+        batch = sample_batch(train_spec, "train", pcfg.batch, gen)
         src_traces: list = []
         state = ingest(backend, batch, pcfg.arm, src_traces,       # graph kept into the bank
-                       pcfg.filler_writes, spec.n_bindings)
+                       pcfg.filler_writes, train_spec.n_bindings)
         loss, hits, q_traces = 0.0, 0, []
         for q in range(spec.n_queries):
             logits, qtrace = query_logits(backend, head, state, batch, q, pcfg.arm,

@@ -1,0 +1,396 @@
+{
+  "_comment": "P2C inputs index (prereg v0.2 0c8d358). Reused checkpoints are validated by these hashes before any evaluation and never relabelled into the new group. Parity references are complete legacy files (5 interventions, 5120 rows), parsed- and byte-equal; P-off fixtures intentionally exercise the legacy E=off path. Registered corners are all E=on.",
+  "prereg": {
+    "commit": "0c8d358",
+    "path": "plans/261006-0316-m4-sgm-p2c-filler-length-curriculum/prereg.md",
+    "sha256": "b1bafbbdeca4668d8bd9270f54a970576332a6612c1bc81a55a5d705ab031413"
+  },
+  "new_group": {
+    "group": "p2c-filler-curriculum-v1",
+    "grid_file": "configs/m4_sgm_p2c_grid.json",
+    "grid_sha256": "7d6aeb685c7346b228835aaef6306c171d889f553eb99bbbe06bb2bae14541a9"
+  },
+  "artifact_eval_seed_base": 9300011,
+  "readings_seed_base": 9500011,
+  "parity_seed_base": 9300011,
+  "corners": {
+    "32": {
+      "v2": "v2-n32-s{s}",
+      "reference": "filleroff-n32-s{s}",
+      "curriculum": "p2c:curriculum-learned-n32-s{s}"
+    },
+    "64": {
+      "v2": "v2-n64-s{s}",
+      "reference": "filleroff-n64-s{s}",
+      "curriculum": "p2c:curriculum-learned-n64-s{s}"
+    }
+  },
+  "reused": {
+    "v2-n32-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s0",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "932719382d9d55f3b721c3f18760a27af865c80bfef377e632a3117a838fe1b5",
+      "trained_parameters_sha256": "18a19add73cc674b5d6924c5657938eb6c16ed8eebb15c0648e90fba95dd33f9",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {}
+      }
+    },
+    "v2-n32-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s1",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "93b60a21d4c0f0489071da99c3b7ee637158fe0844370653c8ef164ddd529593",
+      "trained_parameters_sha256": "3c2c214fef8501187de8cbea3a53161b45ba2144e9020616b7ef0c370933e99f",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {}
+      }
+    },
+    "v2-n64-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n64-s0",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "f1b700e0bf78266c6b19cacd72bf1db7d699afad575de742bcd3c03895f25bb9",
+      "trained_parameters_sha256": "d5ed01ca98292345d5d5378e8f24b4649c4f3376d6b0464b4497a4a464d00d33",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 64,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {}
+      }
+    },
+    "v2-n64-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n64-s1",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "a0cfbf95f1f4d053aca99ba5e1ed9765bc1e2a9e2068131877e993ed32a96580",
+      "trained_parameters_sha256": "c4acc18e93f0319d6d127de51e629f4efbba0bd9a5498b453ed44a9e22277411",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 64,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {}
+      }
+    },
+    "filleroff-n32-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s0",
+      "group": "p2g-selective-write-v1",
+      "git_head": "2613ced101810bd248c1d82d1c3b83d994076120",
+      "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+      "run_manifest_sha256": "c62ff42ff52d9fd70be819fb28108eea28bd539cdcf100ecc3374c3fce31593f",
+      "trained_parameters_sha256": "cabb432b14934a0fad294dc5b84bae384bd05ef9f3c38a6291cf28bc5fcd4c1a",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null
+      }
+    },
+    "filleroff-n32-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s1",
+      "group": "p2g-selective-write-v1",
+      "git_head": "2613ced101810bd248c1d82d1c3b83d994076120",
+      "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+      "run_manifest_sha256": "23aaeddb5593b04d69f14e5a68ffc89b47a1b6fb048c841e4615a31ea2c518ac",
+      "trained_parameters_sha256": "828eb8c1eb82ec12f46127326cc7d58baeb6824bbc51ef51d289e5e0037dceeb",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null
+      }
+    },
+    "filleroff-n64-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n64-s0",
+      "group": "p2d-diagnostics-v1",
+      "git_head": "31aa4c8998fb00b92bccca29725383a982bae8a4",
+      "memsub_source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+      "run_manifest_sha256": "f7bb90405ce753d574419353a8500403918fb26ba7de47240de59be8740e902c",
+      "trained_parameters_sha256": "cbc91c285ffbd72cdf7597d6f96f04d12b9db6751cfe3184cae01019c18266ef",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 64,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": []
+      }
+    },
+    "filleroff-n64-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1-topup-volume-mirror/filleroff-learned-n64-s1",
+      "group": "p2d-diagnostics-v1-topup",
+      "git_head": "f01f3b913547f0efdafd3db99d1b468d3f7012e9",
+      "memsub_source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+      "run_manifest_sha256": "2dbd5b61c47ed1d26b55d48504b3cdab86141b207b174f579e21e5bc141db5e1",
+      "trained_parameters_sha256": "50a12e15833ca2a2acdca14b723624b99513f6cc8094630a09255111dafb4d16",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 64,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": []
+      }
+    },
+    "filleroff-n16-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s0",
+      "group": "p2d-diagnostics-v1",
+      "git_head": "31aa4c8998fb00b92bccca29725383a982bae8a4",
+      "memsub_source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+      "run_manifest_sha256": "c8cd8bb4c8a662c6802f628d74af2658e828667a6fd42239655f12d1810fe9fc",
+      "trained_parameters_sha256": "cc8636da24a5d706be928162c9b364f1a60aac830c292a622e67594441929d89",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 16,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": []
+      }
+    },
+    "filleroff-n16-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s1",
+      "group": "p2d-diagnostics-v1",
+      "git_head": "31aa4c8998fb00b92bccca29725383a982bae8a4",
+      "memsub_source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+      "run_manifest_sha256": "3b2cd13d617a632455f275835ffd19c8721d9207dfad56f0594f428a8cf77d8c",
+      "trained_parameters_sha256": "9d1a5f339e01b3f9d4edc577a44c9569eb38dd1a6036229933d1c331fa6504c5",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 16,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": []
+      }
+    }
+  },
+  "parity": {
+    "P-on": [
+      {
+        "checkpoint": "v2-n32-s0",
+        "filler_writes": true,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n32-s0-fresh-rows.jsonl",
+        "reference_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      },
+      {
+        "checkpoint": "v2-n32-s1",
+        "filler_writes": true,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n32-s1-fresh-rows.jsonl",
+        "reference_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      },
+      {
+        "checkpoint": "v2-n64-s0",
+        "filler_writes": true,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n64-s0-fresh-rows.jsonl",
+        "reference_sha256": "d09d3399afc16eb353e2fd6766cdd5cc7b74ad33c64fb56453e9bafa6ba8a533",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      },
+      {
+        "checkpoint": "v2-n64-s1",
+        "filler_writes": true,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n64-s1-fresh-rows.jsonl",
+        "reference_sha256": "62b9b616afbbbcd97d54e30074f125cdd58b7c761be94c136fc76d7e2f87eb7c",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      }
+    ],
+    "P-off": [
+      {
+        "checkpoint": "filleroff-n16-s0",
+        "filler_writes": false,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s0/per_example_results.jsonl",
+        "reference_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+        "reference_producer": "P2D Modal training run (31aa4c8 / d4effd0c)"
+      },
+      {
+        "checkpoint": "filleroff-n16-s1",
+        "filler_writes": false,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s1/per_example_results.jsonl",
+        "reference_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+        "reference_producer": "P2D Modal training run (31aa4c8 / d4effd0c)"
+      },
+      {
+        "checkpoint": "filleroff-n32-s0",
+        "filler_writes": false,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s0/per_example_results.jsonl",
+        "reference_sha256": "49768782ee2ff3dd57f4ff531120ddb8548449e291832e0f50c0e7edb7e3399f",
+        "reference_producer": "P2G Modal training run (2613ced / 5c3b5420), artifact population"
+      },
+      {
+        "checkpoint": "filleroff-n32-s1",
+        "filler_writes": false,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/runs/p2g-selective-write-v1-volume-mirror/filleroff-learned-n32-s1/per_example_results.jsonl",
+        "reference_sha256": "b492c6d490b9e91f8de48c52ac4febaba1054f05cac0ce7d71b0e29c98cd481e",
+        "reference_producer": "P2G Modal training run (2613ced / 5c3b5420), artifact population"
+      }
+    ]
+  }
+}

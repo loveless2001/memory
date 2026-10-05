@@ -156,6 +156,9 @@ def test_readings_reject_training_artifacts_evaluated_on_the_reserved_seed(tmp_p
 # ---------------- executed identity ----------------
 
 def test_any_executed_identity_change_fails_closed_but_git_head_alone_does_not(monkeypatch):
+    # drift logic only: bind the live memsub (P2G itself is pinned to 5c3b5420 and closed)
+    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+    monkeypatch.setattr(PRE, "p2g_source_sha", lambda: source_tree_sha256(ROOT / "memsub"))
     start = PRE.observer_identity()
     assert "scripts/sgm-p2g-decision-rules.py" in start["analysis_sha256"]
     assert "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py" in start["analysis_sha256"]
