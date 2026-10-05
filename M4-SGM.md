@@ -414,3 +414,55 @@ v2's parameter hash. A mismatch would indicate machine nondeterminism.
 - Function timeout 8 h; the long N = 32 run extrapolates to ~4.4 h.
 - No retries except a preemption-only re-run under the cleared attempt
   policy. The fresh-set re-evaluation of baselines is local and costs $0.
+
+**Registration clarifications (codex 21132, committed before implementation):**
+
+1. **Evaluation sets.**
+   - Final set = seed **9_300_011 + cell seed**: 16 batches × 16 episodes
+     × 4 queries, held-out families. Each treatment cell and the frozen v2
+     learned baseline at the same N and seed use this identical set
+     (matching episode hashes).
+   - **Accuracy and memory interventions run on this final set.**
+     Geometry/telemetry runs on dev 4242 (4 batches × 16 = 64 episodes).
+   - Intervals follow the v2 procedure. Each episode's score is the mean of
+     its 4 query hits; differences are paired on matching episode hashes;
+     the interval is mean ± 1.96 · sample_sd / √n_episodes (256 final, 64 dev).
+   - The reproducible-gain rule (≥ 0.05 and lower bound > 0, in both seeds)
+     is applied separately to each `learned_long` contrast: 4500 vs its own
+     1500, and 4500 vs v2.
+2. **Collapse / alignment criteria** (dev, per selected layer and head,
+   reported for all four heads):
+   - (a) pooled median read→bound-write distance < the frozen baseline's
+     for the same layer/head;
+   - (b) target coupling > 0, where target coupling is the mean over queries
+     of the spatial coupling between the read stencil and the bound value's
+     write stencil;
+   - (c) target ≥ 2 × other coupling, where other coupling is the mean over
+     queries of the mean coupling to the N − 1 other bindings' writes in the
+     SAME episode;
+   - (d) read spread ≥ 1 cell, where spread is the per-episode sample std
+     (ddof = 1) of the queried keys' read coordinates, averaged over the two
+     coordinates, then averaged over episodes.
+   - **"Alignment improved, not collapsed"** requires, in **both seeds**,
+     that for **every selected layer at least one head** satisfies (a)–(d).
+3. **Memory use** (final set; the registered near-chance ceiling is 0.04,
+   not literal chance):
+   - bank_derange accuracy ≤ 0.04;
+   - paired (none − bank_derange) lower bound > 0;
+   - paired (none − read_offset) lower bound > 0.
+4. **Long-prefix continuity** (descriptive).
+   - Compare the 1500-step `learned_long` checkpoint with v2's file hash, and
+     with its tensors if the hashes differ.
+   - An unexplained tensor mismatch is labelled a *continuity discrepancy*
+     (possible causes: serialization, code drift, RNG/order, checkpoint
+     timing), not machine nondeterminism.
+5. **Enforceable budget.**
+   - Each cell's Modal timeout = 1.5 × its v2-extrapolated duration:
+     filler_off N16 / N64 ≈ 73 / 140 min; long N16 / N32 ≈ 218 / 313 min
+     (**~5.2 h**, correcting 4.4 h); supervised N32 / N64 ≈ 115 / 155 min
+     including about 10% overhead.
+   - Expected ≈ 2,030 container-min ≈ **$8.9**. Worst case if every cell hits
+     its timeout ≈ 3,040 container-min ≈ **$13.4 < $15**, so the cap holds by
+     construction at $0.0044 / container-min.
+   - Billing is also checked hourly. A timed-out cell is reported as
+     incomplete, not re-run.
