@@ -1,0 +1,1932 @@
+{
+  "observer": {
+    "git_head": "4e282deca7c4df714316a657a0598baae30b6eae",
+    "dirty": false,
+    "memsub_source_sha256": "729cb242ab563ff9374aca320b225b754566cfebaeda24d8c9a95b02cf323cd2"
+  },
+  "dev_seed": 4242,
+  "dev_batches": 4,
+  "registered_cells": true,
+  "cells": {
+    "main-learned-n4-s0": {
+      "run_manifest_sha256": "ba68a33679b01486f9f3d532d1e987d19336590956626e9a903185f41e88a336",
+      "trained_parameters_sha256": "61ca4675723752902606798296edfc1ab5165b9724f7f6016345f30f684c65b2",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 221
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.92578125,
+        "post_filler": 0.86328125,
+        "actual": 0.86328125
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 19,
+        "wrong_to_correct": 3,
+        "both_correct": 218,
+        "both_wrong": 16
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.3121128976345062,
+        "mean": 0.3332556188106537
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.77734375,
+            0.9375
+          ],
+          "align_stencil_intersects": [
+            0.99609375,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.19380121305584908,
+            0.24116402119398117
+          ],
+          "binding_pair_intersect_rate": [
+            0.7604166567325592,
+            0.6796875
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.05626270081847906,
+            0.03867427725344896
+          ],
+          "filler_hits_any_binding": [
+            0.97265625,
+            0.9722656309604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.11749888956546783,
+            0.11407059617340565
+          ],
+          "align_distance_median_pooled": [
+            0.6253682971000671,
+            0.40653297305107117
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            1.0,
+            1.0
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.32467517256736755,
+            0.3259101137518883
+          ],
+          "binding_pair_intersect_rate": [
+            1.0,
+            1.0
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.3205767869949341,
+            0.32154152542352676
+          ],
+          "filler_hits_any_binding": [
+            1.0,
+            1.0
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.3305360972881317,
+            0.33319294452667236
+          ],
+          "align_distance_median_pooled": [
+            0.15375234186649323,
+            0.16454315185546875
+          ]
+        }
+      }
+    },
+    "main-learned-n4-s1": {
+      "run_manifest_sha256": "b1b4d7cd8a8a326f56fd03591caf796327d5058de0a30d028dec5f7929d48af8",
+      "trained_parameters_sha256": "2fadd7bb04f330fed838936d2962796d077b89331c3d2df6e95b7ac6451fbe00",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 234
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.9765625,
+        "post_filler": 0.9140625,
+        "actual": 0.9140625
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 16,
+        "wrong_to_correct": 0,
+        "both_correct": 234,
+        "both_wrong": 6
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.5742238759994507,
+        "mean": 0.589398980140686
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.9375,
+            0.95703125
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.23607061058282852,
+            0.2412433810532093
+          ],
+          "binding_pair_intersect_rate": [
+            0.7317708283662796,
+            0.7630208283662796
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.047456977888941765,
+            0.0490249153226614
+          ],
+          "filler_hits_any_binding": [
+            0.9867187589406967,
+            0.9898437559604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1228441521525383,
+            0.12369579263031483
+          ],
+          "align_distance_median_pooled": [
+            0.46270468831062317,
+            0.3948315978050232
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            1.0,
+            1.0
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.29478417336940765,
+            0.29017507284879684
+          ],
+          "binding_pair_intersect_rate": [
+            1.0,
+            1.0
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.2898857444524765,
+            0.2876533195376396
+          ],
+          "filler_hits_any_binding": [
+            1.0,
+            1.0
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.3142554685473442,
+            0.3052165359258652
+          ],
+          "align_distance_median_pooled": [
+            0.21486160159111023,
+            0.17881011962890625
+          ]
+        }
+      }
+    },
+    "main-learned-n8-s0": {
+      "run_manifest_sha256": "04f9aff0d8720325aef104a856258cbf4c1d8e79f73c0536e550217a590e022f",
+      "trained_parameters_sha256": "3716cd203a7940dfca665fc582e886b0c1d73c1ffe24c3c115d0e8c6d1e648ee",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 229
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.94921875,
+        "post_filler": 0.89453125,
+        "actual": 0.89453125
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 19,
+        "wrong_to_correct": 5,
+        "both_correct": 224,
+        "both_wrong": 8
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.37972986698150635,
+        "mean": 0.4045998454093933
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.89453125,
+            0.96484375
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.21467764303088188,
+            0.25557152926921844
+          ],
+          "binding_pair_intersect_rate": [
+            0.676897332072258,
+            0.6584821492433548
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.039764322340488434,
+            0.03654914814978838
+          ],
+          "filler_hits_any_binding": [
+            0.990234375,
+            0.9929687529802322
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.15025648847222328,
+            0.15073370933532715
+          ],
+          "align_distance_median_pooled": [
+            0.5478861927986145,
+            0.34519943594932556
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.91015625,
+            0.81640625
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.2376849390566349,
+            0.21225892007350922
+          ],
+          "binding_pair_intersect_rate": [
+            1.0,
+            0.9988839328289032
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.23152505606412888,
+            0.19066983461380005
+          ],
+          "filler_hits_any_binding": [
+            1.0,
+            1.0
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.2802434489130974,
+            0.24261167645454407
+          ],
+          "align_distance_median_pooled": [
+            0.428558886051178,
+            0.5515084862709045
+          ]
+        }
+      }
+    },
+    "main-learned-n8-s1": {
+      "run_manifest_sha256": "cf45d32e38b643c8da4259a83a3b01f02db000b3bfe76a8e503004869d73d7a3",
+      "trained_parameters_sha256": "9e5a4e2b20dd3775c13e4ee89750803f8276797b18f561cfe209f31a667f1753",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 231
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.9765625,
+        "post_filler": 0.90234375,
+        "actual": 0.90234375
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 19,
+        "wrong_to_correct": 0,
+        "both_correct": 231,
+        "both_wrong": 6
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.4265613853931427,
+        "mean": 0.4544451832771301
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.84765625,
+            0.953125
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.20713796466588974,
+            0.2472197823226452
+          ],
+          "binding_pair_intersect_rate": [
+            0.5998883992433548,
+            0.5948660671710968
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.0316301304847002,
+            0.03053622366860509
+          ],
+          "filler_hits_any_binding": [
+            0.9929687529802322,
+            0.9878906309604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1434701643884182,
+            0.14009739831089973
+          ],
+          "align_distance_median_pooled": [
+            0.5329042673110962,
+            0.3857227563858032
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.69140625,
+            0.56640625
+          ],
+          "align_stencil_intersects": [
+            0.99609375,
+            0.9921875
+          ],
+          "align_spatial_coupling_mean": [
+            0.17350784689188004,
+            0.14015357941389084
+          ],
+          "binding_pair_intersect_rate": [
+            0.9888392835855484,
+            0.9776785671710968
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.15847288817167282,
+            0.13890772685408592
+          ],
+          "filler_hits_any_binding": [
+            0.9988281279802322,
+            0.9992187470197678
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.22734428569674492,
+            0.2222401574254036
+          ],
+          "align_distance_median_pooled": [
+            0.7536395192146301,
+            0.8771682977676392
+          ]
+        }
+      }
+    },
+    "main-learned-n16-s0": {
+      "run_manifest_sha256": "355b2b1f320673c11acc414cfd6f57a11e316e867ab15e2164544aa2dd338010",
+      "trained_parameters_sha256": "3502f146ccac99d38153c85fcd43079b2727f3e5529f337b081b1908c37ca7ea",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 13
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.0546875,
+        "post_filler": 0.05078125,
+        "actual": 0.05078125
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 8,
+        "wrong_to_correct": 7,
+        "both_correct": 6,
+        "both_wrong": 235
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.5535730719566345,
+        "mean": 0.580170750617981
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.05078125,
+            0.04296875
+          ],
+          "align_stencil_intersects": [
+            0.41796875,
+            0.296875
+          ],
+          "align_spatial_coupling_mean": [
+            0.018945060204714537,
+            0.014795109629631042
+          ],
+          "binding_pair_intersect_rate": [
+            0.4365885406732559,
+            0.36406250298023224
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.028110296465456486,
+            0.021218829788267612
+          ],
+          "filler_hits_any_binding": [
+            0.9847656190395355,
+            0.9726562350988388
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.15919529274106026,
+            0.1425471231341362
+          ],
+          "align_distance_median_pooled": [
+            3.3330068588256836,
+            4.5420145988464355
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.7265625,
+            0.7890625
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.18864266574382782,
+            0.197465218603611
+          ],
+          "binding_pair_intersect_rate": [
+            0.9893229156732559,
+            0.998046875
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.19213056564331055,
+            0.17510797455906868
+          ],
+          "filler_hits_any_binding": [
+            0.9972656220197678,
+            1.0
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.26042572036385536,
+            0.2806589975953102
+          ],
+          "align_distance_median_pooled": [
+            0.6299164891242981,
+            0.6124697327613831
+          ]
+        }
+      }
+    },
+    "main-learned-n16-s1": {
+      "run_manifest_sha256": "dfe3e4106322005f573056dd3e9d87e663a782b7f5e2c3d2b8ea220157a0a1f1",
+      "trained_parameters_sha256": "a92e88188347b209ab53241efbb698529931dedef6f3a13ff28b58e63cca45df",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 155
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.671875,
+        "post_filler": 0.60546875,
+        "actual": 0.60546875
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 22,
+        "wrong_to_correct": 5,
+        "both_correct": 150,
+        "both_wrong": 79
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.4099336564540863,
+        "mean": 0.44547513127326965
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.203125,
+            0.9296875
+          ],
+          "align_stencil_intersects": [
+            0.76953125,
+            1.0
+          ],
+          "align_spatial_coupling_mean": [
+            0.057283987291157246,
+            0.2293645329773426
+          ],
+          "binding_pair_intersect_rate": [
+            0.5403645932674408,
+            0.5433593690395355
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.02921908488497138,
+            0.02719543920829892
+          ],
+          "filler_hits_any_binding": [
+            1.0,
+            0.9996093809604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.18724804371595383,
+            0.18188180401921272
+          ],
+          "align_distance_median_pooled": [
+            1.8207311630249023,
+            0.4660476744174957
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.79296875,
+            0.80078125
+          ],
+          "align_stencil_intersects": [
+            1.0,
+            0.99609375
+          ],
+          "align_spatial_coupling_mean": [
+            0.18835479766130447,
+            0.18701206892728806
+          ],
+          "binding_pair_intersect_rate": [
+            0.9998697936534882,
+            0.9992187470197678
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.18847570568323135,
+            0.22294555604457855
+          ],
+          "filler_hits_any_binding": [
+            1.0,
+            1.0
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.2818729877471924,
+            0.2877226769924164
+          ],
+          "align_distance_median_pooled": [
+            0.5982939600944519,
+            0.5754586458206177
+          ]
+        }
+      }
+    },
+    "main-learned-n32-s0": {
+      "run_manifest_sha256": "932719382d9d55f3b721c3f18760a27af865c80bfef377e632a3117a838fe1b5",
+      "trained_parameters_sha256": "18a19add73cc674b5d6924c5657938eb6c16ed8eebb15c0648e90fba95dd33f9",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 5
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.0234375,
+        "post_filler": 0.01953125,
+        "actual": 0.01953125
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 3,
+        "wrong_to_correct": 2,
+        "both_correct": 3,
+        "both_wrong": 248
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.7271353006362915,
+        "mean": 0.8869903087615967
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.02734375,
+            0.0390625
+          ],
+          "align_stencil_intersects": [
+            0.20703125,
+            0.1875
+          ],
+          "align_spatial_coupling_mean": [
+            0.00951598642859608,
+            0.011838382109999657
+          ],
+          "binding_pair_intersect_rate": [
+            0.20964591950178146,
+            0.20447958633303642
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.012749706162139773,
+            0.01122084422968328
+          ],
+          "filler_hits_any_binding": [
+            0.985546886920929,
+            0.9980468899011612
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1592940203845501,
+            0.16921696066856384
+          ],
+          "align_distance_median_pooled": [
+            5.800356864929199,
+            6.876828670501709
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.328125,
+            0.109375
+          ],
+          "align_stencil_intersects": [
+            0.85546875,
+            0.65234375
+          ],
+          "align_spatial_coupling_mean": [
+            0.08373836800456047,
+            0.03367570089176297
+          ],
+          "binding_pair_intersect_rate": [
+            0.7915511578321457,
+            0.741336926817894
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.06382846739143133,
+            0.050936308689415455
+          ],
+          "filler_hits_any_binding": [
+            0.9964843839406967,
+            0.9976562559604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.24134883657097816,
+            0.23930280283093452
+          ],
+          "align_distance_median_pooled": [
+            1.4459161758422852,
+            2.2902448177337646
+          ]
+        }
+      }
+    },
+    "main-learned-n32-s1": {
+      "run_manifest_sha256": "93b60a21d4c0f0489071da99c3b7ee637158fe0844370653c8ef164ddd529593",
+      "trained_parameters_sha256": "3c2c214fef8501187de8cbea3a53161b45ba2144e9020616b7ef0c370933e99f",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 6
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.02734375,
+        "post_filler": 0.0234375,
+        "actual": 0.0234375
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 5,
+        "wrong_to_correct": 4,
+        "both_correct": 2,
+        "both_wrong": 245
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.6641628742218018,
+        "mean": 0.783852756023407
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.04296875,
+            0.01171875
+          ],
+          "align_stencil_intersects": [
+            0.18359375,
+            0.1484375
+          ],
+          "align_spatial_coupling_mean": [
+            0.011784425005316734,
+            0.005937949288636446
+          ],
+          "binding_pair_intersect_rate": [
+            0.17354460805654526,
+            0.1600932441651821
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.007696167565882206,
+            0.007151981582865119
+          ],
+          "filler_hits_any_binding": [
+            0.9855468720197678,
+            0.9714843779802322
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.13657205179333687,
+            0.125277666375041
+          ],
+          "align_distance_median_pooled": [
+            5.492684841156006,
+            6.091926097869873
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.25,
+            0.14453125
+          ],
+          "align_stencil_intersects": [
+            0.578125,
+            0.4765625
+          ],
+          "align_spatial_coupling_mean": [
+            0.0653223255649209,
+            0.037942019291222095
+          ],
+          "binding_pair_intersect_rate": [
+            0.5639805793762207,
+            0.5047568008303642
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.052647451870143414,
+            0.04278724640607834
+          ],
+          "filler_hits_any_binding": [
+            0.9925781190395355,
+            0.9968750029802322
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.24204782769083977,
+            0.24068162962794304
+          ],
+          "align_distance_median_pooled": [
+            2.0788800716400146,
+            3.1203463077545166
+          ]
+        }
+      }
+    },
+    "main-learned-n64-s0": {
+      "run_manifest_sha256": "f1b700e0bf78266c6b19cacd72bf1db7d699afad575de742bcd3c03895f25bb9",
+      "trained_parameters_sha256": "d5ed01ca98292345d5d5378e8f24b4649c4f3376d6b0464b4497a4a464d00d33",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 3
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.01171875,
+        "post_filler": 0.01171875,
+        "actual": 0.01171875
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 3,
+        "wrong_to_correct": 3,
+        "both_correct": 0,
+        "both_wrong": 250
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.46654731035232544,
+        "mean": 1.0998283624649048
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.01171875,
+            0.0078125
+          ],
+          "align_stencil_intersects": [
+            0.08203125,
+            0.05859375
+          ],
+          "align_spatial_coupling_mean": [
+            0.0031740070844534785,
+            0.0021757426418389514
+          ],
+          "binding_pair_intersect_rate": [
+            0.0817909836769104,
+            0.0862862728536129
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.0035260188742540777,
+            0.0036541884765028954
+          ],
+          "filler_hits_any_binding": [
+            0.9757812470197678,
+            0.9828124940395355
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.11980405822396278,
+            0.13189071789383888
+          ],
+          "align_distance_median_pooled": [
+            7.72794771194458,
+            8.329802513122559
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.015625,
+            0.0
+          ],
+          "align_stencil_intersects": [
+            0.125,
+            0.0078125
+          ],
+          "align_spatial_coupling_mean": [
+            0.005314388225087896,
+            0.0001331217172264587
+          ],
+          "binding_pair_intersect_rate": [
+            0.112637959420681,
+            0.2681826688349247
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.0051535433158278465,
+            0.014107136288657784
+          ],
+          "filler_hits_any_binding": [
+            0.9652343839406967,
+            0.8910156190395355
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1377234198153019,
+            0.15514380112290382
+          ],
+          "align_distance_median_pooled": [
+            8.826520919799805,
+            19.163118362426758
+          ]
+        }
+      }
+    },
+    "main-learned-n64-s1": {
+      "run_manifest_sha256": "a0cfbf95f1f4d053aca99ba5e1ed9765bc1e2a9e2068131877e993ed32a96580",
+      "trained_parameters_sha256": "c4acc18e93f0319d6d127de51e629f4efbba0bd9a5498b453ed44a9e22277411",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 0
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.01171875,
+        "post_filler": 0.0,
+        "actual": 0.0
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 3,
+        "wrong_to_correct": 0,
+        "both_correct": 0,
+        "both_wrong": 253
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.4472905993461609,
+        "mean": 0.6773295402526855
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.01171875,
+            0.015625
+          ],
+          "align_stencil_intersects": [
+            0.10546875,
+            0.0703125
+          ],
+          "align_spatial_coupling_mean": [
+            0.003271972411312163,
+            0.0032468318240717053
+          ],
+          "binding_pair_intersect_rate": [
+            0.1000589057803154,
+            0.1115141361951828
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.004364948836155236,
+            0.0049285279819741845
+          ],
+          "filler_hits_any_binding": [
+            0.989453136920929,
+            0.971875011920929
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.14044135063886642,
+            0.14177661761641502
+          ],
+          "align_distance_median_pooled": [
+            6.814394474029541,
+            7.928175449371338
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.01953125,
+            0.00390625
+          ],
+          "align_stencil_intersects": [
+            0.08984375,
+            0.0859375
+          ],
+          "align_spatial_coupling_mean": [
+            0.005371465609641746,
+            0.0027533535612747073
+          ],
+          "binding_pair_intersect_rate": [
+            0.11832682229578495,
+            0.1722470261156559
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.005226560169830918,
+            0.007941041141748428
+          ],
+          "filler_hits_any_binding": [
+            0.9749999940395355,
+            0.9601562321186066
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.14262299612164497,
+            0.15143711492419243
+          ],
+          "align_distance_median_pooled": [
+            7.964800834655762,
+            9.25063419342041
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n4-s0": {
+      "run_manifest_sha256": "5194729234d7123336af1b9f67b1df6849fee9584f2042af612a775d8eb5c512",
+      "trained_parameters_sha256": "641e85aebf2464eb21a33fa6f8d91ad901d8db79f0341e680b7bc1644e2fbfc4",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 22
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.03515625,
+        "post_filler": 0.0859375,
+        "actual": 0.0859375
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 5,
+        "wrong_to_correct": 18,
+        "both_correct": 4,
+        "both_wrong": 229
+      },
+      "fixed_query_read_relative_change": {
+        "median": 2.985299825668335,
+        "mean": 48108023808.0
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.0234375,
+            0.0
+          ],
+          "align_stencil_intersects": [
+            0.10546875,
+            0.09765625
+          ],
+          "align_spatial_coupling_mean": [
+            0.006489359133411199,
+            0.00199259452347178
+          ],
+          "binding_pair_intersect_rate": [
+            0.2421875,
+            0.08333333488553762
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.012518567149527371,
+            0.004015805083326995
+          ],
+          "filler_hits_any_binding": [
+            0.38945312052965164,
+            0.24726562574505806
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.024906251579523087,
+            0.012159065576270223
+          ],
+          "align_distance_median_pooled": [
+            8.516997337341309,
+            8.512285232543945
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.046875,
+            0.09375
+          ],
+          "align_stencil_intersects": [
+            0.24609375,
+            0.390625
+          ],
+          "align_spatial_coupling_mean": [
+            0.01371949934400618,
+            0.027419499587267637
+          ],
+          "binding_pair_intersect_rate": [
+            0.4375,
+            0.6484375
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.02663837233558297,
+            0.0447129774838686
+          ],
+          "filler_hits_any_binding": [
+            0.625781238079071,
+            0.710156261920929
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.050802101381123066,
+            0.07245120406150818
+          ],
+          "align_distance_median_pooled": [
+            5.309433937072754,
+            3.275428533554077
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n4-s1": {
+      "run_manifest_sha256": "8b1277b7693ca467854c62f6744fc29f0f2170989955f37f2152d91d12893c9c",
+      "trained_parameters_sha256": "956d1a36de4e91b27dce5891e18df5f2df7d20b115703fda82cac0c3a4f49f0b",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 27
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.04296875,
+        "post_filler": 0.10546875,
+        "actual": 0.10546875
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 8,
+        "wrong_to_correct": 24,
+        "both_correct": 3,
+        "both_wrong": 221
+      },
+      "fixed_query_read_relative_change": {
+        "median": 3.0947957038879395,
+        "mean": 638626432.0
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.0234375,
+            0.015625
+          ],
+          "align_stencil_intersects": [
+            0.16015625,
+            0.109375
+          ],
+          "align_spatial_coupling_mean": [
+            0.00844819808844477,
+            0.006526510609546676
+          ],
+          "binding_pair_intersect_rate": [
+            0.46875,
+            0.3697916641831398
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.02775753289461136,
+            0.021822714945301414
+          ],
+          "filler_hits_any_binding": [
+            0.443359375,
+            0.4671874940395355
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.035187468864023685,
+            0.034858725033700466
+          ],
+          "align_distance_median_pooled": [
+            7.200716495513916,
+            9.53712272644043
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.0625,
+            0.07421875
+          ],
+          "align_stencil_intersects": [
+            0.265625,
+            0.4453125
+          ],
+          "align_spatial_coupling_mean": [
+            0.0171700248029083,
+            0.02278478303924203
+          ],
+          "binding_pair_intersect_rate": [
+            0.4973958283662796,
+            0.5625
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.028009602334350348,
+            0.03804948041215539
+          ],
+          "filler_hits_any_binding": [
+            0.641796886920929,
+            0.716015636920929
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.05521813314408064,
+            0.07107744738459587
+          ],
+          "align_distance_median_pooled": [
+            4.590980052947998,
+            3.1790032386779785
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n8-s0": {
+      "run_manifest_sha256": "da160893d6ceafbbbfa8887afa0af30c2c190ee6d5edf2e4cc467b563a14eacc",
+      "trained_parameters_sha256": "3a4564486513924dc50998eafe3af49b717b9365fac61639083d17be73386bce",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 7
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.01953125,
+        "post_filler": 0.02734375,
+        "actual": 0.02734375
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 2,
+        "wrong_to_correct": 4,
+        "both_correct": 3,
+        "both_wrong": 247
+      },
+      "fixed_query_read_relative_change": {
+        "median": 1.9830788373947144,
+        "mean": 1936896256.0
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.03125,
+            0.0234375
+          ],
+          "align_stencil_intersects": [
+            0.11328125,
+            0.078125
+          ],
+          "align_spatial_coupling_mean": [
+            0.007467227231245488,
+            0.005627184815239161
+          ],
+          "binding_pair_intersect_rate": [
+            0.1478794664144516,
+            0.1311383917927742
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.0075578734977170825,
+            0.006295852828770876
+          ],
+          "filler_hits_any_binding": [
+            0.5195312649011612,
+            0.5160156339406967
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.0355209712870419,
+            0.03358446806669235
+          ],
+          "align_distance_median_pooled": [
+            8.222772598266602,
+            7.556662559509277
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.02734375,
+            0.16015625
+          ],
+          "align_stencil_intersects": [
+            0.13671875,
+            0.63671875
+          ],
+          "align_spatial_coupling_mean": [
+            0.006792924017645419,
+            0.04431620333343744
+          ],
+          "binding_pair_intersect_rate": [
+            0.6255580484867096,
+            0.9414062649011612
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.041793919168412685,
+            0.10569125041365623
+          ],
+          "filler_hits_any_binding": [
+            0.8929687440395355,
+            0.9191406220197678
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1234932467341423,
+            0.16776496544480324
+          ],
+          "align_distance_median_pooled": [
+            6.2850728034973145,
+            2.2185513973236084
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n8-s1": {
+      "run_manifest_sha256": "143d084d5243889b635b625bd8ba035ec4b5d7ae5dd702bf52dd5b2a9f42455e",
+      "trained_parameters_sha256": "66c3bb0abb313233919a487761e04987f9c3734be313d5d395fc95092103b48d",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 16
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.046875,
+        "post_filler": 0.0625,
+        "actual": 0.0625
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 5,
+        "wrong_to_correct": 9,
+        "both_correct": 7,
+        "both_wrong": 235
+      },
+      "fixed_query_read_relative_change": {
+        "median": 1.552161693572998,
+        "mean": 11.100653648376465
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.03125,
+            0.00390625
+          ],
+          "align_stencil_intersects": [
+            0.15625,
+            0.09375
+          ],
+          "align_spatial_coupling_mean": [
+            0.008354387595318258,
+            0.0015712825406808406
+          ],
+          "binding_pair_intersect_rate": [
+            0.1724330335855484,
+            0.1964285708963871
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.007967410027049482,
+            0.010531431529670954
+          ],
+          "filler_hits_any_binding": [
+            0.6566406190395355,
+            0.6769531220197678
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.04569434467703104,
+            0.04992430191487074
+          ],
+          "align_distance_median_pooled": [
+            7.884210586547852,
+            7.37625789642334
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.140625,
+            0.046875
+          ],
+          "align_stencil_intersects": [
+            0.6484375,
+            0.3203125
+          ],
+          "align_spatial_coupling_mean": [
+            0.03929559141397476,
+            0.013922191224992275
+          ],
+          "binding_pair_intersect_rate": [
+            0.7845982015132904,
+            0.791852667927742
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.06385752186179161,
+            0.06038278993219137
+          ],
+          "filler_hits_any_binding": [
+            0.8988281190395355,
+            0.8695312440395355
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.14396319910883904,
+            0.12773043662309647
+          ],
+          "align_distance_median_pooled": [
+            2.2582247257232666,
+            4.002913951873779
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n16-s0": {
+      "run_manifest_sha256": "0cacf97c45f42ffb68dd10d1d7b09725e2f8e16283a293f6de70959dd2873dea",
+      "trained_parameters_sha256": "6287e63d7220ff547d961f682bae0e4eb9a1a5bfefe81918dc307d0098363478",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 6
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.0234375,
+        "post_filler": 0.0234375,
+        "actual": 0.0234375
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 5,
+        "wrong_to_correct": 5,
+        "both_correct": 1,
+        "both_wrong": 245
+      },
+      "fixed_query_read_relative_change": {
+        "median": 1.6075360774993896,
+        "mean": 6.447588920593262
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.0078125,
+            0.03515625
+          ],
+          "align_stencil_intersects": [
+            0.10546875,
+            0.14453125
+          ],
+          "align_spatial_coupling_mean": [
+            0.0031175850599538535,
+            0.00981682213023305
+          ],
+          "binding_pair_intersect_rate": [
+            0.12408854067325592,
+            0.12226562574505806
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.0054302801145240664,
+            0.005087609286420047
+          ],
+          "filler_hits_any_binding": [
+            0.7781250029802322,
+            0.7867187410593033
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.0599092822521925,
+            0.061541938222944736
+          ],
+          "align_distance_median_pooled": [
+            7.0505828857421875,
+            6.234538555145264
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.078125,
+            0.01171875
+          ],
+          "align_stencil_intersects": [
+            0.359375,
+            0.05859375
+          ],
+          "align_spatial_coupling_mean": [
+            0.02413859497755766,
+            0.0032194817540585063
+          ],
+          "binding_pair_intersect_rate": [
+            0.5994791686534882,
+            0.6882812678813934
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.05893432814627886,
+            0.04860436171293259
+          ],
+          "filler_hits_any_binding": [
+            0.8753906339406967,
+            0.8250000029802322
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.16978832334280014,
+            0.13522621802985668
+          ],
+          "align_distance_median_pooled": [
+            4.044074058532715,
+            9.483691215515137
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n16-s1": {
+      "run_manifest_sha256": "cf9892629714fded6c7fd0e049a898301a87ada5e5ccea1aea9ccb0985125016",
+      "trained_parameters_sha256": "727d1b8adaf1f57d84aece9f22039d72e654799af3ef85c74a64ab33a883502e",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 6
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.01953125,
+        "post_filler": 0.0234375,
+        "actual": 0.0234375
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 4,
+        "wrong_to_correct": 5,
+        "both_correct": 1,
+        "both_wrong": 246
+      },
+      "fixed_query_read_relative_change": {
+        "median": 1.4227745532989502,
+        "mean": 7.391843318939209
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.015625,
+            0.0234375
+          ],
+          "align_stencil_intersects": [
+            0.19140625,
+            0.1796875
+          ],
+          "align_spatial_coupling_mean": [
+            0.008516971720382571,
+            0.00958907330641523
+          ],
+          "binding_pair_intersect_rate": [
+            0.18828124925494194,
+            0.15195312723517418
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.008828301448374987,
+            0.006956750759854913
+          ],
+          "filler_hits_any_binding": [
+            0.8804687410593033,
+            0.8648437559604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.09155047871172428,
+            0.08067961782217026
+          ],
+          "align_distance_median_pooled": [
+            5.799713611602783,
+            6.239989757537842
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.09765625,
+            0.03515625
+          ],
+          "align_stencil_intersects": [
+            0.46484375,
+            0.234375
+          ],
+          "align_spatial_coupling_mean": [
+            0.029502370860427618,
+            0.011777633568271995
+          ],
+          "binding_pair_intersect_rate": [
+            0.8316406309604645,
+            0.37708333134651184
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.08404494822025299,
+            0.019943735096603632
+          ],
+          "filler_hits_any_binding": [
+            0.873046875,
+            0.8699218779802322
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.16869134828448296,
+            0.10679449327290058
+          ],
+          "align_distance_median_pooled": [
+            3.1418075561523438,
+            4.6004414558410645
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n32-s0": {
+      "run_manifest_sha256": "c51c20189e61a18a803a9f8fe4c9c33db9b85ffd32c84905c370ba2ecc130813",
+      "trained_parameters_sha256": "2ec452a1c123c26bd26ad4e5eaeb2c15fe87ba77a50d9f5baf79da77f86c2202",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 4
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.0234375,
+        "post_filler": 0.015625,
+        "actual": 0.015625
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 3,
+        "wrong_to_correct": 1,
+        "both_correct": 3,
+        "both_wrong": 249
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.7053577303886414,
+        "mean": 1.2990329265594482
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.015625,
+            0.0078125
+          ],
+          "align_stencil_intersects": [
+            0.1484375,
+            0.16015625
+          ],
+          "align_spatial_coupling_mean": [
+            0.005857286567334086,
+            0.004123513266677037
+          ],
+          "binding_pair_intersect_rate": [
+            0.1410975307226181,
+            0.14283014088869095
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.0058385307202115655,
+            0.006393185816705227
+          ],
+          "filler_hits_any_binding": [
+            0.9339843690395355,
+            0.9273437559604645
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1144919078797102,
+            0.11472499929368496
+          ],
+          "align_distance_median_pooled": [
+            5.853638648986816,
+            5.983800411224365
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.0390625,
+            0.0078125
+          ],
+          "align_stencil_intersects": [
+            0.27734375,
+            0.18359375
+          ],
+          "align_spatial_coupling_mean": [
+            0.0145182847045362,
+            0.004807816760148853
+          ],
+          "binding_pair_intersect_rate": [
+            0.34346649050712585,
+            0.2143712230026722
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.022064808290451765,
+            0.01009628688916564
+          ],
+          "filler_hits_any_binding": [
+            0.903124988079071,
+            0.904296875
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.14960124716162682,
+            0.11498131044209003
+          ],
+          "align_distance_median_pooled": [
+            4.918431758880615,
+            5.4368367195129395
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n32-s1": {
+      "run_manifest_sha256": "61b89d09f9769a93477a62785c0b2b9095a81fab287898ed9b25b42ad5ca5483",
+      "trained_parameters_sha256": "75378e2317f292f217f1aae16ff30589b8fc9f14fe84b54afafeee92d434c1b7",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 4
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.01953125,
+        "post_filler": 0.015625,
+        "actual": 0.015625
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 4,
+        "wrong_to_correct": 3,
+        "both_correct": 1,
+        "both_wrong": 248
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.8819879293441772,
+        "mean": 1.6177455186843872
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.03125,
+            0.02734375
+          ],
+          "align_stencil_intersects": [
+            0.203125,
+            0.1953125
+          ],
+          "align_spatial_coupling_mean": [
+            0.009711197344586253,
+            0.00931072814273648
+          ],
+          "binding_pair_intersect_rate": [
+            0.16689768061041832,
+            0.19370589405298233
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.007967651356011629,
+            0.009214111138135195
+          ],
+          "filler_hits_any_binding": [
+            0.9734375178813934,
+            0.9582031071186066
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.13859505578875542,
+            0.13388020172715187
+          ],
+          "align_distance_median_pooled": [
+            6.502540588378906,
+            5.830224514007568
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.0078125,
+            0.046875
+          ],
+          "align_stencil_intersects": [
+            0.09765625,
+            0.26953125
+          ],
+          "align_spatial_coupling_mean": [
+            0.004182445001788437,
+            0.011651967652142048
+          ],
+          "binding_pair_intersect_rate": [
+            0.28695186227560043,
+            0.49483366310596466
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.01405586814507842,
+            0.03133376594632864
+          ],
+          "filler_hits_any_binding": [
+            0.9011718779802322,
+            0.8402343690395355
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.13549412786960602,
+            0.14209569618105888
+          ],
+          "align_distance_median_pooled": [
+            6.984101295471191,
+            4.575456142425537
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n64-s0": {
+      "run_manifest_sha256": "0b6fd6cbb547bed323285c1b49a3bf98459f86a2b3dde0d9db7a84496f26fccb",
+      "trained_parameters_sha256": "a63c8a7a3247aefdd5f922acea63f30521056bbf0a585954a7f73a04625be33d",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 5
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.02734375,
+        "post_filler": 0.01953125,
+        "actual": 0.01953125
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 2,
+        "wrong_to_correct": 0,
+        "both_correct": 5,
+        "both_wrong": 249
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.5467750430107117,
+        "mean": 0.9405096769332886
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.0234375,
+            0.0234375
+          ],
+          "align_stencil_intersects": [
+            0.1484375,
+            0.1640625
+          ],
+          "align_spatial_coupling_mean": [
+            0.006763165758457035,
+            0.00702891347464174
+          ],
+          "binding_pair_intersect_rate": [
+            0.1455775648355484,
+            0.1583658903837204
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.006414717645384371,
+            0.006911274045705795
+          ],
+          "filler_hits_any_binding": [
+            0.9632812440395355,
+            0.9570312649011612
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.15307467803359032,
+            0.15930287167429924
+          ],
+          "align_distance_median_pooled": [
+            5.806222915649414,
+            5.51840353012085
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.0546875,
+            0.00390625
+          ],
+          "align_stencil_intersects": [
+            0.25390625,
+            0.0859375
+          ],
+          "align_spatial_coupling_mean": [
+            0.016703166998922825,
+            0.0017422787932446226
+          ],
+          "binding_pair_intersect_rate": [
+            0.2726624459028244,
+            0.1933438740670681
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.014264527475461364,
+            0.008839059388265014
+          ],
+          "filler_hits_any_binding": [
+            0.9652343839406967,
+            0.9624999761581421
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.1920308694243431,
+            0.15600785240530968
+          ],
+          "align_distance_median_pooled": [
+            5.080832004547119,
+            7.044426441192627
+          ]
+        }
+      }
+    },
+    "main-random-fixed-n64-s1": {
+      "run_manifest_sha256": "21c46e43c65e33afc6f33280a9fef9b3139d97aedd1d2ae786cda49d15da5ffb",
+      "trained_parameters_sha256": "fea0052056b0d3193c0771e8885fcb73a0df7e8d1ff3fe00d6ed4d47fca1e7f8",
+      "dev_equivalence": {
+        "dev_queries_bitwise_equal_to_frozen": 256,
+        "dev_correct": 2
+      },
+      "compatibility_check_old_final_set_rows": 1024,
+      "dev_episodes": 64,
+      "dev_queries": 256,
+      "fixed_query_accuracy": {
+        "pre_filler": 0.0078125,
+        "post_filler": 0.0078125,
+        "actual": 0.0078125
+      },
+      "fixed_query_transitions_pre_to_post": {
+        "correct_to_wrong": 1,
+        "wrong_to_correct": 1,
+        "both_correct": 1,
+        "both_wrong": 253
+      },
+      "fixed_query_read_relative_change": {
+        "median": 0.5164733529090881,
+        "mean": 0.8333472609519958
+      },
+      "geometry_per_layer_head": {
+        "1": {
+          "align_within_1_cell": [
+            0.015625,
+            0.04296875
+          ],
+          "align_stencil_intersects": [
+            0.18359375,
+            0.2421875
+          ],
+          "align_spatial_coupling_mean": [
+            0.006020692875608802,
+            0.011846456211060286
+          ],
+          "binding_pair_intersect_rate": [
+            0.1898949034512043,
+            0.2171301431953907
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.00866887648589909,
+            0.010548211866989732
+          ],
+          "filler_hits_any_binding": [
+            0.9921875,
+            0.9874999970197678
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.19509639218449593,
+            0.18731774017214775
+          ],
+          "align_distance_median_pooled": [
+            5.890815258026123,
+            4.627962112426758
+          ]
+        },
+        "3": {
+          "align_within_1_cell": [
+            0.01953125,
+            0.015625
+          ],
+          "align_stencil_intersects": [
+            0.1171875,
+            0.17578125
+          ],
+          "align_spatial_coupling_mean": [
+            0.0059664889122359455,
+            0.007426981348544359
+          ],
+          "binding_pair_intersect_rate": [
+            0.1794084832072258,
+            0.2432338148355484
+          ],
+          "binding_pair_spatial_coupling_mean": [
+            0.008117593824863434,
+            0.0111102145165205
+          ],
+          "filler_hits_any_binding": [
+            0.9738281220197678,
+            0.9558593779802322
+          ],
+          "filler_max_spatial_coupling_mean": [
+            0.16684332862496376,
+            0.17146580666303635
+          ],
+          "align_distance_median_pooled": [
+            6.13295316696167,
+            5.4748125076293945
+          ]
+        }
+      }
+    }
+  }
+}
