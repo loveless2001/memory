@@ -51,6 +51,8 @@ V2_SOURCE = "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5"
 CELLS = {"filleroff": (16, 64), "long": (16, 32), "addrsup": (32, 64)}
 IVS = ("none", "bank_derange", "coord_shuffle", "read_offset", "query_off")
 RUNNER = ROOT / "modal-runners" / "modal-m4-sgm-p2d-diagnostics-grid.py"
+REGISTERED_GRID = ROOT / "configs" / "m4_sgm_p2d_grid.json"          # the full 12-cell Step 2 grid
+REGISTERED_GRID_SHA256 = "f6e625e34e2c7254aaad818440efaa9f6797b6ae835271e204642acde251e1b7"
 
 
 def script(name: str):
@@ -199,6 +201,26 @@ def load_group(runs: Path, mirror: Path, validator, source_sha: str) -> dict:
             "registered": validator.registered_cells(grid, RUNNER)}
 
 
+def registered_universe(primary: dict, validator) -> dict:
+    """The full registered grid, bound to its file and hash, never to whichever
+    group the caller lists first: the primary group must launch exactly it."""
+    if sha(REGISTERED_GRID) != REGISTERED_GRID_SHA256:
+        raise SystemExit("registered P2D grid file differs from its registered hash")
+    universe = validator.registered_cells(json.loads(REGISTERED_GRID.read_text()), RUNNER)
+    if primary["launch"]["grid_sha256"] != REGISTERED_GRID_SHA256 or primary["registered"] != universe:
+        raise SystemExit(f"primary group {primary['name']} does not launch the full registered grid "
+                         f"({len(primary['registered'])} of {len(universe)} cells)")
+    return universe
+
+
+def input_hashes(cell: Path) -> dict:
+    """Every consumed per-cell input, including checkpoint rows/weights (long arm)."""
+    files = ["run_manifest.json", "metrics.json", "per_example_results.jsonl", "trained_parameters.safetensors",
+             *sorted(f.name for f in cell.glob("per_example_results_step*.jsonl")),
+             *sorted(f.name for f in cell.glob("trained_parameters_step*.safetensors"))]
+    return {f: sha(cell / f) for f in files}
+
+
 def select_treatments(universe: dict, groups: list, partial: bool, validator,
                       source_sha: str) -> tuple[dict, dict, dict]:
     """Preflight every group's cells before any evaluation, then index each
@@ -236,7 +258,7 @@ def select_treatments(universe: dict, groups: list, partial: bool, validator,
                       "launch_git_head": g["launch"]["git_head"], "launch_grid_sha256": g["launch"]["grid_sha256"],
                       "launch_provenance_sha256": g["launch_provenance_sha256"],
                       "manifest_modal_group": man["modal_group"], "manifest_git_head": man["git_head"],
-                      "run_manifest_sha256": sha(cell / "run_manifest.json")}
+                      "run_manifest_sha256": sha(cell / "run_manifest.json"), "input_sha256": input_hashes(cell)}
     return available, coverage, index
 
 
@@ -280,7 +302,7 @@ def main():
     if source_tree_sha256(ROOT / "memsub") != args.source_sha:
         raise SystemExit("analysis runtime differs from the launch source")
     groups = [load_group(r, m, validator, args.source_sha) for r, m in [(args.runs, args.mirror), *args.add_group]]
-    launch, registered = groups[0]["launch"], groups[0]["registered"]   # primary = the full registered grid
+    launch, registered = groups[0]["launch"], registered_universe(groups[0], validator)
     available, coverage, index = select_treatments(registered, groups, args.partial, validator, args.source_sha)
     pairs = {(tag, n) for tag, ns in CELLS.items() for n in ns
              if all(f"{tag}-learned-n{n}-s{s}" in available for s in (0, 1))}
@@ -300,7 +322,8 @@ def main():
               "partial_mode": args.partial, "coverage": coverage,
               "limits": ["No R3, pretrained-model or scaling claim.",
                          "Missing seed pairs are unevaluable; single seeds are descriptive only.",
-                         "Interrupted cells are preserved without replacement or retraining.",
+                         "The original incomplete v1 artifacts are preserved unchanged; the authorized top-up "
+                         "retrained the missing cells in a separate group with its own provenance.",
                          "Each cell is read from the one group indexed for it (see `index`); top-up cells "
                          "keep their own group/manifest and are not relabelled as primary-group cells."],
               "baselines": {}, "arms": {}}
@@ -350,6 +373,8 @@ def main():
                           "baseline_accuracy": sum(RULES.episode_scores(base_rows[(n, seed)], "none").values()) / RULES.N_EPISODES})
                 if tag == "long":
                     r["vs_own_1500"] = RULES.paired(treat, rows_of(mc / "per_example_results_step1500.jsonl"))
+                    r["step1500_rows_sha256"] = sha(mc / "per_example_results_step1500.jsonl")
+                    r["step1500_parameters_sha256"] = sha(mc / "trained_parameters_step1500.safetensors")
                     r["continuity_1500_vs_v2"] = tensors_equal(
                         mc / "trained_parameters_step1500.safetensors",
                         args.v2_mirror / f"main-learned-n{n}-s{seed}" / "trained_parameters.safetensors")

@@ -122,6 +122,8 @@ def _group(tmp_path, name, cells, launch=None):
     for rid in cells:
         (mirror / rid).mkdir(parents=True, exist_ok=True)
         (mirror / rid / "run_manifest.json").write_text(json.dumps({"modal_group": name, "git_head": name}))
+        for f in ("metrics.json", "per_example_results.jsonl", "trained_parameters.safetensors"):
+            (mirror / rid / f).write_text(f"{name}/{rid}/{f}")
     return {"name": name, "runs": runs, "mirror": mirror, "registered": {rid: {"cfg": rid} for rid in cells},
             "launch": launch or {"git_head": name, "grid_sha256": f"grid-{name}"},
             "launch_provenance_sha256": f"lp-{name}", "grid_snapshot_sha256": f"gs-{name}"}
@@ -170,6 +172,50 @@ def test_topup_completes_the_index_with_per_cell_group_provenance(tmp_path, read
     assert index["b"]["manifest_modal_group"] == "v1-topup" and index["b"]["launch_git_head"] == "v1-topup"
     assert coverage["b"] == {"status": "valid_complete", "group": "v1-topup",
                              "incomplete_in": [{"group": "v1", "reason": "missing ['metrics.json']"}]}
+
+
+def test_index_hashes_every_consumed_input_including_checkpoints(tmp_path, readings):
+    import hashlib
+    v1, topup = _group(tmp_path, "v1", ["a", "b"]), _group(tmp_path, "v1-topup", ["b"])
+    cell = topup["mirror"] / "b"
+    for f in ("per_example_results_step1500.jsonl", "trained_parameters_step1500.safetensors"):
+        (cell / f).write_text(f"checkpoint {f}")
+    problems = {("v1-mirror", "b"): "missing ['metrics.json']"}
+    _a, _c, index = readings.select_treatments(UNIVERSE, [v1, topup], False, _validator(problems), "src")
+    hashes = index["b"]["input_sha256"]
+    assert set(hashes) == {"run_manifest.json", "metrics.json", "per_example_results.jsonl",
+                           "trained_parameters.safetensors", "per_example_results_step1500.jsonl",
+                           "trained_parameters_step1500.safetensors"}
+    assert all(h == hashlib.sha256((cell / f).read_bytes()).hexdigest() for f, h in hashes.items())
+    assert "per_example_results_step1500.jsonl" not in index["a"]["input_sha256"]
+
+
+def _committed_group(m, grid_rel):
+    """A primary group built from a COMMITTED grid file (no run artifacts needed)."""
+    grid_path = ROOT / grid_rel
+    validator = m.script("sgm-recover-and-validate-grid-artifacts")
+    import hashlib
+    return validator, {"name": grid_path.stem, "launch": {"grid_sha256": hashlib.sha256(grid_path.read_bytes()).hexdigest()},
+                       "registered": validator.registered_cells(json.loads(grid_path.read_text()), m.RUNNER)}
+
+
+def test_universe_is_the_registered_12_cell_grid_not_the_first_group():
+    m = _readings()
+    validator, v1 = _committed_group(m, "configs/m4_sgm_p2d_grid.json")
+    assert len(m.registered_universe(v1, validator)) == 12
+    validator, topup = _committed_group(m, "configs/m4_sgm_p2d_topup_grid.json")   # the six-cell top-up
+    assert len(topup["registered"]) == 6
+    with pytest.raises(SystemExit, match="does not launch the full registered grid .6 of 12"):
+        m.registered_universe(topup, validator)
+    forged = {**topup, "launch": dict(v1["launch"])}          # right hash, subset of cells
+    with pytest.raises(SystemExit, match="full registered grid"):
+        m.registered_universe(forged, validator)
+
+
+def test_limits_describe_the_topup_not_no_retraining():
+    src = (ROOT / "scripts" / "sgm-p2d-step2-readings.py").read_text()
+    assert "without replacement or retraining" not in src
+    assert "retrained the missing cells in a separate group" in src
 
 
 def test_a_cell_valid_in_two_groups_is_ambiguous(tmp_path, readings):
