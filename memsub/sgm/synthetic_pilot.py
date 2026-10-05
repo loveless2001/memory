@@ -48,6 +48,9 @@ class PilotConfig:
     filler_writes: bool = True                # False: tail-filler steps never write
     aux_address_lambda: float = 0.0           # >0: AddressMLP-only pair loss
     checkpoint_steps: tuple = ()              # extra fixed-endpoint checkpoints
+    # P2G gate arm: init-only shift of every adapter's beta_proj.bias (default None =
+    # unchanged build). beta = sigmoid(W_beta x + b): W_beta draws are untouched.
+    beta_bias_init: float | None = None
 
     def result_label(self) -> str:
         if self.arm == "oracle":
@@ -55,7 +58,9 @@ class PilotConfig:
         base = "tiny-random-lm+taskhead" if self.readout == "taskhead" else "tiny-random-lm+lm-readout"
         flags = [f for f, on in (("filler-off", not self.filler_writes),
                                  (f"aux-addr-lambda{self.aux_address_lambda:g}", self.aux_address_lambda > 0),
-                                 (f"steps{self.steps}", bool(self.checkpoint_steps))) if on]
+                                 (f"steps{self.steps}", bool(self.checkpoint_steps)),
+                                 (f"beta-bias{self.beta_bias_init:g}" if self.beta_bias_init is not None else "",
+                                  self.beta_bias_init is not None)) if on]
         return base + ("+DIAGNOSTIC-" + "+".join(flags) if flags else "")
 
     def task_spec(self) -> BindingTaskSpec:
@@ -86,6 +91,10 @@ def build(pcfg: PilotConfig):
     c = runtime.cfg
     torch.manual_seed(10_000 + pcfg.seed)
     head = nn.Linear(len(c.selected_layers) * c.memory_heads * c.value_dim, N_VALUES)
+    if pcfg.beta_bias_init is not None:   # after every RNG draw: other parameters stay bitwise v2
+        with torch.no_grad():
+            for adapter in runtime.adapters.values():
+                adapter.beta_proj.bias.fill_(float(pcfg.beta_bias_init))
     return runtime, SparseGrowingMemoryBackend(runtime), head
 
 

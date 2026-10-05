@@ -1,0 +1,263 @@
+{
+  "_comment": "P2G inputs index (prereg v0.2 25fdbc5). Reused checkpoints are validated by these hashes before any evaluation and are never relabelled into the new group. Parity references are complete legacy files (5 interventions, 5120 rows) checked parsed- and byte-equal.",
+  "prereg": {
+    "commit": "25fdbc5",
+    "path": "plans/261006-0010-m4-sgm-p2g-selective-write-gate/prereg.md",
+    "sha256": "c2fa7394e9e621766af705743d46715b9584c83e161a90bdfd45d928908925c3"
+  },
+  "new_group": {
+    "group": "p2g-selective-write-v1",
+    "grid_file": "configs/m4_sgm_p2g_grid.json",
+    "grid_sha256": "1b7ce09049137df80b979279bb3a6e7b9111e6586d70a60e5c2ea1556d551c8e"
+  },
+  "final_seed_base": 9400011,
+  "parity_seed_base": 9300011,
+  "corners": {
+    "16": {
+      "T_on": "v2-n16-s{s}",
+      "T_off": "filleroff-n16-s{s}",
+      "gate": "p2g:gateclosed-learned-n16-s{s}"
+    },
+    "32": {
+      "T_on": "v2-n32-s{s}",
+      "T_off": "p2g:filleroff-learned-n32-s{s}",
+      "gate": "p2g:gateclosed-learned-n32-s{s}"
+    }
+  },
+  "reused": {
+    "v2-n16-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n16-s0",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "355b2b1f320673c11acc414cfd6f57a11e316e867ab15e2164544aa2dd338010",
+      "trained_parameters_sha256": "3502f146ccac99d38153c85fcd43079b2727f3e5529f337b081b1908c37ca7ea",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 16,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {}
+      }
+    },
+    "v2-n16-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n16-s1",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "dfe3e4106322005f573056dd3e9d87e663a782b7f5e2c3d2b8ea220157a0a1f1",
+      "trained_parameters_sha256": "a92e88188347b209ab53241efbb698529931dedef6f3a13ff28b58e63cca45df",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 16,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {}
+      }
+    },
+    "v2-n32-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s0",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "932719382d9d55f3b721c3f18760a27af865c80bfef377e632a3117a838fe1b5",
+      "trained_parameters_sha256": "18a19add73cc674b5d6924c5657938eb6c16ed8eebb15c0648e90fba95dd33f9",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {}
+      }
+    },
+    "v2-n32-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2-volume-mirror/main-learned-n32-s1",
+      "group": "p2-load-sweep-v2",
+      "git_head": "1d62903e3e093ee625642b5ef4c86b3b6cae6d2b",
+      "memsub_source_sha256": "a89284ea8b6fa58c10c61b7095710ced99bcbe7bf4eaf83f1e2c7486c7d900c5",
+      "run_manifest_sha256": "93b60a21d4c0f0489071da99c3b7ee637158fe0844370653c8ef164ddd529593",
+      "trained_parameters_sha256": "3c2c214fef8501187de8cbea3a53161b45ba2144e9020616b7ef0c370933e99f",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {}
+      }
+    },
+    "filleroff-n16-s0": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s0",
+      "group": "p2d-diagnostics-v1",
+      "git_head": "31aa4c8998fb00b92bccca29725383a982bae8a4",
+      "memsub_source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+      "run_manifest_sha256": "c8cd8bb4c8a662c6802f628d74af2658e828667a6fd42239655f12d1810fe9fc",
+      "trained_parameters_sha256": "cc8636da24a5d706be928162c9b364f1a60aac830c292a622e67594441929d89",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 16,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": []
+      }
+    },
+    "filleroff-n16-s1": {
+      "cell": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s1",
+      "group": "p2d-diagnostics-v1",
+      "git_head": "31aa4c8998fb00b92bccca29725383a982bae8a4",
+      "memsub_source_sha256": "d4effd0c5132057093d013d4e117bf131db9b4819fbc02d45fb1bc9b06a48b60",
+      "run_manifest_sha256": "3b2cd13d617a632455f275835ffd19c8721d9207dfad56f0594f428a8cf77d8c",
+      "trained_parameters_sha256": "9d1a5f339e01b3f9d4edc577a44c9569eb38dd1a6036229933d1c331fa6504c5",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 16,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": []
+      }
+    }
+  },
+  "parity": {
+    "P-on": [
+      {
+        "checkpoint": "v2-n16-s0",
+        "filler_writes": true,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n16-s0-fresh-rows.jsonl",
+        "reference_sha256": "ded44fe3c99e7ea608843010d0fa4d880ac5243ea58f8c59a9130c420c8fcd20",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      },
+      {
+        "checkpoint": "v2-n16-s1",
+        "filler_writes": true,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n16-s1-fresh-rows.jsonl",
+        "reference_sha256": "b139bd8e9314809b258d50f6bd96f033bd40fd4db669fd59e8395e7fbd87182a",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      },
+      {
+        "checkpoint": "v2-n32-s0",
+        "filler_writes": true,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n32-s0-fresh-rows.jsonl",
+        "reference_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      },
+      {
+        "checkpoint": "v2-n32-s1",
+        "filler_writes": true,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/p2d/step2-full-v1-r2/baseline-v2-learned-n32-s1-fresh-rows.jsonl",
+        "reference_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+        "reference_producer": "frozen 1d62903 observer (P2D Step 2 cb452fb)"
+      }
+    ],
+    "P-off": [
+      {
+        "checkpoint": "filleroff-n16-s0",
+        "filler_writes": false,
+        "seed": 9300011,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s0/per_example_results.jsonl",
+        "reference_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+        "reference_producer": "P2D Modal training run (31aa4c8 / d4effd0c)"
+      },
+      {
+        "checkpoint": "filleroff-n16-s1",
+        "filler_writes": false,
+        "seed": 9300012,
+        "interventions": [
+          "none",
+          "bank_derange",
+          "coord_shuffle",
+          "read_offset",
+          "query_off"
+        ],
+        "reference": "plans/261005-0210-m4-sgm-p0-p2/runs/p2d-diagnostics-v1/status-audit/volume-mirror/filleroff-learned-n16-s1/per_example_results.jsonl",
+        "reference_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+        "reference_producer": "P2D Modal training run (31aa4c8 / d4effd0c)"
+      }
+    ]
+  }
+}
