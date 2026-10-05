@@ -193,17 +193,46 @@ def test_live_state_rejected_after_weight_reload_or_parameter_replacement():
         a.evaluate_query(st, _ids(1))
 
 
-def test_write_coordinate_trace_is_telemetry_only():
-    """P2D: write_coords are recorded per written layer and change nothing."""
-    be = _backend()
-    traces: list = []
-    with torch.no_grad():
-        st = be.ingest_source(be.new_state(), _ids(6), SRC, traces=traces)
-        out = be.evaluate_query(st, _ids(1, start=1003), detach=True)
-    assert all(set(t["write_coords"]) == {1, 3} for t in traces)
-    assert traces[0]["write_coords"][1].shape == (1, 2, 2)
-    ref = SparseGrowingMemoryBackend(SGMModelRuntime(build_tiny_backbone(0), be.runtime.cfg))
-    with torch.no_grad():
-        st2 = ref.ingest_source(ref.new_state(), _ids(6), SRC)
-        out2 = ref.evaluate_query(st2, _ids(1, start=1003), detach=True)
-    torch.testing.assert_close(out["logits"], out2["logits"], rtol=0, atol=0)
+def test_observer_traces_match_the_frozen_v2_runtime_exactly():
+    """P2D telemetry (write_coords, read_q) must not change behaviour relative
+    to the frozen P2 training code at 1d62903 (bank tensors, reads, logits)."""
+    import importlib
+    import importlib.util
+    from pathlib import Path
+    spec = importlib.util.spec_from_file_location(
+        "p2d_obs", Path(__file__).resolve().parents[1] / "scripts" / "sgm-p2d-address-telemetry-from-saved-runs.py")
+    obs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(obs)
+    obs.load_frozen_memsub()
+    def run(pkg):
+        rt_mod = importlib.import_module(f"{pkg}.runtime.sgm_model_runtime")
+        be_mod = importlib.import_module(f"{pkg}.sgm.backend")
+        cfg_mod = importlib.import_module(f"{pkg}.sgm.config")
+        cfg = cfg_mod.SGMConfig(selected_layers=(1, 3), memory_heads=2, key_dim=8, value_dim=8,
+                                address_hidden=16, local_recent_tokens=4096, max_cells_per_bank=4096)
+        be = be_mod.SparseGrowingMemoryBackend(rt_mod.SGMModelRuntime(build_tiny_backbone(0), cfg))
+        with torch.no_grad():
+            st = be.ingest_source(be.new_state(), _ids(6), be_mod.SourceRef("s"))
+            out = be.evaluate_query(st, _ids(2, start=1003), detach=True)
+        return st, out
+    (fs, fo), (ns, no) = run("memsub_frozen"), run("memsub")
+    torch.testing.assert_close(no["logits"], fo["logits"], rtol=0, atol=0)
+    for l in (1, 3):
+        torch.testing.assert_close(no["reads"][l], fo["reads"][l], rtol=0, atol=0)
+    assert ns.banks.cells.keys() == fs.banks.cells.keys()
+    for key, bank in ns.banks.cells.items():
+        assert bank.keys() == fs.banks.cells[key].keys()
+        for c in bank:
+            torch.testing.assert_close(bank[c], fs.banks.cells[key][c], rtol=0, atol=0)
+    assert "read_q" in no["trace"] and "read_q" not in fo["trace"]   # extra telemetry only
+
+
+def test_stencil_relation_uses_true_supports():
+    from memsub.sgm.p2d_address_diagnostics import stencil_relation
+    origin = torch.tensor([0.0, 0.0])
+    hit, c = stencil_relation(origin, torch.tensor([2.6, 0.0]))
+    assert not bool(hit) and float(c) == 0.0           # distance < 3, no shared cell
+    hit, c = stencil_relation(origin, torch.tensor([2.4, 2.4]))
+    assert bool(hit) and 0 < float(c) < 1e-6          # distance > 3, shares a cell
+    hit, c = stencil_relation(origin, origin)
+    assert abs(float(c) - 0.3525390625) < 1e-9

@@ -142,6 +142,7 @@ class SGMModelRuntime(nn.Module):
     def _read(self, banks: SparseBankSet, i, p, t, oracle, trace):
         idx, w, coords = self._stencil(p, "read", t, oracle)
         trace["read_coords"].setdefault(i, []).append(coords.detach())
+        trace.setdefault("read_q", {}).setdefault(i, []).append(p["q"][:, t].detach())  # telemetry
         cells, present = banks.gather(i, idx)
         trace["empty_read_weight"].append(float((w * ~present).sum(-1).mean()))
         return read_memory(cells, w, p["q"][:, t])

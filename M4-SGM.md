@@ -243,36 +243,67 @@ Preregistered before any P2D measurement. P2 results stay frozen under
 their identity. Candidate causes: filler-write interference, address
 learning / collisions, optimization budget, representation.
 
-### Step 1 — local, $0, descriptive
+### Step 1 — local, $0, descriptive (revised per codex 21117 / 21120)
 
-Reload each v2 `learned` and `random_fixed` cell's saved adapters and task
-head. A reload must reproduce that run's last logged dev evaluation exactly.
-Then measure on **dev** episodes only (seed 4242, 4 batches × 16):
+Observer: `scripts/sgm-p2d-address-telemetry-from-saved-runs.py` plus
+`memsub/sgm/p2d_address_diagnostics.py`. The memsub observer adds two
+telemetry-only traces, `write_coords` and `read_q`. A regression test
+compares bank tensors, reads and logits against the frozen `1d62903` code
+bitwise.
 
-- **Alignment:** distance (cells) from each query's read coordinate to the
-  write coordinate of its binding's value token. Report the median, the
-  fraction < 1 cell, and the fraction < 3 cells (read stencil reaches the write).
-- **Binding-pair collision rate:** the fraction of distinct binding pairs
-  whose write stencils overlap (|dx| < 3 and |dy| < 3).
-- **Filler hits:** the fraction of filler writes whose stencil overlaps any
-  binding's write stencil.
+Exactly the 20 registered cells: `learned` and `random_fixed` × N ∈
+{4, 8, 16, 32, 64} × seeds {0, 1}, reloaded from the v2 volume mirror. Per cell:
 
-Descriptive reading:
-- Low alignment and few collisions in failing runs mean the read misses the
-  write.
-- High alignment with many collisions or filler hits means the content was
-  overwritten.
+1. **Integrity:** parameter sha256 equals the manifest. **Dev equivalence:**
+   the frozen-v2 runtime (memsub extracted from `1d62903`) and the observer,
+   with the same checkpoint on the same dev episodes (seed 4242, eval_batches
+   × batch), produce bitwise-equal task-head logits and labels. The dev
+   aggregate equals the run's last logged dev evaluation.
+2. **Compatibility check** (separate, not telemetry): replaying the old
+   final set (9_100_003 + seed) reproduces the saved per-example predictions.
+3. **Dev telemetry** (4 dev batches × 16), per layer/head. Stencil
+   relations use the actual positive-weight B-spline supports. *Spatial
+   coupling* Σ_c w_a(c) w_b(c) is only the spatial factor of read gain:
+   β (q·k) and the content residual also matter. Measures:
+   - alignment of each query's read to its binding's value write (Euclidean
+     distance, stencil intersection, spatial coupling)
+   - binding-pair stencil intersection and spatial coupling
+   - filler writes intersecting any binding, and their max spatial coupling
+4. **Fixed-final-query filler test:** keep the final query's q and read
+   stencil fixed, and read the bank snapshot before the tail filler and after
+   it. Report task-head accuracy, paired correct→wrong and wrong→correct
+   transitions, and the relative read change.
 
-Tooling: `scripts/sgm-p2d-address-telemetry-from-saved-runs.py`. It needs a
-telemetry-only `write_coords` runtime trace, which is a new memsub source hash
-with no behavior change; the reload-reproduction check enforces that.
+Readings are descriptive only:
+- Geometry can be consistent with a mechanism but does not prove it, and
+  cannot establish a unique cause. In particular, low collision plus
+  misalignment does not establish inadequate q/k representation.
+- A pre→post accuracy drop supports harmful bank changes from tail-filler
+  writes, conditional on that query representation. It does not show that
+  every error is overwritten content, or include query/KV-mediated effects.
+- Step 1 results inform the final Step 2 preregistration.
 
-### Step 2 — Modal CPU (pending design review)
+### Step 2 — Modal CPU (design revised per codex 21118; final prereg after Step 1)
 
-Proposed in #gravity 21114, about $8:
-- `oracle_nojunk` at N ∈ {16, 64}
-- `learned_oraclegate` at N ∈ {16, 64}
-- `learned_long` (4500 steps) at N ∈ {16, 32}
+Arms (2 seeds each, about $7–8 planning estimate, not a cap):
+- `learned_filler_off` at N ∈ {16, 64}: tail-filler write steps skipped
+  (no update, no allocation). Learned β stays on value/key/sink tokens, and
+  all reads are kept.
+- `oracle_nojunk` at N ∈ {16, 64}: only tail-filler WRITE addresses change.
+  They go to an active binding anchor chosen by a fixed hash of (token id,
+  position), independent of the episode RNG. The induced collision load is
+  measured. Value addresses, key/sink junk and source READ addresses are
+  unchanged.
+- `learned_long` at N ∈ {16, 32}: one continuous run from the original init,
+  data stream, optimizer and LR, with checkpoints at 1500 and 4500 steps;
+  both are evaluated (fixed endpoints, no best-checkpoint selection).
 
-2 seeds each. The reading matrix is in 21114. This section is finalized only
-after codex's design review, and before any Step 2 implementation or launch.
+Other rules:
+- Use a fresh final seed. Frozen v2 checkpoints are re-evaluated on the
+  same fresh set, with paired intervals and both seeds reported.
+- Readings are registered diagnostic effects. No R3 pass is conferred on
+  privileged or budget-unmatched arms.
+- Softened matrix: `oracle_nojunk` success means tolerance of that collision
+  policy; its failure means degradation under that policy/budget, not the
+  learned arm's cause. A `learned_long` improvement means a budget effect
+  for this recipe, not the sole cause.
