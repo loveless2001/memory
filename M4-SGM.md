@@ -283,6 +283,49 @@ Readings are descriptive only:
   every error is overwritten content, or include query/KV-mediated effects.
 - Step 1 results inform the final Step 2 preregistration.
 
+### Step 1 results (2026-10-05; evidence audit PASS, #gravity 21128)
+
+Artifacts: `plans/261005-0210-m4-sgm-p0-p2/p2d/step1-address-telemetry.json`
+(sha256 `5f1a643f…`) and `step1-run.log`. Observer `4e282de`, memsub source
+`729cb242…`. All 20 registered cells: 64 dev episodes / 256 queries each.
+Every cell passed bitwise frozen-v2 dev equivalence, the 1024-row old-final
+compatibility replay, and the snapshot invariants. Values are per layer
+(L1 / L3) and head (h0 / h1).
+
+| cells | read→bound-write distance (pooled median) | fixed-query acc pre→post filler | correct→wrong / wrong→correct |
+|---|---|---|---|
+| learned N=4 | L1 0.39–0.63, L3 0.15–0.21 | 0.926→0.863, 0.977→0.914 | 19/3, 16/0 |
+| learned N=8 | L1 0.35–0.55, L3 0.43–0.88 | 0.949→0.895, 0.977→0.902 | 19/5, 19/0 |
+| learned N=16 | s0: L1 3.3/4.5, L3 0.6; s1: L1 1.82/0.47, L3 0.6 | 0.055→0.051, 0.672→0.605 | 8/7, 22/5 |
+| learned N=32 | L1 5.5–6.9, L3 1.5–3.1 | 0.023→0.020, 0.027→0.023 | 3/2, 5/4 |
+| learned N=64 | L1 6.8–8.3, L3 8.0–19.2 | 0.012→0.012, 0.012→0.000 | 3/3, 3/0 |
+| random_fixed | 2.2–9.5 everywhere | N=4 post 0.086/0.105, N=8 s1 0.0625; else ≤ 0.027 | — |
+
+Narrowed descriptive readings (per codex 21128):
+
+- **N = 32 / 64.** Replacing the post-filler bank with the pre-filler bank,
+  while keeping the final query representation, does not rescue accuracy:
+  the pre-filler read is already at 0.012–0.027. This does **not** rank filler
+  as an overall cause. Its effects on training, source KV and the query
+  representation are untested, so `learned_filler_off` stays in Step 2.
+  Reads lie far from their bindings' writes. That is an observation
+  consistent with read/write address misalignment, not a demonstrated cause.
+- **Overlapping supports with working retrieval** (N = 4 / 8: binding-pair
+  stencil intersection L1 0.60–0.76, L3 ≈ 1.0; ~97–100% of filler writes
+  intersect a binding stencil) show that disjoint stencils are unnecessary
+  here. They do **not** identify q·k and β as the separation mechanism:
+  spatial weight differences and head/layer contributions remain possible.
+- **Tail-filler writes** cost the working runs a modest net amount on the
+  fixed-query test: about 6–8 points, with 16–19 correct→wrong against
+  0–5 wrong→correct. This holds conditional on the query representation.
+- **random_fixed** is not at chance throughout. N = 4 dev post-filler
+  accuracy is 0.086 / 0.105 and N = 8 s1 is 0.0625 (chance 0.0156): limited
+  gains. Its frozen MLP maps learned q/k, so its misalignment is an
+  observation, not inevitable because the map is fixed.
+- **Geometric alignment alone is not sufficient.** At N = 16 s0, L3 has a
+  ~0.61–0.63-cell median distance and near-perfect stencil intersection, yet
+  the pre-filler read scores 0.055.
+
 ### Step 2 — Modal CPU (design revised per codex 21118; final prereg after Step 1)
 
 Arms (2 seeds each, about $7–8 planning estimate, not a cap):
