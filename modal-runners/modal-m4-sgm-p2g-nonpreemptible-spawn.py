@@ -30,8 +30,8 @@ TOPUP_RUNNER = "modal-runners/modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py"
 V2_RUNS = "plans/261005-0210-m4-sgm-p0-p2/runs/p2-load-sweep-v2"
 LOCAL_OUT = "plans/261005-0210-m4-sgm-p0-p2/runs"
 SOURCE_SHA = "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2"   # P2G memsub (knob)
-PROPOSED_CAP_USD = 13.0          # prereg v0.2 request; NOT approved
-P2G_CAP_USD = None               # bound only after the user approves a cap (fail closed until then)
+PROPOSED_CAP_USD = 13.0          # prereg v0.2 request
+P2G_CAP_USD = 13.0               # user-approved: #gravity 21341 ("ok go"), scoped by codex 21342 to the 6 cells
 ARM_WALL_FACTOR = {"gateclosed": 1.0, "filleroff": 1.0}   # x own seed-specific v2 wall (codex 21303)
 MAX_CELL_TIMEOUT_S = 8 * 3600    # backstop only; per-cell watchdog is the real bound
 # Training-artifact eval runs on the PUBLISHED P2D population; the registered

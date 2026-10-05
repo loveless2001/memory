@@ -85,10 +85,16 @@ def test_exact_cells_timeouts_and_reservation_under_the_proposed_cap(runner):
 
 
 @pytest.mark.parametrize("cap", [None, 12.0])
-def test_no_approved_or_insufficient_cap_is_refused(runner, cap):
-    assert runner.P2G_CAP_USD is None                         # unapproved: spawn() cannot plan
+def test_missing_or_insufficient_cap_is_refused(runner, cap):
     with pytest.raises(ValueError, match="not admitted"):
         runner.plan(cap=cap)
+
+
+def test_bound_cap_is_the_user_approved_13_and_admits_exactly_the_reservation(runner):
+    assert runner.P2G_CAP_USD == runner.PROPOSED_CAP_USD == 13.0      # #gravity 21341/21342
+    _cells, ledger, _prov = runner.plan()                              # spawn() path, default cap
+    assert ledger["cap_usd"] == 13.0 and ledger["admitted"]
+    assert ledger["reserved_total_usd"] == pytest.approx(12.32978160, abs=1e-8)
 
 
 def test_runner_source_sha_is_the_current_memsub(runner):
