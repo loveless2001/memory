@@ -11,6 +11,7 @@ admission ledger fits the $15 cap and the tree is clean.
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import modal
@@ -128,25 +129,30 @@ def main(group: str, grid: str, v2_runs: str, local_out: str):
         raise SystemExit(f"launch ended with status {status}; see {root / 'shutdown.json'}")
 
 
+MODAL_CLI = [sys.executable, "-m", "modal"]   # the launch interpreter's own Modal CLI
+
+
 def stop_app(app_id: str, timeout_s: int = 120) -> None:
-    """Checked, bounded `modal app stop` (raises on failure or timeout)."""
-    subprocess.run(["modal", "app", "stop", app_id], check=True, timeout=timeout_s,
+    """Checked, bounded, non-interactive `modal app stop --yes` (raises on
+    failure or timeout; newer CLIs otherwise prompt and abort without a TTY)."""
+    subprocess.run([*MODAL_CLI, "app", "stop", "--yes", app_id], check=True, timeout=timeout_s,
                    capture_output=True, text=True)
 
 
 def verify_stopped(app_id: str, timeout_s: int = 120) -> dict:
     """Evidence that the app is stopped with zero running containers."""
-    apps = subprocess.run(["modal", "app", "list", "--json"], check=True, timeout=timeout_s,
+    apps = subprocess.run([*MODAL_CLI, "app", "list", "--json"], check=True, timeout=timeout_s,
                           capture_output=True, text=True).stdout
-    conts = subprocess.run(["modal", "container", "list", "--json"], check=True, timeout=timeout_s,
+    conts = subprocess.run([*MODAL_CLI, "container", "list", "--json"], check=True, timeout=timeout_s,
                            capture_output=True, text=True).stdout
-    state = next((a.get("State") or a.get("state") for a in json.loads(apps)
-                  if app_id in json.dumps(a)), None)
-    running = [c for c in json.loads(conts) if app_id in json.dumps(c)]
-    # `modal app list` drops stopped apps, so "not listed" also counts as stopped
-    stopped = state is None or str(state).lower() == "stopped"
-    return {"app_state": state if state is not None else "not listed (stopped apps drop out)",
-            "app_containers": len(running), "verified": stopped and not running}
+    listed = [a for a in json.loads(apps) if a.get("App ID") == app_id]      # CLI JSON columns
+    running = [c for c in json.loads(conts) if c.get("App ID") == app_id]
+    if listed:   # still listed: require an explicit stopped state and zero tasks
+        state, tasks = listed[0].get("State"), listed[0].get("Tasks")
+        stopped = isinstance(state, str) and state.lower().startswith("stopped") and str(tasks) == "0"
+    else:        # `modal app list` drops stopped apps
+        state, stopped = "not listed (stopped apps drop out)", True
+    return {"app_state": state, "app_containers": len(running), "verified": stopped and not running}
 
 
 def consume(results, root: Path, stop, verify) -> str:
@@ -161,9 +167,12 @@ def consume(results, root: Path, stop, verify) -> str:
             evidence = {"trigger": res}
             try:
                 stop()
+            except Exception as e:                     # e.g. already stopped: still verify
+                evidence["stop_error"] = repr(e)
+            try:
                 evidence["verification"] = verify()
             except Exception as e:                     # surfaced, never swallowed
-                evidence["error"] = repr(e)
+                evidence["verify_error"] = repr(e)
             ok = evidence.get("verification", {}).get("verified", False)
             evidence["status"] = "halted" if ok else "shutdown_unresolved"
             (root / "shutdown.json").write_text(json.dumps(evidence, indent=2, default=str))

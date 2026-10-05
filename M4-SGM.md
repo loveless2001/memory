@@ -491,5 +491,17 @@ Long-prefix continuity and the budget guard are defined in clarifications
      A configuration using rounded worst-seed durations (3,042 timeout-min)
      is rejected (test). Duplicate run IDs are rejected before the ledger is
      built (test).
-   - **Shutdown verification:** app state `stopped` and 0 containers via the
-     CLI, plus billing reconciliation.
+   - **Launch and shutdown commands:**
+     - Launch with the project interpreter's Modal CLI:
+       `.venv/bin/python -m modal run --detach modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py …`
+       (SDK/CLI 1.5.1). The PATH CLI is 1.3.5.
+     - Results are consumed in completion order. On allowance exhaustion the
+       launcher runs `<launch python> -m modal app stop --yes <app>`
+       (check=True, 120 s timeout).
+     - Then, even if the stop errored (e.g. the app was already stopped), it
+       verifies via `app list --json` / `container list --json`. The app is
+       verified only if it is unlisted or listed with an explicit "stopped"
+       State and 0 Tasks, AND no container carries its App ID.
+     - Evidence goes to `shutdown.json`; any unverified state is
+       `shutdown_unresolved` and the launcher exits non-zero.
+     - Billing is reconciliation only.

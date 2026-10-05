@@ -136,8 +136,14 @@ def test_failed_or_unverified_stop_is_surfaced_as_unresolved(tmp_path):
     def boom():
         raise subprocess.CalledProcessError(1, ["modal", "app", "stop"])
     ex = {"run_id": "z", "status": "allowance_exhausted", "reason": "x"}
-    assert _runner().consume(iter([ex]), tmp_path, boom, lambda: {"verified": True}) == "shutdown_unresolved"
-    assert "CalledProcessError" in json.loads((tmp_path / "shutdown.json").read_text())["error"]
+    # stop errors (e.g. already stopped) are recorded but verification still decides
+    assert _runner().consume(iter([ex]), tmp_path, boom, lambda: {"verified": True}) == "halted"
+    assert "CalledProcessError" in json.loads((tmp_path / "shutdown.json").read_text())["stop_error"]
+    (tmp_path / "shutdown.json").unlink()
+    def verify_boom():
+        raise subprocess.TimeoutExpired(["modal"], 120)
+    assert _runner().consume(iter([ex]), tmp_path, boom, verify_boom) == "shutdown_unresolved"
+    assert "TimeoutExpired" in json.loads((tmp_path / "shutdown.json").read_text())["verify_error"]
     (tmp_path / "shutdown.json").unlink()
     assert _runner().consume(iter([ex]), tmp_path, lambda: None,
                              lambda: {"app_state": "running", "app_containers": 3, "verified": False}
@@ -151,12 +157,35 @@ def test_launcher_requests_completion_order_outputs():
 
 def test_verify_stopped_parses_cli_json(monkeypatch):
     runner = _runner()
-    outs = {"app": [{"App ID": "ap-x", "State": "running"}], "container": [{"App ID": "ap-x", "id": "ta-1"}]}
+    outs = {"app": [{"App ID": "ap-x", "State": "running", "Tasks": "3"}],
+            "container": [{"Container ID": "ta-1", "App ID": "ap-x"}]}
 
     def fake_run(cmd, **kw):
-        key = "app" if cmd[1] == "app" else "container"
+        key = "app" if cmd[3] == "app" else "container"   # [python, -m, modal, <group>, ...]
         return subprocess.CompletedProcess(cmd, 0, stdout=json.dumps(outs[key]), stderr="")
     monkeypatch.setattr(runner.subprocess, "run", fake_run)
     assert runner.verify_stopped("ap-x")["verified"] is False
     outs["app"], outs["container"] = [], []                      # stopped apps drop out of the list
     assert runner.verify_stopped("ap-x")["verified"] is True
+    outs["app"] = [{"App ID": "ap-x", "Status": "stopped"}]       # listed without a State column
+    assert runner.verify_stopped("ap-x")["verified"] is False
+    outs["app"] = [{"App ID": "ap-x", "State": "stopped", "Tasks": "0"}]
+    assert runner.verify_stopped("ap-x")["verified"] is True
+    outs["container"] = [{"Container ID": "ta-9", "App ID": "ap-other"}]   # other apps' containers ok
+    assert runner.verify_stopped("ap-x")["verified"] is True
+
+
+def test_shutdown_commands_use_launch_interpreter_noninteractive_and_bounded(monkeypatch):
+    """codex 21145: exact argv, --yes, check=True, timeout."""
+    runner, calls = _runner(), []
+
+    def fake_run(cmd, **kw):
+        calls.append((cmd, kw))
+        return subprocess.CompletedProcess(cmd, 0, stdout="[]", stderr="")
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+    runner.stop_app("ap-x")
+    runner.verify_stopped("ap-x")
+    assert calls[0][0] == [sys.executable, "-m", "modal", "app", "stop", "--yes", "ap-x"]
+    assert calls[1][0] == [sys.executable, "-m", "modal", "app", "list", "--json"]
+    assert calls[2][0] == [sys.executable, "-m", "modal", "container", "list", "--json"]
+    assert all(kw["check"] is True and kw["timeout"] == 120 for _, kw in calls)
