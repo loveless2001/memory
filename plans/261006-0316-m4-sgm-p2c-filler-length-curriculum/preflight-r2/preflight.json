@@ -1,0 +1,136 @@
+{
+  "observer": {
+    "memsub_source_sha256": "09b05c16459c2caba55cddee651bd232e9de4ac5a87ce5ad11f3f18a8ab6d966",
+    "inputs_index_sha256": "46ef68c5f0e57cd148c8a0aff2fcf6ec31c3110a1f667e9f0d24dff37b768010",
+    "grid_sha256": "7d6aeb685c7346b228835aaef6306c171d889f553eb99bbbe06bb2bae14541a9",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a",
+      "scripts/sgm-p2c-preflight.py": "563cd758f8eecfe92e927ba3704ac7fc11020e172b19406a6f33e10ed0eea3ce",
+      "scripts/sgm-p2c-readings.py": "f2c44673b732666c667021894c56ae922149b46f77cce841dec6d090f71342fb",
+      "scripts/sgm-p2c-decision-rules.py": "042cc840d95e4025397fb7ac1e098996a6c08b5c97a18510e514d23d8b006977",
+      "modal-runners/modal-m4-sgm-p2c-nonpreemptible-spawn.py": "0dd8ee7b7a7262231a2ebadda80a3417cf900fa19d4120fbecb730007791e051"
+    },
+    "git_head": "8c3161ac90fda21ff1d767a392af2ed08f802ec5",
+    "prereg_sha256": "b1bafbbdeca4668d8bd9270f54a970576332a6612c1bc81a55a5d705ab031413"
+  },
+  "inputs_validated": [
+    "filleroff-n16-s0",
+    "filleroff-n16-s1",
+    "filleroff-n32-s0",
+    "filleroff-n32-s1",
+    "filleroff-n64-s0",
+    "filleroff-n64-s1",
+    "v2-n32-s0",
+    "v2-n32-s1",
+    "v2-n64-s0",
+    "v2-n64-s1"
+  ],
+  "parity": {
+    "P-on:v2-n32-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "reference_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n32-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "reference_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n64-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "d09d3399afc16eb353e2fd6766cdd5cc7b74ad33c64fb56453e9bafa6ba8a533",
+      "reference_sha256": "d09d3399afc16eb353e2fd6766cdd5cc7b74ad33c64fb56453e9bafa6ba8a533",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n64-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "62b9b616afbbbcd97d54e30074f125cdd58b7c761be94c136fc76d7e2f87eb7c",
+      "reference_sha256": "62b9b616afbbbcd97d54e30074f125cdd58b7c761be94c136fc76d7e2f87eb7c",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n16-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "reference_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n16-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "reference_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n32-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "49768782ee2ff3dd57f4ff531120ddb8548449e291832e0f50c0e7edb7e3399f",
+      "reference_sha256": "49768782ee2ff3dd57f4ff531120ddb8548449e291832e0f50c0e7edb7e3399f",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n32-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "b492c6d490b9e91f8de48c52ac4febaba1054f05cac0ce7d71b0e29c98cd481e",
+      "reference_sha256": "b492c6d490b9e91f8de48c52ac4febaba1054f05cac0ce7d71b0e29c98cd481e",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "pass": true
+  },
+  "schedule_smoke": {
+    "train_filler_lens": [
+      0,
+      0,
+      40,
+      40
+    ],
+    "eval_filler_lens": [
+      40
+    ],
+    "result_label": "tiny-random-lm+taskhead+DIAGNOSTIC-filler-len-schedule",
+    "pass": true
+  },
+  "observer_end": {
+    "memsub_source_sha256": "09b05c16459c2caba55cddee651bd232e9de4ac5a87ce5ad11f3f18a8ab6d966",
+    "inputs_index_sha256": "46ef68c5f0e57cd148c8a0aff2fcf6ec31c3110a1f667e9f0d24dff37b768010",
+    "grid_sha256": "7d6aeb685c7346b228835aaef6306c171d889f553eb99bbbe06bb2bae14541a9",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a",
+      "scripts/sgm-p2c-preflight.py": "563cd758f8eecfe92e927ba3704ac7fc11020e172b19406a6f33e10ed0eea3ce",
+      "scripts/sgm-p2c-readings.py": "f2c44673b732666c667021894c56ae922149b46f77cce841dec6d090f71342fb",
+      "scripts/sgm-p2c-decision-rules.py": "042cc840d95e4025397fb7ac1e098996a6c08b5c97a18510e514d23d8b006977",
+      "modal-runners/modal-m4-sgm-p2c-nonpreemptible-spawn.py": "0dd8ee7b7a7262231a2ebadda80a3417cf900fa19d4120fbecb730007791e051"
+    },
+    "git_head": "8c3161ac90fda21ff1d767a392af2ed08f802ec5",
+    "prereg_sha256": "b1bafbbdeca4668d8bd9270f54a970576332a6612c1bc81a55a5d705ab031413"
+  }
+}
