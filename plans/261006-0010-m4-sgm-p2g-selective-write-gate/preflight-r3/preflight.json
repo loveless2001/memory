@@ -1,0 +1,487 @@
+{
+  "observer": {
+    "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+    "inputs_index_sha256": "8824cd030bb6b3ee7b573e1a8044452b0176f680b514b026c3cb8a269acd37f3",
+    "grid_sha256": "465fa3439ddadccc009ea2b7b5b18cc0c172b7c8d67f7511ec2a8f1515e7e5ee",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "65ba8d94c01950c5e75e7e81d86fc97d1ac6ca0f782a24e3fb64f2e8b635573b",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a"
+    },
+    "git_head": "07261613b206087dcddc50a1ed74ec5925ddb708"
+  },
+  "inputs_validated": [
+    "filleroff-n16-s0",
+    "filleroff-n16-s1",
+    "v2-n16-s0",
+    "v2-n16-s1",
+    "v2-n32-s0",
+    "v2-n32-s1"
+  ],
+  "parity": {
+    "P-on:v2-n16-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "ded44fe3c99e7ea608843010d0fa4d880ac5243ea58f8c59a9130c420c8fcd20",
+      "reference_sha256": "ded44fe3c99e7ea608843010d0fa4d880ac5243ea58f8c59a9130c420c8fcd20",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n16-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "b139bd8e9314809b258d50f6bd96f033bd40fd4db669fd59e8395e7fbd87182a",
+      "reference_sha256": "b139bd8e9314809b258d50f6bd96f033bd40fd4db669fd59e8395e7fbd87182a",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n32-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "reference_sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-on:v2-n32-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "reference_sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n16-s0": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "reference_sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "P-off:filleroff-n16-s1": {
+      "rows": 5120,
+      "reference_rows": 5120,
+      "produced_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "reference_sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "parsed_equal": true,
+      "byte_equal": true
+    },
+    "pass": true
+  },
+  "step0_gate_telemetry": {
+    "gateclosed-n16-s0": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 2048
+      },
+      "rho_pooled_effective": 0.9346223794292803,
+      "auroc_mean_defined": 0.5228713989257813,
+      "auroc_min_defined": 0.47377738952636717,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.48861379623413087,
+          "binding_projected_mean": 0.06136612788105822,
+          "binding_effective_mean": 0.06136612788105822,
+          "filler_projected_mean": 0.06381592126376745,
+          "filler_effective_mean": 0.06381592126376745,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5661515235900879,
+          "binding_projected_mean": 0.08608562282995535,
+          "binding_effective_mean": 0.08608562282995535,
+          "filler_projected_mean": 0.0720277311850623,
+          "filler_effective_mean": 0.0720277311850623,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.47377738952636717,
+          "binding_projected_mean": 0.047529584905134925,
+          "binding_effective_mean": 0.047529584905134925,
+          "filler_projected_mean": 0.05435773957433412,
+          "filler_effective_mean": 0.05435773957433412,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.5629428863525391,
+          "binding_projected_mean": 0.08429624533539481,
+          "binding_effective_mean": 0.08429624533539481,
+          "filler_projected_mean": 0.07081768520702099,
+          "filler_effective_mean": 0.07081768520702099,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "default_v2_recipe-n16-s0": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 2048
+      },
+      "rho_pooled_effective": 0.9679272816299432,
+      "auroc_mean_defined": 0.5230379819869996,
+      "auroc_min_defined": 0.4749669075012207,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.48861379623413087,
+          "binding_projected_mean": 0.47877577561121143,
+          "binding_effective_mean": 0.47877577561121143,
+          "filler_projected_mean": 0.486915780606796,
+          "filler_effective_mean": 0.486915780606796,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5661515235900879,
+          "binding_projected_mean": 0.5548730340779002,
+          "binding_effective_mean": 0.5548730340779002,
+          "filler_projected_mean": 0.5073964438590337,
+          "filler_effective_mean": 0.5073964438590337,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.4749669075012207,
+          "binding_projected_mean": 0.4432629560978967,
+          "binding_effective_mean": 0.4432629560978967,
+          "filler_projected_mean": 0.461240549874492,
+          "filler_effective_mean": 0.461240549874492,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.5624197006225586,
+          "binding_projected_mean": 0.5588463003987272,
+          "binding_effective_mean": 0.5588463003987272,
+          "filler_projected_mean": 0.5149129967190674,
+          "filler_effective_mean": 0.5149129967190674,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "gateclosed-n16-s1": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 2048
+      },
+      "rho_pooled_effective": 1.0573931495943418,
+      "auroc_mean_defined": 0.47880001068115235,
+      "auroc_min_defined": 0.40441179275512695,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.5156614303588867,
+          "binding_projected_mean": 0.065217647578379,
+          "binding_effective_mean": 0.065217647578379,
+          "filler_projected_mean": 0.06164636215580686,
+          "filler_effective_mean": 0.06164636215580686,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5487707138061524,
+          "binding_projected_mean": 0.07489513483949395,
+          "binding_effective_mean": 0.07489513483949395,
+          "filler_projected_mean": 0.06710570915001882,
+          "filler_effective_mean": 0.06710570915001882,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.40441179275512695,
+          "binding_projected_mean": 0.04387640975960494,
+          "binding_effective_mean": 0.04387640975960494,
+          "filler_projected_mean": 0.059637702514737614,
+          "filler_effective_mean": 0.059637702514737614,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.44635610580444335,
+          "binding_projected_mean": 0.04661990462278709,
+          "binding_effective_mean": 0.04661990462278709,
+          "filler_projected_mean": 0.05545470537017536,
+          "filler_effective_mean": 0.05545470537017536,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "default_v2_recipe-n16-s1": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 2048
+      },
+      "rho_pooled_effective": 1.0312379857846354,
+      "auroc_mean_defined": 0.47876772880554197,
+      "auroc_min_defined": 0.4043140411376953,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.5156614303588867,
+          "binding_projected_mean": 0.4908378370000719,
+          "binding_effective_mean": 0.4908378370000719,
+          "filler_projected_mean": 0.47880488004448124,
+          "filler_effective_mean": 0.47880488004448124,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5487707138061524,
+          "binding_projected_mean": 0.5422523659726721,
+          "binding_effective_mean": 0.5422523659726721,
+          "filler_projected_mean": 0.5077377474590321,
+          "filler_effective_mean": 0.5077377474590321,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.4043140411376953,
+          "binding_projected_mean": 0.4093458904317231,
+          "binding_effective_mean": 0.4093458904317231,
+          "filler_projected_mean": 0.4757944363198476,
+          "filler_effective_mean": 0.4757944363198476,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.4463247299194336,
+          "binding_projected_mean": 0.41192003406649746,
+          "binding_effective_mean": 0.41192003406649746,
+          "filler_projected_mean": 0.4499454139971931,
+          "filler_effective_mean": 0.4499454139971931,
+          "binding_applied_events": 2048,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "gateclosed-n32-s0": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 4096
+      },
+      "rho_pooled_effective": 1.0028059382717809,
+      "auroc_mean_defined": 0.49892619848251346,
+      "auroc_min_defined": 0.48844566345214846,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.48844566345214846,
+          "binding_projected_mean": 0.06260506695070944,
+          "binding_effective_mean": 0.06260506695070944,
+          "filler_projected_mean": 0.06522662008155748,
+          "filler_effective_mean": 0.06522662008155748,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.519483232498169,
+          "binding_projected_mean": 0.07827154659725011,
+          "binding_effective_mean": 0.07827154659725011,
+          "filler_projected_mean": 0.07317728967027506,
+          "filler_effective_mean": 0.07317728967027506,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.4937469482421875,
+          "binding_projected_mean": 0.05197246273098699,
+          "binding_effective_mean": 0.05197246273098699,
+          "filler_projected_mean": 0.05364227290119743,
+          "filler_effective_mean": 0.05364227290119743,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.49402894973754885,
+          "binding_projected_mean": 0.07685064625030691,
+          "binding_effective_mean": 0.07685064625030691,
+          "filler_projected_mean": 0.07841030064955704,
+          "filler_effective_mean": 0.07841030064955704,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "default_v2_recipe-n32-s0": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 4096
+      },
+      "rho_pooled_effective": 1.0017147978442673,
+      "auroc_mean_defined": 0.499079966545105,
+      "auroc_min_defined": 0.48844566345214846,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.48844566345214846,
+          "binding_projected_mean": 0.4782974373106299,
+          "binding_effective_mean": 0.4782974373106299,
+          "filler_projected_mean": 0.48724912852921987,
+          "filler_effective_mean": 0.48724912852921987,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5194831848144531,
+          "binding_projected_mean": 0.5307449722554338,
+          "binding_effective_mean": 0.5307449722554338,
+          "filler_projected_mean": 0.5174001923252944,
+          "filler_effective_mean": 0.5174001923252944,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.49516048431396487,
+          "binding_projected_mean": 0.45507747134433885,
+          "binding_effective_mean": 0.45507747134433885,
+          "filler_projected_mean": 0.4585553716198774,
+          "filler_effective_mean": 0.4585553716198774,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.4932305335998535,
+          "binding_projected_mean": 0.5373489350886302,
+          "binding_effective_mean": 0.5373489350886302,
+          "filler_projected_mean": 0.5416962379356847,
+          "filler_effective_mean": 0.5416962379356847,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "gateclosed-n32-s1": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 4096
+      },
+      "rho_pooled_effective": 1.0282206028095664,
+      "auroc_mean_defined": 0.4913422226905823,
+      "auroc_min_defined": 0.4436476707458496,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.5089953422546387,
+          "binding_projected_mean": 0.06872198500903437,
+          "binding_effective_mean": 0.06872198500903437,
+          "filler_projected_mean": 0.06614772784892012,
+          "filler_effective_mean": 0.06614772784892012,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5407052516937256,
+          "binding_projected_mean": 0.07267748589760004,
+          "binding_effective_mean": 0.07267748589760004,
+          "filler_projected_mean": 0.06693633574263913,
+          "filler_effective_mean": 0.06693633574263913,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.4436476707458496,
+          "binding_projected_mean": 0.04528080157098202,
+          "binding_effective_mean": 0.04528080157098202,
+          "filler_projected_mean": 0.05582833465778094,
+          "filler_effective_mean": 0.05582833465778094,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.47202062606811523,
+          "binding_projected_mean": 0.050821441651592636,
+          "binding_effective_mean": 0.050821441651592636,
+          "filler_projected_mean": 0.055291757420900464,
+          "filler_effective_mean": 0.055291757420900464,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        }
+      }
+    },
+    "default_v2_recipe-n32-s1": {
+      "episodes": 64,
+      "events_per_head": {
+        "filler": 2560,
+        "binding": 4096
+      },
+      "rho_pooled_effective": 1.0137690094777192,
+      "auroc_mean_defined": 0.4913358807563782,
+      "auroc_min_defined": 0.44360952377319335,
+      "auroc_defined_heads": 4,
+      "per_head": {
+        "L1h0": {
+          "auroc_applied": 0.5089953422546387,
+          "binding_projected_mean": 0.5002805561498462,
+          "binding_effective_mean": 0.5002805561498462,
+          "filler_projected_mean": 0.4935675099499349,
+          "filler_effective_mean": 0.4935675099499349,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L1h1": {
+          "auroc_applied": 0.5407052040100098,
+          "binding_projected_mean": 0.5365434455779905,
+          "binding_effective_mean": 0.5365434455779905,
+          "filler_projected_mean": 0.5090719657455338,
+          "filler_effective_mean": 0.5090719657455338,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h0": {
+          "auroc_applied": 0.44360952377319335,
+          "binding_projected_mean": 0.4152306851847243,
+          "binding_effective_mean": 0.4152306851847243,
+          "filler_projected_mean": 0.4551649174361955,
+          "filler_effective_mean": 0.4551649174361955,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        },
+        "L3h1": {
+          "auroc_applied": 0.4720334529876709,
+          "binding_projected_mean": 0.431577173554615,
+          "binding_effective_mean": 0.431577173554615,
+          "filler_projected_mean": 0.4517632122748182,
+          "filler_effective_mean": 0.4517632122748182,
+          "binding_applied_events": 4096,
+          "filler_applied_events": 2560
+        }
+      }
+    }
+  },
+  "observer_end": {
+    "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+    "inputs_index_sha256": "8824cd030bb6b3ee7b573e1a8044452b0176f680b514b026c3cb8a269acd37f3",
+    "grid_sha256": "465fa3439ddadccc009ea2b7b5b18cc0c172b7c8d67f7511ec2a8f1515e7e5ee",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "65ba8d94c01950c5e75e7e81d86fc97d1ac6ca0f782a24e3fb64f2e8b635573b",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a"
+    },
+    "git_head": "07261613b206087dcddc50a1ed74ec5925ddb708"
+  }
+}
