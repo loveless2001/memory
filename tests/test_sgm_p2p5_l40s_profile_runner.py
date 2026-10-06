@@ -41,15 +41,6 @@ def test_v2_uses_its_own_app_group_and_guard_dicts(monkeypatch):
     assert v1.charge_bound()["reserved_total_usd"] == v2.charge_bound()["reserved_total_usd"]
 
 
-def test_v2_gpu_sampler_failure_is_recorded_not_fatal(monkeypatch, tmp_path):
-    monkeypatch.chdir(ROOT)
-    v2 = _load(RUNNERS[1])
-    monkeypatch.setenv("PATH", str(tmp_path))                 # no nvidia-smi on PATH
-    s = v2.start_gpu_sampler(tmp_path / "u.csv")
-    assert isinstance(s, str) and "not started" in s
-    assert v2.stop_gpu_sampler(s) == s
-
-
 class FakeDict(dict):
     def put(self, k, v, skip_if_exists=False):
         if skip_if_exists and k in self:
@@ -212,3 +203,84 @@ def test_child_timeout_is_recomputed_at_launch_and_never_passes_the_deadline(run
     assert run.child_timeout_s(deadline, deadline - 600) is None  # too little left: child not launched
     assert run.child_timeout_s(None, 0.0) is None
     assert run.child_timeout_s(deadline, 0.0) == run.OUTER_TIMEOUT_S
+
+
+def test_v2_gpu_sampler_start_failure_is_recorded_not_fatal(monkeypatch, tmp_path):
+    monkeypatch.chdir(ROOT)
+    v2 = _load(RUNNERS[1])
+    monkeypatch.setenv("PATH", str(tmp_path))                 # no nvidia-smi on PATH
+    meta = v2.start_gpu_sampler(tmp_path / "u.csv")
+    assert "start_error" in meta and "proc" not in meta
+    out = v2.stop_gpu_sampler(meta)
+    assert out["status"] == "not started" and out["query"] == v2.GPU_QUERY and out["loop_ms"] == v2.GPU_SAMPLE_MS
+    assert out["end_epoch"] >= out["start_epoch"]
+
+
+class FakeProc:
+    """Scripted Popen stand-in: each of terminate/wait/kill may raise; wait may set rc."""
+    def __init__(self, terminate=None, waits=(), kill=None):
+        self.returncode, self._t, self._waits, self._k = None, terminate, list(waits), kill
+
+    def terminate(self):
+        if self._t:
+            raise self._t
+
+    def kill(self):
+        if self._k:
+            raise self._k
+
+    def wait(self, timeout=None):
+        w = self._waits.pop(0)
+        if isinstance(w, BaseException):
+            raise w
+        self.returncode = w
+        return w
+
+
+def _stop(v2, proc):
+    return v2.stop_gpu_sampler({"query": v2.GPU_QUERY, "loop_ms": 500, "file": "x", "start_epoch": 1.0, "proc": proc})
+
+
+def test_v2_sampler_stop_normal_terminate(monkeypatch):
+    monkeypatch.chdir(ROOT)
+    v2 = _load(RUNNERS[1])
+    out = _stop(v2, FakeProc(waits=[-15]))
+    assert out["status"] == "exited" and out["returncode"] == -15 and out["steps"] == ["terminate"]
+    assert "proc" not in out
+
+
+def test_v2_sampler_stop_timeout_then_kill_race_is_contained(monkeypatch):
+    """codex 21506 counterexample: wait times out, the process disappears before kill."""
+    import subprocess
+    monkeypatch.chdir(ROOT)
+    v2 = _load(RUNNERS[1])
+    out = _stop(v2, FakeProc(waits=[subprocess.TimeoutExpired("nvidia-smi", 10), 0], kill=ProcessLookupError(3)))
+    assert out["status"] == "exited" and out["returncode"] == 0
+    assert any(x.startswith("kill error ProcessLookupError") for x in out["steps"])
+
+
+def test_v2_sampler_stop_everything_fails_reports_not_reaped(monkeypatch):
+    import subprocess
+    monkeypatch.chdir(ROOT)
+    v2 = _load(RUNNERS[1])
+    out = _stop(v2, FakeProc(terminate=OSError("t"), kill=OSError("k"),
+                             waits=[subprocess.TimeoutExpired("x", 1), subprocess.TimeoutExpired("x", 1)]))
+    assert out["status"].startswith("not reaped") and out["returncode"] is None
+    assert [x.split()[0] for x in out["steps"]] == ["terminate", "wait", "kill", "final"]
+
+
+def test_v2_sampler_real_process_ignoring_sigterm_is_killed_and_reaped(monkeypatch, tmp_path):
+    monkeypatch.chdir(ROOT)
+    v2 = _load(RUNNERS[1])
+    fake = tmp_path / "nvidia-smi"                      # writes one row, ignores SIGTERM
+    fake.write_text("#!/bin/sh\ntrap '' TERM\nfor a in \"$@\"; do case $a in --filename=*) f=${a#--filename=};; esac; done\n"
+                    "echo row > \"$f\"\nexec sleep 60\n")         # exec: one process, like nvidia-smi
+    fake.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{tmp_path}:/usr/bin:/bin")
+    monkeypatch.setattr(v2, "SAMPLER_WAIT_S", 0.5)
+    meta = v2.start_gpu_sampler(tmp_path / "u.csv")
+    import time
+    time.sleep(0.3)
+    out = v2.stop_gpu_sampler(meta)
+    assert out["status"] == "exited" and out["returncode"] == -9 and "kill" in out["steps"]
+    assert (tmp_path / "u.csv").read_text().strip() == "row"

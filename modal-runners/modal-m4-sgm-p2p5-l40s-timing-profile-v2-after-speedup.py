@@ -69,6 +69,8 @@ CONTRACT = "full-gradient token-serial, fp32, TF32 off, batch 16, N32, seed 99"
 PHASE_FILLER = {1: 0, 2: 40}
 CAP_USD = 3.0                   # user-approved re-timing cap (#gravity 21498 option A, user 21501)
 GPU_SAMPLE_MS = 500             # descriptive nvidia-smi sampling period (not a usability input)
+GPU_QUERY = "timestamp,utilization.gpu,utilization.memory,memory.used"
+SAMPLER_WAIT_S, SAMPLER_KILL_WAIT_S = 10, 5     # bounded sampler shutdown (terminate, then kill + reap)
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000542, 0.0000131, 0.00000222   # modal.com/pricing, preemptible
 FIXED_MARGIN_USD = 0.25
 EXPECTED_CONFIGS = [("learned", 1), ("learned", 2), ("memory_off", 1), ("memory_off", 2)]
@@ -232,25 +234,57 @@ def run_profile(expected: dict) -> dict:
             "profile": profile}
 
 
-def start_gpu_sampler(path: Path):
-    """Descriptive GPU utilisation trace; any failure is recorded, never fatal."""
+def start_gpu_sampler(path: Path) -> dict:
+    """Descriptive GPU utilisation trace (nvidia-smi `utilization.gpu` = fraction of time
+    with >= 1 kernel executing; not SM occupancy). Returns a metadata dict carrying the
+    query, cadence, start epoch and container timezone for phase alignment; a start
+    failure is recorded in it, never raised."""
+    meta = {"query": GPU_QUERY, "loop_ms": GPU_SAMPLE_MS, "file": str(path), "start_epoch": time.time()}
     try:
-        return subprocess.Popen(["nvidia-smi", "--query-gpu=timestamp,utilization.gpu,utilization.memory,memory.used",
-                                 "--format=csv,noheader,nounits", f"--loop-ms={GPU_SAMPLE_MS}", f"--filename={path}"],
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        meta.update(tz_name=time.strftime("%Z"), utc_offset_s=-time.timezone, tz_env=os.environ.get("TZ"))
+        meta["proc"] = subprocess.Popen(["nvidia-smi", f"--query-gpu={GPU_QUERY}", "--format=csv,noheader,nounits",
+                                         f"--loop-ms={GPU_SAMPLE_MS}", f"--filename={path}"],
+                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     except Exception as e:
-        return f"sampler not started: {e!r:.200}"
+        meta["start_error"] = f"{e!r:.200}"
+    return meta
 
 
-def stop_gpu_sampler(sampler) -> str:
-    if not isinstance(sampler, subprocess.Popen):
-        return str(sampler)
+def stop_gpu_sampler(meta: dict) -> dict:
+    """Fully contained (codex 21506): runs in run_profile's `finally` BEFORE exit.json and
+    the volume commit, so no step may raise. terminate -> bounded wait -> kill -> bounded
+    reap; every error is recorded; status is 'exited' only with a real return code."""
+    out, steps = {k: v for k, v in meta.items() if k != "proc"}, []
+    proc = meta.get("proc")
     try:
-        sampler.terminate()
-        sampler.wait(timeout=10)
-    except Exception:
-        sampler.kill()
-    return f"stopped (rc {sampler.returncode})"
+        if proc is None:
+            out["status"] = "not started"
+            return out
+        try:
+            proc.terminate()
+            steps.append("terminate")
+        except Exception as e:
+            steps.append(f"terminate error {e!r:.120}")
+        try:
+            proc.wait(timeout=SAMPLER_WAIT_S)
+        except Exception as e:
+            steps.append(f"wait error {e!r:.120}")
+            try:
+                proc.kill()
+                steps.append("kill")
+            except Exception as e2:                     # e.g. ProcessLookupError: already gone
+                steps.append(f"kill error {e2!r:.120}")
+            try:
+                proc.wait(timeout=SAMPLER_KILL_WAIT_S)  # reap after kill
+            except Exception as e3:
+                steps.append(f"final wait error {e3!r:.120}")
+        rc = getattr(proc, "returncode", None)
+        out.update(returncode=rc, status="exited" if rc is not None else "not reaped (returncode None)")
+    except Exception as e:                              # belt and braces: never propagate
+        out.update(status="stop error", error=f"{e!r:.200}")
+    finally:
+        out.update(steps=steps, end_epoch=time.time())
+    return out
 
 
 def profile_usable(profile: dict | None, child_exit, memsub_sha: str) -> tuple[bool, str]:
