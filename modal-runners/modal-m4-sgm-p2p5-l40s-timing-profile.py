@@ -110,6 +110,9 @@ image = (modal.Image.debian_slim(python_version="3.12")
          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
          .add_local_file(PROFILE_SCRIPT, f"/root/repo/{PROFILE_SCRIPT}")
          .add_local_file(f"modal-runners/{LOGIC_FILE}", f"/root/{LOGIC_FILE}"))
+# the scheduled reaper needs ONLY the shared logic (codex 21458: it must not run on the bare default image)
+reaper_image = modal.Image.debian_slim(python_version="3.12").add_local_file(f"modal-runners/{LOGIC_FILE}",
+                                                                             f"/root/{LOGIC_FILE}")
 artifacts = modal.Volume.from_name("memsub-artifacts")
 
 
@@ -147,7 +150,7 @@ def guard_decision(store, now: float) -> str | None:
     return "start allowance exhausted"
 
 
-@app.function(schedule=modal.Period(seconds=REAPER_PERIOD_S), cpu=0.125, memory=256, timeout=110,
+@app.function(image=reaper_image, schedule=modal.Period(seconds=REAPER_PERIOD_S), cpu=0.125, memory=256, timeout=110,
               max_containers=1, retries=0)
 def reaper() -> dict:
     """Independent server-side lifetime stop (no local host or call id needed)."""

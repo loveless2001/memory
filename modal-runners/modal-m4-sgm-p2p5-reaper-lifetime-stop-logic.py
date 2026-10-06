@@ -25,7 +25,10 @@ def reap_and_stop(store, now: float, app_name: str, stopper, canceller=None, aba
     reason = reap_decision(store, now, abandon_s)
     if reason is None:
         return {"stop": False}
-    stopper(app_name, store.get("app_id", None))            # binding action, independent of the rest
+    bound = store.get("app_id", None)
+    # server-side evidence BEFORE the stop (a print, not an RPC): the proof requires it in the app logs
+    print(f"M4SGM_REAPER_STOP app={app_name} bound={bound} reason={reason} t={now:.0f}", flush=True)
+    stopper(app_name, bound)                                    # binding action, independent of the rest
     for optional in (lambda: canceller and store.get("call_id", None) and canceller(store.get("call_id")),
                      lambda: store.put("reaper_fired", {"t": now, "reason": reason}, skip_if_exists=True)):
         try:
