@@ -7,7 +7,13 @@ Exactly the registered matrix, ONCE: scripts/sgm-p2p5-local-gpu-timing-profile.p
 (4 configs x (2 warmup + 8 measured) = 40 updates, four dev-batch timings, seed 99,
 no artifact/reserved populations, no accuracy).
 
-Bounded paid lifecycle (R1) — survives host and call-ID loss:
+Bounded paid lifecycle (R1, revised per codex cd1c0c8 audit) — survives host and call-ID loss:
+  * an in-app scheduled REAPER (CPU, every 2 min) stops the WHOLE app with
+    modal.experimental.stop_app once the spawn-time deadline has passed (after
+    cancelling the stored call with terminate_containers=True), and stops an
+    abandoned deploy (never spawned) ABANDON_S after its first tick. With
+    max_containers=1, GPU time is bounded by the app lifetime regardless of
+    import/startup crashes;
   * server-side guard as the FIRST statement of every container start: a Modal
     Dict holds the spawn-time deadline; each start atomically claims one of
     MAX_STARTS slots (put skip_if_exists). Past the deadline or with no slot left
@@ -43,15 +49,23 @@ LOCAL_OUT = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
 GPU, CPU_CORES, MEMORY_GIB = "L40S", 4.0, 32
 OUTER_TIMEOUT_S, FUNCTION_TIMEOUT_S, STARTUP_S, EARLY_S = 1860, 2100, 300, 120
-MAX_STARTS, OVERALL_S, COLLECT_GRACE_S = 2, 3600, 300
-BUILD_STEPS, BUILD_STEP_S, BUILD_CPU, BUILD_GIB = 3, 900, 4.0, 8        # pip, pip, weight download
+MAX_STARTS, OVERALL_S, COLLECT_GRACE_S = 2, 2700, 300
+REAPER_PERIOD_S, STOP_LATENCY_S, ABANDON_S, MIN_REMAINING_S = 120, 120, 1800, 900
+BUILD_S, BUILD_CPU, BUILD_GIB, BUILD_OVERUSE = 1200, 4.0, 8, 2.0        # ONE timed build function (pip + weights)
+GUARD_DICT = "m4-sgm-p2p5-l40s-profile-v1-guard"
 CAP_USD = 3.0                   # user-approved profile cap (#gravity 21436 option (a), 21446)
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000542, 0.0000131, 0.00000222   # modal.com/pricing, preemptible
 FIXED_MARGIN_USD = 0.25
 EXPECTED_CONFIGS = [("learned", 1), ("learned", 2), ("memory_off", 1), ("memory_off", 2)]
 
 
-def _download_pinned_weights():
+def _build_environment():
+    """ALL build compute in one function with an enforced timeout: pinned wheels + weights."""
+    import subprocess as sp
+    sp.run([sys.executable, "-m", "pip", "install", "--no-cache-dir", "torch==2.7.1",
+            "--index-url", "https://download.pytorch.org/whl/cu126"], check=True)
+    sp.run([sys.executable, "-m", "pip", "install", "--no-cache-dir", "transformers==4.55.2",
+            "safetensors==0.5.3", "numpy==2.2.6"], check=True)
     from huggingface_hub import snapshot_download
     snapshot_download("Qwen/Qwen3-0.6B-Base", revision=MODEL_REVISION, local_dir=MODEL_DIR,
                       allow_patterns=["config.json", "generation_config.json", "model.safetensors"])
@@ -59,9 +73,8 @@ def _download_pinned_weights():
 
 app = modal.App(APP_NAME)
 image = (modal.Image.debian_slim(python_version="3.12")
-         .pip_install("torch==2.7.1", index_url="https://download.pytorch.org/whl/cu126")
-         .pip_install("transformers==4.55.2", "safetensors==0.5.3", "numpy==2.2.6")
-         .run_function(_download_pinned_weights, timeout=BUILD_STEP_S, cpu=BUILD_CPU, memory=BUILD_GIB * 1024)
+         .pip_install("huggingface_hub==0.36.2")                       # tiny bootstrap layer
+         .run_function(_build_environment, timeout=BUILD_S, cpu=BUILD_CPU, memory=BUILD_GIB * 1024)
          .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "M4_SGM_QWEN3_0P6B_DIR": MODEL_DIR})
          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
          .add_local_file(PROFILE_SCRIPT, f"/root/repo/{PROFILE_SCRIPT}"))
@@ -70,6 +83,27 @@ artifacts = modal.Volume.from_name("memsub-artifacts")
 
 def file_sha(p) -> str:
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def reap_decision(store, now: float) -> str | None:
+    """Pure reaper rule: 'stop' reason or None. Past the spawn deadline -> stop; never
+    spawned within ABANDON_S of the first reaper tick -> stop (abandoned deploy)."""
+    store.put("first_tick", now, skip_if_exists=True)
+    deadline = store.get("deadline_epoch", None)
+    if isinstance(deadline, (int, float)):
+        return "deadline passed" if now > deadline else None
+    first = store.get("first_tick", now)
+    return "abandoned deploy (never spawned)" if now > first + ABANDON_S else None
+
+
+def admit(store, now: float) -> tuple[str | None, float]:
+    """(refusal reason or None, seconds remaining before the deadline) for one start."""
+    refused = guard_decision(store, now)
+    deadline = store.get("deadline_epoch", None)
+    remaining = (deadline - now) if isinstance(deadline, (int, float)) else 0.0
+    if refused is None and remaining < MIN_REMAINING_S:
+        refused = f"only {remaining:.0f}s before the deadline"
+    return refused, remaining
 
 
 def guard_decision(store, now: float) -> str | None:
@@ -83,21 +117,41 @@ def guard_decision(store, now: float) -> str | None:
     return "start allowance exhausted"
 
 
+@app.function(schedule=modal.Period(seconds=REAPER_PERIOD_S), cpu=0.125, memory=256, timeout=110,
+              max_containers=1, retries=0)
+def reaper() -> dict:
+    """Independent server-side lifetime stop (no local host or call id needed)."""
+    store = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
+    reason = reap_decision(store, time.time())
+    if reason is None:
+        return {"stop": False}
+    store.put("reaper_fired", {"t": time.time(), "reason": reason}, skip_if_exists=True)
+    call = store.get("call_id", None)
+    if call:
+        try:
+            modal.FunctionCall.from_id(call).cancel(terminate_containers=True)
+        except Exception:
+            pass                                       # the app stop below is the binding action
+    from modal.experimental import stop_app
+    stop_app(APP_NAME)
+    return {"stop": True, "reason": reason}
+
+
 @app.function(image=image, gpu=GPU, cpu=(CPU_CORES, CPU_CORES), memory=(MEMORY_GIB * 1024, MEMORY_GIB * 1024),
               timeout=FUNCTION_TIMEOUT_S, startup_timeout=STARTUP_S, retries=0, scaledown_window=2,
               max_containers=1, single_use_containers=True, volumes={"/artifacts": artifacts})
 def run_profile(expected: dict) -> dict:
-    try:   # FIRST statement; ANY guard failure refuses (a crash here would be rescheduled)
-        refused = guard_decision(modal.Dict.from_name(f"m4-sgm-{GROUP}-guard", create_if_missing=True),
-                                 time.time())
-    except Exception as e:
-        refused = f"guard error {e!r:.200}"
-    if refused:                                       # bounded restarts: the call completes
-        return {"status": "guard_refused", "reason": refused}
     sys.path.insert(0, "/root/repo")
     from memsub.sgm.p2d_launch_guard import (EARLY_DEADLINE_S, AllowanceExhausted, AttemptLedger,
                                              ReplayRefused, Watchdog)
-    early = Watchdog(EARLY_DEADLINE_S)
+    early = Watchdog(EARLY_DEADLINE_S)                # FIRST: bounds guard RPCs, imports and the claim
+    try:   # ANY guard failure refuses (a crash here would be rescheduled; the reaper bounds the rest)
+        refused, remaining = admit(modal.Dict.from_name(GUARD_DICT, create_if_missing=True), time.time())
+    except Exception as e:
+        refused, remaining = f"guard error {e!r:.200}", 0.0
+    if refused:                                       # bounded restarts: the call completes
+        early.cancel()
+        return {"status": "guard_refused", "reason": refused}
     try:   # identity before the claim
         from memsub.sgm.synthetic_pilot_run import source_tree_sha256
         got = {"runner": file_sha(__file__), "profile_script": file_sha(f"/root/repo/{PROFILE_SCRIPT}"),
@@ -114,7 +168,8 @@ def run_profile(expected: dict) -> dict:
     out.parent.mkdir(parents=True, exist_ok=True)
     try:   # outer timeout + external exit capture around the child profile
         proc = subprocess.run([sys.executable, "-u", f"/root/repo/{PROFILE_SCRIPT}", "--out", str(out)],
-                              cwd="/root/repo", capture_output=True, text=True, timeout=OUTER_TIMEOUT_S)
+                              cwd="/root/repo", capture_output=True, text=True,
+                              timeout=min(OUTER_TIMEOUT_S, max(remaining - 90, 60)))
         rc, stdout, stderr = proc.returncode, proc.stdout, proc.stderr
     except subprocess.TimeoutExpired as e:
         rc, stdout, stderr = "outer_timeout", str(e.stdout or ""), str(e.stderr or "")
@@ -122,47 +177,64 @@ def run_profile(expected: dict) -> dict:
         {"child_exit": rc, "stdout_tail": stdout[-4000:], "stderr_tail": stderr[-4000:]}, indent=2))
     artifacts.commit()
     profile = json.loads((out / "profile.json").read_text()) if (out / "profile.json").exists() else None
-    usable, why = profile_usable(profile, rc)
+    usable, why = profile_usable(profile, rc, expected["memsub"])
     return {"status": "profiled" if usable else "profile_unusable", "reason": why, "child_exit": rc,
             "profile": profile}
 
 
-def profile_usable(profile: dict | None, child_exit) -> tuple[bool, str]:
-    """R3: timings are usable only for exit 0 + complete status + exactly the registered
-    four configs, each 10 updates with 8 finite positive measured timings, finite memory."""
+def profile_usable(profile: dict | None, child_exit, memsub_sha: str) -> tuple[bool, str]:
+    """R3: timings are usable only for exit 0, the bound source, a complete environment,
+    status complete, exactly the registered four configs in order, each with 10 updates =
+    2 finite positive warmups + 8 finite positive measured timings whose mean equals the
+    reported mean, and finite positive dev-eval time and memory fields."""
+    def pos(v):
+        return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and v > 0
     if child_exit != 0:
         return False, f"child exit {child_exit}"
     if not isinstance(profile, dict) or profile.get("status") != "complete":
         return False, f"profile status {profile.get('status') if isinstance(profile, dict) else None}"
+    if profile.get("memsub_source_sha256") != memsub_sha:
+        return False, "profile memsub source differs from the bound source"
+    env = profile.get("environment") or {}
+    if (not all(env.get(k) for k in ("python", "torch", "cuda", "gpu")) or not pos(env.get("gpu_total_bytes"))
+            or env.get("tf32_matmul") is not False):
+        return False, "incomplete or non-registered environment record"
     cfgs = profile.get("configs") or []
     if [(c.get("arm"), c.get("phase")) for c in cfgs] != EXPECTED_CONFIGS:
         return False, "configs differ from the registered matrix"
     for c in cfgs:
-        m = c.get("measured_s") or []
-        vals = m + [c.get("dev_eval_batch_s"), c.get("peak_train_memory_bytes")]
-        if c.get("updates") != 10 or len(m) != 8 or not all(
-                isinstance(v, (int, float)) and math.isfinite(v) and v > 0 for v in vals):
-            return False, f"{c.get('arm')} phase {c.get('phase')}: incomplete or non-finite timings"
+        w, m = c.get("warmup_s") or [], c.get("measured_s") or []
+        tag = f"{c.get('arm')} phase {c.get('phase')}"
+        if c.get("updates") != 10 or len(w) != 2 or len(m) != 8 or not all(pos(v) for v in w + m):
+            return False, f"{tag}: incomplete or non-finite update timings"
+        mean = c.get("mean_measured_s_per_update")
+        if not pos(mean) or abs(mean - sum(m) / len(m)) > 1e-9 * max(1.0, mean):
+            return False, f"{tag}: reported mean inconsistent with measured timings"
+        if not all(pos(c.get(k)) for k in ("dev_eval_batch_s", "peak_train_memory_bytes", "peak_memory_bytes")):
+            return False, f"{tag}: non-finite dev-eval time or memory field"
     return True, "complete registered matrix"
 
 
 # ---------------- local side ----------------
 
 def charge_bound() -> dict:
-    """Every charged second at list rates: one profiling start, the other allowed start
-    (refused at claim), one guard refusal, the image build, and a fixed margin."""
+    """Lifetime basis: max_containers=1, so GPU-container time cannot exceed the app's
+    life, which the in-app reaper ends at the deadline (+ one period + stop latency).
+    Plus the scheduled reaper ticks, the single timed build function with a 2x CPU/RAM
+    overuse allowance, and a fixed margin."""
     rate = GPU_USD_S + CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S
-    build_rate = BUILD_CPU * CPU_USD_CORE_S + BUILD_GIB * MEM_USD_GIB_S
-    parts = {"profiling_start_usd": (STARTUP_S + FUNCTION_TIMEOUT_S) * rate,
-             "refused_starts_usd": (MAX_STARTS - 1) * (STARTUP_S + EARLY_S) * rate,
-             "guard_refusal_start_usd": (STARTUP_S + 10) * rate,
-             "image_build_usd": BUILD_STEPS * BUILD_STEP_S * build_rate,
+    reaper_rate = 0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S
+    reaper_ticks = math.ceil((ABANDON_S + OVERALL_S + REAPER_PERIOD_S + STOP_LATENCY_S) / REAPER_PERIOD_S)
+    parts = {"gpu_container_lifetime_usd": (OVERALL_S + REAPER_PERIOD_S + STOP_LATENCY_S) * rate,
+             "reaper_ticks_usd": reaper_ticks * 110 * reaper_rate,
+             "image_build_usd": BUILD_S * BUILD_OVERUSE * (BUILD_CPU * CPU_USD_CORE_S + BUILD_GIB * MEM_USD_GIB_S),
              "fixed_margin_usd": FIXED_MARGIN_USD}
     total = sum(parts.values())
     return {**parts, "usd_per_container_hour": rate * 3600, "reserved_total_usd": total, "cap_usd": CAP_USD,
             "admitted": total <= CAP_USD, "gpu": GPU, "preemptible": True, "max_starts": MAX_STARTS,
-            "overall_deadline_s": OVERALL_S,
-            "build_basis": f"{BUILD_STEPS} layers x {BUILD_STEP_S}s at {BUILD_CPU} cores/{BUILD_GIB} GiB (assumed for pip layers)"}
+            "overall_deadline_s": OVERALL_S, "reaper_period_s": REAPER_PERIOD_S, "abandon_s": ABANDON_S,
+            "build_basis": f"one run_function: timeout {BUILD_S}s, {BUILD_CPU} cores/{BUILD_GIB} GiB requested, "
+                           f"{BUILD_OVERUSE}x overuse allowance"}
 
 
 def atomic_write(path: Path, text: str) -> None:
@@ -195,8 +267,8 @@ def spawn() -> None:
         raise SystemExit(f"not admitted: ${ledger['reserved_total_usd']:.4f} > cap ${CAP_USD}")
     fn = modal.Function.from_name(APP_NAME, "run_profile")
     fn.hydrate()
-    guard = modal.Dict.from_name(f"m4-sgm-{GROUP}-guard", create_if_missing=True)
-    if guard.len() != 0:
+    guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
+    if set(guard.keys()) - {"first_tick"}:                 # only the reaper's first tick may precede spawn
         raise SystemExit("guard Dict already used: a profile was spawned before")
     root = Path(LOCAL_OUT) / GROUP
     root.mkdir(parents=True, exist_ok=False)           # a second spawn refuses here
@@ -210,6 +282,7 @@ def spawn() -> None:
         raise SystemExit("guard deadline already set")
     call = fn.spawn(prov["expected_identity"]).object_id
     atomic_write(root / "call.json", json.dumps({"call_id": call}))
+    guard.put("call_id", call, skip_if_exists=True)        # lets the reaper cancel it server-side
     print("spawned", call)
 
 
@@ -232,7 +305,8 @@ def collect(poller=None, stopper=None, fetch=None, now=None) -> dict:
         report["final_shutdown"] = stopper(prov["deployed_app_id"])
         report["evidence"] = (fetch or fetch_evidence)(root)
     if isinstance(payload, dict) and "profile" in payload:
-        report["usable"], report["usable_reason"] = profile_usable(payload.get("profile"), payload.get("child_exit"))
+        report["usable"], report["usable_reason"] = profile_usable(
+            payload.get("profile"), payload.get("child_exit"), prov["expected_identity"]["memsub"])
     atomic_write(root / "collect_status.json", json.dumps(report, indent=2, default=str))
     print(json.dumps({k: v for k, v in report.items() if k != "result"}, default=str))
     return report

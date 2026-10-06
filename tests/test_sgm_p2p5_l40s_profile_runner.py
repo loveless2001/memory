@@ -38,10 +38,17 @@ def test_guard_bounds_starts_and_deadline(run):
     assert "deadline" in run.guard_decision(FakeDict(), 1.0)                            # unset deadline refuses
 
 
+SHA = "f" * 64
+
+
 def _profile(**over):
-    cfg = lambda a, p: {"arm": a, "phase": p, "updates": 10, "measured_s": [1.5] * 8, "dev_eval_batch_s": 2.0,
-                        "peak_train_memory_bytes": 2e10}
-    return {"status": "complete", "configs": [cfg(a, p) for a, p in run_cfgs()], **over}
+    cfg = lambda a, p: {"arm": a, "phase": p, "updates": 10, "warmup_s": [3.0, 2.0], "measured_s": [1.5] * 8,
+                        "mean_measured_s_per_update": 1.5, "dev_eval_batch_s": 2.0,
+                        "peak_train_memory_bytes": 2e10, "peak_memory_bytes": 2.1e10}
+    env = {"python": "3.12.11", "torch": "2.7.1+cu126", "cuda": "12.6", "gpu": "NVIDIA L40S",
+           "gpu_total_bytes": 4.8e10, "tf32_matmul": False}
+    return {"status": "complete", "memsub_source_sha256": SHA, "environment": env,
+            "configs": [cfg(a, p) for a, p in run_cfgs()], **over}
 
 
 def run_cfgs():
@@ -57,16 +64,45 @@ def run_cfgs():
     (None, 0, False),
 ])
 def test_profile_usable_requires_exit_zero_and_the_full_finite_matrix(run, profile, exit_code, ok):
-    assert run.profile_usable(profile, exit_code)[0] is ok
+    assert run.profile_usable(profile, exit_code, SHA)[0] is ok
 
 
-def test_profile_usable_rejects_nonfinite_or_short_timings(run):
-    bad = _profile()
-    bad["configs"][2]["measured_s"] = [1.0] * 7
-    assert not run.profile_usable(bad, 0)[0]
-    bad = _profile()
-    bad["configs"][0]["measured_s"][3] = float("nan")
-    assert not run.profile_usable(bad, 0)[0]
+def _mut(fn):
+    p = _profile()
+    fn(p)
+    return p
+
+
+@pytest.mark.parametrize("bad", [
+    _mut(lambda p: p["configs"][2].__setitem__("measured_s", [1.0] * 7)),
+    _mut(lambda p: p["configs"][0]["measured_s"].__setitem__(3, float("nan"))),
+    _mut(lambda p: p.__setitem__("memsub_source_sha256", "0" * 64)),          # wrong source (codex probe)
+    _mut(lambda p: p.pop("environment")),                                      # missing environment
+    _mut(lambda p: p["environment"].__setitem__("tf32_matmul", True)),
+    _mut(lambda p: p["configs"][1].__setitem__("warmup_s", [])),               # missing warmups
+    _mut(lambda p: p["configs"][1].__setitem__("mean_measured_s_per_update", float("nan"))),
+    _mut(lambda p: p["configs"][1].__setitem__("mean_measured_s_per_update", 9.0)),   # inconsistent mean
+    _mut(lambda p: p["configs"][3].__setitem__("peak_memory_bytes", float("nan"))),
+])
+def test_profile_usable_rejects_every_codex_probe(run, bad):
+    assert not run.profile_usable(bad, 0, SHA)[0]
+
+
+def test_reaper_stops_past_deadline_and_abandoned_deploys(run):
+    d = FakeDict()
+    assert run.reap_decision(d, 0.0) is None                                    # first tick, nothing spawned
+    assert run.reap_decision(d, run.ABANDON_S - 1) is None
+    assert "abandoned" in run.reap_decision(d, run.ABANDON_S + 1)
+    d = FakeDict(deadline_epoch=500.0)
+    assert run.reap_decision(d, 100.0) is None and run.reap_decision(d, 501.0) == "deadline passed"
+
+
+def test_admission_refuses_late_starts_with_too_little_time(run):
+    d = FakeDict(deadline_epoch=10_000.0)
+    refused, remaining = run.admit(d, 10_000.0 - run.MIN_REMAINING_S + 1)
+    assert refused and "before the deadline" in refused and remaining < run.MIN_REMAINING_S
+    refused, remaining = run.admit(FakeDict(deadline_epoch=10_000.0), 0.0)
+    assert refused is None and remaining == 10_000.0
 
 
 def test_charge_bound_admits_under_the_approved_cap(run):
@@ -78,7 +114,8 @@ def _root(run, tmp_path, monkeypatch, call=True, deadline=1e12):
     monkeypatch.setattr(run, "LOCAL_OUT", str(tmp_path))
     root = tmp_path / run.GROUP
     root.mkdir(parents=True)
-    (root / "launch_provenance.json").write_text(json.dumps({"deployed_app_id": "ap-prof", "deadline_epoch": deadline}))
+    (root / "launch_provenance.json").write_text(json.dumps({"deployed_app_id": "ap-prof", "deadline_epoch": deadline,
+                                                            "expected_identity": {"memsub": SHA}}))
     if call is True:
         (root / "call.json").write_text(json.dumps({"call_id": "fc-1"}))
     elif call == "corrupt":
