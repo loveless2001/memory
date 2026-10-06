@@ -1,0 +1,166 @@
+{
+  "proposed_cap_usd": 12.0,
+  "approved_cap_usd": 12.0,
+  "ledger": {
+    "cells": 4,
+    "price_multiplier": 3.0,
+    "usd_per_container_hour": 0.757728,
+    "train_timeouts_usd": 8.06790888,
+    "startup_teardown_usd": 0.3030912,
+    "replay_allowance_usd": 0.35360639999999993,
+    "cpu_overuse_margin_usd": 0.60256332,
+    "image_build_usd": 0.3,
+    "fixed_margin_usd": 1.5,
+    "reserved_total_usd": 11.127169799999999,
+    "cap_usd": 12.0,
+    "admitted": true,
+    "cell_timeouts_s": {
+      "curriculum-learned-n32-s0": 8773,
+      "curriculum-learned-n32-s1": 6952,
+      "curriculum-learned-n64-s0": 11797,
+      "curriculum-learned-n64-s1": 10809
+    }
+  },
+  "provenance": {
+    "grid_file": "configs/m4_sgm_p2c_grid.json",
+    "grid_sha256": "7d6aeb685c7346b228835aaef6306c171d889f553eb99bbbe06bb2bae14541a9",
+    "inputs_index_sha256": "46ef68c5f0e57cd148c8a0aff2fcf6ec31c3110a1f667e9f0d24dff37b768010",
+    "prereg_sha256": "b1bafbbdeca4668d8bd9270f54a970576332a6612c1bc81a55a5d705ab031413",
+    "runner_sha256": "ed2f9470d5a88c1ff89989c5b9eb78b8da8d820e0d7cf1b654b2ae708f1206fa",
+    "deployed_app": "memsub-m4-sgm-p2c",
+    "nonpreemptible": true,
+    "memsub_source_sha256": "09b05c16459c2caba55cddee651bd232e9de4ac5a87ce5ad11f3f18a8ab6d966",
+    "artifact_eval_seed_base": 9300011,
+    "readings_seed_base_reserved": 9500011
+  },
+  "cells": [
+    {
+      "run_id": "curriculum-learned-n32-s0",
+      "timeout_s": 8773,
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ],
+        "n_bindings": 32,
+        "seed": 0
+      }
+    },
+    {
+      "run_id": "curriculum-learned-n32-s1",
+      "timeout_s": 6952,
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ],
+        "n_bindings": 32,
+        "seed": 1
+      }
+    },
+    {
+      "run_id": "curriculum-learned-n64-s0",
+      "timeout_s": 11797,
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ],
+        "n_bindings": 64,
+        "seed": 0
+      }
+    },
+    {
+      "run_id": "curriculum-learned-n64-s1",
+      "timeout_s": 10809,
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ],
+        "n_bindings": 64,
+        "seed": 1
+      }
+    }
+  ]
+}

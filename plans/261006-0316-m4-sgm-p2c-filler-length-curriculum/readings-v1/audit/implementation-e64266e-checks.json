@@ -1,0 +1,90 @@
+{
+  "original_commit": "e64266e624f24e2b69553000abcee92503843a73",
+  "reviewed_identity": {
+    "memsub_source_sha256": "09b05c16459c2caba55cddee651bd232e9de4ac5a87ce5ad11f3f18a8ab6d966",
+    "inputs_index_sha256": "46ef68c5f0e57cd148c8a0aff2fcf6ec31c3110a1f667e9f0d24dff37b768010",
+    "grid_sha256": "7d6aeb685c7346b228835aaef6306c171d889f553eb99bbbe06bb2bae14541a9",
+    "analysis_sha256": {
+      "scripts/sgm-p2g-preflight.py": "fc632c8425143c4fb599b0394ec91ba19bac36421573e0f3cbf3cab9fbd827ef",
+      "scripts/sgm-p2g-readings.py": "709da6423aa58ff33307b8f90a21f3fa1e1246e49fa455e21cac246bd3188b99",
+      "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "scripts/sgm-p2g-common-observer-evaluation.py": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "scripts/sgm-recover-and-validate-grid-artifacts.py": "b5bf6809c23431665eaa68953af5ebb9c034bac4a6c064bd9c0202529640f46d",
+      "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+      "modal-runners/modal-m4-sgm-p2d-diagnostics-grid.py": "c11668aa935e7f20f027859afcc0443ac394f03dc00c87b8074feb9e28c4268a",
+      "scripts/sgm-p2c-preflight.py": "563cd758f8eecfe92e927ba3704ac7fc11020e172b19406a6f33e10ed0eea3ce",
+      "scripts/sgm-p2c-readings.py": "f2c44673b732666c667021894c56ae922149b46f77cce841dec6d090f71342fb",
+      "scripts/sgm-p2c-decision-rules.py": "042cc840d95e4025397fb7ac1e098996a6c08b5c97a18510e514d23d8b006977",
+      "modal-runners/modal-m4-sgm-p2c-nonpreemptible-spawn.py": "0dd8ee7b7a7262231a2ebadda80a3417cf900fa19d4120fbecb730007791e051"
+    },
+    "git_head": "e64266e624f24e2b69553000abcee92503843a73",
+    "prereg_sha256": "b1bafbbdeca4668d8bd9270f54a970576332a6612c1bc81a55a5d705ab031413"
+  },
+  "source_review": "PASS with two original findings fixed in current working files",
+  "prereg_byte_binding_failure_reproduced_on_original_commit": true,
+  "fixed_prereg_initial_and_ending_fail_closed_probes_pass": true,
+  "original_smoke_used_reserved_seed_values": true,
+  "original_smoke_distribution": "toy N4, 16 episodes; not the registered N32/N64 256-episode population",
+  "fixed_smoke_eval_seed_bases": {
+    "p2c": 777000,
+    "p2g": 777000
+  },
+  "bound_reused_cells": 10,
+  "launch_cells": 4,
+  "ledger": {
+    "cells": 4,
+    "price_multiplier": 3.0,
+    "usd_per_container_hour": 0.757728,
+    "train_timeouts_usd": 8.06790888,
+    "startup_teardown_usd": 0.3030912,
+    "replay_allowance_usd": 0.35360639999999993,
+    "cpu_overuse_margin_usd": 0.60256332,
+    "image_build_usd": 0.3,
+    "fixed_margin_usd": 1.5,
+    "reserved_total_usd": 11.127169799999999,
+    "cap_usd": 12,
+    "admitted": true,
+    "cell_timeouts_s": {
+      "curriculum-learned-n32-s0": 8773,
+      "curriculum-learned-n32-s1": 6952,
+      "curriculum-learned-n64-s0": 11797,
+      "curriculum-learned-n64-s1": 10809
+    }
+  },
+  "missing_or_insufficient_cap_refused": true,
+  "reserved_seed_tampered_grid_refused": true,
+  "launcher_helper_ast_parity_with_cleared_p2g": {
+    "functions": 12,
+    "allowed_differences": [
+      "identities",
+      "seed",
+      "cell_count",
+      "max_containers"
+    ]
+  },
+  "closed_source_files_byte_equal": 10,
+  "tests_initial": {
+    "command": ".venv/bin/python -m pytest -q tests/test_sgm_p2c_filler_length_curriculum.py tests/test_sgm_p2g_fail_closed_and_seed_reservation.py tests/test_sgm_p2g_gate_knob_and_decision_rules.py tests/test_sgm_p2g_observer_runner_and_preflight.py -k 'not readings_pipeline_smoke_and_artifact_seed_guard'",
+    "passed": 73,
+    "deselected": 1,
+    "seconds": 51.52
+  },
+  "tests_fixed": {
+    "command": ".venv/bin/python -m pytest -q tests/test_sgm_p2c_filler_length_curriculum.py tests/test_sgm_p2g_readings_pipeline_smoke.py -k 'readings or prereg'",
+    "passed": 4,
+    "deselected": 11,
+    "seconds": 124.76,
+    "seed_spies_pass": true
+  },
+  "preflight_status": "original r1 aborted by owner while fixing prereg binding; no completed fixed-version report yet",
+  "training_clearance": "HELD until fixed code committed and final source-bound preflight verified; scoped user cap approval still required",
+  "paid_work_by_auditor": false,
+  "registered_cells_trained_by_auditor": 0,
+  "reserved_seed_evaluations_by_auditor": 0,
+  "fixed_working_file_sha256": {
+    "scripts/sgm-p2c-preflight.py": "563cd758f8eecfe92e927ba3704ac7fc11020e172b19406a6f33e10ed0eea3ce",
+    "tests/test_sgm_p2c_filler_length_curriculum.py": "1d78c781e370feb825302fba0f0751feb8036e268e06ec2816012e1235757567",
+    "tests/test_sgm_p2g_readings_pipeline_smoke.py": "6089e61efff08a5a682a51e407c89f29d0adf1a540f9cad76e8887b04abbb871"
+  }
+}
