@@ -1,101 +1,122 @@
-# P2.5 Amendment PK — packed A100-80GB execution with checkpoint/resume (DRAFT v0.2)
+# P2.5 Amendment PK — packed A100-80GB execution with durable checkpoint/resume (DRAFT v0.3)
 
 Amends prereg v0.2 (`3bf8737`, sha 0ce61a09…; file unchanged). User 21549 chose "A: plan a packed P2.5".
-Basis (dev evidence only, audited): option-A speed-up stage 1 (GPU parity 6/6 bitwise in checked scope, run 2
-`c17cfcc`), registered L40S re-timing v2 (`4e22bae`: learned 9.44 / 14.88 s/update), packing test (`6686215`:
-A100-80GB fixed-work speed-up P2 k=2 1.928×, P1 k=3 2.118×). None of these is a campaign price or a correctness
-claim under packing; this amendment registers how the unchanged 18-cell experiment would be EXECUTED.
-
-v0.2 adds codex 21551: universe binding, the P1→P2 two-worker schedule, worker failure isolation, exact
-continuity checks, the resume consumer, the retry/stop policy, the proof through the real campaign consumer, and
-"priced estimate / reservation" wording (no firm price).
-
-## PK0 — Bound universe and preserved bytes
-- Cells = exactly the 18 run ids `{tag}-n{N}-s{seed}` expanded from `configs/m4_sgm_p2p5_grid.json`
-  (sha256 d1c045ea…; group p2p5-qwen3-0p6b-screen-v1); prereg v0.2 (sha 0ce61a09…), both profile evidence trees
-  (v1 `2fda0d4`, v2 `4e22bae`), the dev/packing evidence and every ledger file keep their bytes. New outputs go
-  only to new paths.
+History: v0.1 `5c7f74f`; v0.2 `2c99725` (codex 21551); **v0.3 = codex 21553 items 1–6** (cell state machine,
+durable generations/ownership, terminal TRAINED/eval-only state, cross-container proof, frozen proof acceptance and
+budget, restart lifetime) + one disclosed ledger correction (PK5: artifact-eval batch counts).
+Basis (dev evidence, audited; not a price or correctness claim): stage-1 GPU parity (`c17cfcc`), registered L40S
+re-timing v2 (`4e22bae`), packing test (`6686215`: A100-80GB fixed-work P2 k=2 1.928×, P1 k=3 2.118×).
 
 **Unchanged:** question, arms, 18 cells, model/readout/SGM settings, training recipe (1500 updates, batch 16, lr 3e-3,
 P2C curriculum, seeds 0/1, full-gradient FP32 token-serial contract), populations, single readings run, readings
 table, limits. Only execution topology, SKU, preemption handling and the ledger basis change.
 
-## PK1 — SKU and packing topology
-- SKU: Modal **A100-80GB**, preemptible (Modal offers no non-preemptible GPU functions), hard tuples 8 cores / 64 GiB,
-  pinned image = the P2.5 dev/profile image (torch 2.7.1+cu126, transformers 4.55.2, weights @da87bfb6), TF32 off.
-- One container ("slot") = **2 cells as 2 independent OS processes** (k = 2), each the unchanged `run_pilot` cell
-  with its own seed, data stream, optimizer, artifact eval and output dir; no shared tensors, streams or state.
-  Workers arm a checked parent-death signal (as in the packing test).
-- 9 slots, fixed pairing (same arm, same N, seeds 0+1 — matched expected duration):
-  learned N16 · learned N32 · single_cell N16 · single_cell N32 · random_fixed N16 · random_fixed N32 ·
-  oracle N32 · memory_off N16 · memory_off N32. Pairing is fixed before any cell runs and never changed after.
-- k = 3 is NOT used (three P2 learned-like processes exceed 80 GB by the summed peaks; untested).
-- **Schedule across P1→P2:** both workers of a slot start together (same recipe, matched N), so they normally switch
-  from phase 1 (filler 0, ~17 GB peak each) to phase 2 (filler 40, ~26.8 GB peak each, ≈ 57 GB summed observed in the
-  packing test) at update 1000 at similar times; the slot is sized for both workers in phase 2 simultaneously (the
-  worst case), so no phase alignment is required for memory. After a resume the two workers may be at different
-  updates; that is allowed (memory bound unchanged).
-- **Worker failure isolation:** each worker is its own process with its own output dir and checkpoint path. A worker
-  that exits nonzero (error, OOM, non-finite) is NOT restarted and is reported "failed" with its log; its co-tenant
-  continues to completion unaffected. Only a whole-container loss (preemption, host loss, container crash) triggers
-  a restart (PK2), which resumes every not-yet-finished worker of that slot.
+## PK0 — Bound universe and preserved bytes
+Cells = exactly the 18 run ids `{tag}-n{N}-s{seed}` from `configs/m4_sgm_p2p5_grid.json` (sha256 d1c045ea…).
+Prereg v0.2, profile evidence v1 (`2fda0d4`) and v2 (`4e22bae`), dev/packing evidence and every ledger file keep
+their bytes. New outputs go only to new paths.
 
-## PK2 — Checkpoint / resume (preemption)
-- Each cell runs `run_pilot(..., train_checkpoint=<volume path>, checkpoint_every=C)` with **C = 50 updates**
-  (implemented at `f676699`: atomic, PilotConfig-bound snapshot of adapters, head, AdamW, episode generator,
-  CPU/CUDA RNG, logged telemetry and fixed-endpoint checkpoints; resumes at the start of the saved iteration).
-- A preempted/crashed slot is rescheduled by the platform; each restart resumes BOTH cells from their own last
-  checkpoint. Bounded: at most **R = 3 restarts per slot** (Modal Dict attempt ledger, atomic claims); a slot past R
-  or past its lifetime deadline stops, and its cells are reported "lost" (no operator rescue, no reseeding).
-- **Resume consumer = the campaign slot runner itself** (no separate tool): on container start it lists each
-  assigned cell's state on the volume: `complete` (validated outputs present) → skip; `checkpoint present` →
-  `run_pilot(..., train_checkpoint=…)` resumes; `nothing` → fresh start.
-- **Exact continuity checks before any resume** (refuse and mark the cell "failed: continuity" otherwise): the
-  checkpoint's PilotConfig equals the cell's grid-expanded config; the running memsub source sha, runner sha,
-  pinned environment (python/torch/CUDA/transformers, TF32 off) and model-file hashes equal the slot's launch
-  identity recorded at first start; checkpoint format `m4-sgm-train-resume-v1`; step < 1500 and a multiple of C.
-  RNG/optimizer/data continuity is carried by the checkpoint itself (restored states, not reseeded).
-- **Retry/stop policy:** container restarts only (≤ R = 3 per slot, atomic attempt claims; lifetime deadline per
-  slot); no worker-level retry; no operator retry, rescue, reseeding, recipe/precision/batch change or re-pairing.
-- Every resume is recorded (from-step, attempt, container id) in the cell manifest. A resumed cell is the SAME cell
-  (same seed and recipe); it is excluded from headlines only if its resume validation fails (PK4).
-- Final artifact eval runs after training completes in the same process; if a restart happens after training
-  finished but before the artifact eval was saved, training is NOT repeated (final weights are checkpointed first).
+## PK1 — SKU, slots, schedule, isolation
+- Modal **A100-80GB**, preemptible (no non-preemptible GPU functions exist), hard tuples 8 cores / 64 GiB, the pinned
+  P2.5 image (torch 2.7.1+cu126, transformers 4.55.2, weights @da87bfb6), TF32 off, `torch.set_num_threads(2)` per
+  worker.
+- 9 fixed slots, each = 2 cells as 2 independent OS processes (same arm, same N, seeds 0+1): learned N16 · learned
+  N32 · single_cell N16 · single_cell N32 · random_fixed N16 · random_fixed N32 · oracle N32 · memory_off N16 ·
+  memory_off N32. Pairing is fixed now and never changed. k = 3 is not used.
+- Schedule across P1→P2: the slot is sized for both workers in phase 2 at once (worst case; ≈ 57 GB summed in the
+  packing test); phase alignment is not required, so post-resume misalignment is allowed.
+- Isolation is a POLICY, not an immunity: each worker has its own process, output and checkpoint paths; a worker that
+  exits nonzero becomes FAILED (PK2) while its co-tenant continues. A shared fault (GPU error, host loss, a co-tenant-
+  induced OOM) can still end both; a container loss follows PK2's restart rule, a worker exit does not.
 
-## PK3 — Pre-campaign paid proof ("packed profile + GPU resume", needs its own small user approval, ≲ $2)
-Seed 99 streams only; no accuracy; no registered/artifact/reserved populations. Runs THROUGH the real campaign slot
-runner and resume consumer (proof-mode slot: a dev grid with the same code path, shortened step counts, seeds
-99/100), on one A100-80GB:
-1. **Packed timing for every slot type**: for each pairing shape {learned-like N16, learned-like N32 for learned /
-   single_cell / random_fixed / oracle, memory_off N16, N32} × {phase 1, phase 2}: 2 warmup + 4 measured updates at
-   k = 2 (closes the untested P1 k=2 and the unprofiled arms / N16 timings), plus one dev and one artifact-shaped eval
-   batch per shape.
-2. **GPU resume equivalence**: learned N32, 8 updates uninterrupted vs 4 + simulated container loss (the slot's
-   worker processes killed after the step-4 checkpoint) + the slot runner's restart path resuming to 8 in fresh
-   processes. Compare per-update loss, name-bound gradients and final
-   weights; report bitwise status; PASS = within the run-2 checker tolerance (rtol 1e-5) and identical dev
-   predictions. A second uninterrupted run measures run-to-run GPU determinism.
-3. **Packed-vs-alone numerical equivalence**: the uninterrupted learned run alone vs the same run at k = 2 (paired
-   with another seed-99+1 process): same checked-scope comparison.
-Outcome: any FAIL in 2 or 3 stops the packed plan (report; options to the user). Otherwise 1 → ledger (PK5).
+## PK2 — Durable cell state machine (volume `memsub-artifacts`, `m4-sgm/<group>/cells/<cell>/`)
+States (in `state.json`, the cell's single durable pointer): **NEW** (no state file) → **STARTED** → **TRAINED** →
+**COMPLETE**; terminal side states **FAILED** and **LOST**. Precedence on every start: COMPLETE, FAILED and LOST are
+terminal and never re-run, whatever later container losses happen; TRAINED → eval-only consumer; STARTED → resume
+from the acked generation, or (no acked generation yet) a declared from-scratch replay of ≤ C updates (the fresh
+build is deterministic from the cell seed; the replay is recorded); NEW → fresh start.
+- **Attempt directories:** every start of a cell uses a fresh `attempt-<a>/` (run_pilot's out_dir must not exist).
+  Interrupted attempt directories are never deleted; they are marked `interrupted` in the pointer history.
+- **Immutable checkpoint generations:** `ckpt/gen-<g>-step<s>.pt` (format `m4-sgm-train-resume-v1`), written once,
+  sha256 recorded. Generation g is DURABLE only after the slot supervisor (the container's main process) has (i)
+  verified the file hash, (ii) atomically replaced `state.json` to point at it, (iii) called `Volume.commit()` and
+  (iv) written the worker's ack. The worker BLOCKS after each checkpoint until its ack, so no update runs past a
+  non-durable checkpoint: lost work on any container loss is ≤ C updates (+ the in-flight update).
+- **Cadence:** C = 50 updates for campaign cells (checkpoints at 50, 100, …, 1450) plus the **terminal generation
+  at step = steps (1500)**, taken at the start of the final loop iteration (before the step-1500 dev eval), which
+  moves the cell to TRAINED. Commit/serialization overhead is measured in PK3 and charged in PK5.
+- **Eval-only consumer (TRAINED):** resumes from the terminal generation into a fresh attempt dir; the loop runs only
+  the final iteration (dev eval at 1500; no optimizer update), then the run_pilot artifact eval and output writing.
+  An interruption during the dev/artifact eval repeats only the evaluation (deterministic, no_grad, fixed seeds);
+  the partial eval attempt is preserved and labelled. No optimizer update is ever repeated after TRAINED.
+- **COMPLETE** is published only after the outputs (manifest, metrics, per-example rows, trained parameters) are
+  hashed, validated (v0.2 per-cell validation + PK4), committed, and the pointer is updated and committed again.
+- **FAILED:** a worker nonzero exit, a continuity refusal, or a validation failure. Never resumed.
+- **LOST:** a cell not terminal when its slot has no admitted start left or its lifetime deadline passed (set by the
+  next admission check, the collector or the reaper; never resumed).
+- **Continuity checks before any resume / eval-only start** (refuse → FAILED "continuity"): checkpoint PilotConfig ==
+  the cell's grid expansion; memsub source sha, slot-runner sha, pinned environment (python/torch/CUDA/transformers,
+  TF32 off) and model-file hashes == the slot's first-start identity (stored in the pointer); format string; step ∈
+  {C, 2C, …, steps}; checkpoint file sha == pointer sha. RNG/optimizer/data state come from the checkpoint.
+- **Ownership:** one owner per cell = the current admitted attempt of its slot. Each admitted start atomically claims
+  `slot-<k>-start-<n>` in a Modal Dict and writes it as `owner` into the pointers it touches; before every commit the
+  supervisor re-reads the slot's current-attempt key and refuses (stops its workers, writes nothing) if it is no
+  longer the owner (stale-writer refusal). Every start calls `Volume.reload()` before reading pointers.
 
-## PK4 — Validation additions per cell
-- Resume records complete and consistent (each resume's from-step equals a saved checkpoint step; telemetry rows
-  continuous; no duplicated or missing update ids).
-- The slot co-tenant is recorded; pairing must equal PK1.
-- Everything else exactly as the v0.2 per-cell validation (manifests, hashes, finite metrics, artifact seeds).
+## PK3 — Restart lifetime (R)
+- R = 3 restarts ⇒ **at most 4 admitted starts per slot**. Admission = atomic Dict claim (survives host loss) +
+  per-slot lifetime deadline set once at spawn. No admitted start is left past the deadline (admission refuses;
+  the call completes). Function `retries` set so the platform restarts crashed containers into the admission check.
+- A scheduled in-app reaper stops the WHOLE app past the global deadline (stop-first, app-id bound, as the accepted
+  v1/v2 profile reaper); local collection stops + verifies by app id; both fail closed.
+- No worker-level retry; no operator retry, rescue, reseeding, recipe/precision/batch change or re-pairing.
 
-## PK5 — Priced estimate / reservation (computed only after PK3, before any cap request; not a price guarantee)
-Per slot: life = max(cell walls) at the measured k = 2 timings × 1.4 + startup + R × (startup + lost work ≤ C
-updates) allowance; charged at A100-80GB + 8 cores + 64 GiB list prices (2× CPU/RAM conservative basis as audited);
-plus readings run, parity, image build, reaper/teardown, fixed margin. Two bases (estimate / planning reserve) as
-before; topology, concurrency (9 slots in parallel) and queueing stated; assumptions explicit (preemption rate,
-restart count, platform scheduling). The user cap is requested on the planning reserve. The packing-test numbers
-and the $75–85 illustration are not a bound.
+## PK4 — Per-cell validation additions
+Pointer history consistent (generations strictly increasing, every resume's from-step == an acked generation step,
+TRAINED only after the terminal generation, COMPLETE only after validated outputs); telemetry rows continuous with no
+duplicated or missing update ids; co-tenant recorded and == PK1; exactly 1500 optimizer updates in total per cell
+(update-id ledger across attempts). Everything else exactly as v0.2.
+
+## PK5 — Proof before any campaign spend (needs its own user approval; budget = a computed reservation)
+Runs the REAL slot runner + supervisor + resume consumer in proof mode on A100-80GB. Proof mode = a separate grid
+`configs/m4_sgm_p2p5_packed_proof_grid.json` (new): steps 8, C = 2, curriculum ((0,0),(4,40)) (crosses phase at
+step 4), eval_every 4, eval_batches 1, batch 16, N32 unless stated, seeds 99/100, proof populations dev 8_800_000,
+artifact 8_800_011+s, train-split 8_800_021+s (never 4242 / 555_001 / 9_100_003 / 9_300_011 / 9_400_011 /
+9_500_011 / 9_600_011 families), run_pilot artifact eval cut to 1 batch per intervention.
+1. **Reference A, A′:** learned pair, uninterrupted, twice (separate containers) → run-to-run determinism control.
+2. **Training interruption B:** same pair; fault injected after the step-4 ack (supervisor kills workers and exits
+   the container nonzero) → a fresh container is admitted and consumes generation step 4 through the real runner →
+   COMPLETE. Both container ids and generation hashes retained.
+3. **Terminal/eval interruption C:** fault injected during the artifact eval after TRAINED → fresh container →
+   eval-only consumer → COMPLETE; the update ledger shows exactly 8 updates; the partial eval attempt preserved.
+4. **FAILED persistence D:** worker rank 1 injected to exit 3 at step 2 (FAILED), then a container fault after rank
+   0's step-4 ack → fresh container: rank 1 stays FAILED (not started), rank 0 resumes → COMPLETE.
+5. **Packed vs alone E:** seed-99 learned alone (k = 1 slot) vs its packed run in A.
+6. **Packed timing T (all 9 slot types × phases 1, 2 = 18 configs):** k = 2, 2 warmup + 4 measured updates, one
+   dev-shaped and one artifact-shaped eval batch per config, one repeat, threads 2; plus checkpoint+commit time.
+   Any OOM/error/incomplete config ⇒ no ledger.
+**Acceptance (frozen):** comparisons over per-update loss, name-bound gradients (full expected parameter name list
+and shapes), final weights, dev/artifact predictions and accuracies; all values finite; bitwise status reported.
+If A ≡ A′ bitwise, then B, C, D-rank-0 and E must be bitwise ≡ A on that scope; otherwise each value must satisfy
+|x − x_A| ≤ max(1e-5 · max|x_A|, 1e-8) per tensor, with identical predictions. Training-telemetry numeric fields are
+compared too (finite, |Δ| ≤ same rule). Any failure in 1–5 stops the packed plan (report + options); any T failure
+blocks the ledger. No automatic scope reduction or retry. Budget: a complete charged reservation (every container
+start, model loads, timing configs, commits, teardown, image build, margin, 2× CPU/RAM basis) is computed and
+posted before the approval request; ≲ $2 is a target only.
+
+## PK6 — Priced estimate / reservation (only after PK5 PASS; not a price guarantee)
+Per slot: life = max(paired cell walls) at the PK5 k = 2 timings (+ measured checkpoint/commit overhead) × 1.4 +
+startup + 3 restarts × (startup + ≤ C updates + checkpoint reload); artifact eval at the run_pilot batches **as
+implemented: 5 interventions × 16 + 4 train-split = 84 batches (learned/random_fixed/oracle), 68 (single_cell,
+coord_shuffle not applicable), 20 (memory_off)** — correcting the earlier 52/20 basis, which assumed 3 interventions;
+all 9 slots (parallel), readings run, parity, image build, reaper, teardown, fixed margin; A100-80GB + 8 cores +
+64 GiB list prices on the audited 2× CPU/RAM basis. Assumptions stated (preemption rate, restart count, queueing).
+The user cap is requested on the planning reserve.
 
 ## Gates
-1. Amendment PK clearance (codex) → implementation: packed slot runner + resume integration + CPU tests ($0).
-2. Implementation audit (meaningful CPU tests: slot runner, resume consumer, continuity refusals, failure
-   isolation, restart bound) → **separate user approval** for the PK3 proof (≲ $2) → run → proof/artifact audit.
-3. PK3 PASS → schedule-bound priced estimate/reservation → **explicit user execution cap** → launch audit → 9 slots.
-4. Readings exactly once after all cells validate (unchanged), on a single A100-80GB or the profile L40S (stated).
+1. Amendment PK clearance → implementation (slot runner, supervisor commit/ack protocol, state machine, eval-only
+   consumer, train() terminal checkpoint, run_pilot proof-population parameters, proof grid, fault injection limited
+   to proof mode) + meaningful CPU tests ($0) → implementation audit.
+2. PK5 reservation posted → **separate user approval** → proof → proof/artifact audit.
+3. PK5 PASS → PK6 schedule-bound estimate/reservation → **explicit user execution cap** → launch audit → 9 slots.
+4. Readings exactly once after all cells validate (unchanged), on one A100-80GB (stated SKU).
