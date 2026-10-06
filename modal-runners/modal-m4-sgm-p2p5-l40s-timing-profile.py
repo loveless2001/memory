@@ -53,10 +53,41 @@ MAX_STARTS, OVERALL_S, COLLECT_GRACE_S = 2, 2700, 300
 REAPER_PERIOD_S, STOP_LATENCY_S, ABANDON_S, MIN_REMAINING_S = 120, 120, 1800, 900
 BUILD_S, BUILD_CPU, BUILD_GIB, BUILD_OVERUSE = 1200, 4.0, 8, 2.0        # ONE timed build function (pip + weights)
 GUARD_DICT = "m4-sgm-p2p5-l40s-profile-v1-guard"
+MIN_CHILD_S = 600                                      # below this the child is not launched (late start)
+EXPECTED_ENV = {"python_prefix": "3.12.", "torch": "2.7.1+cu126", "cuda": "12.6", "gpu_contains": "L40S"}
+CONTRACT = "full-gradient token-serial, fp32, TF32 off, batch 16, N32, seed 99"
+PHASE_FILLER = {1: 0, 2: 40}
 CAP_USD = 3.0                   # user-approved profile cap (#gravity 21436 option (a), 21446)
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000542, 0.0000131, 0.00000222   # modal.com/pricing, preemptible
 FIXED_MARGIN_USD = 0.25
 EXPECTED_CONFIGS = [("learned", 1), ("learned", 2), ("memory_off", 1), ("memory_off", 2)]
+
+
+LOGIC_FILE = "modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"   # shared with the CPU self-stop proof
+
+
+def _load_logic():
+    """The shared reaper logic sits next to this runner locally AND in the container."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("p2p5_reaper_logic", Path(__file__).with_name(LOGIC_FILE))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+LOGIC = _load_logic()
+ENVIRONMENT = LOGIC.ENVIRONMENT
+
+
+def reap_decision(store, now: float) -> str | None:
+    return LOGIC.reap_decision(store, now, ABANDON_S)
+
+
+def reap_and_stop(store, now: float, app_name: str, stopper, canceller=None) -> dict:
+    return LOGIC.reap_and_stop(store, now, app_name, stopper, canceller, ABANDON_S)
+
+
+stop_bound_app = LOGIC.stop_bound_app
 
 
 def _build_environment():
@@ -77,23 +108,13 @@ image = (modal.Image.debian_slim(python_version="3.12")
          .run_function(_build_environment, timeout=BUILD_S, cpu=BUILD_CPU, memory=BUILD_GIB * 1024)
          .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "M4_SGM_QWEN3_0P6B_DIR": MODEL_DIR})
          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
-         .add_local_file(PROFILE_SCRIPT, f"/root/repo/{PROFILE_SCRIPT}"))
+         .add_local_file(PROFILE_SCRIPT, f"/root/repo/{PROFILE_SCRIPT}")
+         .add_local_file(f"modal-runners/{LOGIC_FILE}", f"/root/{LOGIC_FILE}"))
 artifacts = modal.Volume.from_name("memsub-artifacts")
 
 
 def file_sha(p) -> str:
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
-
-
-def reap_decision(store, now: float) -> str | None:
-    """Pure reaper rule: 'stop' reason or None. Past the spawn deadline -> stop; never
-    spawned within ABANDON_S of the first reaper tick -> stop (abandoned deploy)."""
-    store.put("first_tick", now, skip_if_exists=True)
-    deadline = store.get("deadline_epoch", None)
-    if isinstance(deadline, (int, float)):
-        return "deadline passed" if now > deadline else None
-    first = store.get("first_tick", now)
-    return "abandoned deploy (never spawned)" if now > first + ABANDON_S else None
 
 
 def admit(store, now: float) -> tuple[str | None, float]:
@@ -104,6 +125,15 @@ def admit(store, now: float) -> tuple[str | None, float]:
     if refused is None and remaining < MIN_REMAINING_S:
         refused = f"only {remaining:.0f}s before the deadline"
     return refused, remaining
+
+
+def child_timeout_s(deadline, now: float) -> float | None:
+    """Outer child timeout recomputed at launch: never past the deadline (90 s reserved for
+    commit/return); None (do not launch) when under MIN_CHILD_S would remain."""
+    if not isinstance(deadline, (int, float)):
+        return None
+    t = min(OUTER_TIMEOUT_S, deadline - now - 90)
+    return t if t >= MIN_CHILD_S else None
 
 
 def guard_decision(store, now: float) -> str | None:
@@ -121,20 +151,9 @@ def guard_decision(store, now: float) -> str | None:
               max_containers=1, retries=0)
 def reaper() -> dict:
     """Independent server-side lifetime stop (no local host or call id needed)."""
-    store = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
-    reason = reap_decision(store, time.time())
-    if reason is None:
-        return {"stop": False}
-    store.put("reaper_fired", {"t": time.time(), "reason": reason}, skip_if_exists=True)
-    call = store.get("call_id", None)
-    if call:
-        try:
-            modal.FunctionCall.from_id(call).cancel(terminate_containers=True)
-        except Exception:
-            pass                                       # the app stop below is the binding action
-    from modal.experimental import stop_app
-    stop_app(APP_NAME)
-    return {"stop": True, "reason": reason}
+    return reap_and_stop(modal.Dict.from_name(GUARD_DICT, create_if_missing=True), time.time(), APP_NAME,
+                         stop_bound_app,
+                         lambda c: modal.FunctionCall.from_id(c).cancel(terminate_containers=True))
 
 
 @app.function(image=image, gpu=GPU, cpu=(CPU_CORES, CPU_CORES), memory=(MEMORY_GIB * 1024, MEMORY_GIB * 1024),
@@ -155,6 +174,7 @@ def run_profile(expected: dict) -> dict:
     try:   # identity before the claim
         from memsub.sgm.synthetic_pilot_run import source_tree_sha256
         got = {"runner": file_sha(__file__), "profile_script": file_sha(f"/root/repo/{PROFILE_SCRIPT}"),
+               "reaper_logic": file_sha(Path(__file__).with_name(LOGIC_FILE)),
                "memsub": source_tree_sha256(Path("/root/repo/memsub"))}
         if got != expected:
             return {"status": "identity_mismatch", "got": got}
@@ -166,10 +186,12 @@ def run_profile(expected: dict) -> dict:
         early.cancel()
     out = Path("/artifacts/m4-sgm") / GROUP / RUN_ID
     out.parent.mkdir(parents=True, exist_ok=True)
+    child_timeout = child_timeout_s(modal.Dict.from_name(GUARD_DICT).get("deadline_epoch", None), time.time())
+    if child_timeout is None:                          # recomputed AT launch (codex 21456)
+        return {"status": "late_refused", "reason": "too little time left at child launch"}
     try:   # outer timeout + external exit capture around the child profile
         proc = subprocess.run([sys.executable, "-u", f"/root/repo/{PROFILE_SCRIPT}", "--out", str(out)],
-                              cwd="/root/repo", capture_output=True, text=True,
-                              timeout=min(OUTER_TIMEOUT_S, max(remaining - 90, 60)))
+                              cwd="/root/repo", capture_output=True, text=True, timeout=child_timeout)
         rc, stdout, stderr = proc.returncode, proc.stdout, proc.stderr
     except subprocess.TimeoutExpired as e:
         rc, stdout, stderr = "outer_timeout", str(e.stdout or ""), str(e.stderr or "")
@@ -196,15 +218,21 @@ def profile_usable(profile: dict | None, child_exit, memsub_sha: str) -> tuple[b
     if profile.get("memsub_source_sha256") != memsub_sha:
         return False, "profile memsub source differs from the bound source"
     env = profile.get("environment") or {}
-    if (not all(env.get(k) for k in ("python", "torch", "cuda", "gpu")) or not pos(env.get("gpu_total_bytes"))
+    if (not str(env.get("python", "")).startswith(EXPECTED_ENV["python_prefix"])
+            or env.get("torch") != EXPECTED_ENV["torch"] or env.get("cuda") != EXPECTED_ENV["cuda"]
+            or EXPECTED_ENV["gpu_contains"] not in str(env.get("gpu", "")) or not pos(env.get("gpu_total_bytes"))
             or env.get("tf32_matmul") is not False):
-        return False, "incomplete or non-registered environment record"
+        return False, "environment differs from the registered pinned environment"
+    if profile.get("contract") != CONTRACT:
+        return False, "contract differs from the registered contract"
     cfgs = profile.get("configs") or []
     if [(c.get("arm"), c.get("phase")) for c in cfgs] != EXPECTED_CONFIGS:
         return False, "configs differ from the registered matrix"
     for c in cfgs:
         w, m = c.get("warmup_s") or [], c.get("measured_s") or []
         tag = f"{c.get('arm')} phase {c.get('phase')}"
+        if c.get("train_filler_len") != PHASE_FILLER[c.get("phase")]:
+            return False, f"{tag}: training filler length differs from the registered phase"
         if c.get("updates") != 10 or len(w) != 2 or len(m) != 8 or not all(pos(v) for v in w + m):
             return False, f"{tag}: incomplete or non-finite update timings"
         mean = c.get("mean_measured_s_per_update")
@@ -234,7 +262,10 @@ def charge_bound() -> dict:
             "admitted": total <= CAP_USD, "gpu": GPU, "preemptible": True, "max_starts": MAX_STARTS,
             "overall_deadline_s": OVERALL_S, "reaper_period_s": REAPER_PERIOD_S, "abandon_s": ABANDON_S,
             "build_basis": f"one run_function: timeout {BUILD_S}s, {BUILD_CPU} cores/{BUILD_GIB} GiB requested, "
-                           f"{BUILD_OVERUSE}x overuse allowance"}
+                           f"{BUILD_OVERUSE}x overuse allowance",
+            "assumptions": ["reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+                            "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+                            "list prices from modal.com/pricing checked 2026-10-06"]}
 
 
 def atomic_write(path: Path, text: str) -> None:
@@ -247,6 +278,7 @@ def expected_identity() -> dict:
     sys.path.insert(0, str(Path.cwd()))
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256
     return {"runner": file_sha(__file__), "profile_script": file_sha(PROFILE_SCRIPT),
+            "reaper_logic": file_sha(Path(__file__).with_name(LOGIC_FILE)),
             "memsub": source_tree_sha256(Path("memsub"))}
 
 
@@ -259,7 +291,8 @@ def _load(path: str, name: str):
 
 
 def spawn() -> None:
-    if subprocess.run(["git", "status", "--porcelain", "--", "memsub", __file__, PROFILE_SCRIPT],
+    if subprocess.run(["git", "status", "--porcelain", "--", "memsub", __file__, PROFILE_SCRIPT,
+                       f"modal-runners/{LOGIC_FILE}"],
                       capture_output=True, text=True, check=True).stdout.strip():
         raise SystemExit("refusing to spawn from a dirty tree")
     ledger = charge_bound()
@@ -278,8 +311,9 @@ def spawn() -> None:
             "git_head": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
             "deployed_app_id": modal.App.lookup(APP_NAME).app_id}
     atomic_write(root / "launch_provenance.json", json.dumps(prov, indent=2))   # app id saved BEFORE spawn
-    if not guard.put("deadline_epoch", prov["deadline_epoch"], skip_if_exists=True):
-        raise SystemExit("guard deadline already set")
+    if not (guard.put("app_id", prov["deployed_app_id"], skip_if_exists=True)
+            and guard.put("deadline_epoch", prov["deadline_epoch"], skip_if_exists=True)):
+        raise SystemExit("guard app id / deadline already set")
     call = fn.spawn(prov["expected_identity"]).object_id
     atomic_write(root / "call.json", json.dumps({"call_id": call}))
     guard.put("call_id", call, skip_if_exists=True)        # lets the reaper cancel it server-side
