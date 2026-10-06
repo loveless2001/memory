@@ -9,10 +9,13 @@ working-tree `memsub`. Both run the real `train()` for the same PilotConfig (dev
 99, never a registered/artifact/reserved population), with torch.Tensor.backward and
 AdamW.step wrapped to capture every update's loss and every parameter gradient. Then
 one dev evaluation batch (seed 4242) through each package's `evaluate`.
-Compared: initial weights (bitwise), per-update loss, per-update gradients, final
-weights, dev predictions/accuracy and telemetry. Reported as max abs / max relative
-(to the reference tensor's max |x|) differences; PASS needs every relative diff
-<= --rtol and identical dev accuracy. CPU is expected to be bitwise (reported).
+Checked scope (codex 21492/21493): initial weights (bitwise), per-update loss,
+per-update gradients (bound to parameter names), final weights, dev predictions and dev
+accuracy. Reported as max abs / max relative (to the reference tensor's max |x|)
+differences; PASS needs zero structural problems, every relative diff <= --rtol and
+identical dev predictions/accuracy. "bitwise" means bitwise over THAT scope only.
+NOT verified: training telemetry rows and dev numeric fields other than accuracy (the
+differing float fields are listed in `dev_float_fields_differing` for information).
 
 Isolation (codex 21484): `memsub_ref` is a separate package name with relative imports;
 after the suite every loaded `memsub_ref.*` module must live under the reference copy,
