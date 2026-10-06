@@ -5,10 +5,8 @@ parent-death signal is armed and the parent verified."""
 
 import copy
 import importlib.util
-import os
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 import pytest
@@ -64,6 +62,12 @@ def test_early_finisher_inflates_only_secondary_estimates():
     assert abs(out["secondary"]["reciprocal_mean_sum_updates_per_s"] - 1.3) < 1e-12
 
 
+def test_nan_mean_fails_summarize():                             # codex 21535 probe
+    w = [worker(0, 2, 0.0, 1.0), worker(1, 2, 0.0, 1.1)]
+    w[0]["mean_measured_s"] = float("nan")
+    assert pk.summarize(w, 2, 2)["status"] == "failed"
+
+
 def test_fractional_counting_inside_window():
     w = worker(0, 1, 0.0, 2.0)                                   # measured updates [4,6] ... [14,16]
     assert pk.window_updates([w], 5.0, 9.0) == 0.5 + 1.0 + 0.5
@@ -89,6 +93,9 @@ def _span_gap(w):
     (lambda w: w[0].__setitem__("mean_measured_s", 0.5), "inconsistent"),
     (lambda w: w[0]["updates"][5].__setitem__("t_end", w[0]["updates"][4]["t_end"]), "increasing"),
     (_span_gap, "span"),
+    (lambda w: w[0].__setitem__("mean_measured_s", float("nan")), "non-finite or non-positive mean"),
+    (lambda w: w[1].__setitem__("measured_start", float("nan")), "non-finite or non-positive mean"),
+    (lambda w: w[1].__setitem__("measured_end", float("inf")), "non-finite or non-positive mean"),
 ])
 def test_validate_rejects_malformed_records(mutate, needle):
     w = [worker(0, 2, 0.0, 1.0), worker(1, 2, 0.0, 1.1)]
@@ -98,34 +105,31 @@ def test_validate_rejects_malformed_records(mutate, needle):
     assert needle in pk.validate_workers(bad, 2, 2)
 
 
-def _gone(pid: int) -> bool:
-    try:
-        os.kill(pid, 0)
-        return False
-    except ProcessLookupError:
-        return True
+def _alive(tag: str) -> int:
+    """Live processes whose command line is exactly `sleep <tag>` (tags are unique per test)."""
+    out = subprocess.run(["pgrep", "-fx", f"sleep {tag}"], capture_output=True, text=True)
+    return len(out.stdout.split())
 
 
 def test_launch_failure_kills_already_started_workers(tmp_path):
-    pidfile = tmp_path / "pid"
+    tag = "30.4711"                                           # exec'd directly: the Popen pid IS sleep
 
     def cmd(phase, r, k, d, smoke):
-        return ["sh", "-c", f"echo $$ > {pidfile}; exec sleep 30"] if r == 0 else ["/nonexistent/worker"]
+        return ["sleep", tag] if r == 0 else ["/nonexistent/worker"]
     res = pk.run_test(2, 2, tmp_path, cmd=cmd)
     assert res["status"] == "failed" and "launch/wait" in res["problem"]
-    time.sleep(0.2)
-    assert _gone(int(pidfile.read_text()))
+    assert _alive(tag) == 0
 
 
 def test_test_timeout_kills_workers(tmp_path, monkeypatch):
     monkeypatch.setattr(pk, "TEST_TIMEOUT_S", 0.5)
-    pids = tmp_path / "pids"
+    tag = "30.4712"
 
     def cmd(phase, r, k, d, smoke):
-        return ["sh", "-c", f"echo $$ >> {pids}; exec sleep 30"]
+        return ["sleep", tag]
     res = pk.run_test(1, 3, tmp_path, cmd=cmd)
     assert res["status"] == "failed" and res["worker_exit"] == ["timeout"] * 3
-    assert all(_gone(int(p)) for p in pids.read_text().split())
+    assert _alive(tag) == 0
 
 
 def test_parent_death_arming_refuses_a_wrong_parent():

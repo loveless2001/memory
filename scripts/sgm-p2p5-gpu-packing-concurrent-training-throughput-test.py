@@ -97,6 +97,10 @@ def validate_workers(w: list, phase: int, k: int) -> str | None:
             return f"rank {r}: non-finite or non-positive update timing"
         if any(b["t_end"] <= a["t_end"] for a, b in zip(ups, ups[1:])):
             return f"rank {r}: update end times not increasing"
+        fin = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+        if not (fin(x["mean_measured_s"]) and x["mean_measured_s"] > 0 and fin(x["measured_start"])
+                and fin(x["measured_end"])):                 # codex 21535: NaN compares false below
+            return f"rank {r}: non-finite or non-positive mean / measured start / end"
         rel = ups[WARMUP - 1].get("barrier_release")
         if not isinstance(rel, (int, float)) or x["measured_start"] != rel or not rel >= ups[WARMUP - 1]["t_end"]:
             return f"rank {r}: measured start is not the barrier release after the final warmup"
