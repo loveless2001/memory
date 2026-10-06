@@ -75,19 +75,29 @@ def _load_logic():
     return mod
 
 
-LOGIC = _load_logic()
-ENVIRONMENT = LOGIC.ENVIRONMENT
+_LOGIC = None
+ENVIRONMENT = "main"                # must equal the shared logic's ENVIRONMENT (tested)
+
+
+def logic():
+    """LAZY: Modal imports this module inside the image-build step, before the logic file is
+    mounted (deploy 18:01 failed with FileNotFoundError); only callers that need it load it."""
+    global _LOGIC
+    if _LOGIC is None:
+        _LOGIC = _load_logic()
+    return _LOGIC
 
 
 def reap_decision(store, now: float) -> str | None:
-    return LOGIC.reap_decision(store, now, ABANDON_S)
+    return logic().reap_decision(store, now, ABANDON_S)
 
 
 def reap_and_stop(store, now: float, app_name: str, stopper, canceller=None) -> dict:
-    return LOGIC.reap_and_stop(store, now, app_name, stopper, canceller, ABANDON_S)
+    return logic().reap_and_stop(store, now, app_name, stopper, canceller, ABANDON_S)
 
 
-stop_bound_app = LOGIC.stop_bound_app
+def stop_bound_app(app_name: str, expected_app_id: str | None, environment: str = ENVIRONMENT) -> None:
+    return logic().stop_bound_app(app_name, expected_app_id, environment)
 
 
 def _build_environment():

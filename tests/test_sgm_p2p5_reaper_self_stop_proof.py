@@ -130,4 +130,16 @@ def test_production_reaper_runs_on_a_cpu_image_with_the_shared_logic(monkeypatch
     assert uid(run.run_profile.spec.image) == uid(run.image) and not run.reaper.spec.gpus
     src = (ROOT / "modal-runners" / "modal-m4-sgm-p2p5-l40s-timing-profile.py").read_text()
     assert 'add_local_file(f"modal-runners/{LOGIC_FILE}",\n' in src and src.count('f"/root/{LOGIC_FILE}"') == 2
-    assert run.LOGIC.reap_and_stop is not None
+    assert run.logic().reap_and_stop is not None and run.ENVIRONMENT == run.logic().ENVIRONMENT
+
+
+def test_runner_module_imports_without_the_logic_file_like_the_image_build_step(tmp_path, monkeypatch):
+    """Deploy 18:01 failed: the build step imports the runner before the logic mount exists."""
+    import shutil
+    lone = tmp_path / "modal-m4-sgm-p2p5-l40s-timing-profile.py"
+    shutil.copy(ROOT / "modal-runners" / lone.name, lone)                    # NO logic file beside it
+    monkeypatch.chdir(ROOT)
+    run = _load_registered(lone, "p2p5_build_step_import")
+    assert run._LOGIC is None                                                 # import did not touch the file
+    with pytest.raises(FileNotFoundError):
+        run.reap_decision({}, 0.0)
