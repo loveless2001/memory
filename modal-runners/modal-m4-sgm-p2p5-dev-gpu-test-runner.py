@@ -9,7 +9,12 @@ Total option-A dev cap $3 (claude 21477); each run is bounded by itself:
     cannot outlive the client;
   * remote child under subprocess timeout CHILD_S, Modal function timeout FUNCTION_S,
     max_containers=1, retries=0.
-Charge bound per run = FUNCTION_S x (L40S + 4 CPU + 32 GiB) = $1.00 (preemptible rates).
+Charge basis per run (reserved in #gravity before launch): client lifetime (outer timeout)
+x (L40S + 4 CPU + 32 GiB, hard request=limit tuples) + build + detection/teardown allowance.
+Exit status (codex 21482): the local entrypoint exits NONZERO unless the remote child
+returned 0; run.json always records the outcome (also failures) before exiting.
+Inputs: plans/.../dev-gpu/inputs is mounted read-only at /root/repo/dev-gpu-inputs (the
+frozen reference memsub tree for the speed-up parity check).
 
     timeout 1500 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py \
         --script scripts/sgm-p2p5-sgm-path-hotspot-profile.py --out <local dir> [--args "..."]
@@ -19,6 +24,7 @@ Charge bound per run = FUNCTION_S x (L40S + 4 CPU + 32 GiB) = $1.00 (preemptible
 import io
 import json
 import shlex
+import signal
 import subprocess
 import sys
 import tarfile
@@ -31,6 +37,7 @@ APP_NAME = "memsub-m4-sgm-p2p5-dev-gpu-test"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
 GPU, CPU_CORES, MEMORY_GIB = "L40S", 4.0, 32
 FUNCTION_S, CHILD_S = 1440, 1380
+INPUTS_DIR = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/inputs"
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000542, 0.0000131, 0.00000222   # modal.com/pricing
 CHARGE_BOUND_USD = FUNCTION_S * (GPU_USD_S + CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S)
 
@@ -55,10 +62,11 @@ image = (modal.Image.debian_slim(python_version="3.12")
          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
          .add_local_dir("scripts", "/root/repo/scripts", ignore=["**/__pycache__/**", "**/*.pyc"])
          .add_local_dir("tests", "/root/repo/tests", ignore=["**/__pycache__/**", "**/*.pyc"])
-         .add_local_dir("configs", "/root/repo/configs"))
+         .add_local_dir("configs", "/root/repo/configs")
+         .add_local_dir(INPUTS_DIR, "/root/repo/dev-gpu-inputs", ignore=["**/__pycache__/**", "**/*.pyc"]))
 
 
-@app.function(image=image, gpu=GPU, cpu=CPU_CORES, memory=MEMORY_GIB * 1024,
+@app.function(image=image, gpu=GPU, cpu=(CPU_CORES, CPU_CORES), memory=(MEMORY_GIB * 1024, MEMORY_GIB * 1024),
               timeout=FUNCTION_S, retries=0, max_containers=1)
 def run_remote(script: str, args: str) -> dict:
     out = Path("/tmp/dev-out")
@@ -87,11 +95,26 @@ def main(script: str, out: str, args: str = ""):
     dest.mkdir(parents=True, exist_ok=False)
     started = time.time()
     meta = {"app_id": app.app_id, "script": script, "args": args, "started": started,
-            "charge_bound_usd": round(CHARGE_BOUND_USD, 4), "gpu": GPU}
+            "charge_bound_usd": round(CHARGE_BOUND_USD, 4), "gpu": GPU, "outcome": "started"}
+    # "started" left on disk = the client never reached the end (host loss / SIGKILL);
+    # the launch wrapper's EXIT_STATUS (124 = outer timeout) is recorded beside it
     (dest / "run.json").write_text(json.dumps(meta, indent=2))
-    res = run_remote.remote(script, args)
-    with tarfile.open(fileobj=io.BytesIO(res.pop("tar")), mode="r:gz") as tar:
-        tar.extractall(dest, filter="data")
-    meta.update(res, client_wall_s=time.time() - started)
-    (dest / "run.json").write_text(json.dumps(meta, indent=2))
-    print(json.dumps({k: meta[k] for k in ("app_id", "returncode", "wall_s", "client_wall_s")}))
+
+    def on_sigterm(_sig, _frame):                      # outer `timeout` sends SIGTERM first
+        raise SystemExit("SIGTERM (outer timeout)")
+    signal.signal(signal.SIGTERM, on_sigterm)
+    meta["outcome"] = "remote call failed"
+    try:
+        res = run_remote.remote(script, args)
+        with tarfile.open(fileobj=io.BytesIO(res.pop("tar")), mode="r:gz") as tar:
+            tar.extractall(dest, filter="data")
+        meta.update(res, outcome="ok" if res["returncode"] == 0 else "child failed")
+    except BaseException as e:                         # remote error / interrupt: recorded, then fail
+        meta["error"] = f"{type(e).__name__}: {str(e)[:500]}"
+        raise
+    finally:
+        meta["client_wall_s"] = time.time() - started
+        (dest / "run.json").write_text(json.dumps(meta, indent=2))
+        print(json.dumps({k: meta.get(k) for k in ("app_id", "outcome", "returncode", "wall_s", "client_wall_s")}))
+    if meta["outcome"] != "ok":
+        raise SystemExit(1)

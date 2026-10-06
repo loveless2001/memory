@@ -1,0 +1,187 @@
+{
+  "suite": "tiny-cpu",
+  "rtol": 1e-05,
+  "ref_memsub_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "cand_memsub_sha256": "d5a4002583c4e37e7bfa86d496c94b86c43decf0e41a62926fb0663baf2b876f",
+  "cases": [
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "learned",
+        "readout": "taskhead"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "learned",
+        "readout": "residual_head"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "single_cell",
+        "readout": "taskhead"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "single_cell",
+        "readout": "residual_head"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "random_fixed",
+        "readout": "taskhead"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "random_fixed",
+        "readout": "residual_head"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "oracle",
+        "readout": "taskhead"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "oracle",
+        "readout": "residual_head"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "learned",
+        "readout": "taskhead",
+        "filler_writes": false
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "learned",
+        "readout": "taskhead",
+        "aux_address_lambda": 0.1
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    },
+    {
+      "config": {
+        "backbone": "tiny",
+        "device": "cpu",
+        "n_bindings": 16,
+        "filler_len": 8,
+        "batch": 4,
+        "steps": 3,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "arm": "memory_off",
+        "readout": "residual_head"
+      },
+      "pass": false,
+      "problem": "KeyError: 'dev'"
+    }
+  ],
+  "pass": false
+}

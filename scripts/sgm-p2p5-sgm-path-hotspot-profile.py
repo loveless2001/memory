@@ -73,7 +73,8 @@ def run_config(arm: str, batch: int) -> dict:
     torch.cuda.reset_peak_memory_stats()
 
     def on_update(update: int, seconds: float) -> None:
-        rows.append({"s": seconds, "bwd_s": PHASE["bwd_s"]})
+        kind = "warmup" if update < WARMUP else "measured" if update < WARMUP + MEASURED else "profiled"
+        rows.append({"update": update, "kind": kind, "s": seconds, "bwd_s": PHASE["bwd_s"]})
         if update == WARMUP + MEASURED - 1:             # the next update is profiled
             prof_box["p"] = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA])
             prof_box["p"].__enter__()
@@ -93,10 +94,12 @@ def run_config(arm: str, batch: int) -> dict:
               for k, e in by_key.items() if k.startswith("SGM::")}
     syncs = {k: by_key[k].count for k in ("aten::_local_scalar_dense", "cudaStreamSynchronize",
                                           "cudaDeviceSynchronize", "aten::item") if k in by_key}
-    measured = rows[WARMUP:WARMUP + MEASURED]
+    measured = [r for r in rows if r["kind"] == "measured"]
+    if [r["update"] for r in rows] != list(range(steps)) or len(measured) != MEASURED:
+        raise RuntimeError(f"update rows {[r['update'] for r in rows]} != 0..{steps - 1}")
     mean = sum(r["s"] for r in measured) / len(measured)
     return {"arm": arm, "batch": batch, "n_bindings": 32, "train_filler_len": 0,
-            "measured": measured, "mean_s_per_update": mean,
+            "updates": rows, "measured": measured, "mean_s_per_update": mean,
             "mean_bwd_s": sum(r["bwd_s"] for r in measured) / len(measured),
             "profiled_update_s_with_profiler": rows[-1]["s"],
             "peak_allocated_bytes": torch.cuda.max_memory_allocated(),
@@ -142,6 +145,8 @@ def main():
         print(report["status"], flush=True)
     finally:
         watchdog.cancel()
+    if report["status"] != "complete":                 # codex 21482: partial runs exit nonzero
+        sys.exit(1)
 
 
 if __name__ == "__main__":
