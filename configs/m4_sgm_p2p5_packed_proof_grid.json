@@ -1,0 +1,34 @@
+{
+  "_comment": "M4-SGM P2.5 Amendment PK §PK5 PROOF grid (prereg-amendment-pk v0.4 0578975). DEV only: seeds 99/100, proof populations 8_800_000 (dev) / 8_800_011+s (artifact) / 8_800_021+s (train-split); never 4242 / 555_001 / 9_100_003 / 9_300_011 / 9_400_011 / 9_500_011 / 9_600_011. steps 8, C = 2, curriculum crosses phase at step 4. Each scenario = one slot run through the real supervisor/consumer under its own group dir; faults apply to the FIRST admitted start only.",
+  "base": {"arm": "learned", "readout": "residual_head", "n_queries": 4, "filler_len": 40, "steps": 8,
+           "batch": 16, "lr": 0.003, "eval_every": 4, "eval_batches": 1, "sgm": {},
+           "filler_writes": true, "aux_address_lambda": 0.0, "checkpoint_steps": [], "beta_bias_init": null,
+           "filler_len_schedule": [[0, 0], [4, 40]], "backbone": "qwen3-0.6b-base", "device": "cuda"},
+  "blocks": [
+    {"tag": "learned", "n_bindings": [32], "seeds": [99, 100], "override": {"arm": "learned"}}
+  ],
+  "checkpoint_every": 2,
+  "eval": {"final_batches": 1, "final_batch_size": 16, "final_seed_base": 8800011, "dev_seed": 8800000,
+           "train_eval_seed_base": 8800021},
+  "scenarios": {
+    "A":      {"cells": ["learned-n32-s99", "learned-n32-s100"], "faults": null},
+    "Aprime": {"cells": ["learned-n32-s99", "learned-n32-s100"], "faults": null},
+    "B":      {"cells": ["learned-n32-s99", "learned-n32-s100"],
+               "faults": {"after_ack": {"cell": "learned-n32-s99", "step": 4}}},
+    "C":      {"cells": ["learned-n32-s99", "learned-n32-s100"],
+               "faults": {"during_eval": {"cell": "learned-n32-s99"}}},
+    "D":      {"cells": ["learned-n32-s99", "learned-n32-s100"],
+               "faults": {"worker_exit": {"learned-n32-s100": {"exit_at_update": 2}},
+                          "after_ack": {"cell": "learned-n32-s99", "step": 4,
+                                        "require_terminal": ["learned-n32-s100"]}}},
+    "E":      {"cells": ["learned-n32-s99"], "faults": null}
+  },
+  "timing": {
+    "slot_types": [["learned", 16], ["learned", 32], ["single_cell", 16], ["single_cell", 32],
+                   ["random_fixed", 16], ["random_fixed", 32], ["oracle", 32], ["memory_off", 16],
+                   ["memory_off", 32]],
+    "phases": {"1": 0, "2": 40},
+    "k": 2, "warmup": 2, "measured": 4, "seeds": [99, 100], "threads": 2,
+    "eval_batches": {"dev_shaped": 1, "artifact_shaped": 1}
+  }
+}
