@@ -148,7 +148,7 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
                 hit = pred == batch.labels[:, q]
                 correct += int(hit.sum()); total += hit.numel()
                 ep_hits += hit.float()
-                empty += trace["empty_read_weight"]
+                empty += [float(x) for x in trace["empty_read_weight"]]
                 coords += [cs[-1].reshape(-1, 2) for cs in trace["read_coords"].values()]
                 if per_example is not None:
                     for b in range(hit.numel()):

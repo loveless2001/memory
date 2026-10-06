@@ -30,6 +30,20 @@ from ..sgm.sparse_cell_bank import SparseBankSet
 from .compacted_prefix_cache import CompactedPrefixCache
 
 
+class EmptyReadWeight:
+    """Lazy per-read telemetry: mean over (batch, head) of the stencil weight on
+    absent cells. Converted only when consumed (`float()`, evaluation) with the
+    same device arithmetic as before; training never pays the host sync."""
+    __slots__ = ("weights", "present")
+
+    def __init__(self, weights: torch.Tensor, present: list):
+        self.weights, self.present = weights, present
+
+    def __float__(self) -> float:
+        mask = torch.tensor(self.present, dtype=torch.bool, device=self.weights.device)
+        return float((self.weights * ~mask.view(self.weights.shape)).sum(-1).mean())
+
+
 class SGMModelRuntime(nn.Module):
     def __init__(self, model, cfg: SGMConfig, seed: int = 0):
         super().__init__()
@@ -152,17 +166,26 @@ class SGMModelRuntime(nn.Module):
         idx, w, coords = self._stencil(p, "read", t, oracle)
         trace["read_coords"].setdefault(i, []).append(coords.detach())
         trace.setdefault("read_q", {}).setdefault(i, []).append(p["q"][:, t].detach())  # telemetry
-        cells, present = banks.gather(i, idx)
-        trace["empty_read_weight"].append(float((w * ~present).sum(-1).mean()))
+        cells, present = banks.gather(i, idx, mask=False)
+        trace["empty_read_weight"].append(EmptyReadWeight(w.detach(), present))
         return read_memory(cells, w, p["q"][:, t])
 
     def _write(self, banks: SparseBankSet, i, p, oracle, trace) -> int:
         idx, w, coords = self._stencil(p, "write", 0, oracle)
         trace.setdefault("write_coords", {})[i] = coords.detach()  # telemetry only
         trace.setdefault("write_k", {})[i] = p["k"][:, 0].detach()  # telemetry only
-        cells, _ = banks.gather(i, idx)
+        # one device->host transfer for the addresses AND the nonzero-weight
+        # flags, shared by gather and scatter (P2.5 option A speed-up)
+        B, H = idx.shape[:2]
+        host = torch.cat([idx.reshape(-1), (w != 0).reshape(-1).long()]).tolist()
+        xy, nz = host[:B * H * 18], host[B * H * 18:]           # == idx.tolist(), (w != 0).tolist()
+        coords = [[[xy[j:j + 2] for j in range((b * H + h) * 18, (b * H + h + 1) * 18, 2)]
+                   for h in range(H)] for b in range(B)]
+        nonzero = [[[bool(x) for x in nz[(b * H + h) * 9:(b * H + h + 1) * 9]] for h in range(H)]
+                   for b in range(B)]
+        cells, _ = banks.gather(i, idx, coords=coords, mask=False)
         new = delta_update(cells, w, p["beta"][:, 0], p["k"][:, 0], p["v"][:, 0].float())
-        return banks.scatter(i, idx, new, w)
+        return banks.scatter(i, idx, new, w, coords=coords, nonzero=nonzero)
 
     def _evict(self, cache: CompactedPrefixCache) -> None:
         """Keep sinks + the most recent local_recent_tokens (step boundary)."""

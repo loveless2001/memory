@@ -15,6 +15,17 @@ from __future__ import annotations
 import torch
 
 _OFFSETS = torch.tensor([-1, 0, 1], dtype=torch.long)
+_OFFSETS_BY_DEVICE: dict[torch.device, torch.Tensor] = {}
+
+
+def _offsets(device: torch.device) -> torch.Tensor:
+    """Per-device copy of [-1, 0, 1]: a fresh host->device copy on every call
+    synchronised the stream (P2.5 option A speed-up; values unchanged)."""
+    if device.type == "cpu":
+        return _OFFSETS
+    if device not in _OFFSETS_BY_DEVICE:
+        _OFFSETS_BY_DEVICE[device] = _OFFSETS.to(device)
+    return _OFFSETS_BY_DEVICE[device]
 
 
 def stencil_1d(x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
@@ -22,7 +33,7 @@ def stencil_1d(x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     n = torch.floor(x.detach() + 0.5)
     f = x - n
     w = torch.stack([0.5 * (0.5 - f) ** 2, 0.75 - f ** 2, 0.5 * (0.5 + f) ** 2], dim=-1)
-    idx = n.long().unsqueeze(-1) + _OFFSETS.to(x.device)
+    idx = n.long().unsqueeze(-1) + _offsets(x.device)
     return idx, w
 
 

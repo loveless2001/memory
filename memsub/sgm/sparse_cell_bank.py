@@ -68,9 +68,14 @@ class SparseBankSet:
         return out
 
     # -- access ----------------------------------------------------------------------
-    def gather(self, layer: int, idx: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        """idx [B, H, 9, 2] long -> (cells [B, H, 9, dk, dv], present [B, H, 9])."""
-        coords = idx.tolist()
+    def gather(self, layer: int, idx: torch.Tensor, coords: list | None = None,
+               mask: bool = True) -> tuple[torch.Tensor, torch.Tensor | list]:
+        """idx [B, H, 9, 2] long -> (cells [B, H, 9, dk, dv], present [B, H, 9]).
+
+        `coords` = idx.tolist() if the caller already holds it (one device->host
+        transfer shared with `scatter`); mask=False returns `present` as the flat
+        host list instead of a device tensor (no host->device copy)."""
+        coords = idx.tolist() if coords is None else coords
         tensors, present = [], []
         for b in range(self.batch):
             for h in range(self.heads):
@@ -81,16 +86,19 @@ class SparseBankSet:
                     tensors.append(self._zero if cell is None else cell)
         shape = (self.batch, self.heads, 9)
         stacked = torch.stack(tensors).view(*shape, self.key_dim, self.value_dim)
-        mask = torch.tensor(present, dtype=torch.bool, device=self.device).view(shape)
         self.counters.cells_read += len(tensors)
-        return stacked, mask
+        if not mask:
+            return stacked, present
+        return stacked, torch.tensor(present, dtype=torch.bool, device=self.device).view(shape)
 
     def scatter(self, layer: int, idx: torch.Tensor, new_cells: torch.Tensor,
-                weights: torch.Tensor) -> int:
+                weights: torch.Tensor, coords: list | None = None,
+                nonzero: list | None = None) -> int:
         """Replace addressed cells with new_cells [B, H, 9, dk, dv]. Returns the
-        number of newly allocated cells. Fails closed on capacity."""
-        coords = idx.tolist()
-        nonzero = (weights != 0).tolist()
+        number of newly allocated cells. Fails closed on capacity. `coords` /
+        `nonzero` = idx.tolist() / (weights != 0).tolist() if already on host."""
+        coords = idx.tolist() if coords is None else coords
+        nonzero = (weights != 0).tolist() if nonzero is None else nonzero
         plan: list[tuple[dict, Coord, int]] = []
         for b in range(self.batch):
             for h in range(self.heads):
@@ -107,13 +115,17 @@ class SparseBankSet:
                     raise CapacityError(
                         f"bank (b={b}, layer={layer}, head={h}) would hold "
                         f"{len(bank) + new_here} > {self.max_cells} cells")
-        flat = new_cells.reshape(-1, self.key_dim, self.value_dim)
-        keep_graph = torch.is_grad_enabled() and flat.requires_grad
+        # ONE unbind node per write batch (P2.5 option A speed-up): per-cell
+        # `flat[row]` made one SelectBackward per cell, each materialising a
+        # zero-filled [B*H*9, dk, dv] gradient; unbind routes every cell's
+        # gradient through a single node. Same values, same graph semantics.
+        # Without autograd the rows are views of this write batch, which stays
+        # alive while any of its cells is live (previously one clone per cell).
+        rows = new_cells.reshape(-1, self.key_dim, self.value_dim).unbind(0)
         allocated = 0
         for bank, key, row in plan:
             allocated += key not in bank
-            # outside autograd, clone so dead write batches are not retained
-            bank[key] = flat[row] if keep_graph else flat[row].clone()
+            bank[key] = rows[row]
         self.counters.cells_written += len(plan)
         self.counters.cells_allocated += allocated
         return allocated
