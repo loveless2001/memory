@@ -1,0 +1,226 @@
+{
+  "inputs": {
+    "proof_timing_sha256": "6381c986972af93ddb712171b0bbe2e1fc1465dc524a549d0e9650a3e514f537",
+    "proof_exit_sha256": "d92cf667c73d63a92e6f7afb10fb70a42c14e7da405f852e3e00e22d8020df17",
+    "grid_sha256": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "script_sha256": "b993d434e0cb9dac87146481b162a152fa48a29ef5db373e3020218eb92c6f63",
+    "gpu": "NVIDIA A100-SXM4-80GB"
+  },
+  "slots": {
+    "learned-n16": {
+      "cells": [
+        "learned-n16-s0",
+        "learned-n16-s1"
+      ],
+      "training_s": 10610.2,
+      "dev_evals_s": 432.3,
+      "artifact_eval_s": 571.9,
+      "checkpoints_s": 84.5,
+      "startup_s": 300,
+      "life_s": 11998.8,
+      "restart_allowance_s": 1481.0,
+      "reserve_life_s": 21241.4,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        4.9032289022499995,
+        11.41384520975
+      ],
+      "dev_batch_s": 6.754128156999997,
+      "artifact_batch_s": 6.808386629999994
+    },
+    "learned-n32": {
+      "cells": [
+        "learned-n32-s0",
+        "learned-n32-s1"
+      ],
+      "training_s": 16879.4,
+      "dev_evals_s": 599.4,
+      "artifact_eval_s": 766.2,
+      "checkpoints_s": 84.4,
+      "startup_s": 300,
+      "life_s": 18629.5,
+      "restart_allowance_s": 1861.2,
+      "reserve_life_s": 31664.8,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        9.45325735475,
+        14.85235279825001
+      ],
+      "dev_batch_s": 9.366138403000036,
+      "artifact_batch_s": 9.121985238000036
+    },
+    "single_cell-n16": {
+      "cells": [
+        "singlecell-n16-s0",
+        "singlecell-n16-s1"
+      ],
+      "training_s": 9561.5,
+      "dev_evals_s": 242.7,
+      "artifact_eval_s": 249.9,
+      "checkpoints_s": 84.3,
+      "startup_s": 300,
+      "life_s": 10438.3,
+      "restart_allowance_s": 1072.3,
+      "reserve_life_s": 17830.4,
+      "artifact_batches": 68,
+      "s_per_update_p1_p2": [
+        4.588546070499987,
+        9.945850313249991
+      ],
+      "dev_batch_s": 3.7914898719999997,
+      "artifact_batch_s": 3.6743604040000264
+    },
+    "single_cell-n32": {
+      "cells": [
+        "singlecell-n32-s0",
+        "singlecell-n32-s1"
+      ],
+      "training_s": 16183.9,
+      "dev_evals_s": 352.9,
+      "artifact_eval_s": 383.6,
+      "checkpoints_s": 84.3,
+      "startup_s": 300,
+      "life_s": 17304.7,
+      "restart_allowance_s": 1421.6,
+      "reserve_life_s": 28491.3,
+      "artifact_batches": 68,
+      "s_per_update_p1_p2": [
+        9.165575293749981,
+        14.036724672499986
+      ],
+      "dev_batch_s": 5.513826783000013,
+      "artifact_batch_s": 5.641714072000013
+    },
+    "random_fixed-n16": {
+      "cells": [
+        "randomfixed-n16-s0",
+        "randomfixed-n16-s1"
+      ],
+      "training_s": 9737.7,
+      "dev_evals_s": 420.4,
+      "artifact_eval_s": 554.6,
+      "checkpoints_s": 84.3,
+      "startup_s": 300,
+      "life_s": 11097.0,
+      "restart_allowance_s": 1384.2,
+      "reserve_life_s": 19688.3,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        4.803075309250005,
+        9.869164947000002
+      ],
+      "dev_batch_s": 6.568499339000027,
+      "artifact_batch_s": 6.60235408099993
+    },
+    "random_fixed-n32": {
+      "cells": [
+        "randomfixed-n32-s0",
+        "randomfixed-n32-s1"
+      ],
+      "training_s": 16114.1,
+      "dev_evals_s": 602.7,
+      "artifact_eval_s": 864.1,
+      "checkpoints_s": 84.7,
+      "startup_s": 300,
+      "life_s": 17965.6,
+      "restart_allowance_s": 1936.5,
+      "reserve_life_s": 30961.4,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        8.910976507749979,
+        14.406247878750008
+      ],
+      "dev_batch_s": 9.416699318000042,
+      "artifact_batch_s": 10.287498699000025
+    },
+    "memory_off-n16": {
+      "cells": [
+        "memoryoff-n16-s0",
+        "memoryoff-n16-s1"
+      ],
+      "training_s": 2244.5,
+      "dev_evals_s": 153.1,
+      "artifact_eval_s": 46.8,
+      "checkpoints_s": 83.1,
+      "startup_s": 300,
+      "life_s": 2827.5,
+      "restart_allowance_s": 474.2,
+      "reserve_life_s": 5380.9,
+      "artifact_batches": 20,
+      "s_per_update_p1_p2": [
+        1.0894220315000211,
+        2.310211800999923
+      ],
+      "dev_batch_s": 2.3922797010000068,
+      "artifact_batch_s": 2.3384048139998868
+    },
+    "memory_off-n32": {
+      "cells": [
+        "memoryoff-n32-s0",
+        "memoryoff-n32-s1"
+      ],
+      "training_s": 3729.7,
+      "dev_evals_s": 220.4,
+      "artifact_eval_s": 64.9,
+      "checkpoints_s": 83.2,
+      "startup_s": 300,
+      "life_s": 4398.3,
+      "restart_allowance_s": 546.6,
+      "reserve_life_s": 7797.3,
+      "artifact_batches": 20,
+      "s_per_update_p1_p2": [
+        2.083641815499959,
+        3.292204677499967
+      ],
+      "dev_batch_s": 3.444117279000011,
+      "artifact_batch_s": 3.2442291730001216
+    },
+    "oracle-n32": {
+      "cells": [
+        "oracle-n32-s0",
+        "oracle-n32-s1"
+      ],
+      "training_s": 15853.9,
+      "dev_evals_s": 726.2,
+      "artifact_eval_s": 941.6,
+      "checkpoints_s": 84.4,
+      "startup_s": 300,
+      "life_s": 17906.0,
+      "restart_allowance_s": 2022.0,
+      "reserve_life_s": 31134.6,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        8.647213088749993,
+        14.41331254525005
+      ],
+      "dev_batch_s": 11.34703429199999,
+      "artifact_batch_s": 11.209293460000026
+    }
+  },
+  "estimate": {
+    "slot_gpu_hours": 31.26825,
+    "readings_gpu_hours": 2.031529078496891,
+    "usd": 112.79194610175415,
+    "wall_h_slots_parallel": 5.174861111111111,
+    "wall_h_end_to_end": 7.206390189608003
+  },
+  "planning_reserve": {
+    "slots_usd": 230.651589504,
+    "readings_usd": 12.161363650508354,
+    "image_usd": 0.168384,
+    "reaper_usd": 0.06412200116666665,
+    "margin_usd": 5.0,
+    "total_usd": 248.04545915567502
+  },
+  "lifecycle_bound_if_every_slot_crash_loops_usd": 358.38695488250835,
+  "assumptions": [
+    "timings = audited proof T (one A100-80GB host, k = 2, 6 measured updates per config); host variation not modelled",
+    "slower worker of each pair; dev/artifact batch = the max measured for that arm/N",
+    "at most 3 restarts per slot (4 admitted starts), each replaying <= 50 + 1 P2 updates and one full final evaluation",
+    "deadline factor 1.4 on every slot life; readings x 1.4 with a 10% parity allowance",
+    "CPU/RAM on the audited 2x basis for the reserve; hard tuples for the estimate; list prices modal.com 2026-10-06",
+    "9 slots run concurrently (A100-80GB availability / queueing not modelled); readings afterwards on one container",
+    "preemption rate unknown: the reserve covers 3 restarts per slot, not more",
+    "not a price guarantee and not a platform cash ceiling"
+  ]
+}

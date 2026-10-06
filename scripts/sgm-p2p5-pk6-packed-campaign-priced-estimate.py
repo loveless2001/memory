@@ -56,7 +56,9 @@ def main():
     ex = json.loads((PROOF / "timing.exit.json").read_text())
     grid = json.loads(GRID.read_text())
     base = grid["base"]
-    steps, (_, switch) = base["steps"], base["filler_len_schedule"][1]
+    steps, (switch, _filler) = base["steps"], base["filler_len_schedule"][1]   # [[0, 0], [1000, 40]] -> switch 1000
+    if (switch, steps - switch) != (1000, 500):                                  # v1 bug (codex 21591): switch was 40
+        raise SystemExit(f"curriculum split {switch}/{steps - switch} != registered 1000/500")
     evals = steps // base["eval_every"] + 1
     gens = len([s for s in range(1, steps) if s % C == 0]) + 1
     commit = max(ex["commit_s"])
@@ -99,7 +101,8 @@ def main():
                    "grid_sha256": sha(GRID), "script_sha256": sha(Path(__file__)), "gpu": t["gpu"]},
         "slots": slots,
         "estimate": {"slot_gpu_hours": est_s / 3600, "readings_gpu_hours": readings_s / 3600,
-                     "usd": (est_s + readings_s) * rate(1.0), "wall_h_parallel": max(v["life_s"] for v in slots.values()) / 3600},
+                     "usd": (est_s + readings_s) * rate(1.0), "wall_h_slots_parallel": max(v["life_s"] for v in slots.values()) / 3600,
+                     "wall_h_end_to_end": (max(v["life_s"] for v in slots.values()) + readings_s) / 3600},
         "planning_reserve": {"slots_usd": res_s * rate(2.0), "readings_usd": readings_s * FACTOR * rate(2.0),
                              "image_usd": IMAGE_USD, "reaper_usd": reaper, "margin_usd": MARGIN_USD},
         "lifecycle_bound_if_every_slot_crash_loops_usd": 9 * (longest + REAPER_PERIOD_S + STOP_LATENCY_S) * rate(2.0)
@@ -118,7 +121,7 @@ def main():
     a.out.write_text(json.dumps(out, indent=2))
     print(json.dumps({"estimate_usd": round(out["estimate"]["usd"], 2),
                       "estimate_gpu_h": round(out["estimate"]["slot_gpu_hours"] + out["estimate"]["readings_gpu_hours"], 1),
-                      "wall_h": round(out["estimate"]["wall_h_parallel"], 2),
+                      "wall_h_end_to_end": round(out["estimate"]["wall_h_end_to_end"], 2),
                       "reserve_usd": round(out["planning_reserve"]["total_usd"], 2),
                       "lifecycle_bound_usd": round(out["lifecycle_bound_if_every_slot_crash_loops_usd"], 2)}))
 
