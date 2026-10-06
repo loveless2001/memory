@@ -105,8 +105,9 @@ def test_q_reading_is_total_and_ordered():
 
 # ---------------- launcher ----------------
 
-def test_exact_cells_timeouts_and_reservation_under_the_proposed_cap(runner):
-    cells, ledger, prov = runner.plan(cap=runner.PROPOSED_CAP_USD)
+def test_exact_cells_timeouts_and_reservation_under_the_approved_cap(runner):
+    assert runner.P2C_CAP_USD == runner.PROPOSED_CAP_USD == 12.0
+    cells, ledger, prov = runner.plan()
     assert {r for r, _p, _t in cells} == runner.P2C_IDS and len(cells) == 4
     assert ledger["cell_timeouts_s"] == {"curriculum-learned-n32-s0": 8773, "curriculum-learned-n32-s1": 6952,
                                          "curriculum-learned-n64-s0": 11797, "curriculum-learned-n64-s1": 10809}
@@ -117,7 +118,6 @@ def test_exact_cells_timeouts_and_reservation_under_the_proposed_cap(runner):
 
 @pytest.mark.parametrize("cap", [None, 11.0])
 def test_missing_or_insufficient_cap_is_refused(runner, cap):
-    assert runner.P2C_CAP_USD is None                           # unapproved: spawn() cannot plan
     with pytest.raises(ValueError, match="not admitted"):
         runner.plan(cap=cap)
 
