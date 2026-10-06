@@ -30,7 +30,10 @@ TINY["eval"]["final_batch_size"] = 2
 for sc in TINY["scenarios"].values():                    # learned-n32-* -> learned-n4-*
     sc["cells"] = [c.replace("n32", "n4") for c in sc["cells"]]
     sc["faults"] = json.loads(json.dumps(sc["faults"]).replace("n32", "n4")) if sc["faults"] else None
-EXP = {"memsub": source_tree_sha256(ROOT / "memsub"), "runner": "test-runner"}
+import hashlib  # noqa: E402
+PACKING = ROOT / "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py"
+EXP = {"memsub": source_tree_sha256(ROOT / "memsub"), "runner": "test-runner",
+       "packing_helpers": hashlib.sha256(PACKING.read_bytes()).hexdigest()}
 ID = {**EXP, "env": "cpu", "runner_expected": EXP}
 CELLS = expand_cells(TINY)
 REG = {"by_arm": {"learned": parameter_registry(CELLS["learned-n4-s99"])}}
@@ -208,7 +211,7 @@ def test_joint_metric_field_omission_fails(proof, tmp_path):
         (o / "metrics.json").write_text(json.dumps(m))
         _rebind(ev, s_, c)
     rep = evaluate(ev)
-    assert not rep["pass"] and "output schema" in rep["failure"], rep.get("failure")
+    assert not rep["pass"] and ("output schema" in rep["failure"] or "disagree" in rep["failure"]), rep.get("failure")
 
 
 def test_joint_telemetry_gutting_fails(proof, tmp_path):
@@ -239,7 +242,7 @@ def test_supervisor_refuses_gutted_outputs_with_the_frozen_schema(proof, tmp_pat
     (out.parent / "done.json").write_text(json.dumps({"outputs": files}))
     sup.finish("learned-n4-s99", 0)
     final = es.read_record(tmp_path / "cells" / "learned-n4-s99", 1)
-    assert final["state"] == es.FAILED and "output schema" in final["reason"]
+    assert final["state"] == es.FAILED and ("output schema" in final["reason"] or "disagree" in final["reason"])
 
 
 def test_zeroed_snapshot_digests_fail(proof, tmp_path):
@@ -279,11 +282,11 @@ def test_timing_gate_accepts_a_complete_matrix(tmp_path):
 
 @pytest.mark.parametrize("mutate, exit_mutate, needle", [
     (lambda t: [c.__setitem__("eval_and_checkpoint", []) for c in t["configs"]], None, "exactly k"),
-    (lambda t: t["configs"][3]["workers"].pop(), None, "exactly k"),
+    (lambda t: t["configs"][3]["workers"].pop(), None, "exactly k|ranks"),
     (lambda t: t.__setitem__("gpu", "smoke-cpu"), None, "SKU"),
     (lambda t: t.__setitem__("timing_spec", {**t["timing_spec"], "measured": 2}), None, "spec"),
     (lambda t: t.__setitem__("memsub_source_sha256", "other"), None, "binding"),
-    (lambda t: t["configs"][0]["workers"][0]["updates"].pop(), None, "update coverage"),
+    (lambda t: t["configs"][0]["workers"][0]["updates"].pop(), None, "update coverage|update ids"),
     (None, lambda ex: ex.__setitem__("commit_probe_bytes", 1), "sized"),
     (None, lambda ex: ex.__setitem__("commit_s", [0.5, 0.6]), "commit probes"),
 ])
@@ -305,3 +308,100 @@ def test_consumed_input_bindings(tmp_path):
         acc.check_consumed_inputs(paths, reg, sch, {**exp, "comparator": "x"})
     with pytest.raises(acc.Fail, match="different grid / source"):
         acc.check_consumed_inputs(paths, {**reg, "memsub_source_sha256": "x"}, sch, exp)
+
+
+# -- codex 21572: per-field layer coverage, exact row coverage, finite literals, T raw-record checks --
+def _gut_layer(o):
+    rows = [json.loads(x) for x in (o / "routing_telemetry.jsonl").read_text().splitlines()]
+    for r in rows:
+        if "grad_norm" in r:
+            r["grad_norm"].pop("L1/q_proj")
+    (o / "routing_telemetry.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    m = json.loads((o / "metrics.json").read_text())
+    m["train_last"]["grad_norm"].pop("L1/q_proj")
+    (o / "metrics.json").write_text(json.dumps(m))
+
+
+def _dup_rows(o):
+    rows = (o / "per_example_results.jsonl").read_text().splitlines()
+    (o / "per_example_results.jsonl").write_text("\n".join([rows[0]] * len(rows)) + "\n")
+
+
+def _inf_literal(o):
+    m = (o / "metrics.json").read_text()
+    (o / "metrics.json").write_text(m.replace('"wall_seconds": ', '"wall_seconds": 1e999, "x_": ', 1))
+
+
+@pytest.mark.parametrize("gut, needle", [(_gut_layer, "covers layers"), (_dup_rows, "exactly once")])
+def test_coverage_defects_fail_whole_acceptance(proof, tmp_path, gut, needle):
+    ev = _copy(proof, tmp_path)
+    for s_, c, o in _complete_outs(ev):
+        gut(o)
+        _rebind(ev, s_, c)
+    rep = evaluate(ev)
+    assert not rep["pass"] and needle in rep["failure"], rep.get("failure")
+
+
+@pytest.mark.parametrize("gut, needle", [(_gut_layer, "covers layers"), (_dup_rows, "exactly once"),
+                                         (_inf_literal, "non-finite")])
+def test_supervisor_refuses_coverage_defects(proof, tmp_path, gut, needle):
+    src = next(o for s_, c, o in _complete_outs(proof) if s_ == "E")
+    sup = SlotSupervisor(root=tmp_path, cells={"learned-n4-s99": CELLS["learned-n4-s99"]}, epoch=1, admitted=[1],
+                         identity=ID, checkpoint_every=2, eval_cfg=TINY["eval"], commit=lambda: None,
+                         reload=lambda: None, registry=REG["by_arm"]["learned"], schema=SCHEMA["by_arm"]["learned"])
+    sup.acknowledge()
+    rec = sup.records["learned-n4-s99"]
+    rec["chain"], rec["state"] = [{"epoch": 1, "g": 4, "step": 8, "file": "x", "sha256": "y"}], es.TRAINED
+    out = sup.attempt_dir("learned-n4-s99") / "out"
+    shutil.copytree(src, out)
+    gut(out)
+    files = {str(p.relative_to(out)): es.file_sha256(p) for p in sorted(out.rglob("*")) if p.is_file()}
+    (out.parent / "done.json").write_text(json.dumps({"outputs": files}))
+    sup.finish("learned-n4-s99", 0)
+    final = es.read_record(tmp_path / "cells" / "learned-n4-s99", 1)
+    assert final["state"] == es.FAILED and needle in final["reason"], final.get("reason")
+
+
+def _with_timing(ev, mutate=None):
+    """Whole-proof evidence + a SYNTHETIC-labelled T built from the retained real CPU smoke records."""
+    (ev / "timing").mkdir()
+    t = json.loads((SMOKE_T / "timing.json").read_text())
+    t.update(gpu="NVIDIA A100-SXM4-80GB", memsub_source_sha256=EXP["memsub"], packing_helpers_sha256=EXP["packing_helpers"])
+    if mutate:
+        mutate(t)
+    (ev / "timing" / "timing.json").write_text(json.dumps(t))
+    nbytes = max(e["checkpoint_bytes"] for c in t["configs"] for e in c["eval_and_checkpoint"])
+    (ev / "timing.exit.json").write_text(json.dumps({"child_exit": 0, "commit_s": [0.5, 0.6, 0.7],
+                                                     "commit_probe_bytes": nbytes, "SYNTHETIC_STUB": True}))
+    adm = json.loads((ev / "admission.json").read_text())
+    return acc.evaluate(ev, TINY, REG, adm, EXP, gpu=True, require_timing=True, schema=SCHEMA)
+
+
+def test_whole_acceptance_with_timing_passes(proof, tmp_path):
+    rep = _with_timing(_copy(proof, tmp_path))
+    assert rep["pass"], rep.get("failure")
+
+
+def _dup_rank(t):
+    w = t["configs"][2]["workers"]
+    w[1] = json.loads(json.dumps(w[0]))
+
+
+def _k1(t):
+    t["configs"][4]["workers"][0]["k"] = 1
+
+
+def _ids0(t):
+    for u in t["configs"][5]["workers"][1]["updates"]:
+        u["update"] = 0
+
+
+def _rate(t):
+    t["configs"][6]["fixed_work_updates_per_s"] = 1e9
+
+
+@pytest.mark.parametrize("mutate, needle", [(_dup_rank, "ranks"), (_k1, "mismatch"), (_ids0, "update ids"),
+                                            (_rate, "recomputed")])
+def test_whole_acceptance_rejects_timing_record_defects(proof, tmp_path, mutate, needle):
+    rep = _with_timing(_copy(proof, tmp_path), mutate)
+    assert not rep["pass"] and needle in rep["failure"], rep.get("failure")

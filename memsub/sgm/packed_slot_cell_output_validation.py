@@ -26,9 +26,17 @@ ROW_KEYS = {"batch", "episode", "episode_hash", "query", "key", "label", "pred",
 
 
 def strict_json(text: str):
+    """JSON with every number finite: NaN/Infinity literals AND overflowing literals such as
+    1e999 are rejected (codex 21572 #1)."""
     def bad(c):
         raise ValueError(f"non-finite constant {c}")
-    return json.loads(text, parse_constant=bad)
+
+    def finite_float(x: str) -> float:
+        v = float(x)
+        if not math.isfinite(v):
+            raise ValueError(f"non-finite number literal {x}")
+        return v
+    return json.loads(text, parse_constant=bad, parse_float=finite_float)
 
 
 def applicable_interventions(arm: str) -> tuple[str, ...]:
@@ -59,6 +67,24 @@ def parameter_registry(pilot: dict) -> dict:
     return {"grad_names_shapes": grads, "state_names_shapes": state}
 
 
+def row_coverage(rows: list, pilot: dict, eval_cfg: dict) -> str | None:
+    """Exactly one row per intervention x batch x episode x query (no duplicates / gaps); each
+    row's correctness == (pred == label); one episode hash per (batch, episode) across every
+    intervention (the same population is re-read under each intervention)."""
+    want = {(iv, b, e, q) for iv in applicable_interventions(pilot["arm"]) for b in range(eval_cfg["final_batches"])
+            for e in range(eval_cfg["final_batch_size"]) for q in range(pilot["n_queries"])}
+    got = [(r["intervention"], r["batch"], r["episode"], r["query"]) for r in rows]
+    if len(set(got)) != len(got) or set(got) != want:
+        return "per-example rows do not cover intervention x batch x episode x query exactly once"
+    hashes = {}
+    for r in rows:
+        if r["correct"] != (r["pred"] == r["label"]):
+            return "per-example row correctness differs from pred == label"
+        if hashes.setdefault((r["batch"], r["episode"]), r["episode_hash"]) != r["episode_hash"]:
+            return "episode hash differs across interventions for one (batch, episode)"
+    return None
+
+
 def selected_layer_ids(pilot: dict) -> set[str]:
     from .synthetic_pilot import TINY_SGM_DEFAULTS
     if pilot["backbone"] == "tiny":
@@ -73,19 +99,23 @@ def structural_schema(obj, layers: set[str], seen: set) -> dict:
     """Recursive key / type / N-A description; selected-layer keys are normalised ('6' -> '{L}',
     'L6/q_proj' -> 'L{L}/q_proj') and recorded in `seen` (codex 21570 #1: frozen field schema)."""
     if isinstance(obj, dict):
-        keys = {}
+        keys, covered = {}, {}
         for k, v in obj.items():
-            nk, m = k, re.match(r"^L(\d+)/(.*)$", k)
+            nk, m, layer = k, re.match(r"^L(\d+)/(.*)$", k), None
             if k in layers:
-                nk = "{L}"
-                seen.add(k)
+                nk, layer = "{L}", k
             elif m and m.group(1) in layers:
-                nk = "L{L}/" + m.group(2)
-                seen.add(m.group(1))
+                nk, layer = "L{L}/" + m.group(2), m.group(1)
+            if layer is not None:
+                seen.add(layer)
+                covered.setdefault(nk, set()).add(layer)
             sv = structural_schema(v, layers, seen)
             if nk in keys and keys[nk] != sv:
                 raise ValueError(f"layer-normalised key {nk} has inconsistent schemas")
             keys[nk] = sv
+        for nk, got in covered.items():          # EVERY per-layer field covers EVERY selected layer
+            if got != layers:
+                raise ValueError(f"per-layer key {nk} covers layers {sorted(got)} != {sorted(layers)}")
         return {"dict": dict(sorted(keys.items()))}
     if isinstance(obj, list):
         items = [structural_schema(x, layers, seen) for x in obj]
@@ -148,9 +178,17 @@ def validate_cell_outputs(out: Path, done_outputs: dict, pilot: dict, eval_cfg: 
     exp = expected_counts(pilot, eval_cfg)
     if len(rows) != exp["rows"] or any(set(r) != ROW_KEYS for r in rows):
         return f"per-example rows {len(rows)} != {exp['rows']} or schema differs"
+    problem = row_coverage(rows, pilot, eval_cfg)
+    if problem:
+        return problem
     final = metrics.get("final") or {}
     if sorted(final) != exp["final_keys"]:
         return f"metrics final keys {sorted(final)} != {exp['final_keys']}"
+    for iv in applicable_interventions(pilot["arm"]):          # rows <-> metric counts
+        f = final.get(f"heldout_{iv}") or {}
+        sel = [r for r in rows if r["intervention"] == iv]
+        if f.get("total") != len(sel) or f.get("correct") != sum(r["correct"] for r in sel):
+            return f"metrics heldout_{iv} correct/total disagree with the per-example rows"
     for k, v in final.items():
         na = pilot["arm"] == "single_cell" and k == "heldout_coord_shuffle"
         if na != (v is None):

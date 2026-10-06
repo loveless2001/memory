@@ -131,6 +131,20 @@ def load_cell(scen_dir: Path, cell: str, pilot: dict, grid: dict, registry: dict
     return out
 
 
+def _packing_helpers(spec: dict):
+    """A PRIVATE instance of the audited packing measurement (validate_workers / summarize) with the
+    frozen T warmup / measured counts (codex 21572 #2)."""
+    import importlib.util
+    m = importlib.util.spec_from_file_location(
+        "pk_helpers_for_acceptance", ROOT / "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py")
+    pk = importlib.util.module_from_spec(m)
+    m.loader.exec_module(pk)
+    pk.WARMUP, pk.MEASURED = spec["warmup"], spec["measured"]
+    if pk.SEED0 != min(spec["seeds"]) or list(spec["seeds"]) != [pk.SEED0 + r for r in range(spec["k"])]:
+        raise Fail("frozen T seeds are not 99 + rank")
+    return pk
+
+
 def validate_timing(tdir: Path, spec: dict, expected: dict | None, gpu: bool = True) -> dict:
     """T gate (codex 21570 #2): complete; all 18 configs in order; per config exactly k workers AND k
     eval/checkpoint entries with the frozen seeds, arm/N, update coverage; finite positive timing and
@@ -155,11 +169,23 @@ def validate_timing(tdir: Path, spec: dict, expected: dict | None, gpu: bool = T
     fields = ("dev_eval_batch_s", "artifact_eval_batch_s", "checkpoint_serialize_s", "checkpoint_bytes",
               "checkpoint_optimizer_states")
     k, n_up, max_bytes = spec["k"], spec["warmup"] + spec["measured"], 0
+    pk = _packing_helpers(spec)
     for c in t["configs"]:
         tag = f"timing {c['arm']} N{c['n']} P{c['phase']}"
         ws, ec = c.get("workers") or [], c.get("eval_and_checkpoint") or []
         if c.get("status") != "ok" or not pos(c.get("fixed_work_updates_per_s")):
             raise Fail(f"{tag}: not ok")
+        try:                                             # raw-record coverage + derived summary
+            problem = pk.validate_workers(ws, c["phase"], k)
+            summ = None if problem else pk.summarize(ws, c["phase"], k)
+        except (KeyError, TypeError, ValueError, IndexError) as e:
+            problem = f"worker records unusable: {e!r:.120}"
+        if problem:
+            raise Fail(f"{tag}: {problem}")
+        for key in ("status", "fixed_work_updates_per_s", "per_worker_mean_s", "fixed_work_span",
+                    "overlap_window", "overlap_s", "secondary"):
+            if summ.get(key) != c.get(key):
+                raise Fail(f"{tag}: reported {key} differs from the summary recomputed from raw records")
         if len(ws) != k or len(ec) != k or sorted(w.get("seed") for w in ws) != sorted(spec["seeds"]):
             raise Fail(f"{tag}: workers/entries/seeds do not cover exactly k = {k} ranks")
         for w, e in zip(ws, ec):
