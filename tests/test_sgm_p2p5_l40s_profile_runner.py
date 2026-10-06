@@ -13,13 +13,41 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@pytest.fixture
-def run(monkeypatch):
-    monkeypatch.chdir(ROOT)
-    spec = importlib.util.spec_from_file_location("p2p5_prof", ROOT / "modal-runners" / "modal-m4-sgm-p2p5-l40s-timing-profile.py")
+RUNNERS = ["modal-m4-sgm-p2p5-l40s-timing-profile.py",                   # v1 (accepted profile)
+           "modal-m4-sgm-p2p5-l40s-timing-profile-v2-after-speedup.py"]   # v2 re-timing (user 21501)
+
+
+def _load(name):
+    spec = importlib.util.spec_from_file_location(f"p2p5_prof_{len(name)}", ROOT / "modal-runners" / name)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+@pytest.fixture(params=RUNNERS)
+def run(monkeypatch, request):
+    monkeypatch.chdir(ROOT)
+    return _load(request.param)
+
+
+def test_v2_uses_its_own_app_group_and_guard_dicts(monkeypatch):
+    monkeypatch.chdir(ROOT)
+    v1, v2 = _load(RUNNERS[0]), _load(RUNNERS[1])
+    for attr in ("APP_NAME", "GROUP", "GUARD_DICT"):
+        assert getattr(v1, attr) != getattr(v2, attr)
+    for attr in ("PROFILE_SCRIPT", "EXPECTED_CONFIGS", "CONTRACT", "PHASE_FILLER", "GPU", "CAP_USD",
+                 "OUTER_TIMEOUT_S", "FUNCTION_TIMEOUT_S", "OVERALL_S", "MAX_STARTS"):
+        assert getattr(v1, attr) == getattr(v2, attr), attr
+    assert v1.charge_bound()["reserved_total_usd"] == v2.charge_bound()["reserved_total_usd"]
+
+
+def test_v2_gpu_sampler_failure_is_recorded_not_fatal(monkeypatch, tmp_path):
+    monkeypatch.chdir(ROOT)
+    v2 = _load(RUNNERS[1])
+    monkeypatch.setenv("PATH", str(tmp_path))                 # no nvidia-smi on PATH
+    s = v2.start_gpu_sampler(tmp_path / "u.csv")
+    assert isinstance(s, str) and "not started" in s
+    assert v2.stop_gpu_sampler(s) == s
 
 
 class FakeDict(dict):
