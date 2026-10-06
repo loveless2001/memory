@@ -47,7 +47,8 @@ def test_resumed_run_reproduces_uninterrupted_run(tmp_path, monkeypatch):
                 raise Preempted("simulated preemption after update 4")
         inner = k["on_checkpoint"]
         k["on_checkpoint"] = lambda step, st: (saved.append(step), inner(step, st))
-        return real_train(*a, on_update=on_update, **k)
+        k["on_update"] = on_update
+        return real_train(*a, **k)
     monkeypatch.setattr(spr, "train", crashing_train)
     with pytest.raises(Preempted):
         spr.run_pilot(PilotConfig(**PCFG), tmp_path / "attempt1", final_batches=1, final_batch_size=2,
@@ -79,3 +80,20 @@ def test_checkpoint_snapshot_is_detached_from_live_training():
           on_checkpoint=lambda _s, st: states.append(st))
     a, b = states[0]["adapters"], states[1]["adapters"]       # step 2 vs step 4: training moved on
     assert any(not torch.equal(a[k], b[k]) for k in a)
+
+
+def test_terminal_generation_and_zero_update_eval_only_resume():
+    """Amendment PK: a terminal state is offered at step == steps (before the final dev eval);
+    resuming from it runs only the final iteration — zero optimizer updates — and reproduces
+    the uninterrupted final weights and telemetry."""
+    states, updates = {}, []
+    full = train(PilotConfig(**PCFG), log=lambda _r: None, checkpoint_every=4,
+                 on_checkpoint=lambda s, st: states.__setitem__(s, st))
+    assert sorted(states) == [4, 6]                          # 6 = steps: terminal generation
+    resumed = train(PilotConfig(**PCFG), log=lambda _r: None, resume=states[6],
+                    on_update=lambda u, _s: updates.append(u))
+    assert updates == []                                     # eval-only: no optimizer update
+    for k, v in full["runtime"].adapters.state_dict().items():
+        assert torch.equal(v, resumed["runtime"].adapters.state_dict()[k])
+    assert resumed["telemetry"][:len(states[6]["telemetry"])] == states[6]["telemetry"]
+    assert resumed["checkpoints"].keys() == full["checkpoints"].keys()

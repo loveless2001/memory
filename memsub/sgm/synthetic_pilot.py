@@ -156,7 +156,10 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None, *,
     each optimizer step with the device synchronized; None changes nothing.
     Resume (P2.5 option A): on_checkpoint(step, state) receives a training_state
     snapshot at the start of every iteration step % checkpoint_every == 0
-    (0 < step < steps); resume=<such a state> continues the run from that step.
+    (0 < step < steps) and, as the TERMINAL generation (Amendment PK), at the start
+    of the final iteration step == steps (after the last update, before the final
+    dev eval); resume=<such a state> continues the run from that step (from the
+    terminal state: the final iteration only, zero optimizer updates).
     Defaults (0 / None / None) change nothing."""
     runtime, backend, head = build(pcfg)
     params = [p for p in list(runtime.adapters.parameters()) + list(head.parameters())
@@ -170,8 +173,8 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None, *,
         start = restore_training_state(resume, pcfg, runtime, head, opt, gen)
         telemetry, checkpoints = list(resume["telemetry"]), dict(resume["checkpoints"])
     for step in range(start, pcfg.steps + 1):
-        if (on_checkpoint is not None and checkpoint_every > 0 and step % checkpoint_every == 0
-                and 0 < step < pcfg.steps and step != start):
+        if (on_checkpoint is not None and checkpoint_every > 0 and step != start and 0 < step
+                and (step % checkpoint_every == 0 and step < pcfg.steps or step == pcfg.steps)):
             on_checkpoint(step, training_state(step, pcfg, runtime, head, opt, gen, telemetry, checkpoints))
         if step in pcfg.checkpoint_steps:      # state after exactly `step` updates
             checkpoints[step] = {"adapters": {k: v.detach().clone() for k, v in runtime.adapters.state_dict().items()},

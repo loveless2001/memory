@@ -57,21 +57,29 @@ def _versions() -> dict:
 def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
               final_batch_size: int = 16, extra_manifest: dict | None = None,
               final_seed_base: int = EVAL_SEED_FINAL, train_checkpoint: Path | None = None,
-              checkpoint_every: int = 0) -> dict:
+              checkpoint_every: int = 0, resume: dict | None = None, on_checkpoint=None,
+              on_update=None, dev_seed: int = EVAL_SEED_DEV, train_eval_seed_base: int = EVAL_SEED_TRAIN) -> dict:
     """train_checkpoint (P2.5 option A resume): training state is saved there every
     `checkpoint_every` updates; if the file already exists, training RESUMES from it
     (the out_dir is still fresh: the interrupted attempt's telemetry rows are
-    re-written from the checkpoint). Defaults change nothing."""
+    re-written from the checkpoint). Defaults change nothing.
+    Amendment PK slot workers instead pass `resume` (a loaded state), `on_checkpoint`
+    (their durable generation writer) and `on_update` (physical-update log); proof mode
+    passes its own `dev_seed` / `train_eval_seed_base` / `final_seed_base` populations.
+    train_checkpoint and these hooks are mutually exclusive."""
     from .training_resume_checkpoint import load as load_checkpoint, save_atomic
-    resume = None
+    if train_checkpoint is not None and (resume is not None or on_checkpoint is not None):
+        raise ValueError("train_checkpoint and resume/on_checkpoint are mutually exclusive")
     if train_checkpoint is not None and Path(train_checkpoint).exists():
         resume = load_checkpoint(train_checkpoint)
+    if train_checkpoint is not None:
+        on_checkpoint = lambda _step, state: save_atomic(state, train_checkpoint)  # noqa: E731
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=False)
     started = time.time()
     spec = pcfg.task_spec()
     (out_dir / "split_manifest.json").write_text(json.dumps(split_manifest(
-        spec, {"train": pcfg.seed, "dev_eval": EVAL_SEED_DEV,
+        spec, {"train": pcfg.seed, "dev_eval": dev_seed,
                "final_eval": final_seed_base + pcfg.seed}), indent=2))
     tele_f = (out_dir / "routing_telemetry.jsonl").open("w")
 
@@ -83,13 +91,12 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
 
     def dev_eval(backend, head, step):
         return evaluate(backend, head, spec, pcfg.arm, pcfg.readout, split="heldout",
-                        batches=pcfg.eval_batches, batch_size=pcfg.batch, seed=EVAL_SEED_DEV,
+                        batches=pcfg.eval_batches, batch_size=pcfg.batch, seed=dev_seed,
                         filler_writes=pcfg.filler_writes)
 
-    result = train(pcfg, log=log, evaluate_fn=dev_eval, resume=resume,
-                   checkpoint_every=checkpoint_every if train_checkpoint is not None else 0,
-                   on_checkpoint=(None if train_checkpoint is None
-                                  else lambda _step, state: save_atomic(state, train_checkpoint)))
+    result = train(pcfg, log=log, evaluate_fn=dev_eval, resume=resume, on_update=on_update,
+                   checkpoint_every=checkpoint_every if on_checkpoint is not None else 0,
+                   on_checkpoint=on_checkpoint)
     backend, head = result["backend"], result["head"]
     manifest = {"experiment": "m4-sgm-v0", "phase": "P2", "mode": "research_only",
                 "result_label": pcfg.result_label(), "pilot_config": asdict(pcfg),
@@ -119,7 +126,7 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
         out["train_split_none"] = evaluate(
             backend, head, spec, pcfg.arm, pcfg.readout, split="train",
             batches=max(2, final_batches // 4), batch_size=final_batch_size,
-            seed=EVAL_SEED_TRAIN + pcfg.seed, filler_writes=pcfg.filler_writes)
+            seed=train_eval_seed_base + pcfg.seed, filler_writes=pcfg.filler_writes)
         return out
 
     metrics["final"] = final_eval(per_example)
