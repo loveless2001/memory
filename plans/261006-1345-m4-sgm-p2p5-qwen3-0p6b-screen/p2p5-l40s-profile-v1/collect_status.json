@@ -1,0 +1,137 @@
+{
+  "call_id": "fc-01M48EPG6ZYYEQYR1ER9DRDFHX",
+  "poll": "result",
+  "past_deadline": false,
+  "result": {
+    "status": "profiled",
+    "reason": "complete registered matrix",
+    "child_exit": 0,
+    "profile": {
+      "environment": {
+        "python": "3.12.10",
+        "torch": "2.7.1+cu126",
+        "cuda": "12.6",
+        "gpu": "NVIDIA L40S",
+        "gpu_total_bytes": 47695921152,
+        "tf32_matmul": false
+      },
+      "memsub_source_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+      "contract": "full-gradient token-serial, fp32, TF32 off, batch 16, N32, seed 99",
+      "configs": [
+        {
+          "arm": "learned",
+          "phase": 1,
+          "train_filler_len": 0,
+          "updates": 10,
+          "warmup_s": [
+            15.295609772999999,
+            13.574935546999999
+          ],
+          "measured_s": [
+            13.306024665999999,
+            13.644204504000001,
+            13.341229846000004,
+            13.427623167999997,
+            14.785412235999999,
+            14.63793213999999,
+            13.48829700200001,
+            13.63992133299999
+          ],
+          "mean_measured_s_per_update": 13.783830611874999,
+          "peak_train_memory_bytes": 16981223424,
+          "dev_eval_batch_s": 8.312448907999993,
+          "peak_memory_bytes": 16981223424
+        },
+        {
+          "arm": "learned",
+          "phase": 2,
+          "train_filler_len": 40,
+          "updates": 10,
+          "warmup_s": [
+            22.092837650999996,
+            21.099910932
+          ],
+          "measured_s": [
+            21.162855570000005,
+            21.178369935999996,
+            20.89548886900002,
+            21.992037681,
+            22.050778522999963,
+            21.212601895999967,
+            21.506732900999964,
+            21.362978354000006
+          ],
+          "mean_measured_s_per_update": 21.42023046624999,
+          "peak_train_memory_bytes": 26778958336,
+          "dev_eval_batch_s": 8.606311283000025,
+          "peak_memory_bytes": 26778958336
+        },
+        {
+          "arm": "memory_off",
+          "phase": 1,
+          "train_filler_len": 0,
+          "updates": 10,
+          "warmup_s": [
+            2.2420747819999747,
+            2.185012303999997
+          ],
+          "measured_s": [
+            2.157587999000043,
+            2.2028653500000246,
+            2.1518655559999615,
+            2.1516202009999574,
+            2.1572354580000024,
+            2.170804383000018,
+            2.1547069109999484,
+            2.1858157099999858
+          ],
+          "mean_measured_s_per_update": 2.1665626959999926,
+          "peak_train_memory_bytes": 2716088832,
+          "dev_eval_batch_s": 3.328642603999981,
+          "peak_memory_bytes": 2716088832
+        },
+        {
+          "arm": "memory_off",
+          "phase": 2,
+          "train_filler_len": 40,
+          "updates": 10,
+          "warmup_s": [
+            3.3666681469999844,
+            3.354273688000035
+          ],
+          "measured_s": [
+            3.375953174000017,
+            3.352992671000038,
+            3.3218136809999805,
+            3.328586282999993,
+            3.3719848519999687,
+            3.3563253890000055,
+            3.333133726999961,
+            3.3870191120000186
+          ],
+          "mean_measured_s_per_update": 3.3534761111249978,
+          "peak_train_memory_bytes": 2716154368,
+          "dev_eval_batch_s": 3.3385908719999975,
+          "peak_memory_bytes": 2716154368
+        }
+      ],
+      "status": "complete",
+      "wall_s": 445.405699037
+    }
+  },
+  "final_shutdown": {
+    "app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+    "verification": {
+      "app_state": "stopped",
+      "app_containers": 0,
+      "verified": true
+    },
+    "status": "stopped_verified"
+  },
+  "evidence": {
+    "returncode": 0,
+    "stderr_tail": ""
+  },
+  "usable": true,
+  "usable_reason": "complete registered matrix"
+}
