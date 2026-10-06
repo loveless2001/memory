@@ -1,0 +1,57 @@
+{
+  "cell": "learned-n32-s100",
+  "epoch": 1,
+  "attempt": 1,
+  "pilot_config": {
+    "arm": "learned",
+    "readout": "residual_head",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 8,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 4,
+    "eval_batches": 1,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        4,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda",
+    "n_bindings": 32,
+    "seed": 100
+  },
+  "mode": "train",
+  "epoch_dir": "/artifacts/m4-sgm/p2p5-pk-proof-v1/D/cells/learned-n32-s100/epoch-1",
+  "attempt_dir": "/artifacts/m4-sgm/p2p5-pk-proof-v1/D/cells/learned-n32-s100/epoch-1/attempt-1",
+  "resume_file": null,
+  "resume_sha256": null,
+  "next_g": 1,
+  "resume_step": 0,
+  "checkpoint_every": 2,
+  "eval": {
+    "final_batches": 1,
+    "final_batch_size": 16,
+    "final_seed_base": 8800011,
+    "dev_seed": 8800000,
+    "train_eval_seed_base": 8800021
+  },
+  "parent_pid": 2,
+  "threads": 2,
+  "ack_timeout_s": 300,
+  "proof_capture": true,
+  "fault": {
+    "exit_at_update": 2
+  }
+}

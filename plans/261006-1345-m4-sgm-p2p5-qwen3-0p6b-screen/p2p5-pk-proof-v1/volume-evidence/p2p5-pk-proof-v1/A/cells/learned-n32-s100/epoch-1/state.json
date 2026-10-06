@@ -1,0 +1,101 @@
+{
+  "acknowledged": true,
+  "cell": "learned-n32-s100",
+  "chain": [
+    {
+      "epoch": 1,
+      "file": "gen-1-step2.pt",
+      "g": 1,
+      "sha256": "58449a8114cdafa296a962ef7614af84cf036b1104809b054bdc3b75078e4cb7",
+      "step": 2
+    },
+    {
+      "epoch": 1,
+      "file": "gen-2-step4.pt",
+      "g": 2,
+      "sha256": "5e3646dd7950e6525bab20c8f1b3489aa2ac96070e33ec6adc3c7fae8a5fde4a",
+      "step": 4
+    },
+    {
+      "epoch": 1,
+      "file": "gen-3-step6.pt",
+      "g": 3,
+      "sha256": "cd67f6c41928d3877da0824b88cf16b0998b94d1eeeca45e302c8cd83de1490a",
+      "step": 6
+    },
+    {
+      "epoch": 1,
+      "file": "gen-4-step8.pt",
+      "g": 4,
+      "sha256": "e40237192dd1e6ea606e95bb4c2314edb9416183a779335cef70c2ab982cbd2f",
+      "step": 8
+    }
+  ],
+  "epoch": 1,
+  "format": "m4-sgm-pk-cell-state-v1",
+  "history": [],
+  "identity": {
+    "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+    "env": {
+      "cuda": "12.6",
+      "python": "3.12.10",
+      "tf32_matmul": false,
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2"
+    },
+    "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+    "model": {
+      "files": {
+        "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+        "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+        "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+      },
+      "repo": "Qwen/Qwen3-0.6B-Base",
+      "revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+    },
+    "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+    "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+    "runner_expected": {
+      "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+      "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+      "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+      "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+      "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+      "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+      "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+      "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+      "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4"
+    },
+    "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+    "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4"
+  },
+  "inherited_from": null,
+  "outputs": {
+    "attempt": "cells/learned-n32-s100/epoch-1/attempt-1",
+    "files": {
+      "metrics.json": "2a27766fda8c2b9f13961457dae5c84dc815951fba5fd0019fcdf975b1f67707",
+      "per_example_results.jsonl": "159027a6daa50f6b05b071bff63ec12903e553c7b70b6866415c98bdb5e026e7",
+      "report.md": "b76f4f131083919396d2b234b82a15474300ad617330a08d7f752ecbc1d3f2e5",
+      "routing_telemetry.jsonl": "246767b1c1c8259ecbf7572094134f2732560f71327e414bd59d3b5b2fdf2c00",
+      "run_manifest.json": "7e3995d9c8bd6f642d24270cc1cb68117654471b8f3d481bbd65df55407ebd1c",
+      "split_manifest.json": "fdd933446e6b9d171b6eeba994b58443e87c9c9086d4c7d7d8e0bb010f71d11c",
+      "trained_parameters.safetensors": "e94052edcacf5f0631c33c245d3c7f344bdedafb5f1588a84594913be00f44bd"
+    }
+  },
+  "physical": {
+    "last_observed_update": 7,
+    "observed_updates": 8,
+    "resume_step": 0
+  },
+  "provenance": {
+    "admitted_at": 1791313094.2486274,
+    "container_id": "ta-01M4999113VYW0F2YGXJY9Y5XR"
+  },
+  "recovery": "fresh",
+  "state": "COMPLETE",
+  "steps": 8,
+  "unacknowledged_epochs": []
+}

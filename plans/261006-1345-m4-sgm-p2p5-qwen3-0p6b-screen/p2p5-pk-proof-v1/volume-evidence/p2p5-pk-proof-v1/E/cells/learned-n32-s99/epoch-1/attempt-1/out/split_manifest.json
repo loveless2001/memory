@@ -1,0 +1,49 @@
+{
+  "task": "synthetic_kv_binding_v1",
+  "spec": {
+    "n_bindings": 32,
+    "n_queries": 4,
+    "filler_len": 40
+  },
+  "source_len": 108,
+  "key_ranges": {
+    "train": [
+      10000,
+      10800
+    ],
+    "heldout": [
+      10800,
+      11000
+    ]
+  },
+  "filler_ranges": {
+    "train": [
+      20000,
+      21000
+    ],
+    "heldout": [
+      21000,
+      22000
+    ]
+  },
+  "value_classes": {
+    "base": 3000,
+    "n": 64
+  },
+  "sink_ids": [
+    151643,
+    198,
+    220,
+    271
+  ],
+  "seeds": {
+    "train": 99,
+    "dev_eval": 8800000,
+    "final_eval": 8800110
+  },
+  "overlap_audit": {
+    "key_family_overlap": 0,
+    "filler_family_overlap": 0,
+    "key_value_filler_disjoint": true
+  }
+}

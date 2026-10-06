@@ -1,0 +1,247 @@
+{
+  "result_label": "frozen-qwen3-0.6b-base+residual-head",
+  "arm": "learned",
+  "n_bindings": 32,
+  "seed": 100,
+  "steps": 8,
+  "readout": "residual_head",
+  "n_queries": 4,
+  "final_episodes": 16,
+  "final": {
+    "heldout_none": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 64,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.1961287674198502,
+      "query_read_address_std_cells": 1.2692265510559082,
+      "occupancy_mean": 35.37890625,
+      "occupancy_max": 59.0,
+      "effective_cells_mean": 16.58237602865218,
+      "neural_bytes": 37097472.0,
+      "beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "episodes": 16,
+      "accuracy_ci95_halfwidth_episode": 0.0
+    },
+    "heldout_bank_derange": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 64,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.196149688280002,
+      "query_read_address_std_cells": 1.2692339420318604,
+      "occupancy_mean": 35.37890625,
+      "occupancy_max": 59.0,
+      "effective_cells_mean": 16.58237602865218,
+      "neural_bytes": 37097472.0,
+      "beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "episodes": 16,
+      "accuracy_ci95_halfwidth_episode": 0.0
+    },
+    "heldout_coord_shuffle": {
+      "accuracy": 0.03125,
+      "correct": 2,
+      "total": 64,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.19611876877343093,
+      "query_read_address_std_cells": 1.264358401298523,
+      "occupancy_mean": 35.37890625,
+      "occupancy_max": 59.0,
+      "effective_cells_mean": 16.58237602865218,
+      "neural_bytes": 37097472.0,
+      "beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "episodes": 16,
+      "accuracy_ci95_halfwidth_episode": 0.041841715627668356
+    },
+    "heldout_read_offset": {
+      "accuracy": 0.03125,
+      "correct": 2,
+      "total": 64,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.7975219637155533,
+      "query_read_address_std_cells": 1.2616257667541504,
+      "occupancy_mean": 35.37890625,
+      "occupancy_max": 59.0,
+      "effective_cells_mean": 16.58237602865218,
+      "neural_bytes": 37097472.0,
+      "beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "episodes": 16,
+      "accuracy_ci95_halfwidth_episode": 0.041841715627668356
+    },
+    "heldout_query_off": {
+      "accuracy": 0.03125,
+      "correct": 2,
+      "total": 64,
+      "chance": 0.015625,
+      "query_empty_read_weight": null,
+      "query_read_address_std_cells": null,
+      "occupancy_mean": 35.37890625,
+      "occupancy_max": 59.0,
+      "effective_cells_mean": 16.58237602865218,
+      "neural_bytes": 37097472.0,
+      "beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6672718990594149,
+        "value": 0.670276615768671,
+        "filler": 0.6722788140177727
+      },
+      "episodes": 16,
+      "accuracy_ci95_halfwidth_episode": 0.041841715627668356
+    },
+    "train_split_none": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 128,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.19611381505465175,
+      "query_read_address_std_cells": 1.2742972373962402,
+      "occupancy_mean": 35.7578125,
+      "occupancy_max": 56.5,
+      "effective_cells_mean": 16.90819634544072,
+      "neural_bytes": 37494784.0,
+      "beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6678797081112862,
+        "value": 0.6706530591472983,
+        "filler": 0.6735238395631313
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6145233809947968,
+        "key": 0.6678797081112862,
+        "value": 0.6706530591472983,
+        "filler": 0.6735238395631313
+      },
+      "episodes": 32,
+      "accuracy_ci95_halfwidth_episode": 0.0
+    }
+  },
+  "checkpoints": {},
+  "train_last": {
+    "step": 0,
+    "loss": 5.1686110496521,
+    "train_acc": 0.046875,
+    "aux_address_mse": null,
+    "grad_norm": {
+      "L6/q_proj": 0.0022211900935650815,
+      "L6/k_proj": 0.001997300045316773,
+      "L6/value": 0.0014538621854844193,
+      "L6/beta": 0.00016568815768115656,
+      "L6/address_mlp": 0.0002787169100358272,
+      "L6/out_proj": 0.0024168533581240266,
+      "L6/alpha": 2.1546873627577747e-05,
+      "L13/q_proj": 0.0019403010797900465,
+      "L13/k_proj": 0.0022137521346496094,
+      "L13/value": 0.0007357275177632094,
+      "L13/beta": 0.00019576085888362176,
+      "L13/address_mlp": 0.0008042804812907079,
+      "L13/out_proj": 0.0011860121613299435,
+      "L13/alpha": 2.828706410035424e-05,
+      "L20/q_proj": 0.0018893007903084517,
+      "L20/k_proj": 0.0016230983534188633,
+      "L20/value": 0.0019675930601053097,
+      "L20/beta": 0.00047154279374269026,
+      "L20/address_mlp": 0.0004467502880481641,
+      "L20/out_proj": 0.003080390186053067,
+      "L20/alpha": 8.215353901979716e-06,
+      "L27/q_proj": 0.0021549368013921715,
+      "L27/k_proj": 0.002119942499447239,
+      "L27/value": 0.0019546010541856475,
+      "L27/beta": 0.0009944312340815487,
+      "L27/address_mlp": 0.0005026088096491254,
+      "L27/out_proj": 0.002957107703031276,
+      "L27/alpha": 8.569797588895437e-05
+    },
+    "update_norm": {
+      "L6/q_proj": 1.0670697689056396,
+      "L6/k_proj": 1.065284252166748,
+      "L6/value": 1.0587579011917114,
+      "L6/beta": 0.1930137942545116,
+      "L6/address_mlp": 0.19603357557207346,
+      "L6/out_proj": 1.0735441446304321,
+      "L6/alpha": 0.002998828887939453,
+      "L13/q_proj": 1.047156572341919,
+      "L13/k_proj": 1.0481228828430176,
+      "L13/value": 1.0243741273880005,
+      "L13/beta": 0.19247855804860592,
+      "L13/address_mlp": 0.19668005965650082,
+      "L13/out_proj": 1.0594327449798584,
+      "L13/alpha": 0.002998828887939453,
+      "L20/q_proj": 1.0405100584030151,
+      "L20/k_proj": 1.0416661500930786,
+      "L20/value": 1.0162798166275024,
+      "L20/beta": 0.1946149249561131,
+      "L20/address_mlp": 0.19659481244161725,
+      "L20/out_proj": 1.0567388534545898,
+      "L20/alpha": 0.0029964447021484375,
+      "L27/q_proj": 1.0505515336990356,
+      "L27/k_proj": 1.0556442737579346,
+      "L27/value": 1.0426403284072876,
+      "L27/beta": 0.1963510075584054,
+      "L27/address_mlp": 0.19608327373862267,
+      "L27/out_proj": 1.059550404548645,
+      "L27/alpha": 0.002999544143676758
+    },
+    "alpha": {
+      "6": 0.0179333183914423,
+      "13": 0.01803925447165966,
+      "20": 0.01793336123228073,
+      "27": 0.018039267510175705
+    },
+    "sec_per_step": 9.332203483,
+    "occupancy_mean": 31.52734375,
+    "occupancy_max": 42,
+    "effective_cells_mean": 14.294577208886489,
+    "neural_bytes": 33058816
+  },
+  "wall_seconds": 260.5799198150635
+}

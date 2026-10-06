@@ -1,0 +1,184 @@
+{
+  "acknowledged": true,
+  "cell": "learned-n32-s99",
+  "chain": [
+    {
+      "epoch": 1,
+      "file": "gen-1-step2.pt",
+      "g": 1,
+      "sha256": "50f28b75d4b17fc836e648e03449838781c50170753a0b50078018f6dde54b86",
+      "step": 2
+    },
+    {
+      "epoch": 1,
+      "file": "gen-2-step4.pt",
+      "g": 2,
+      "sha256": "8c19a217ba17e355c6e509503bb35edc6e50ce51d0841ee0bfe2e1aee3c6b77c",
+      "step": 4
+    },
+    {
+      "epoch": 2,
+      "file": "gen-3-step6.pt",
+      "g": 3,
+      "sha256": "4c494b51d25cd046c8eb3df5473c5cabce0c4f566d5db3505ce53f53a1c70eb1",
+      "step": 6
+    },
+    {
+      "epoch": 2,
+      "file": "gen-4-step8.pt",
+      "g": 4,
+      "sha256": "1bfa321e45184cc82a06e3d46f083fd3d952e2db754ea6f65f15cadc68942c65",
+      "step": 8
+    }
+  ],
+  "epoch": 2,
+  "format": "m4-sgm-pk-cell-state-v1",
+  "history": [
+    {
+      "epoch": 1,
+      "state": "STARTED"
+    }
+  ],
+  "identity": {
+    "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+    "env": {
+      "cuda": "12.6",
+      "python": "3.12.10",
+      "tf32_matmul": false,
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2"
+    },
+    "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+    "model": {
+      "files": {
+        "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+        "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+        "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+      },
+      "repo": "Qwen/Qwen3-0.6B-Base",
+      "revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+    },
+    "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+    "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+    "runner_expected": {
+      "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+      "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+      "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+      "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+      "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+      "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+      "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+      "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+      "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4"
+    },
+    "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+    "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4"
+  },
+  "inherited_from": {
+    "epoch": 1,
+    "record_sha256": "846178a1021231de1fd07e26216730f3d8d487079201bd36202f2b8bc98298c6"
+  },
+  "outputs": {
+    "attempt": "cells/learned-n32-s99/epoch-2/attempt-1",
+    "files": {
+      "metrics.json": "70d10acd64f808d0a97e0dc07f0daff14351cbe6a9a2afbaf427d8d9bcb89c99",
+      "per_example_results.jsonl": "cc8ccf267d22db2a5690acbcecbf00877ceffab3a7a762fc46f4a3526ee6bf8d",
+      "report.md": "bb833f58fcb36a10ab0d2ddea0dccbc9335a5b02051a35bc5e5ea91a5817a4e7",
+      "routing_telemetry.jsonl": "8542fec8135a6dcf82a31f74767d12ec935af5c35f928aa34075a710e899d3e3",
+      "run_manifest.json": "541e3007bc399807e90b9759fdd52fde3e401f11ca7bf67e6a988c641d3a381a",
+      "split_manifest.json": "2e42c35053e59ad3b3d8130bfe3bec30601b17a8173c9914365ced7e3e5c68e5",
+      "trained_parameters.safetensors": "5a9956a9a41437a99f0c9a8ae4192e36843c81379a8f72bfb5be969f19435e4c"
+    }
+  },
+  "physical": {
+    "last_observed_update": 7,
+    "observed_updates": 4,
+    "predecessor_unobserved_tail_bound_updates": 3,
+    "resume_step": 4
+  },
+  "predecessor_snapshot": {
+    "acknowledged": true,
+    "cell": "learned-n32-s99",
+    "chain": [
+      {
+        "epoch": 1,
+        "file": "gen-1-step2.pt",
+        "g": 1,
+        "sha256": "50f28b75d4b17fc836e648e03449838781c50170753a0b50078018f6dde54b86",
+        "step": 2
+      },
+      {
+        "epoch": 1,
+        "file": "gen-2-step4.pt",
+        "g": 2,
+        "sha256": "8c19a217ba17e355c6e509503bb35edc6e50ce51d0841ee0bfe2e1aee3c6b77c",
+        "step": 4
+      }
+    ],
+    "epoch": 1,
+    "format": "m4-sgm-pk-cell-state-v1",
+    "history": [],
+    "identity": {
+      "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+      "env": {
+        "cuda": "12.6",
+        "python": "3.12.10",
+        "tf32_matmul": false,
+        "torch": "2.7.1+cu126",
+        "transformers": "4.55.2"
+      },
+      "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+      "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+      "model": {
+        "files": {
+          "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+          "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+          "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+        },
+        "repo": "Qwen/Qwen3-0.6B-Base",
+        "revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+      },
+      "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+      "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+      "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+      "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+      "runner_expected": {
+        "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+        "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+        "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+        "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+        "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+        "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+        "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+        "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+        "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4"
+      },
+      "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+      "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4"
+    },
+    "inherited_from": null,
+    "physical": {
+      "last_observed_update": 3,
+      "observed_updates": 4,
+      "resume_step": 0
+    },
+    "provenance": {
+      "admitted_at": 1791313771.6930187,
+      "container_id": "ta-01M499XQQE34B8GC5KEQFQKKQR"
+    },
+    "recovery": "fresh",
+    "state": "STARTED",
+    "steps": 8,
+    "unacknowledged_epochs": []
+  },
+  "provenance": {
+    "admitted_at": 1791316139.6649413,
+    "container_id": "ta-01M49C5ZXAJ8JSK8Y1KSDE2FBR"
+  },
+  "recovery": "resume",
+  "state": "COMPLETE",
+  "steps": 8
+}
