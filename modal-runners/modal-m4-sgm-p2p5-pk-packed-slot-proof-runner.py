@@ -8,9 +8,13 @@ Needs its own user approval of the reservation printed by `plan`; nothing here i
     .venv/bin/python modal-runners/modal-m4-sgm-p2p5-pk-packed-slot-proof-runner.py spawn
     .venv/bin/python modal-runners/modal-m4-sgm-p2p5-pk-packed-slot-proof-runner.py collect   # idempotent
 
-Lifecycle (as the accepted v1/v2 profile runners): one deploy, one spawn of 6 scenario slot calls +
-1 timing call; app-level deadline in a guard Dict; an in-app scheduled reaper stops the WHOLE app
-past the deadline (shared stop-first logic); local collect stops + verifies by app id.
+Lifecycle (as the accepted v1/v2 profile runners): one deploy, one spawn of 7 unit calls (6 scenario
+slots + timing) into ONE GPU function with max_containers=1 (codex 21567 #1): at most one A100
+container exists at any time, units run serially, platform retries re-queue. App-level deadline in a
+guard Dict; an in-app scheduled reaper stops the WHOLE app past the deadline (shared stop-first
+logic); local collect stops + verifies by app id and exports the admission/guard Dicts. The charge
+bound is therefore 1 container x (app lifetime + reaper period + stop latency): pre-admission crash
+loops, refused starts, startups and teardown all fall inside it.
 Admission (PK3): every container start of a scenario atomically claims `<scenario>-start-<n>`
 (n <= MAX_STARTS[scenario]) in the admission Dict; none left or past the deadline -> the call
 returns (completes) without work. Faults apply to admitted start 1 only; a ContainerFault is
@@ -31,6 +35,8 @@ import modal
 
 APP_NAME, GROUP = "memsub-m4-sgm-p2p5-pk-proof", "p2p5-pk-proof-v1"
 GRID_FILE = "configs/m4_sgm_p2p5_packed_proof_grid.json"
+REGISTRY_FILE = "configs/m4_sgm_p2p5_packed_proof_registry.json"
+COMPARATOR = "scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py"
 TIMING_SCRIPT = "scripts/sgm-p2p5-pk-packed-slot-timing-profile.py"
 PACKING_HELPERS = "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py"
 LOGIC_FILE = "modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"
@@ -38,8 +44,9 @@ LOCAL_OUT = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
 GPU, CPU_CORES, MEMORY_GIB = "A100-80GB", 8.0, 64
 MAX_STARTS = {"A": 1, "Aprime": 1, "E": 1, "B": 2, "C": 2, "D": 2}
-SLOT_START_TIMEOUT_S, TIMING_TIMEOUT_S, STARTUP_S = 420, 2400, 120
-OVERALL_S, REAPER_PERIOD_S, STOP_LATENCY_S, ABANDON_S, EARLY_S = 4200, 120, 120, 1800, 120
+UNIT_TIMEOUT_S, STARTUP_TIMEOUT_S = 2400, 300          # one function serves slot units and the timing unit
+EXPECTED_WALL_S = 78 * 60                                # serial: 9 slot starts ~5.5 min + timing ~28.5 min
+OVERALL_S, REAPER_PERIOD_S, STOP_LATENCY_S, ABANDON_S, EARLY_S = 6600, 120, 120, 1800, 120   # ~1.4x expected
 GUARD_DICT, ADMIT_DICT = "m4-sgm-p2p5-pk-proof-v1-guard", "m4-sgm-p2p5-pk-proof-v1-admission"
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000694, 0.0000131, 0.00000222    # modal.com/pricing 2026-10-06
 CPU_RAM_BASIS, IMAGE_RESERVE_USD, FIXED_MARGIN_USD = 2.0, 0.168384, 0.25
@@ -114,6 +121,8 @@ def identity_now(root: str = "/root/repo") -> dict:
             "grid": file_sha(Path(root) / GRID_FILE),
             "timing_script": file_sha(Path(root) / TIMING_SCRIPT),
             "packing_helpers": file_sha(Path(root) / PACKING_HELPERS),
+            "registry": file_sha(Path(root) / REGISTRY_FILE), "comparator": file_sha(Path(root) / COMPARATOR),
+            "reaper_logic": file_sha(Path(__file__).with_name(LOGIC_FILE)),
             "env": {"python": platform.python_version(), "torch": torch.__version__, "cuda": torch.version.cuda,
                     "transformers": transformers.__version__, "tf32_matmul": torch.backends.cuda.matmul.allow_tf32},
             "model": QWEN3_0P6B_BASE}
@@ -127,69 +136,80 @@ def reaper() -> dict:
                                  None, ABANDON_S)
 
 
-@app.function(image=image, timeout=SLOT_START_TIMEOUT_S, startup_timeout=300, max_containers=6,
+@app.function(image=image, timeout=UNIT_TIMEOUT_S, startup_timeout=STARTUP_TIMEOUT_S, max_containers=1,
               single_use_containers=True,          # a restart is always a FRESH container (codex 21553 #4)
               retries=modal.Retries(max_retries=1, initial_delay=1.0, backoff_coefficient=1.0), **RESOURCES)
-def run_slot(scenario: str, expected: dict) -> dict:
+def run_unit(unit: str, expected: dict) -> dict:
+    """One proof unit: a scenario slot start (A, Aprime, B, C, D, E) or the timing profile."""
+    return _timing(expected) if unit == "timing" else _slot(unit, expected)
+
+
+def _admitted_start(unit: str, cap: int):
     sys.path.insert(0, "/root/repo")
     from memsub.sgm.p2d_launch_guard import Watchdog
     early = Watchdog(EARLY_S)
     try:
         adm = modal.Dict.from_name(ADMIT_DICT, create_if_missing=True)
         guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
-        epoch, why = admit(adm, guard, scenario, time.time(), MAX_STARTS[scenario])
-        admitted = [n for n in range(1, MAX_STARTS[scenario] + 1) if adm.contains(f"{scenario}-start-{n}")]
+        epoch, why = admit(adm, guard, unit, time.time(), cap)
+        admitted = [n for n in range(1, cap + 1) if adm.contains(f"{unit}-start-{n}")]
     except Exception as e:
-        epoch, why, admitted = None, f"admission error {e!r:.200}", []
+        adm, epoch, why, admitted = None, None, f"admission error {e!r:.200}", []
     finally:
         early.cancel()
+    return adm, epoch, why, admitted
+
+
+def _slot(scenario: str, expected: dict) -> dict:
+    adm, epoch, why, admitted = _admitted_start(scenario, MAX_STARTS[scenario])
     if epoch is None:
-        return {"scenario": scenario, "status": "admission_refused", "reason": why}
+        return {"unit": scenario, "status": "admission_refused", "reason": why}
     got = identity_now()
     if {k: got[k] for k in expected} != expected:
-        return {"scenario": scenario, "status": "identity_mismatch", "epoch": epoch, "got": got}
+        return {"unit": scenario, "status": "identity_mismatch", "epoch": epoch, "got": got}
     from memsub.sgm.packed_slot_supervisor import ContainerFault, SlotSupervisor, expand_cells
     grid = json.loads(Path("/root/repo", GRID_FILE).read_text())
+    registry = json.loads(Path("/root/repo", REGISTRY_FILE).read_text())
     spec, cells_all = grid["scenarios"][scenario], expand_cells(grid)
+    cells = {c: cells_all[c] for c in spec["cells"]}
+    arms = {p["arm"] for p in cells.values()}
+    if len(arms) != 1:
+        return {"unit": scenario, "status": "refused", "reason": "a slot holds one arm"}
     artifacts.reload()
-    sup = SlotSupervisor(root=Path("/artifacts/m4-sgm") / GROUP / scenario,
-                         cells={c: cells_all[c] for c in spec["cells"]}, epoch=epoch, admitted=admitted,
-                         identity={**got, "runner_expected": expected}, checkpoint_every=grid["checkpoint_every"],
-                         eval_cfg=grid["eval"], commit=artifacts.commit, reload=artifacts.reload,
+    sup = SlotSupervisor(root=Path("/artifacts/m4-sgm") / GROUP / scenario, cells=cells, epoch=epoch,
+                         admitted=admitted, identity={**got, "runner_expected": expected},
+                         checkpoint_every=grid["checkpoint_every"], eval_cfg=grid["eval"],
+                         commit=artifacts.commit, reload=artifacts.reload,
                          newer_start=lambda: adm.contains(f"{scenario}-start-{epoch + 1}"),
                          ack_timeout_s=ACK_TIMEOUT_S, proof_capture=True,
                          faults=spec["faults"] if epoch == 1 else None,
-                         provenance={"container_id": os.environ.get("MODAL_TASK_ID"), "admitted_at": time.time()})
+                         provenance={"container_id": os.environ.get("MODAL_TASK_ID"), "admitted_at": time.time()},
+                         registry=registry["by_arm"][arms.pop()])
     try:
         res = sup.run()
-    except ContainerFault as e:                                  # proof fault -> platform restart
+    except ContainerFault as e:                                  # proof fault -> platform restart (fresh container)
         artifacts.commit()
         raise RuntimeError(f"proof container fault {e.code} (scenario {scenario}, epoch {epoch})")
     artifacts.commit()
-    return {"scenario": scenario, "status": "slot_done", "epoch": epoch, **res}
+    return {"unit": scenario, "status": "slot_done", "epoch": epoch, **res}
 
 
-@app.function(image=image, timeout=TIMING_TIMEOUT_S, startup_timeout=300, max_containers=1, retries=0,
-              single_use_containers=True, **RESOURCES)
-def run_timing(expected: dict) -> dict:
-    sys.path.insert(0, "/root/repo")
-    adm = modal.Dict.from_name(ADMIT_DICT, create_if_missing=True)
-    guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
-    epoch, why = admit(adm, guard, "timing", time.time(), 1)
+def _timing(expected: dict) -> dict:
+    _adm, epoch, why, _admitted = _admitted_start("timing", 1)
     if epoch is None:
-        return {"status": "admission_refused", "reason": why}
+        return {"unit": "timing", "status": "admission_refused", "reason": why}
     got = identity_now()
     if {k: got[k] for k in expected} != expected:
-        return {"status": "identity_mismatch", "got": got}
+        return {"unit": "timing", "status": "identity_mismatch", "got": got}
     out = Path("/artifacts/m4-sgm") / GROUP / "timing"
     try:
         proc = subprocess.run([sys.executable, "-u", f"/root/repo/{TIMING_SCRIPT}", "--out", str(out)],
-                              cwd="/root/repo", capture_output=True, text=True, timeout=TIMING_TIMEOUT_S - 120)
+                              cwd="/root/repo", capture_output=True, text=True, timeout=UNIT_TIMEOUT_S - 120)
         rc, stdout, stderr = proc.returncode, proc.stdout, proc.stderr
     except subprocess.TimeoutExpired as e:
         rc, stdout, stderr = "outer_timeout", str(e.stdout or ""), str(e.stderr or "")
-    commit_s = []
-    if rc == 0:                                                   # measured commit cost of one generation
+    commit_s, nbytes = [], None
+    if rc == 0:                                                   # commit cost of one REAL generation size
         nbytes = max(w["checkpoint_bytes"] for c in json.loads((out / "timing.json").read_text())["configs"]
                      for w in c["eval_and_checkpoint"])
         for i in range(3):
@@ -198,10 +218,12 @@ def run_timing(expected: dict) -> dict:
             artifacts.commit()
             commit_s.append(time.monotonic() - t0)
     (out.parent / "timing.exit.json").write_text(json.dumps({"child_exit": rc, "commit_s": commit_s,
+                                                             "commit_probe_bytes": nbytes,
                                                              "stdout_tail": stdout[-4000:],
                                                              "stderr_tail": stderr[-4000:]}, indent=2))
     artifacts.commit()
-    return {"status": "timed" if rc == 0 else "timing_failed", "child_exit": rc, "commit_s": commit_s}
+    return {"unit": "timing", "status": "timed" if rc == 0 else "timing_failed", "child_exit": rc,
+            "commit_s": commit_s}
 
 
 # ---------------- local side ----------------
@@ -211,25 +233,27 @@ def rate(basis: float) -> float:
 
 
 def charge_bound() -> dict:
-    """Every admitted container start at its full function timeout + startup, the timing function,
-    reaper ticks, image reserve and margin; GPU at list price, CPU/RAM on the 2x basis."""
-    slot_starts = sum(MAX_STARTS.values())
-    slot_s = slot_starts * (SLOT_START_TIMEOUT_S + STARTUP_S)
-    timing_s = TIMING_TIMEOUT_S + STARTUP_S
-    reaper_ticks = math.ceil((OVERALL_S + REAPER_PERIOD_S + STOP_LATENCY_S) / REAPER_PERIOD_S)
-    parts = {"slot_starts_usd": slot_s * rate(CPU_RAM_BASIS), "timing_usd": timing_s * rate(CPU_RAM_BASIS),
+    """TRUE lifecycle bound under the whole-app reaper (codex 21564/21567 #1): one GPU container at a
+    time (max_containers=1 on the only GPU function) for at most the app lifetime + one reaper period +
+    stop latency, at A100-80GB list price + CPU/RAM on the 2x basis; plus reaper ticks (until the app
+    stop, or the abandoned-deploy stop), the image-build reserve and a fixed margin. Assumptions, not a
+    platform cash ceiling: reaper period/stop latency are nominal scheduling allowances; CPU/RAM billing
+    beyond the 2x basis is not covered; list prices as checked."""
+    life_s = OVERALL_S + REAPER_PERIOD_S + STOP_LATENCY_S
+    reaper_ticks = math.ceil((ABANDON_S + life_s) / REAPER_PERIOD_S)
+    parts = {"gpu_container_lifetime_usd": life_s * rate(CPU_RAM_BASIS),
              "reaper_usd": reaper_ticks * 110 * (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S),
              "image_reserve_usd": IMAGE_RESERVE_USD, "fixed_margin_usd": FIXED_MARGIN_USD}
     return {**parts, "reserved_total_usd": sum(parts.values()),
-            "hard_tuple_total_usd": (slot_s + timing_s) * rate(1.0) + sum(parts[k] for k in parts
-                                                                           if k not in ("slot_starts_usd", "timing_usd")),
-            "slot_starts": slot_starts, "max_starts": MAX_STARTS, "slot_container_s": slot_s,
-            "timing_container_s": timing_s, "usd_per_container_hour_2x": rate(CPU_RAM_BASIS) * 3600,
-            "overall_deadline_s": OVERALL_S, "lifetime_backstop_usd": 7 * (OVERALL_S + REAPER_PERIOD_S
-                                                                            + STOP_LATENCY_S) * rate(CPU_RAM_BASIS),
-            "assumptions": ["startup allowance 120 s per admitted start (cached image)",
-                            "CPU/RAM requests charged at 2x (audited conservative basis)",
-                            "list prices modal.com/pricing 2026-10-06", "the app-lifetime reaper is the backstop"]}
+            "expected_usd_hard_tuples": EXPECTED_WALL_S * rate(1.0),
+            "expected_usd_2x_basis": EXPECTED_WALL_S * rate(CPU_RAM_BASIS),
+            "max_concurrent_gpu_containers": 1, "app_lifetime_s": OVERALL_S, "expected_serial_wall_s": EXPECTED_WALL_S,
+            "max_starts": MAX_STARTS, "unit_timeout_s": UNIT_TIMEOUT_S, "startup_timeout_s": STARTUP_TIMEOUT_S,
+            "usd_per_container_hour_2x": rate(CPU_RAM_BASIS) * 3600,
+            "assumptions": ["the in-app reaper stops the whole app within one period + stop latency of the deadline",
+                            "CPU/RAM requests charged at 2x (audited conservative basis); not a platform cash ceiling",
+                            "list prices modal.com/pricing 2026-10-06",
+                            "expected wall: 9 slot starts x ~5.5 min + timing ~28.5 min (packing/profile timings)"]}
 
 
 def atomic_write(path: Path, text: str) -> None:
@@ -242,11 +266,14 @@ def expected_identity() -> dict:
     sys.path.insert(0, str(Path.cwd()))
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256
     return {"runner": file_sha(__file__), "memsub": source_tree_sha256(Path("memsub")), "grid": file_sha(GRID_FILE),
-            "timing_script": file_sha(TIMING_SCRIPT), "packing_helpers": file_sha(PACKING_HELPERS)}
+            "timing_script": file_sha(TIMING_SCRIPT), "packing_helpers": file_sha(PACKING_HELPERS),
+            "registry": file_sha(REGISTRY_FILE), "comparator": file_sha(COMPARATOR),
+            "reaper_logic": file_sha(Path(__file__).with_name(LOGIC_FILE))}
 
 
 def spawn() -> None:
-    tracked = ["memsub", __file__, GRID_FILE, TIMING_SCRIPT, PACKING_HELPERS, f"modal-runners/{LOGIC_FILE}"]
+    tracked = ["memsub", __file__, GRID_FILE, REGISTRY_FILE, COMPARATOR, TIMING_SCRIPT, PACKING_HELPERS,
+               f"modal-runners/{LOGIC_FILE}"]
     if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
                       check=True).stdout.strip():
         raise SystemExit("refusing to spawn from a dirty tree")
@@ -265,14 +292,13 @@ def spawn() -> None:
             and guard.put("deadline_epoch", prov["deadline_epoch"], skip_if_exists=True)):
         raise SystemExit("guard app id / deadline already set")
     grid = json.loads(Path(GRID_FILE).read_text())
-    slot_fn, timing_fn = modal.Function.from_name(APP_NAME, "run_slot"), modal.Function.from_name(APP_NAME, "run_timing")
-    calls = {s: slot_fn.spawn(s, prov["expected_identity"]).object_id for s in grid["scenarios"]}
-    calls["timing"] = timing_fn.spawn(prov["expected_identity"]).object_id
+    unit_fn = modal.Function.from_name(APP_NAME, "run_unit")
+    calls = {u: unit_fn.spawn(u, prov["expected_identity"]).object_id for u in [*grid["scenarios"], "timing"]}
     atomic_write(root / "calls.json", json.dumps(calls, indent=2))
     print("spawned", json.dumps(calls))
 
 
-def collect(poller=None, stopper=None, fetch=None, now=None) -> dict:
+def collect(poller=None, stopper=None, fetch=None, now=None, export=None) -> dict:
     """Idempotent: polls every call; when all are terminal OR the deadline passed, stops + verifies
     the app by its spawn-time id and pulls the volume evidence."""
     import importlib.util
@@ -299,10 +325,24 @@ def collect(poller=None, stopper=None, fetch=None, now=None) -> dict:
     if (calls and all(v[0] != "pending" for v in polls.values())) or past or not calls:
         report["final_shutdown"] = stopper(prov["deployed_app_id"])
         report["evidence"] = (fetch or fetch_evidence)(root)
+        report["dicts"] = (export or export_dicts)(root)
     atomic_write(root / "collect_status.json", json.dumps(report, indent=2, default=str))
     print(json.dumps({k: (v["kind"] if isinstance(v, dict) else v) for k, v in report["polls"].items()}),
           "final" if "final_shutdown" in report else "pending")
     return report
+
+
+def export_dicts(root: Path) -> dict:
+    """Admission + guard Dict contents (the comparator's admission binding)."""
+    out = {}
+    for name, fname in ((ADMIT_DICT, "admission.json"), (GUARD_DICT, "guard.json")):
+        try:
+            d = dict(modal.Dict.from_name(name).items())
+            atomic_write(root / fname, json.dumps(d, indent=2, default=str))
+            out[fname] = len(d)
+        except Exception as e:
+            out[fname] = f"export error {e!r:.200}"
+    return out
 
 
 def fetch_evidence(root: Path) -> dict:

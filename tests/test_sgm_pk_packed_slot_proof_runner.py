@@ -46,19 +46,24 @@ def test_max_starts_match_amendment(run):
         assert run.MAX_STARTS[s] == (2 if spec["faults"] else 1)
 
 
-def test_slot_function_is_single_use_with_one_retry(run):
+def test_single_gpu_function_serial_single_use_one_retry(run):
     src = (ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-slot-proof-runner.py").read_text()
-    slot_decl = src[src.index("def run_slot") - 400:src.index("def run_slot")]
-    assert "single_use_containers=True" in slot_decl and "max_retries=1" in slot_decl
+    gpu_fns = [blk for blk in src.split("@app.function(")[1:] if "**RESOURCES" in blk.split("def ")[0]]
+    assert len(gpu_fns) == 1                                   # exactly one GPU function
+    decl = gpu_fns[0].split("def ")[0]
+    assert "max_containers=1" in decl and "single_use_containers=True" in decl and "max_retries=1" in decl
+    assert "def run_unit" in gpu_fns[0]
 
 
-def test_charge_bound_is_the_sum_of_its_parts(run):
+def test_charge_bound_is_the_one_container_lifetime(run):
     led = run.charge_bound()
-    parts = [led[k] for k in ("slot_starts_usd", "timing_usd", "reaper_usd", "image_reserve_usd", "fixed_margin_usd")]
+    parts = [led[k] for k in ("gpu_container_lifetime_usd", "reaper_usd", "image_reserve_usd", "fixed_margin_usd")]
     assert abs(led["reserved_total_usd"] - sum(parts)) < 1e-9
-    assert led["slot_starts"] == 9
-    assert abs(led["slot_starts_usd"] - 9 * (run.SLOT_START_TIMEOUT_S + run.STARTUP_S) * run.rate(2.0)) < 1e-9
-    assert led["hard_tuple_total_usd"] < led["reserved_total_usd"]
+    life = run.OVERALL_S + run.REAPER_PERIOD_S + run.STOP_LATENCY_S
+    assert abs(led["gpu_container_lifetime_usd"] - life * run.rate(2.0)) < 1e-9
+    assert led["max_concurrent_gpu_containers"] == 1
+    assert run.OVERALL_S >= 1.4 * run.EXPECTED_WALL_S * 0.999
+    assert led["expected_usd_2x_basis"] < led["reserved_total_usd"]
 
 
 def _prov(tmp_path, run):
@@ -73,7 +78,7 @@ def test_collect_pending_before_deadline_does_not_stop(run, tmp_path, monkeypatc
     monkeypatch.chdir(tmp_path)
     _prov(tmp_path, run)
     stops = []
-    rep = run.collect(poller=lambda c: ("pending", None), stopper=lambda a: stops.append(a), fetch=lambda r: {},
+    rep = run.collect(poller=lambda c: ("pending", None), stopper=lambda a: stops.append(a), fetch=lambda r: {}, export=lambda r: {},
                       now=10.0)
     assert stops == [] and "final_shutdown" not in rep
 
@@ -83,10 +88,10 @@ def test_collect_terminal_or_past_deadline_stops_by_app_id(run, tmp_path, monkey
     root = _prov(tmp_path, run)
     stops = []
     run.collect(poller=lambda c: ("result", {"status": "slot_done"}), stopper=lambda a: stops.append(a) or {"ok": 1},
-                fetch=lambda r: {"returncode": 0}, now=10.0)
+                fetch=lambda r: {"returncode": 0}, export=lambda r: {}, now=10.0)
     run.collect(poller=lambda c: ("pending", None), stopper=lambda a: stops.append(a) or {"ok": 1},
-                fetch=lambda r: {"returncode": 0}, now=2000.0)
+                fetch=lambda r: {"returncode": 0}, export=lambda r: {}, now=2000.0)
     (root / "calls.json").unlink()                              # untracked calls still reach the stop
     run.collect(poller=lambda c: ("pending", None), stopper=lambda a: stops.append(a) or {"ok": 1},
-                fetch=lambda r: {"returncode": 0}, now=10.0)
+                fetch=lambda r: {"returncode": 0}, export=lambda r: {}, now=10.0)
     assert stops == ["ap-x", "ap-x", "ap-x"]

@@ -1,0 +1,2837 @@
+{
+  "status": "complete",
+  "configs": [
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.2673420079991047,
+        0.26042164475438767
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "learned",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.2574049870017916,
+              "t_end": 1791308109.4582174
+            },
+            {
+              "update": 1,
+              "seconds": 0.26154007100558374,
+              "t_end": 1791308109.7245753,
+              "barrier_release": 1791308109.7249618
+            },
+            {
+              "update": 2,
+              "seconds": 0.25510786499944516,
+              "t_end": 1791308109.980076
+            },
+            {
+              "update": 3,
+              "seconds": 0.24437958300404716,
+              "t_end": 1791308110.224463
+            },
+            {
+              "update": 4,
+              "seconds": 0.29022995599370915,
+              "t_end": 1791308110.5147028
+            },
+            {
+              "update": 5,
+              "seconds": 0.27965062799921725,
+              "t_end": 1791308110.7943623
+            }
+          ],
+          "mean_measured_s": 0.2673420079991047,
+          "measured_start": 1791308109.7249618,
+          "measured_end": 1791308110.7943623,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.4167436799907591,
+          "artifact_eval_batch_s": 0.42811287099902984,
+          "checkpoint_serialize_s": 0.004601364998961799,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "fc28533d4e42149d1c3d7f11af4fffd6edb5357034e15255a07737d47a27d6e8"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "learned",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.23146238600020297,
+              "t_end": 1791308109.4447463
+            },
+            {
+              "update": 1,
+              "seconds": 0.25518708101299126,
+              "t_end": 1791308109.7029214,
+              "barrier_release": 1791308109.743889
+            },
+            {
+              "update": 2,
+              "seconds": 0.25872440000239294,
+              "t_end": 1791308110.0026238
+            },
+            {
+              "update": 3,
+              "seconds": 0.22853582601237576,
+              "t_end": 1791308110.2311704
+            },
+            {
+              "update": 4,
+              "seconds": 0.27640925299783703,
+              "t_end": 1791308110.5075877
+            },
+            {
+              "update": 5,
+              "seconds": 0.27801710000494495,
+              "t_end": 1791308110.7856128
+            }
+          ],
+          "mean_measured_s": 0.26042164475438767,
+          "measured_start": 1791308109.743889,
+          "measured_end": 1791308110.7856128,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.41915597300976515,
+          "artifact_eval_batch_s": 0.41725216699705925,
+          "checkpoint_serialize_s": 0.005885632999707013,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "4546987302eaa59fbaec179897a63cbaa8b7c78b826dca21dfcfd8e4439c2a1d"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308109.7249618,
+        1791308110.7943623
+      ],
+      "overlap_window": [
+        1791308109.743889,
+        1791308110.7856128
+      ],
+      "overlap_s": 1.0417237281799316,
+      "status": "ok",
+      "fixed_work_updates_per_s": 7.480826532179692,
+      "secondary": {
+        "windowed_updates_per_s": 7.578347664815368,
+        "reciprocal_mean_sum_updates_per_s": 7.580453599674114
+      },
+      "arm": "learned",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.4167436799907591,
+          "artifact_eval_batch_s": 0.42811287099902984,
+          "checkpoint_serialize_s": 0.004601364998961799,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        },
+        {
+          "dev_eval_batch_s": 0.41915597300976515,
+          "artifact_eval_batch_s": 0.41725216699705925,
+          "checkpoint_serialize_s": 0.005885632999707013,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.9385190240027441,
+        0.9355637810003827
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "learned",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.951369120986783,
+              "t_end": 1791308119.4234064
+            },
+            {
+              "update": 1,
+              "seconds": 0.9266947669966612,
+              "t_end": 1791308120.3559854,
+              "barrier_release": 1791308120.3564663
+            },
+            {
+              "update": 2,
+              "seconds": 1.1289202460029628,
+              "t_end": 1791308121.485396
+            },
+            {
+              "update": 3,
+              "seconds": 0.7922971439984394,
+              "t_end": 1791308122.2777061
+            },
+            {
+              "update": 4,
+              "seconds": 0.9764468200010015,
+              "t_end": 1791308123.2541614
+            },
+            {
+              "update": 5,
+              "seconds": 0.8564118860085728,
+              "t_end": 1791308124.1105828
+            }
+          ],
+          "mean_measured_s": 0.9385190240027441,
+          "measured_start": 1791308120.3564663,
+          "measured_end": 1791308124.1105828,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.36978203800390474,
+          "artifact_eval_batch_s": 0.4207874559942866,
+          "checkpoint_serialize_s": 0.005714507991797291,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "039d14f1b88d2ac1194769268d846764b5a5e78effdb1cc97ed066629f4af179"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "learned",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.943258383005741,
+              "t_end": 1791308119.4264333
+            },
+            {
+              "update": 1,
+              "seconds": 0.9225991779967444,
+              "t_end": 1791308120.3548806,
+              "barrier_release": 1791308120.3757045
+            },
+            {
+              "update": 2,
+              "seconds": 1.0791281220008386,
+              "t_end": 1791308121.454845
+            },
+            {
+              "update": 3,
+              "seconds": 0.8054998790030368,
+              "t_end": 1791308122.2603543
+            },
+            {
+              "update": 4,
+              "seconds": 0.9925192719965708,
+              "t_end": 1791308123.252882
+            },
+            {
+              "update": 5,
+              "seconds": 0.8651078510010848,
+              "t_end": 1791308124.1179984
+            }
+          ],
+          "mean_measured_s": 0.9355637810003827,
+          "measured_start": 1791308120.3757045,
+          "measured_end": 1791308124.1179984,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.3743125799956033,
+          "artifact_eval_batch_s": 0.4123836099897744,
+          "checkpoint_serialize_s": 0.006376158999046311,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "83a835e98eb07f1407292d604441298a70007ef8566d55e3e7398cdba0216a22"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308120.3564663,
+        1791308124.1179984
+      ],
+      "overlap_window": [
+        1791308120.3757045,
+        1791308124.1105828
+      ],
+      "overlap_s": 3.7348783016204834,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.126792980849539,
+      "secondary": {
+        "windowed_updates_per_s": 2.1351151287883443,
+        "reciprocal_mean_sum_updates_per_s": 2.1343827155411086
+      },
+      "arm": "learned",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.36978203800390474,
+          "artifact_eval_batch_s": 0.4207874559942866,
+          "checkpoint_serialize_s": 0.005714507991797291,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        },
+        {
+          "dev_eval_batch_s": 0.3743125799956033,
+          "artifact_eval_batch_s": 0.4123836099897744,
+          "checkpoint_serialize_s": 0.006376158999046311,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.22854603425003006,
+        0.22538935800184845
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "learned",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.22678797401022166,
+              "t_end": 1791308131.5861096
+            },
+            {
+              "update": 1,
+              "seconds": 0.21988530800445005,
+              "t_end": 1791308131.810293,
+              "barrier_release": 1791308131.8310773
+            },
+            {
+              "update": 2,
+              "seconds": 0.2511501739936648,
+              "t_end": 1791308132.0822392
+            },
+            {
+              "update": 3,
+              "seconds": 0.20712775700667407,
+              "t_end": 1791308132.2893755
+            },
+            {
+              "update": 4,
+              "seconds": 0.23604573900229298,
+              "t_end": 1791308132.5254302
+            },
+            {
+              "update": 5,
+              "seconds": 0.2198604669974884,
+              "t_end": 1791308132.7452998
+            }
+          ],
+          "mean_measured_s": 0.22854603425003006,
+          "measured_start": 1791308131.8310773,
+          "measured_end": 1791308132.7452998,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.40225711501261685,
+          "artifact_eval_batch_s": 0.42057915701298043,
+          "checkpoint_serialize_s": 0.004531556987785734,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "ac0701284f5bd084aa35cc3cf13139d0f3794ae910e5c73c9577f13dbeb8c0e1"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "learned",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.22355511100613512,
+              "t_end": 1791308131.617158
+            },
+            {
+              "update": 1,
+              "seconds": 0.2092993810074404,
+              "t_end": 1791308131.829607,
+              "barrier_release": 1791308131.8301184
+            },
+            {
+              "update": 2,
+              "seconds": 0.23978947900468484,
+              "t_end": 1791308132.0699146
+            },
+            {
+              "update": 3,
+              "seconds": 0.20782658600364812,
+              "t_end": 1791308132.2777488
+            },
+            {
+              "update": 4,
+              "seconds": 0.23453569700359367,
+              "t_end": 1791308132.5122938
+            },
+            {
+              "update": 5,
+              "seconds": 0.21940566999546718,
+              "t_end": 1791308132.731709
+            }
+          ],
+          "mean_measured_s": 0.22538935800184845,
+          "measured_start": 1791308131.8301184,
+          "measured_end": 1791308132.731709,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.4031050899939146,
+          "artifact_eval_batch_s": 0.44258399300451856,
+          "checkpoint_serialize_s": 0.005335144000127912,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "7f850b1d72b2d25f3804dd0005b188b3843927a403669e373bd244f29f47c897"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308131.8301184,
+        1791308132.7452998
+      ],
+      "overlap_window": [
+        1791308131.8310773,
+        1791308132.731709
+      ],
+      "overlap_s": 0.9006316661834717,
+      "status": "ok",
+      "fixed_work_updates_per_s": 8.7414364125611,
+      "secondary": {
+        "windowed_updates_per_s": 8.809609443255587,
+        "reciprocal_mean_sum_updates_per_s": 8.812252825545237
+      },
+      "arm": "learned",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.40225711501261685,
+          "artifact_eval_batch_s": 0.42057915701298043,
+          "checkpoint_serialize_s": 0.004531556987785734,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        },
+        {
+          "dev_eval_batch_s": 0.4031050899939146,
+          "artifact_eval_batch_s": 0.44258399300451856,
+          "checkpoint_serialize_s": 0.005335144000127912,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.9112134339993645,
+        0.9223199627485883
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "learned",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.777773146997788,
+              "t_end": 1791308140.9486213
+            },
+            {
+              "update": 1,
+              "seconds": 0.8749788419954712,
+              "t_end": 1791308141.827438,
+              "barrier_release": 1791308141.8278754
+            },
+            {
+              "update": 2,
+              "seconds": 1.062828692010953,
+              "t_end": 1791308142.890711
+            },
+            {
+              "update": 3,
+              "seconds": 0.89055750699481,
+              "t_end": 1791308143.7812786
+            },
+            {
+              "update": 4,
+              "seconds": 0.8829624319914728,
+              "t_end": 1791308144.6642485
+            },
+            {
+              "update": 5,
+              "seconds": 0.8085051050002221,
+              "t_end": 1791308145.4727619
+            }
+          ],
+          "mean_measured_s": 0.9112134339993645,
+          "measured_start": 1791308141.8278754,
+          "measured_end": 1791308145.4727619,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.5072580790001666,
+          "artifact_eval_batch_s": 0.4255646439996781,
+          "checkpoint_serialize_s": 0.00493660599750001,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "2a7b8d93f21b8d1dc52f957536434f987a2b157e3efe01ec077a613b7b8bc161"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "learned",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.7719528059969889,
+              "t_end": 1791308140.9447882
+            },
+            {
+              "update": 1,
+              "seconds": 0.8633917490078602,
+              "t_end": 1791308141.8120987,
+              "barrier_release": 1791308141.8328416
+            },
+            {
+              "update": 2,
+              "seconds": 1.0762471829948481,
+              "t_end": 1791308142.9090989
+            },
+            {
+              "update": 3,
+              "seconds": 0.9181832760077668,
+              "t_end": 1791308143.8272905
+            },
+            {
+              "update": 4,
+              "seconds": 0.850401896997937,
+              "t_end": 1791308144.6776996
+            },
+            {
+              "update": 5,
+              "seconds": 0.8444474949938012,
+              "t_end": 1791308145.522155
+            }
+          ],
+          "mean_measured_s": 0.9223199627485883,
+          "measured_start": 1791308141.8328416,
+          "measured_end": 1791308145.522155,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.49925901199458167,
+          "artifact_eval_batch_s": 0.4246380199911073,
+          "checkpoint_serialize_s": 0.007019422002485953,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24,
+          "checkpoint_sha256": "d18572b8efeec7120e891a234c552684ef80b19f71df0c2fd147537fdd33a426"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308141.8278754,
+        1791308145.522155
+      ],
+      "overlap_window": [
+        1791308141.8328416,
+        1791308145.4727619
+      ],
+      "overlap_s": 3.639920234680176,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.1655101164690493,
+      "secondary": {
+        "windowed_updates_per_s": 2.1804989155724956,
+        "reciprocal_mean_sum_updates_per_s": 2.1816601666856643
+      },
+      "arm": "learned",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.5072580790001666,
+          "artifact_eval_batch_s": 0.4255646439996781,
+          "checkpoint_serialize_s": 0.00493660599750001,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        },
+        {
+          "dev_eval_batch_s": 0.49925901199458167,
+          "artifact_eval_batch_s": 0.4246380199911073,
+          "checkpoint_serialize_s": 0.007019422002485953,
+          "checkpoint_bytes": 275453,
+          "checkpoint_optimizer_states": 24
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.19971266849825042,
+        0.20087550124662812
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "single_cell",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.1877629709924804,
+              "t_end": 1791308153.602273
+            },
+            {
+              "update": 1,
+              "seconds": 0.19920442599686794,
+              "t_end": 1791308153.8025436,
+              "barrier_release": 1791308153.8434732
+            },
+            {
+              "update": 2,
+              "seconds": 0.20787322499381844,
+              "t_end": 1791308154.0513551
+            },
+            {
+              "update": 3,
+              "seconds": 0.21858981098921504,
+              "t_end": 1791308154.269957
+            },
+            {
+              "update": 4,
+              "seconds": 0.1959325890056789,
+              "t_end": 1791308154.4658985
+            },
+            {
+              "update": 5,
+              "seconds": 0.17645504900428932,
+              "t_end": 1791308154.6423628
+            }
+          ],
+          "mean_measured_s": 0.19971266849825042,
+          "measured_start": 1791308153.8434732,
+          "measured_end": 1791308154.6423628,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.37893013999564573,
+          "artifact_eval_batch_s": 0.4520238499972038,
+          "checkpoint_serialize_s": 0.0036600210005417466,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "4ae9f5fcf27c11b2b5281f9cac1a1975314b7a34d4e426cb958b953f9db1a786"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "single_cell",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.1856197710003471,
+              "t_end": 1791308153.6426344
+            },
+            {
+              "update": 1,
+              "seconds": 0.19088469000416808,
+              "t_end": 1791308153.8346019,
+              "barrier_release": 1791308153.8350246
+            },
+            {
+              "update": 2,
+              "seconds": 0.20035901899973396,
+              "t_end": 1791308154.0353894
+            },
+            {
+              "update": 3,
+              "seconds": 0.21238978799374308,
+              "t_end": 1791308154.2477875
+            },
+            {
+              "update": 4,
+              "seconds": 0.19871491199592128,
+              "t_end": 1791308154.4465106
+            },
+            {
+              "update": 5,
+              "seconds": 0.19203828599711414,
+              "t_end": 1791308154.6385567
+            }
+          ],
+          "mean_measured_s": 0.20087550124662812,
+          "measured_start": 1791308153.8350246,
+          "measured_end": 1791308154.6385567,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.38076302999979816,
+          "artifact_eval_batch_s": 0.468562608002685,
+          "checkpoint_serialize_s": 0.005464767993544228,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "686b5041a370ef3cec7e5420aa23cebbbaa54689d88e4e0f4a4dcb78921d010e"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308153.8350246,
+        1791308154.6423628
+      ],
+      "overlap_window": [
+        1791308153.8434732,
+        1791308154.6385567
+      ],
+      "overlap_s": 0.7950835227966309,
+      "status": "ok",
+      "fixed_work_updates_per_s": 9.909105782196205,
+      "secondary": {
+        "windowed_updates_per_s": 9.981707779086582,
+        "reciprocal_mean_sum_updates_per_s": 9.985401486360526
+      },
+      "arm": "single_cell",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.37893013999564573,
+          "artifact_eval_batch_s": 0.4520238499972038,
+          "checkpoint_serialize_s": 0.0036600210005417466,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.38076302999979816,
+          "artifact_eval_batch_s": 0.468562608002685,
+          "checkpoint_serialize_s": 0.005464767993544228,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.7035530112443666,
+        0.6916020792523341
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "single_cell",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.6391925370116951,
+              "t_end": 1791308162.797687
+            },
+            {
+              "update": 1,
+              "seconds": 0.6284999759955099,
+              "t_end": 1791308163.4279013,
+              "barrier_release": 1791308163.4283738
+            },
+            {
+              "update": 2,
+              "seconds": 0.7058906809979817,
+              "t_end": 1791308164.1342745
+            },
+            {
+              "update": 3,
+              "seconds": 0.6633668329886859,
+              "t_end": 1791308164.7976587
+            },
+            {
+              "update": 4,
+              "seconds": 0.6356500699912431,
+              "t_end": 1791308165.4333184
+            },
+            {
+              "update": 5,
+              "seconds": 0.8093044609995559,
+              "t_end": 1791308166.2426329
+            }
+          ],
+          "mean_measured_s": 0.7035530112443666,
+          "measured_start": 1791308163.4283738,
+          "measured_end": 1791308166.2426329,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.3188795000023674,
+          "artifact_eval_batch_s": 0.34422354098933283,
+          "checkpoint_serialize_s": 0.003693366001243703,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "2d87075e9ee7f55673c49f804483981c5023ca6b97e76c881651e6cfc045a4a1"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "single_cell",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.6245222370052943,
+              "t_end": 1791308162.691807
+            },
+            {
+              "update": 1,
+              "seconds": 0.6679566530074226,
+              "t_end": 1791308163.3615363,
+              "barrier_release": 1791308163.4430556
+            },
+            {
+              "update": 2,
+              "seconds": 0.7076700650068233,
+              "t_end": 1791308164.1507525
+            },
+            {
+              "update": 3,
+              "seconds": 0.6256655330071226,
+              "t_end": 1791308164.7764254
+            },
+            {
+              "update": 4,
+              "seconds": 0.6373658829979831,
+              "t_end": 1791308165.4137998
+            },
+            {
+              "update": 5,
+              "seconds": 0.7957068359974073,
+              "t_end": 1791308166.2095134
+            }
+          ],
+          "mean_measured_s": 0.6916020792523341,
+          "measured_start": 1791308163.4430556,
+          "measured_end": 1791308166.2095134,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.30449959500401746,
+          "artifact_eval_batch_s": 0.34129071900679264,
+          "checkpoint_serialize_s": 0.0052229899883968756,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "7bc8af9d9413f67c39a15165f57e7e65101b58f0c182e0c333d790b4c2e37669"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308163.4283738,
+        1791308166.2426329
+      ],
+      "overlap_window": [
+        1791308163.4430556,
+        1791308166.2095134
+      ],
+      "overlap_s": 2.7664577960968018,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.8426665247921483,
+      "secondary": {
+        "windowed_updates_per_s": 2.8694787481496844,
+        "reciprocal_mean_sum_updates_per_s": 2.867275155182088
+      },
+      "arm": "single_cell",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.3188795000023674,
+          "artifact_eval_batch_s": 0.34422354098933283,
+          "checkpoint_serialize_s": 0.003693366001243703,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.30449959500401746,
+          "artifact_eval_batch_s": 0.34129071900679264,
+          "checkpoint_serialize_s": 0.0052229899883968756,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.20573578450421337,
+        0.199799979753152
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "single_cell",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.21203504799632356,
+              "t_end": 1791308174.6296046
+            },
+            {
+              "update": 1,
+              "seconds": 0.1959858510090271,
+              "t_end": 1791308174.8280404,
+              "barrier_release": 1791308174.8693988
+            },
+            {
+              "update": 2,
+              "seconds": 0.20840447100636084,
+              "t_end": 1791308175.0778117
+            },
+            {
+              "update": 3,
+              "seconds": 0.23307325699715875,
+              "t_end": 1791308175.3108945
+            },
+            {
+              "update": 4,
+              "seconds": 0.19170785900496412,
+              "t_end": 1791308175.5026095
+            },
+            {
+              "update": 5,
+              "seconds": 0.18975755100836977,
+              "t_end": 1791308175.6923747
+            }
+          ],
+          "mean_measured_s": 0.20573578450421337,
+          "measured_start": 1791308174.8693988,
+          "measured_end": 1791308175.6923747,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.3646185629913816,
+          "artifact_eval_batch_s": 0.37992864199623,
+          "checkpoint_serialize_s": 0.004301849010516889,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "70148c652239466c23ab8ab64c47042b94c08ef15cfd627455c31df0c2bb5451"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "single_cell",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.2181172619893914,
+              "t_end": 1791308174.6475716
+            },
+            {
+              "update": 1,
+              "seconds": 0.20940839900868014,
+              "t_end": 1791308174.8588104,
+              "barrier_release": 1791308174.8592432
+            },
+            {
+              "update": 2,
+              "seconds": 0.20719630700477865,
+              "t_end": 1791308175.0664463
+            },
+            {
+              "update": 3,
+              "seconds": 0.22290053899632767,
+              "t_end": 1791308175.2893589
+            },
+            {
+              "update": 4,
+              "seconds": 0.1856874220102327,
+              "t_end": 1791308175.4750555
+            },
+            {
+              "update": 5,
+              "seconds": 0.183415651001269,
+              "t_end": 1791308175.6584833
+            }
+          ],
+          "mean_measured_s": 0.199799979753152,
+          "measured_start": 1791308174.8592432,
+          "measured_end": 1791308175.6584833,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.34373692399822176,
+          "artifact_eval_batch_s": 0.3701831630023662,
+          "checkpoint_serialize_s": 0.004101884987903759,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "3c917c75742086d74f78de40bad0e8823fb4d079ac8a8cd6f084ecc2b3b155e5"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308174.8592432,
+        1791308175.6923747
+      ],
+      "overlap_window": [
+        1791308174.8693988,
+        1791308175.6584833
+      ],
+      "overlap_s": 0.7890844345092773,
+      "status": "ok",
+      "fixed_work_updates_per_s": 9.602325086917466,
+      "secondary": {
+        "windowed_updates_per_s": 9.849915140943953,
+        "reciprocal_mean_sum_updates_per_s": 9.865608651356318
+      },
+      "arm": "single_cell",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.3646185629913816,
+          "artifact_eval_batch_s": 0.37992864199623,
+          "checkpoint_serialize_s": 0.004301849010516889,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.34373692399822176,
+          "artifact_eval_batch_s": 0.3701831630023662,
+          "checkpoint_serialize_s": 0.004101884987903759,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.7566434047512303,
+        0.7546783632496954
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "single_cell",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.6910744470078498,
+              "t_end": 1791308183.9558523
+            },
+            {
+              "update": 1,
+              "seconds": 0.6893941019952763,
+              "t_end": 1791308184.646386,
+              "barrier_release": 1791308184.6467884
+            },
+            {
+              "update": 2,
+              "seconds": 0.6760693579999497,
+              "t_end": 1791308185.322864
+            },
+            {
+              "update": 3,
+              "seconds": 0.7556868350075092,
+              "t_end": 1791308186.0785608
+            },
+            {
+              "update": 4,
+              "seconds": 0.7230124580091797,
+              "t_end": 1791308186.8015833
+            },
+            {
+              "update": 5,
+              "seconds": 0.8718049679882824,
+              "t_end": 1791308187.6734
+            }
+          ],
+          "mean_measured_s": 0.7566434047512303,
+          "measured_start": 1791308184.6467884,
+          "measured_end": 1791308187.6734,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.3328840660105925,
+          "artifact_eval_batch_s": 0.32785589298873674,
+          "checkpoint_serialize_s": 0.003910990999429487,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "2eca483209363374277e318d668e34d498db72874662badae6172d2cacb3c8bf"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "single_cell",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.6928116499911994,
+              "t_end": 1791308183.9093113
+            },
+            {
+              "update": 1,
+              "seconds": 0.7062087469967082,
+              "t_end": 1791308184.617443,
+              "barrier_release": 1791308184.6586266
+            },
+            {
+              "update": 2,
+              "seconds": 0.7140911280002911,
+              "t_end": 1791308185.3727274
+            },
+            {
+              "update": 3,
+              "seconds": 0.7155473879975034,
+              "t_end": 1791308186.0882828
+            },
+            {
+              "update": 4,
+              "seconds": 0.7151672820036765,
+              "t_end": 1791308186.8034632
+            },
+            {
+              "update": 5,
+              "seconds": 0.8739076549973106,
+              "t_end": 1791308187.6773798
+            }
+          ],
+          "mean_measured_s": 0.7546783632496954,
+          "measured_start": 1791308184.6586266,
+          "measured_end": 1791308187.6773798,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.3046029810066102,
+          "artifact_eval_batch_s": 0.312016655007028,
+          "checkpoint_serialize_s": 0.004936907993396744,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "a2b870700bfc1ccc0f50f53f4b7a7f7aaa6e2793bccd4d842e889a64975af1fe"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308184.6467884,
+        1791308187.6773798
+      ],
+      "overlap_window": [
+        1791308184.6586266,
+        1791308187.6734
+      ],
+      "overlap_s": 3.014773368835449,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.639748719674631,
+      "secondary": {
+        "windowed_updates_per_s": 2.6462834997728035,
+        "reciprocal_mean_sum_updates_per_s": 2.6466943353344545
+      },
+      "arm": "single_cell",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.3328840660105925,
+          "artifact_eval_batch_s": 0.32785589298873674,
+          "checkpoint_serialize_s": 0.003910990999429487,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.3046029810066102,
+          "artifact_eval_batch_s": 0.312016655007028,
+          "checkpoint_serialize_s": 0.004936907993396744,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.20576566124873352,
+        0.2039317575035966
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "random_fixed",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.21604990899504628,
+              "t_end": 1791308195.069245
+            },
+            {
+              "update": 1,
+              "seconds": 0.20671239399234764,
+              "t_end": 1791308195.2813902,
+              "barrier_release": 1791308195.2818103
+            },
+            {
+              "update": 2,
+              "seconds": 0.1925249820051249,
+              "t_end": 1791308195.4743419
+            },
+            {
+              "update": 3,
+              "seconds": 0.20709527499275282,
+              "t_end": 1791308195.681447
+            },
+            {
+              "update": 4,
+              "seconds": 0.2118818719900446,
+              "t_end": 1791308195.8933375
+            },
+            {
+              "update": 5,
+              "seconds": 0.21156051600701176,
+              "t_end": 1791308196.1049068
+            }
+          ],
+          "mean_measured_s": 0.20576566124873352,
+          "measured_start": 1791308195.2818103,
+          "measured_end": 1791308196.1049068,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.42126696699415334,
+          "artifact_eval_batch_s": 0.44325405001291074,
+          "checkpoint_serialize_s": 0.004844120005145669,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "5f1b31d65db15cf3b13eb20cea851814177be6e72cfc993d6a016b3ad89948e0"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "random_fixed",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.21782093300134875,
+              "t_end": 1791308195.062783
+            },
+            {
+              "update": 1,
+              "seconds": 0.2069549269945128,
+              "t_end": 1791308195.2726793,
+              "barrier_release": 1791308195.2936554
+            },
+            {
+              "update": 2,
+              "seconds": 0.19584744800522458,
+              "t_end": 1791308195.4895127
+            },
+            {
+              "update": 3,
+              "seconds": 0.20300533800036646,
+              "t_end": 1791308195.6925263
+            },
+            {
+              "update": 4,
+              "seconds": 0.21372767399589065,
+              "t_end": 1791308195.9062617
+            },
+            {
+              "update": 5,
+              "seconds": 0.2031465700129047,
+              "t_end": 1791308196.1094177
+            }
+          ],
+          "mean_measured_s": 0.2039317575035966,
+          "measured_start": 1791308195.2936554,
+          "measured_end": 1791308196.1094177,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.4054745869943872,
+          "artifact_eval_batch_s": 0.4451107610075269,
+          "checkpoint_serialize_s": 0.004281879999325611,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "700af203ab1854c5204d1f9bf0ed0b92bfa2cbd3879d5075eb0d08d94b45eb01"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308195.2818103,
+        1791308196.1094177
+      ],
+      "overlap_window": [
+        1791308195.2936554,
+        1791308196.1049068
+      ],
+      "overlap_s": 0.8112514019012451,
+      "status": "ok",
+      "fixed_work_updates_per_s": 9.666419204450747,
+      "secondary": {
+        "windowed_updates_per_s": 9.758139718231229,
+        "reciprocal_mean_sum_updates_per_s": 9.763498536714502
+      },
+      "arm": "random_fixed",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.42126696699415334,
+          "artifact_eval_batch_s": 0.44325405001291074,
+          "checkpoint_serialize_s": 0.004844120005145669,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.4054745869943872,
+          "artifact_eval_batch_s": 0.4451107610075269,
+          "checkpoint_serialize_s": 0.004281879999325611,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.8846790377501748,
+        0.8916084887532634
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "random_fixed",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.7362181950011291,
+              "t_end": 1791308204.4708352
+            },
+            {
+              "update": 1,
+              "seconds": 0.7788004829926649,
+              "t_end": 1791308205.2576184,
+              "barrier_release": 1791308205.25806
+            },
+            {
+              "update": 2,
+              "seconds": 0.9592109990044264,
+              "t_end": 1791308206.2172768
+            },
+            {
+              "update": 3,
+              "seconds": 0.805816269989009,
+              "t_end": 1791308207.0231035
+            },
+            {
+              "update": 4,
+              "seconds": 0.9452225499990163,
+              "t_end": 1791308207.968339
+            },
+            {
+              "update": 5,
+              "seconds": 0.8284663320082473,
+              "t_end": 1791308208.796815
+            }
+          ],
+          "mean_measured_s": 0.8846790377501748,
+          "measured_start": 1791308205.25806,
+          "measured_end": 1791308208.796815,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.45318752199818846,
+          "artifact_eval_batch_s": 0.39187631900131237,
+          "checkpoint_serialize_s": 0.004734381989692338,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "0c0c0be908aed05a018823b2411a9767394967ca13ed172bb9420669afdbc1f8"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "random_fixed",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.7222485189995496,
+              "t_end": 1791308204.40441
+            },
+            {
+              "update": 1,
+              "seconds": 0.7839394850016106,
+              "t_end": 1791308205.1927881,
+              "barrier_release": 1791308205.2750702
+            },
+            {
+              "update": 2,
+              "seconds": 0.9660556930029998,
+              "t_end": 1791308206.2411344
+            },
+            {
+              "update": 3,
+              "seconds": 0.8008184390055249,
+              "t_end": 1791308207.0419621
+            },
+            {
+              "update": 4,
+              "seconds": 0.9509278640034609,
+              "t_end": 1791308207.9929
+            },
+            {
+              "update": 5,
+              "seconds": 0.848631959001068,
+              "t_end": 1791308208.8415394
+            }
+          ],
+          "mean_measured_s": 0.8916084887532634,
+          "measured_start": 1791308205.2750702,
+          "measured_end": 1791308208.8415394,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.44428216401138343,
+          "artifact_eval_batch_s": 0.3992740160028916,
+          "checkpoint_serialize_s": 0.005034165995311923,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "6e14d63740bef70b44be2e54d0cfbbf788809bbaa3d6497740f71121ca58c532"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308205.25806,
+        1791308208.8415394
+      ],
+      "overlap_window": [
+        1791308205.2750702,
+        1791308208.796815
+      ],
+      "overlap_s": 3.521744728088379,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.2324671351722354,
+      "secondary": {
+        "windowed_updates_per_s": 2.2516028813673508,
+        "reciprocal_mean_sum_updates_per_s": 2.2519219524661596
+      },
+      "arm": "random_fixed",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.45318752199818846,
+          "artifact_eval_batch_s": 0.39187631900131237,
+          "checkpoint_serialize_s": 0.004734381989692338,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.44428216401138343,
+          "artifact_eval_batch_s": 0.3992740160028916,
+          "checkpoint_serialize_s": 0.005034165995311923,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.21046915899933083,
+        0.20895097024913412
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "random_fixed",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.21378770199953578,
+              "t_end": 1791308216.5114636
+            },
+            {
+              "update": 1,
+              "seconds": 0.20979482900293078,
+              "t_end": 1791308216.7239847,
+              "barrier_release": 1791308216.724416
+            },
+            {
+              "update": 2,
+              "seconds": 0.19685441299225204,
+              "t_end": 1791308216.921279
+            },
+            {
+              "update": 3,
+              "seconds": 0.22324757400201634,
+              "t_end": 1791308217.1445377
+            },
+            {
+              "update": 4,
+              "seconds": 0.21268096800486092,
+              "t_end": 1791308217.3572304
+            },
+            {
+              "update": 5,
+              "seconds": 0.20909368099819403,
+              "t_end": 1791308217.5663354
+            }
+          ],
+          "mean_measured_s": 0.21046915899933083,
+          "measured_start": 1791308216.724416,
+          "measured_end": 1791308217.5663354,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.4192948999989312,
+          "artifact_eval_batch_s": 0.39867547000176273,
+          "checkpoint_serialize_s": 0.005298149000736885,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "53b2416e1507bea94cf07a074f7f193a7699aef0e377162d733f2a18b62f1c1f"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "random_fixed",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.222643690998666,
+              "t_end": 1791308216.4434292
+            },
+            {
+              "update": 1,
+              "seconds": 0.21578566699463408,
+              "t_end": 1791308216.6624057,
+              "barrier_release": 1791308216.7440326
+            },
+            {
+              "update": 2,
+              "seconds": 0.1994345319981221,
+              "t_end": 1791308216.9434774
+            },
+            {
+              "update": 3,
+              "seconds": 0.23256439999386203,
+              "t_end": 1791308217.176051
+            },
+            {
+              "update": 4,
+              "seconds": 0.20130234000680503,
+              "t_end": 1791308217.3773634
+            },
+            {
+              "update": 5,
+              "seconds": 0.2025026089977473,
+              "t_end": 1791308217.5798755
+            }
+          ],
+          "mean_measured_s": 0.20895097024913412,
+          "measured_start": 1791308216.7440326,
+          "measured_end": 1791308217.5798755,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.40920543498941697,
+          "artifact_eval_batch_s": 0.41370931100391317,
+          "checkpoint_serialize_s": 0.0038864829984959215,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "81bc10d26a5057c3505d6a8e2d86e972abd1a3fb8eee80d4c3e1c48a8573e85c"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308216.724416,
+        1791308217.5798755
+      ],
+      "overlap_window": [
+        1791308216.7440326,
+        1791308217.5663354
+      ],
+      "overlap_s": 0.8223028182983398,
+      "status": "ok",
+      "fixed_work_updates_per_s": 9.351699819707434,
+      "secondary": {
+        "windowed_updates_per_s": 9.52633219874366,
+        "reciprocal_mean_sum_updates_per_s": 9.537101659171652
+      },
+      "arm": "random_fixed",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.4192948999989312,
+          "artifact_eval_batch_s": 0.39867547000176273,
+          "checkpoint_serialize_s": 0.005298149000736885,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.40920543498941697,
+          "artifact_eval_batch_s": 0.41370931100391317,
+          "checkpoint_serialize_s": 0.0038864829984959215,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.8670190179982455,
+        0.8563497092472971
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "random_fixed",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.7116687770030694,
+              "t_end": 1791308225.7769544
+            },
+            {
+              "update": 1,
+              "seconds": 0.7803967430081684,
+              "t_end": 1791308226.561506,
+              "barrier_release": 1791308226.5619237
+            },
+            {
+              "update": 2,
+              "seconds": 0.7517670369998086,
+              "t_end": 1791308227.313697
+            },
+            {
+              "update": 3,
+              "seconds": 0.8112102469895035,
+              "t_end": 1791308228.124918
+            },
+            {
+              "update": 4,
+              "seconds": 1.0733259150001686,
+              "t_end": 1791308229.1982524
+            },
+            {
+              "update": 5,
+              "seconds": 0.8317728730035014,
+              "t_end": 1791308230.030036
+            }
+          ],
+          "mean_measured_s": 0.8670190179982455,
+          "measured_start": 1791308226.5619237,
+          "measured_end": 1791308230.030036,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.4294987350003794,
+          "artifact_eval_batch_s": 0.41193768600351177,
+          "checkpoint_serialize_s": 0.004119490011362359,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "f52016fc28ee740648d5ce9bd6df9b1a032cd6d41be84d3cdf7596c4991944c9"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "random_fixed",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.7215658569912193,
+              "t_end": 1791308225.750897
+            },
+            {
+              "update": 1,
+              "seconds": 0.7634116429981077,
+              "t_end": 1791308226.5218925,
+              "barrier_release": 1791308226.5778418
+            },
+            {
+              "update": 2,
+              "seconds": 0.7711036559921922,
+              "t_end": 1791308227.3489559
+            },
+            {
+              "update": 3,
+              "seconds": 0.8105738269950962,
+              "t_end": 1791308228.1595383
+            },
+            {
+              "update": 4,
+              "seconds": 1.0504571670026053,
+              "t_end": 1791308229.2100055
+            },
+            {
+              "update": 5,
+              "seconds": 0.7932641869992949,
+              "t_end": 1791308230.0032794
+            }
+          ],
+          "mean_measured_s": 0.8563497092472971,
+          "measured_start": 1791308226.5778418,
+          "measured_end": 1791308230.0032794,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.42759974299406167,
+          "artifact_eval_batch_s": 0.42392453699721955,
+          "checkpoint_serialize_s": 0.005084678006824106,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "575bd880ef987c3d82dda5cadbde07c591656f67e60c9b834a15b66ff469b2ed"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308226.5619237,
+        1791308230.030036
+      ],
+      "overlap_window": [
+        1791308226.5778418,
+        1791308230.0032794
+      ],
+      "overlap_s": 3.4254376888275146,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.306730425302845,
+      "secondary": {
+        "windowed_updates_per_s": 2.319898091219048,
+        "reciprocal_mean_sum_updates_per_s": 2.321124466652683
+      },
+      "arm": "random_fixed",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.4294987350003794,
+          "artifact_eval_batch_s": 0.41193768600351177,
+          "checkpoint_serialize_s": 0.004119490011362359,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.42759974299406167,
+          "artifact_eval_batch_s": 0.42392453699721955,
+          "checkpoint_serialize_s": 0.005084678006824106,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.19937542474872316,
+        0.1938602159934817
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "oracle",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.18510512600187212,
+              "t_end": 1791308237.5578487
+            },
+            {
+              "update": 1,
+              "seconds": 0.18571309799153823,
+              "t_end": 1791308237.7471132,
+              "barrier_release": 1791308237.747526
+            },
+            {
+              "update": 2,
+              "seconds": 0.18917310400865972,
+              "t_end": 1791308237.9367054
+            },
+            {
+              "update": 3,
+              "seconds": 0.21722623199457303,
+              "t_end": 1791308238.1539395
+            },
+            {
+              "update": 4,
+              "seconds": 0.18813590198988095,
+              "t_end": 1791308238.342083
+            },
+            {
+              "update": 5,
+              "seconds": 0.20296646100177895,
+              "t_end": 1791308238.5450575
+            }
+          ],
+          "mean_measured_s": 0.19937542474872316,
+          "measured_start": 1791308237.747526,
+          "measured_end": 1791308238.5450575,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.40141397499246523,
+          "artifact_eval_batch_s": 0.4442119910090696,
+          "checkpoint_serialize_s": 0.004399184996145777,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "5000b8c73cd4e28abf48f3c8956f69eda211bb69160a6d61222b7b04e4b94114"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "oracle",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.19580857999972068,
+              "t_end": 1791308237.561313
+            },
+            {
+              "update": 1,
+              "seconds": 0.18060840500402264,
+              "t_end": 1791308237.7461622,
+              "barrier_release": 1791308237.7669802
+            },
+            {
+              "update": 2,
+              "seconds": 0.19759340898599476,
+              "t_end": 1791308237.9645858
+            },
+            {
+              "update": 3,
+              "seconds": 0.1937583669932792,
+              "t_end": 1791308238.1583524
+            },
+            {
+              "update": 4,
+              "seconds": 0.18893480600672774,
+              "t_end": 1791308238.3472958
+            },
+            {
+              "update": 5,
+              "seconds": 0.19515428198792506,
+              "t_end": 1791308238.5424592
+            }
+          ],
+          "mean_measured_s": 0.1938602159934817,
+          "measured_start": 1791308237.7669802,
+          "measured_end": 1791308238.5424592,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.39384186500683427,
+          "artifact_eval_batch_s": 0.4405906739993952,
+          "checkpoint_serialize_s": 0.005987583994283341,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "a954a7ca15c5af70d8e1917a002d96d2ec859f4daa960e86099dc16b129e374d"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308237.747526,
+        1791308238.5450575
+      ],
+      "overlap_window": [
+        1791308237.7669802,
+        1791308238.5424592
+      ],
+      "overlap_s": 0.7754790782928467,
+      "status": "ok",
+      "fixed_work_updates_per_s": 10.030950437805858,
+      "secondary": {
+        "windowed_updates_per_s": 10.167125327390213,
+        "reciprocal_mean_sum_updates_per_s": 10.174019252840855
+      },
+      "arm": "oracle",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.40141397499246523,
+          "artifact_eval_batch_s": 0.4442119910090696,
+          "checkpoint_serialize_s": 0.004399184996145777,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.39384186500683427,
+          "artifact_eval_batch_s": 0.4405906739993952,
+          "checkpoint_serialize_s": 0.005987583994283341,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.7427007207479619,
+        0.7499648479970347
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "oracle",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.6315308190096403,
+              "t_end": 1791308246.4706304
+            },
+            {
+              "update": 1,
+              "seconds": 0.6868448500026716,
+              "t_end": 1791308247.1641197,
+              "barrier_release": 1791308247.1646543
+            },
+            {
+              "update": 2,
+              "seconds": 0.7102720599941676,
+              "t_end": 1791308247.8749332
+            },
+            {
+              "update": 3,
+              "seconds": 0.8372472030023346,
+              "t_end": 1791308248.7121897
+            },
+            {
+              "update": 4,
+              "seconds": 0.7397951379971346,
+              "t_end": 1791308249.4519925
+            },
+            {
+              "update": 5,
+              "seconds": 0.6834884819982108,
+              "t_end": 1791308250.1355147
+            }
+          ],
+          "mean_measured_s": 0.7427007207479619,
+          "measured_start": 1791308247.1646543,
+          "measured_end": 1791308250.1355147,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.4231550249969587,
+          "artifact_eval_batch_s": 0.37197313900105655,
+          "checkpoint_serialize_s": 0.00406180699064862,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "9ebe7cf4376b9913598ee1327d0ce348ea4479215a5924c93d26642ab54850c8"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "oracle",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.6452950949897058,
+              "t_end": 1791308246.455445
+            },
+            {
+              "update": 1,
+              "seconds": 0.6908081569999922,
+              "t_end": 1791308247.1509323,
+              "barrier_release": 1791308247.1718595
+            },
+            {
+              "update": 2,
+              "seconds": 0.885479459000635,
+              "t_end": 1791308248.0573504
+            },
+            {
+              "update": 3,
+              "seconds": 0.6763375149894273,
+              "t_end": 1791308248.733697
+            },
+            {
+              "update": 4,
+              "seconds": 0.7364324079971993,
+              "t_end": 1791308249.4701412
+            },
+            {
+              "update": 5,
+              "seconds": 0.7016100100008771,
+              "t_end": 1791308250.1717603
+            }
+          ],
+          "mean_measured_s": 0.7499648479970347,
+          "measured_start": 1791308247.1718595,
+          "measured_end": 1791308250.1717603,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.41469533198687714,
+          "artifact_eval_batch_s": 0.3760672920034267,
+          "checkpoint_serialize_s": 0.0066776540043065324,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16,
+          "checkpoint_sha256": "a47359afe1007772828d1e6b18894fafb4f910c9e061b659146175c03f57b23b"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308247.1646543,
+        1791308250.1717603
+      ],
+      "overlap_window": [
+        1791308247.1718595,
+        1791308250.1355147
+      ],
+      "overlap_s": 2.9636552333831787,
+      "status": "ok",
+      "fixed_work_updates_per_s": 2.660365090249785,
+      "secondary": {
+        "windowed_updates_per_s": 2.6785183092183793,
+        "reciprocal_mean_sum_updates_per_s": 2.679833191790145
+      },
+      "arm": "oracle",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.4231550249969587,
+          "artifact_eval_batch_s": 0.37197313900105655,
+          "checkpoint_serialize_s": 0.00406180699064862,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        },
+        {
+          "dev_eval_batch_s": 0.41469533198687714,
+          "artifact_eval_batch_s": 0.3760672920034267,
+          "checkpoint_serialize_s": 0.0066776540043065324,
+          "checkpoint_bytes": 263493,
+          "checkpoint_optimizer_states": 16
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.0568425292512984,
+        0.05615301824582275
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "memory_off",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.06196723999164533,
+              "t_end": 1791308257.5907156
+            },
+            {
+              "update": 1,
+              "seconds": 0.05707896100648213,
+              "t_end": 1791308257.6482358,
+              "barrier_release": 1791308257.6487403
+            },
+            {
+              "update": 2,
+              "seconds": 0.05370794500049669,
+              "t_end": 1791308257.7024558
+            },
+            {
+              "update": 3,
+              "seconds": 0.05966691600042395,
+              "t_end": 1791308257.7621326
+            },
+            {
+              "update": 4,
+              "seconds": 0.056167269009165466,
+              "t_end": 1791308257.8183117
+            },
+            {
+              "update": 5,
+              "seconds": 0.057827986995107494,
+              "t_end": 1791308257.8761518
+            }
+          ],
+          "mean_measured_s": 0.0568425292512984,
+          "measured_start": 1791308257.6487403,
+          "measured_end": 1791308257.8761518,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.1826021720044082,
+          "artifact_eval_batch_s": 0.18714606600406114,
+          "checkpoint_serialize_s": 0.0031109019910218194,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "342dd91ea33c4b41e99d1775bb1098f8e62b4017bf147f587af3700e13dc21ca"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "memory_off",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.05865598301170394,
+              "t_end": 1791308257.5507374
+            },
+            {
+              "update": 1,
+              "seconds": 0.057271437006420456,
+              "t_end": 1791308257.6086352,
+              "barrier_release": 1791308257.6497593
+            },
+            {
+              "update": 2,
+              "seconds": 0.05514009999751579,
+              "t_end": 1791308257.7049062
+            },
+            {
+              "update": 3,
+              "seconds": 0.05668008199427277,
+              "t_end": 1791308257.7615933
+            },
+            {
+              "update": 4,
+              "seconds": 0.05387160799000412,
+              "t_end": 1791308257.8154716
+            },
+            {
+              "update": 5,
+              "seconds": 0.05892028300149832,
+              "t_end": 1791308257.8744001
+            }
+          ],
+          "mean_measured_s": 0.05615301824582275,
+          "measured_start": 1791308257.6497593,
+          "measured_end": 1791308257.8744001,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.1727581610030029,
+          "artifact_eval_batch_s": 0.17811887900461443,
+          "checkpoint_serialize_s": 0.003266735002398491,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "aefbfa3caec9aca6fbc68a9acfb427142da5203ae325a834f1543ede23739ad5"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308257.6487403,
+        1791308257.8761518
+      ],
+      "overlap_window": [
+        1791308257.6497593,
+        1791308257.8744001
+      ],
+      "overlap_s": 0.2246408462524414,
+      "status": "ok",
+      "fixed_work_updates_per_s": 35.17851867150748,
+      "secondary": {
+        "windowed_updates_per_s": 35.39373285812405,
+        "reciprocal_mean_sum_updates_per_s": 35.4009431081682
+      },
+      "arm": "memory_off",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.1826021720044082,
+          "artifact_eval_batch_s": 0.18714606600406114,
+          "checkpoint_serialize_s": 0.0031109019910218194,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        },
+        {
+          "dev_eval_batch_s": 0.1727581610030029,
+          "artifact_eval_batch_s": 0.17811887900461443,
+          "checkpoint_serialize_s": 0.003266735002398491,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.1780592630020692,
+        0.17189444825271494
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "memory_off",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.1740958560112631,
+              "t_end": 1791308264.9468992
+            },
+            {
+              "update": 1,
+              "seconds": 0.18879285600269213,
+              "t_end": 1791308265.136124,
+              "barrier_release": 1791308265.1365187
+            },
+            {
+              "update": 2,
+              "seconds": 0.17045133700594306,
+              "t_end": 1791308265.3069763
+            },
+            {
+              "update": 3,
+              "seconds": 0.18615423700248357,
+              "t_end": 1791308265.4931371
+            },
+            {
+              "update": 4,
+              "seconds": 0.17112483199161943,
+              "t_end": 1791308265.6642685
+            },
+            {
+              "update": 5,
+              "seconds": 0.18450664600823075,
+              "t_end": 1791308265.8487833
+            }
+          ],
+          "mean_measured_s": 0.1780592630020692,
+          "measured_start": 1791308265.1365187,
+          "measured_end": 1791308265.8487833,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.19549100700533018,
+          "artifact_eval_batch_s": 0.18408774099953007,
+          "checkpoint_serialize_s": 0.002298348001204431,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "e9d269f58588707b6cd9166022eb5e27f66ec2110e2dec69ddb2ae61a1914182"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "memory_off",
+          "n": 16,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.17827173401019536,
+              "t_end": 1791308264.9448714
+            },
+            {
+              "update": 1,
+              "seconds": 0.17956798301020171,
+              "t_end": 1791308265.1249375,
+              "barrier_release": 1791308265.1456895
+            },
+            {
+              "update": 2,
+              "seconds": 0.16123232000973076,
+              "t_end": 1791308265.3069355
+            },
+            {
+              "update": 3,
+              "seconds": 0.1670755340019241,
+              "t_end": 1791308265.474019
+            },
+            {
+              "update": 4,
+              "seconds": 0.17864008400647435,
+              "t_end": 1791308265.6526687
+            },
+            {
+              "update": 5,
+              "seconds": 0.18062985499273054,
+              "t_end": 1791308265.8333063
+            }
+          ],
+          "mean_measured_s": 0.17189444825271494,
+          "measured_start": 1791308265.1456895,
+          "measured_end": 1791308265.8333063,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.18519253699923865,
+          "artifact_eval_batch_s": 0.18624659000488464,
+          "checkpoint_serialize_s": 0.0033119290019385517,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "c33b4c955ea7bc433638fdd2876fbc1b5919f526a5b4b38d334ee190cd0adf76"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308265.1365187,
+        1791308265.8487833
+      ],
+      "overlap_window": [
+        1791308265.1456895,
+        1791308265.8333063
+      ],
+      "overlap_s": 0.6876168251037598,
+      "status": "ok",
+      "fixed_work_updates_per_s": 11.231781978902436,
+      "secondary": {
+        "windowed_updates_per_s": 11.434203461425955,
+        "reciprocal_mean_sum_updates_per_s": 11.433631256423487
+      },
+      "arm": "memory_off",
+      "n": 16,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.19549100700533018,
+          "artifact_eval_batch_s": 0.18408774099953007,
+          "checkpoint_serialize_s": 0.002298348001204431,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        },
+        {
+          "dev_eval_batch_s": 0.18519253699923865,
+          "artifact_eval_batch_s": 0.18624659000488464,
+          "checkpoint_serialize_s": 0.0033119290019385517,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 1,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.05973326324601658,
+        0.059846401254617376
+      ],
+      "workers": [
+        {
+          "phase": 1,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "memory_off",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.06238689098972827,
+              "t_end": 1791308272.7735121
+            },
+            {
+              "update": 1,
+              "seconds": 0.052426925001782365,
+              "t_end": 1791308272.8267002,
+              "barrier_release": 1791308272.8271272
+            },
+            {
+              "update": 2,
+              "seconds": 0.057876512000802904,
+              "t_end": 1791308272.885009
+            },
+            {
+              "update": 3,
+              "seconds": 0.060204025998245925,
+              "t_end": 1791308272.9452212
+            },
+            {
+              "update": 4,
+              "seconds": 0.060715913990861736,
+              "t_end": 1791308273.005949
+            },
+            {
+              "update": 5,
+              "seconds": 0.06013660099415574,
+              "t_end": 1791308273.0660982
+            }
+          ],
+          "mean_measured_s": 0.05973326324601658,
+          "measured_start": 1791308272.8271272,
+          "measured_end": 1791308273.0660982,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.18658653099555522,
+          "artifact_eval_batch_s": 0.20325616400805302,
+          "checkpoint_serialize_s": 0.003822429003776051,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "ccad30f9e22184267e937b9ad1196c66b15a2b92ca9cc711c0e2e7ca45e45461"
+        },
+        {
+          "phase": 1,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "memory_off",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.05613777300459333,
+              "t_end": 1791308272.7068255
+            },
+            {
+              "update": 1,
+              "seconds": 0.058984533010516316,
+              "t_end": 1791308272.766255,
+              "barrier_release": 1791308272.827635
+            },
+            {
+              "update": 2,
+              "seconds": 0.0602553210046608,
+              "t_end": 1791308272.8878984
+            },
+            {
+              "update": 3,
+              "seconds": 0.053449500002898276,
+              "t_end": 1791308272.941355
+            },
+            {
+              "update": 4,
+              "seconds": 0.07165544699819293,
+              "t_end": 1791308273.0130186
+            },
+            {
+              "update": 5,
+              "seconds": 0.0540253370127175,
+              "t_end": 1791308273.0670538
+            }
+          ],
+          "mean_measured_s": 0.059846401254617376,
+          "measured_start": 1791308272.827635,
+          "measured_end": 1791308273.0670538,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.20243103100801818,
+          "artifact_eval_batch_s": 0.1879823900089832,
+          "checkpoint_serialize_s": 0.0025852480030152947,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "950c0e69b21a639298ae014af941e5cd0c16498e2b332482d1e23b3912bc342d"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308272.8271272,
+        1791308273.0670538
+      ],
+      "overlap_window": [
+        1791308272.827635,
+        1791308273.0660982
+      ],
+      "overlap_s": 0.2384631633758545,
+      "status": "ok",
+      "fixed_work_updates_per_s": 33.34353414652324,
+      "secondary": {
+        "windowed_updates_per_s": 33.43756953628659,
+        "reciprocal_mean_sum_updates_per_s": 33.45053356155114
+      },
+      "arm": "memory_off",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.18658653099555522,
+          "artifact_eval_batch_s": 0.20325616400805302,
+          "checkpoint_serialize_s": 0.003822429003776051,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        },
+        {
+          "dev_eval_batch_s": 0.20243103100801818,
+          "artifact_eval_batch_s": 0.1879823900089832,
+          "checkpoint_serialize_s": 0.0025852480030152947,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        }
+      ],
+      "gpu": null
+    },
+    {
+      "phase": 2,
+      "k": 2,
+      "worker_exit": [
+        0,
+        0
+      ],
+      "per_worker_mean_s": [
+        0.1975155599975551,
+        0.20141491200047312
+      ],
+      "workers": [
+        {
+          "phase": 2,
+          "rank": 0,
+          "k": 2,
+          "seed": 99,
+          "arm": "memory_off",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.21531099600542802,
+              "t_end": 1791308280.333076
+            },
+            {
+              "update": 1,
+              "seconds": 0.19024813700525556,
+              "t_end": 1791308280.5243316,
+              "barrier_release": 1791308280.5451956
+            },
+            {
+              "update": 2,
+              "seconds": 0.23204610699031036,
+              "t_end": 1791308280.777254
+            },
+            {
+              "update": 3,
+              "seconds": 0.1953862649970688,
+              "t_end": 1791308280.972649
+            },
+            {
+              "update": 4,
+              "seconds": 0.19128135399660096,
+              "t_end": 1791308281.1639395
+            },
+            {
+              "update": 5,
+              "seconds": 0.1713485140062403,
+              "t_end": 1791308281.3352969
+            }
+          ],
+          "mean_measured_s": 0.1975155599975551,
+          "measured_start": 1791308280.5451956,
+          "measured_end": 1791308281.3352969,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.1777365950110834,
+          "artifact_eval_batch_s": 0.18634183298854623,
+          "checkpoint_serialize_s": 0.003846981009701267,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "00074eae29aedc200d873f788e4a52e39e4868514e6f1413961bf5f7d3569584"
+        },
+        {
+          "phase": 2,
+          "rank": 1,
+          "k": 2,
+          "seed": 100,
+          "arm": "memory_off",
+          "n": 32,
+          "updates": [
+            {
+              "update": 0,
+              "seconds": 0.21742628001084086,
+              "t_end": 1791308280.335574
+            },
+            {
+              "update": 1,
+              "seconds": 0.19522839999990538,
+              "t_end": 1791308280.5316436,
+              "barrier_release": 1791308280.532916
+            },
+            {
+              "update": 2,
+              "seconds": 0.2294725709944032,
+              "t_end": 1791308280.7624018
+            },
+            {
+              "update": 3,
+              "seconds": 0.19886730599682778,
+              "t_end": 1791308280.9612792
+            },
+            {
+              "update": 4,
+              "seconds": 0.1932567750045564,
+              "t_end": 1791308281.1545436
+            },
+            {
+              "update": 5,
+              "seconds": 0.1840629960061051,
+              "t_end": 1791308281.3386142
+            }
+          ],
+          "mean_measured_s": 0.20141491200047312,
+          "measured_start": 1791308280.532916,
+          "measured_end": 1791308281.3386142,
+          "peak_allocated_bytes": 0,
+          "dev_eval_batch_s": 0.1758742340025492,
+          "artifact_eval_batch_s": 0.1820625100081088,
+          "checkpoint_serialize_s": 0.0036561129963956773,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2,
+          "checkpoint_sha256": "ca61a723f69863d8e345481672b9bbe8deae1761b01c6a7b883bb6d398a44b88"
+        }
+      ],
+      "peak_allocated_bytes": [
+        0,
+        0
+      ],
+      "fixed_work_span": [
+        1791308280.532916,
+        1791308281.3386142
+      ],
+      "overlap_window": [
+        1791308280.5451956,
+        1791308281.3352969
+      ],
+      "overlap_s": 0.7901012897491455,
+      "status": "ok",
+      "fixed_work_updates_per_s": 9.929276785458002,
+      "secondary": {
+        "windowed_updates_per_s": 10.034817601261887,
+        "reciprocal_mean_sum_updates_per_s": 10.027767949331407
+      },
+      "arm": "memory_off",
+      "n": 32,
+      "eval_and_checkpoint": [
+        {
+          "dev_eval_batch_s": 0.1777365950110834,
+          "artifact_eval_batch_s": 0.18634183298854623,
+          "checkpoint_serialize_s": 0.003846981009701267,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        },
+        {
+          "dev_eval_batch_s": 0.1758742340025492,
+          "artifact_eval_batch_s": 0.1820625100081088,
+          "checkpoint_serialize_s": 0.0036561129963956773,
+          "checkpoint_bytes": 133635,
+          "checkpoint_optimizer_states": 2
+        }
+      ],
+      "gpu": null
+    }
+  ],
+  "timing_spec": {
+    "slot_types": [
+      [
+        "learned",
+        16
+      ],
+      [
+        "learned",
+        32
+      ],
+      [
+        "single_cell",
+        16
+      ],
+      [
+        "single_cell",
+        32
+      ],
+      [
+        "random_fixed",
+        16
+      ],
+      [
+        "random_fixed",
+        32
+      ],
+      [
+        "oracle",
+        32
+      ],
+      [
+        "memory_off",
+        16
+      ],
+      [
+        "memory_off",
+        32
+      ]
+    ],
+    "phases": {
+      "1": 0,
+      "2": 40
+    },
+    "k": 2,
+    "warmup": 2,
+    "measured": 4,
+    "seeds": [
+      99,
+      100
+    ],
+    "threads": 2,
+    "eval_batches": {
+      "dev_shaped": 1,
+      "artifact_shaped": 1
+    }
+  },
+  "gpu": "smoke-cpu",
+  "memsub_source_sha256": "ab9ffa626c3daaac3725570e56796b9b75f182610ad4e9e24320923adaa708c5",
+  "packing_helpers_sha256": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+  "sampler_stop": "not started"
+}

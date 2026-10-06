@@ -7,7 +7,9 @@ Matrix from configs/m4_sgm_p2p5_packed_proof_grid.json "timing": 9 slot types (a
 99/100, threads 2) run the real `train()` for 2 warmup + 4 measured updates with the barrier
 after the final warmup; then each worker times one dev-shaped eval batch (heldout, filler 40,
 batch 16, intervention none) and one artifact-shaped batch (bank_derange; memory_off: none),
-and one checkpoint serialization (training_state -> torch.save -> sha256) with its byte size.
+and the REAL terminal checkpoint (codex 21567 #4): captured by train()'s own on_checkpoint hook at
+step == steps (after the last measured update, outside the throughput window; with the trained
+AdamW moments), timed through torch.save + sha256, with its byte size and optimizer-state count.
 The measurement, validation, fixed-work rate, sampler and cleanup are the AUDITED packing-test
 functions (scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py, imported
 unchanged; only its MEASURED count is set to 4 here). The first failed config stops the matrix
@@ -44,7 +46,6 @@ def worker(arm: str, n: int, phase: int, rank: int, k: int, barrier: Path, out: 
     import torch
     from memsub.sgm.synthetic_pilot import PilotConfig, train
     from memsub.sgm.synthetic_pilot_evaluation import evaluate
-    from memsub.sgm.training_resume_checkpoint import training_state
     torch.set_num_threads(pk.THREADS)
     base = {**GRID["base"], "arm": arm, "n_bindings": n, "seed": pk.SEED0 + rank, "steps": pk.WARMUP + pk.MEASURED,
             "eval_every": 10 ** 9, "filler_len_schedule": [[0, int(T["phases"][str(phase)])]]}
@@ -63,7 +64,18 @@ def worker(arm: str, n: int, phase: int, rank: int, k: int, barrier: Path, out: 
                     raise TimeoutError("barrier timeout")
                 time.sleep(0.02)
             rows[-1]["barrier_release"] = time.time()
-    res = train(pcfg, log=lambda _r: None, on_update=on_update)
+    ckpt = {}
+
+    def on_checkpoint(step: int, state: dict) -> None:            # terminal generation only
+        t0 = time.monotonic()
+        buf = io.BytesIO()
+        torch.save(state, buf)
+        ckpt.update(step=step, sha=hashlib.sha256(buf.getvalue()).hexdigest(), bytes=buf.getbuffer().nbytes,
+                    seconds=time.monotonic() - t0, optimizer_states=len(state["optimizer"]["state"]))
+    res = train(pcfg, log=lambda _r: None, on_update=on_update, checkpoint_every=pcfg.steps,
+                on_checkpoint=on_checkpoint)
+    if ckpt.get("step") != pcfg.steps:
+        raise RuntimeError("terminal checkpoint was not captured")
     measured = [r for r in rows if r["update"] >= pk.WARMUP]
     sync = (lambda: torch.cuda.synchronize()) if not smoke else (lambda: None)
 
@@ -76,13 +88,6 @@ def worker(arm: str, n: int, phase: int, rank: int, k: int, barrier: Path, out: 
         return time.monotonic() - t0
     dev_s = timed_eval("none")
     art_s = timed_eval("none" if arm == "memory_off" else "bank_derange")
-    opt = torch.optim.AdamW([p for p in list(res["runtime"].adapters.parameters()) + list(res["head"].parameters())
-                             if p.requires_grad], lr=pcfg.lr)
-    t0 = time.monotonic()
-    buf = io.BytesIO()
-    torch.save(training_state(pcfg.steps, pcfg, res["runtime"], res["head"], opt, torch.Generator(), [], {}), buf)
-    digest = hashlib.sha256(buf.getvalue()).hexdigest()
-    ckpt_s = time.monotonic() - t0
     out.write_text(json.dumps({"phase": phase, "rank": rank, "k": k, "seed": pk.SEED0 + rank, "arm": arm, "n": n,
                                "updates": rows,
                                "mean_measured_s": sum(r["seconds"] for r in measured) / len(measured),
@@ -90,8 +95,9 @@ def worker(arm: str, n: int, phase: int, rank: int, k: int, barrier: Path, out: 
                                "measured_end": measured[-1]["t_end"],
                                "peak_allocated_bytes": 0 if smoke else torch.cuda.max_memory_allocated(),
                                "dev_eval_batch_s": dev_s, "artifact_eval_batch_s": art_s,
-                               "checkpoint_serialize_s": ckpt_s, "checkpoint_bytes": buf.getbuffer().nbytes,
-                               "checkpoint_sha256": digest}))
+                               "checkpoint_serialize_s": ckpt["seconds"], "checkpoint_bytes": ckpt["bytes"],
+                               "checkpoint_optimizer_states": ckpt["optimizer_states"],
+                               "checkpoint_sha256": ckpt["sha"]}))
 
 
 def main():
@@ -129,7 +135,8 @@ def main():
                 res.update(arm=arm, n=n)
                 if res["status"] == "ok":
                     res["eval_and_checkpoint"] = [{k: w[k] for k in ("dev_eval_batch_s", "artifact_eval_batch_s",
-                                                                     "checkpoint_serialize_s", "checkpoint_bytes")}
+                                                                     "checkpoint_serialize_s", "checkpoint_bytes",
+                                                                     "checkpoint_optimizer_states")}
                                                   for w in res["workers"]]
                     res["gpu"] = pk.gpu_util(csv_path, res["fixed_work_span"]) if csv_path.exists() else None
                 report["configs"].append(res)

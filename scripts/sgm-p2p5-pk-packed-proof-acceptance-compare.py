@@ -13,7 +13,16 @@ N/A (None) must match exactly; missing/extra fields, shape mismatches and NaN/in
 Control first: A' vs A bitwise -> every candidate bitwise; else A' must pass the tolerance
 |x - x_A| <= max(1e-5 * max|x_A|, 1e-8) with identical rows, else UNSTABLE (proof stops).
 Scenario checks: B resume at step 4 in a later epoch; C eval-only epoch with zero physical
-updates; D co-tenant FAILED (worker exit 3) inherited as FAILED and never relaunched; E alone.
+updates and partial artifact-eval progress retained; D co-tenant FAILED (worker exit 3) inherited
+as FAILED and never relaunched; E alone.
+Revision (codex 21567): BEFORE any pairwise check every run is validated on its own — the canonical
+chain from immutable predecessor snapshots (acyclic, <= admitted starts), every generation file
+present with its bound sha, every epoch admitted (exported admission record), the record identity
+== the launch's expected identity, GPU mode: real and distinct container ids per epoch, the shared
+per-cell output validation (required outputs, strict JSON, populations, row/key/telemetry counts,
+FROZEN name/shape registry), and per-update gradients against the frozen registry (joint omissions
+fail). The T timing evidence (18 configs, eval/serialize/commit timings and sizes) gates the whole
+proof.
 """
 
 import argparse
@@ -36,8 +45,12 @@ class Fail(Exception):
     pass
 
 
-def authority(cell_dir: Path) -> tuple[int, dict]:
+def authority(cell_dir: Path, admitted: list[int]) -> tuple[int, dict]:
+    """Highest ADMITTED epoch with an acknowledged record; an epoch dir that was never
+    admitted is a binding failure."""
     epochs = sorted(int(p.name.split("-")[1]) for p in cell_dir.glob("epoch-*"))
+    if any(m not in admitted for m in epochs):
+        raise Fail(f"{cell_dir.name}: epoch dirs {epochs} not all admitted {admitted}")
     for m in reversed(epochs):
         rec = es.read_record(cell_dir, m)
         if rec is not None:
@@ -45,47 +58,101 @@ def authority(cell_dir: Path) -> tuple[int, dict]:
     raise Fail(f"{cell_dir.name}: no acknowledged record")
 
 
-def walk(cell_dir: Path, rec: dict) -> list[dict]:
-    """Chronological records along the inheritance links (oldest first)."""
-    out = [rec]
-    while out[0]["inherited_from"]:
-        prev = es.read_record(cell_dir, out[0]["inherited_from"]["epoch"])
-        if prev is None:
-            raise Fail(f"{cell_dir.name}: broken inheritance link")
-        out.insert(0, prev)
-    return out
+def bound_walk(cell_dir: Path, rec: dict, admitted: list[int], expected: dict | None, gpu: bool) -> list[dict]:
+    """Canonical chain (snapshots), identity, admission, provenance and generation bindings."""
+    try:
+        walk = es.canonical_walk(rec, max_len=len(admitted))
+    except ValueError as e:
+        raise Fail(f"{cell_dir.name}: {e}")
+    for r in walk:
+        if r["epoch"] not in admitted:
+            raise Fail(f"{cell_dir.name}: epoch {r['epoch']} in the chain was not admitted")
+        if expected is not None and (r["identity"].get("runner_expected") != expected
+                                     or {k: r["identity"].get(k) for k in expected} != expected):
+            raise Fail(f"{cell_dir.name}: epoch {r['epoch']} identity differs from the launch identity")
+    if gpu:
+        ids = [(r.get("provenance") or {}).get("container_id") for r in walk]
+        if any(not (isinstance(i, str) and i) for i in ids) or len(set(ids)) != len(ids):
+            raise Fail(f"{cell_dir.name}: container ids {ids} not real and distinct per epoch")
+    problem = es.verify_chain(cell_dir, rec["chain"])
+    if problem:
+        raise Fail(f"{cell_dir.name}: {problem}")
+    for prev, r in zip(walk, walk[1:]):                 # each resume starts at the inherited chain end
+        inherited = prev["chain"][-1]["step"] if prev["chain"] else 0
+        if r["physical"]["resume_step"] != inherited:
+            raise Fail(f"{cell_dir.name}: epoch {r['epoch']} resume step {r['physical']['resume_step']} != {inherited}")
+    return walk
 
 
-def logical_chain(cell_dir: Path, rec: dict, steps: int) -> list[dict]:
-    recs = walk(cell_dir, rec)
-    starts = [r["physical"]["resume_step"] for r in recs] + [steps]
+def logical_chain(cell_dir: Path, walk: list[dict], steps: int, grad_reg: dict) -> list[dict]:
+    starts = [r["physical"]["resume_step"] for r in walk] + [steps]
     chain = []
-    for r, lo, hi in zip(recs, starts, starts[1:]):
+    for r, lo, hi in zip(walk, starts, starts[1:]):
         cap = es.epoch_dir(cell_dir, r["epoch"]) / "attempt-1" / "proof-capture"
         for u in range(lo, hi):
             f = cap / f"u{u:05d}.pt"
             if not f.exists():
                 raise Fail(f"{cell_dir.name}: logical update {u} missing in epoch {r['epoch']}")
-            chain.append(torch.load(f, map_location="cpu", weights_only=False))
+            d = torch.load(f, map_location="cpu", weights_only=False)
+            got = {n: list(g.shape) for n, g in d["grads"].items()}
+            if got != grad_reg:                          # frozen registry: joint omissions fail
+                raise Fail(f"{cell_dir.name}: u{u} gradient names/shapes differ from the frozen registry")
+            chain.append(d)
     if [c["update"] for c in chain] != list(range(steps)):
         raise Fail(f"{cell_dir.name}: logical updates {[c['update'] for c in chain]} != 0..{steps - 1}")
     return chain
 
 
-def load_cell(scen_dir: Path, cell: str, steps: int) -> dict:
+def load_cell(scen_dir: Path, cell: str, pilot: dict, grid: dict, registry: dict, admitted: list[int],
+              expected: dict | None, gpu: bool) -> dict:
     from safetensors.torch import load_file
+    from memsub.sgm.packed_slot_cell_output_validation import validate_cell_outputs
     cdir = scen_dir / "cells" / cell
-    m, rec = authority(cdir)
-    out = {"epoch": m, "record": rec, "walk": walk(cdir, rec)}
+    m, rec = authority(cdir, admitted)
+    walk = bound_walk(cdir, rec, admitted, expected, gpu)
+    out = {"epoch": m, "record": rec, "walk": walk}
     if rec["state"] != es.COMPLETE:
         return out
-    o = scen_dir / rec["outputs"]["attempt"] / "out"          # stored relative to the scenario root
-    out.update(chain=logical_chain(cdir, rec, steps),
+    reg = registry["by_arm"][pilot["arm"]]
+    att = scen_dir / rec["outputs"]["attempt"]
+    o = att / "out"
+    memsub = (expected or rec["identity"])["memsub"]
+    problem = validate_cell_outputs(o, rec["outputs"]["files"], pilot, grid["eval"], memsub, reg)
+    if problem:
+        raise Fail(f"{cell}: output validation: {problem}")
+    out.update(chain=logical_chain(cdir, walk, pilot["steps"], reg["grad_names_shapes"]),
                weights=load_file(str(o / "trained_parameters.safetensors")),
                metrics=json.loads((o / "metrics.json").read_text()),
                rows=[json.loads(x) for x in (o / "per_example_results.jsonl").read_text().splitlines()],
                telemetry=[json.loads(x) for x in (o / "routing_telemetry.jsonl").read_text().splitlines()])
     return out
+
+
+def validate_timing(tdir: Path, spec: dict) -> dict:
+    """T gate: complete status, all 18 configs ok in order, finite positive eval/serialize/commit
+    timings and byte sizes for every rank/seed, child exit 0 with 3 commit probes."""
+    try:
+        t = json.loads((tdir / "timing" / "timing.json").read_text())
+        ex = json.loads((tdir / "timing.exit.json").read_text())
+    except (OSError, ValueError) as e:
+        raise Fail(f"timing evidence missing: {e!r:.120}")
+    want = [(a, n, p) for a, n in spec["slot_types"] for p in sorted(int(x) for x in spec["phases"])]
+    got = [(c.get("arm"), c.get("n"), c.get("phase")) for c in t.get("configs", [])]
+    if t.get("status") != "complete" or [tuple(x) for x in got] != [(a, n, p) for a, n, p in want]:
+        raise Fail(f"timing incomplete: status {t.get('status')}, {len(got)}/{len(want)} configs")
+    pos = lambda v: isinstance(v, (int, float)) and math.isfinite(v) and v > 0       # noqa: E731
+    for c in t["configs"]:
+        if c.get("status") != "ok" or not pos(c.get("fixed_work_updates_per_s")):
+            raise Fail(f"timing {c.get('arm')} N{c.get('n')} P{c.get('phase')}: not ok")
+        if sorted(w["seed"] for w in c["workers"]) != list(spec["seeds"]):
+            raise Fail(f"timing {c['arm']} N{c['n']} P{c['phase']}: seeds differ")
+        for w in c["eval_and_checkpoint"]:
+            if not all(pos(w.get(k)) for k in ("dev_eval_batch_s", "artifact_eval_batch_s",
+                                               "checkpoint_serialize_s", "checkpoint_bytes", "checkpoint_optimizer_states")):
+                raise Fail(f"timing {c['arm']} N{c['n']} P{c['phase']}: eval/checkpoint fields not finite positive")
+    if ex.get("child_exit") != 0 or len(ex.get("commit_s", [])) != 3 or not all(pos(x) for x in ex["commit_s"]):
+        raise Fail("timing child exit / commit probes invalid")
+    return {"configs": len(t["configs"]), "commit_s": ex["commit_s"]}
 
 
 def check_clocks(x, where: str) -> None:
@@ -173,11 +240,21 @@ def compare(ref: dict, cand: dict, bitwise: bool, cell: str) -> dict:
     return {"bitwise": c.all_equal, "max_rel": c.max_rel}
 
 
-def evaluate(evidence: Path, grid: dict) -> dict:
-    steps, scen = grid["base"]["steps"], grid["scenarios"]
+def evaluate(evidence: Path, grid: dict, registry: dict, admission: dict, expected: dict | None,
+             gpu: bool, require_timing: bool = True) -> dict:
+    from memsub.sgm.packed_slot_supervisor import expand_cells
+    scen, pilots = grid["scenarios"], expand_cells(grid)
     rep = {"scenarios": {}, "pass": False}
     try:
-        cells = {s: {c: load_cell(evidence / s, c, steps) for c in spec["cells"]} for s, spec in scen.items()}
+        if not isinstance(registry.get("by_arm"), dict):
+            raise Fail("registry malformed")
+        cells = {}
+        for s, spec in scen.items():
+            admitted = sorted(int(k.rsplit("-", 1)[1]) for k in admission if k.startswith(f"{s}-start-"))
+            if not admitted:
+                raise Fail(f"{s}: no admitted start recorded")
+            cells[s] = {c: load_cell(evidence / s, c, pilots[c], grid, registry, admitted, expected, gpu)
+                        for c in spec["cells"]}
         for s, cs in cells.items():
             for c, d in cs.items():
                 if not (s == "D" and c in (scen["D"]["faults"]["worker_exit"])) and d["record"]["state"] != es.COMPLETE:
@@ -200,8 +277,10 @@ def evaluate(evidence: Path, grid: dict) -> dict:
                     out[c] = _check_failed_persistence(evidence / s / "cells" / c, d)
                     continue
                 out[c] = compare(cells["A"][c], d, bitwise, f"{s}/{c}")
-            out.update(_scenario_checks(s, cells[s], scen[s]))
+            out.update(_scenario_checks(s, cells[s], scen[s], evidence))
             rep["scenarios"][s] = out
+        if require_timing:
+            rep["timing"] = validate_timing(evidence, grid["timing"])
         rep["pass"] = True
     except Fail as e:
         rep["failure"] = str(e)
@@ -220,7 +299,7 @@ def _check_failed_persistence(cell_dir: Path, d: dict) -> dict:
     return {"failed_persisted_epochs": [r["epoch"] for r in recs]}
 
 
-def _scenario_checks(s: str, cs: dict, spec: dict) -> dict:
+def _scenario_checks(s: str, cs: dict, spec: dict, evidence: Path) -> dict:
     if s == "B":
         c = spec["faults"]["after_ack"]["cell"]
         last = cs[c]["walk"][-1]
@@ -232,7 +311,12 @@ def _scenario_checks(s: str, cs: dict, spec: dict) -> dict:
         last = cs[c]["walk"][-1]
         if last["recovery"] != "eval_only" or last["physical"]["observed_updates"] != 0:
             raise Fail(f"C/{c}: eval-only recovery with zero updates not shown")
-        return {"eval_only_epoch": last["epoch"]}
+        first = cs[c]["walk"][0]
+        prog = es.epoch_dir(evidence / "C" / "cells" / c, first["epoch"]) / "attempt-1" / "artifact-eval-progress.jsonl"
+        rows = [json.loads(x) for x in prog.read_text().splitlines()] if prog.exists() else []
+        if not rows or (es.epoch_dir(evidence / "C" / "cells" / c, first["epoch"]) / "attempt-1" / "done.json").exists():
+            raise Fail(f"C/{c}: no retained partial artifact-eval work inside the interrupted attempt")
+        return {"eval_only_epoch": last["epoch"], "interrupted_artifact_units": len(rows)}
     if s == "D":
         c = spec["faults"]["after_ack"]["cell"]
         if len(cs[c]["walk"]) < 2:
@@ -244,11 +328,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--evidence", type=Path, required=True)
     ap.add_argument("--grid", type=Path, default=ROOT / "configs/m4_sgm_p2p5_packed_proof_grid.json")
+    ap.add_argument("--registry", type=Path, default=ROOT / "configs/m4_sgm_p2p5_packed_proof_registry.json")
+    ap.add_argument("--admission", type=Path, required=True, help="exported admission Dict (JSON)")
+    ap.add_argument("--provenance", type=Path, required=True, help="launch_provenance.json (expected identity)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     if a.out.exists():
         raise SystemExit(f"refusing to overwrite {a.out}")
-    rep = evaluate(a.evidence, json.loads(a.grid.read_text()))
+    grid, registry = json.loads(a.grid.read_text()), json.loads(a.registry.read_text())
+    import hashlib
+    if registry["grid_sha256"] != hashlib.sha256(a.grid.read_bytes()).hexdigest():
+        raise SystemExit("registry was frozen for a different grid")
+    rep = evaluate(a.evidence, grid, registry, json.loads(a.admission.read_text()),
+                   json.loads(a.provenance.read_text())["expected_identity"], gpu=True)
+    rep["comparator_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     a.out.write_text(json.dumps(rep, indent=2, default=str))
     print("PASS" if rep["pass"] else f"FAIL: {rep.get('failure')}")
     sys.exit(0 if rep["pass"] else 1)
