@@ -21,6 +21,13 @@ OUT = ROOT / "configs/m4_sgm_p2p5_packed_proof_registry.json"
 
 
 def main():
+    import argparse
+    global GRID, OUT
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--grid", type=Path, default=GRID)       # defaults reproduce the frozen PROOF file
+    ap.add_argument("--out", type=Path, default=OUT)
+    a = ap.parse_args()
+    GRID, OUT = a.grid, a.out
     if OUT.exists():
         raise SystemExit(f"refusing to overwrite {OUT}")
     grid = json.loads(GRID.read_text())

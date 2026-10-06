@@ -2,22 +2,22 @@
 
     .venv/bin/python scripts/sgm-p2p5-pk6-packed-campaign-priced-estimate.py --out <new json>
 
-Inputs (all hash-recorded): the AUDITED proof timing (A100-80GB, k = 2, seeds 99/100; fab5c67 / codex 21585),
-its measured volume-commit times, and the registered 18-cell grid (configs/m4_sgm_p2p5_grid.json). Nothing is
-taken from the earlier packing test or the L40S profiles.
+Inputs (all hash-recorded): the AUDITED proof timing (A100-80GB, k = 2, 2 warmup + 4 measured, seeds 99/100;
+fab5c67 / codex 21585), its measured volume-commit times, and the registered 18-cell grid. Nothing is taken from
+the earlier packing test or the L40S profiles.
 
-Per slot (PK1: 2 cells, same arm/N, seeds 0+1), from the slower worker of the matching T config:
-  training     = 1000 x s/update(P1) + 500 x s/update(P2)          (P2C curriculum, 1500 updates)
-  dev evals    = 16 evals x 4 batches x dev-batch s                 (eval_every 100, steps 0..1500)
-  artifact     = 84 / 68 / 20 batches x artifact-batch s            (run_pilot as implemented)
-  checkpoints  = 30 generations x (serialize s + max commit s)      (C = 50 incl. the terminal one)
-  startup      = 300 s (startup_timeout)
-ESTIMATE  = sum over slots of life at the hard-tuple rate (A100-80GB + 8 cores + 64 GiB list prices).
-RESERVE   = PER-APP LIFECYCLE ENVELOPE (v3, codex 21594): each slot runs in its own app (max_containers=1, own
-            deadline = slot life x 1.4 + 3 restarts x (startup + reload + 50 replayed + 1 in-flight P2 updates + one
-            complete final evaluation), own whole-app reaper); every slot app and the readings app is charged its
-            full lifetime + reaper period + stop latency at the 2x CPU/RAM basis; + image per app, reaper ticks, margin.
-SINGLE-APP LIFECYCLE (one app, 9 containers to the longest deadline) is reported for comparison only.
+Per slot (PK1: 2 cells, same arm/N, seeds 0+1), per-worker s/update = k / PRIMARY fixed-work rate:
+  training      = 1000 x s(P1) + 500 x s(P2)
+  dev evals     = 16 evals x 4 batches x dev-batch s
+  artifact      = 84 / 68 / 20 batches x artifact-batch s
+  checkpoints   = both cells' 30 generations x (serialize s + bytes / WRITE_MB_S)
+  commits       = 67 (66 actual successful-start calls; conservative) x the max measured commit s
+  startup       = 300 s
+ESTIMATE = sum of slot lives + readings at the hard-tuple rate.
+RESERVE  = PER-APP LIFECYCLE ENVELOPE: 9 slot apps (deadline = life x 1.4 + 3 restarts x (startup + reload + 51 P2
+           updates + one complete final evaluation)) + 1 readings app (ONE admitted start: life x 1.4), each charged
+           its whole lifetime + control period + stop latency at the 2x CPU/RAM basis; ONE control-plane reaper
+           schedule; image per app; $5 margin. The single-app line is illustrative only (no reaper line).
 Assumptions are listed in the output; this is a priced estimate, not a price guarantee.
 """
 
@@ -42,7 +42,8 @@ EXTRA_COMMITS_PER_CELL = 3   # inheritance ack, outputs-before-COMPLETE, COMPLET
 EXTRA_COMMITS_PER_SLOT = 1   # final commit after the supervisor returns
 RELOAD_S = 30.0              # checkpoint + generation load on a resumed start (allowance)
 READ_LOAD_S = 30.0           # readings: trained-parameter load + validation per population (allowance)
-N_APPS = 10                  # 9 slot apps + 1 readings app, each its own guard/deadline/reaper
+N_APPS = 10                  # 9 slot apps + 1 readings app, each its own guard/deadline (+ one control app)
+CONTROL_SLACK_S = 1800       # v4: ONE control-plane reaper schedule; its own deadline = longest app life + slack
 READ_BATCHES, READ_INTERVENTIONS, PARITY, IMAGE_USD, MARGIN_USD = 16, 3, 0.10, 0.168384, 5.0
 
 
@@ -106,15 +107,15 @@ def main():
         for pn in ([32, 16] if arm == "oracle" else [n]):
             art = max(e["artifact_eval_batch_s"] for ph in (1, 2) for e in cfg[(arm, 32 if arm == "oracle" else pn, ph)]["eval_and_checkpoint"])
             rd += READ_BATCHES * (1 if arm == "memory_off" else READ_INTERVENTIONS) * art
-    pops = sum(2 if p["arm"] == "oracle" else 1 for p in expand_cells(grid).values())
+    pops = sum(2 if p["arm"] == "oracle" else 1 for p in expand_cells(grid).values())       # 20 population units
     readings_s = rd * (1 + PARITY) + STARTUP_S + pops * READ_LOAD_S
     est_s = sum(v["life_s"] for v in slots.values())
     res_s = sum(v["reserve_life_s"] for v in slots.values())
     longest = max(v["reserve_life_s"] for v in slots.values())
     tail = REAPER_PERIOD_S + STOP_LATENCY_S
-    reaper = sum((v["reserve_life_s"] + tail) / REAPER_PERIOD_S for v in slots.values()) * 110 * \
-        (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S) + (readings_s * FACTOR + tail) / REAPER_PERIOD_S * 110 * \
-        (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S)
+    readings_life = readings_s * FACTOR                # ONE admitted start, retries 0: no restart allowance
+    control_life = max(longest, readings_life) + CONTROL_SLACK_S + tail
+    reaper = control_life / REAPER_PERIOD_S * 110 * (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S)
     import subprocess
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256
     out = {
@@ -132,12 +133,15 @@ def main():
                             "in-app whole-app reaper; pre-admission crash loops, refused starts, startups and teardown of a "
                             "slot are all inside its own app lifetime. Not yet implemented (campaign runner pending)."),
         "slots": slots,
+        "readings": {"life_s": round(readings_s, 1), "reserve_life_s": round(readings_life, 1), "admitted_starts": 1,
+                     "population_units": pops},
+        "control_plane": {"schedules": 1, "period_s": REAPER_PERIOD_S, "life_s": round(control_life, 1)},
         "estimate": {"slot_gpu_hours": est_s / 3600, "readings_gpu_hours": readings_s / 3600,
                      "usd": (est_s + readings_s) * rate(1.0), "wall_h_slots_parallel": max(v["life_s"] for v in slots.values()) / 3600,
                      "wall_h_end_to_end": (max(v["life_s"] for v in slots.values()) + readings_s) / 3600},
         "planning_reserve_per_app_envelope": {
             "slot_apps_usd": (res_s + 9 * tail) * rate(2.0),
-            "readings_app_usd": (readings_s * FACTOR + tail) * rate(2.0),
+            "readings_app_usd": (readings_life + tail) * rate(2.0),
             "image_usd": IMAGE_USD * N_APPS, "reaper_usd": reaper, "margin_usd": MARGIN_USD},
         "single_app_lifecycle_for_comparison_usd": 9 * (longest + tail) * rate(2.0)
                                                    + (readings_s * FACTOR + tail) * rate(2.0) + IMAGE_USD + MARGIN_USD,
@@ -148,7 +152,9 @@ def main():
             "per-worker s/update = k / PRIMARY fixed-work rate; dev/artifact batch = the max measured for that arm/N",
             f"generation write {WRITE_MB_S} MB/s incl. fsync (assumed); all {EXTRA_COMMITS_PER_CELL} extra commits per cell + 1 per slot and every generation commit serialised on the critical path at the max measured commit",
             f"resumed start reload {RELOAD_S} s; readings parameter load + validation {READ_LOAD_S} s per population",
-            "the ~30% / ~9% comparison with the old single-L40S model is arithmetic across differently scoped models, not a measured matched-host saving",
+            "any comparison with the preserved single-L40S model is arithmetic across differently scoped models, not a measured matched-host saving",
+            "readings app: ONE admitted start, retries 0, fails closed on crash re-entry (no restart allowance)",
+            "one control-plane reaper schedule stops every app at its own absolute deadline (+ period + stop latency)",
             "at most 3 restarts per slot (4 admitted starts), each replaying <= 50 + 1 P2 updates and one full final evaluation",
             "deadline factor 1.4 on every slot life; readings x 1.4 with a 10% parity allowance",
             "CPU/RAM on the audited 2x basis for the reserve; hard tuples for the estimate; list prices modal.com 2026-10-06; nominal reaper period / stop latency",

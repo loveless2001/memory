@@ -24,14 +24,24 @@ OUT = ROOT / "configs/m4_sgm_p2p5_packed_proof_output_schema.json"
 
 
 def main():
+    import argparse
+    global GRID, OUT
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--grid", type=Path, default=GRID)       # defaults reproduce the frozen PROOF file
+    ap.add_argument("--out", type=Path, default=OUT)
+    a = ap.parse_args()
+    GRID, OUT = a.grid, a.out
     if OUT.exists():
         raise SystemExit(f"refusing to overwrite {OUT}")
     grid = json.loads(GRID.read_text())
     by_arm = {}
     for cid, pilot in expand_cells(grid).items():
         tiny = {**pilot, "backbone": "tiny", "device": "cpu", "n_bindings": 4, "batch": 2}
+        if tiny["steps"] > 8:   # campaign grid: the key structure does not depend on step count (counts checked separately)
+            tiny.update(steps=8, eval_every=4, filler_len_schedule=[[0, 0], [4, 40]])
         with tempfile.TemporaryDirectory() as d:
-            ev = grid["eval"]
+            ev = grid.get("eval") or {"final_batches": 1, "final_seed_base": grid["artifact_eval_seed_base"],
+                                      "dev_seed": 4242, "train_eval_seed_base": 555_001}
             run_pilot(PilotConfig(**tiny), Path(d) / "out", final_batches=ev["final_batches"], final_batch_size=2,
                       final_seed_base=ev["final_seed_base"], dev_seed=ev["dev_seed"],
                       train_eval_seed_base=ev["train_eval_seed_base"])
