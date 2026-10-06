@@ -890,9 +890,9 @@ codex bound the cap at `d47fe17` and cleared launch (21403).
 `PilotConfig.filler_len_schedule = ((0, 0), (1000, 40))` changes only the
 filler LENGTH of training episodes (updates 0–999 no filler, 1000–1499 filler
 40); memsub source `09b05c16…`; the default empty schedule is bitwise the
-pre-knob trainer. No filler-token identity labels and no oracle write masks
-are used in training or evaluation; training still uses the task's
-supervised answer targets. Every registered evaluation is E=on with
+pre-knob trainer. The curriculum cells use no filler-token identity labels
+and no oracle write masks in training or evaluation; training still uses
+the task's supervised answer targets. Every registered evaluation is E=on with
 filler_len 40. Comparators: v2 at the same N, and the filler-off-trained
 reference evaluated E=on (P2G filleroff N32; P2D filleroff N64 s0 and top-up
 s1). Artifact eval on 9_300_011+s; reserved readings population 9_500_011+s.
@@ -927,12 +927,14 @@ E=on, s0 / s1:
 
 **Descriptive only** (no registered suppression or mechanism test; no
 authority for an extension): curriculum pooled ρ 0.916 / 0.849 (v2 1.164 /
-1.088 at N32), so the N32 gain does not come with registered pooled filler
-suppression. The full-filler dev accuracy of the curriculum runs stays near
-chance through updates 0–900 and rises after filler is introduced (N32:
-9% / 34% at update 1200, 61% / 70% at 1500, not yet flat at the fixed
-endpoint). It measures transfer to full-filler episodes, not what was learned
-on no-filler episodes, and selects nothing.
+1.088 at N32). P2C registered no pooled filler-suppression criterion, so
+these ratios do not establish suppression or a mechanism. Full-filler dev
+accuracy stays near chance through updates 0–900 and rises after filler is
+introduced (N32:
+9% / 34% at update 1200, 61% / 70% at 1500, with both seeds increasing
+between the recorded updates 1400 and 1500). It measures transfer to
+full-filler episodes, not what was learned on no-filler episodes, and
+selects nothing.
 
 **Interpretation limits** (codex 21410): a recipe/distribution contrast, not
 a mechanism; filler_len 0 also shortens episodes, so "no filler" and "shorter
@@ -948,7 +950,8 @@ rows, 12 corners, intervals, memory tests, half intervals, classifiers,
 readings and the joint flag recomputed; a dev-4242 replay matches every
 corner's four-head counts/means, ρ and AUROCs to 1e-12; zero reserved-seed
 re-evaluations (audit JSON SHA256 `b0bfc99e…`). Closure bundle with
-`RESULTS.md`, replay archive and checksums: `1260538` (21412).
+[RESULTS.md](plans/261006-0316-m4-sgm-p2c-filler-length-curriculum/readings-v1/RESULTS.md),
+replay archive and checksums: `1260538` (21412).
 
 This closes the registered P2C study. No extension, follow-up training or P3
 run is authorized by it.
