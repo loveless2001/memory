@@ -202,3 +202,54 @@ def test_controller_preflight_fails_closed_on_partial_stale_or_mismatched_state(
     src = (ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py").read_text()
     body = src[src.index("def spawn() -> None:"):]
     assert body.index("controller_preflight(") < body.index("GUARD_DICT, create_if_missing") < body.index("root.mkdir(")
+
+
+# -- codex 21606 --
+def test_early_exit_leader_does_not_leave_descendants():
+    def launch(name, app_id):
+        return subprocess.Popen(["sh", "-c", "sleep 61.6161 & exit 0"], start_new_session=True)
+    out, _ = cp.control_tick({"e": {"app_id": "ap-e", "deadline_epoch": 1.0}}, 10.0, launch, request_timeout_s=2.0)
+    import time as _t
+    _t.sleep(0.2)
+    assert out["e"] == "stopped_verified" and alive("61.6161") == 0       # rc kept, group cleaned
+
+
+def test_terminal_intent_logged_before_failing_writer_and_immediate_termination(capsys):
+    ctl = _ctl_app()
+
+    def bad_writer(o):
+        raise OSError("no tempfile")
+
+    def immediate():
+        raise SystemExit("terminated")
+    with pytest.raises(SystemExit):
+        ctl.finish_tick(cp, {"slot-a": "stopped_verified", "__unresolved__": []}, True, bad_writer, immediate)
+    logged = capsys.readouterr().out
+    assert '"m4_pk_control_tick"' in logged and '"slot-a": "stopped_verified"' in logged and '"self_stop_due": true' in logged
+
+
+def test_spawn_uses_one_immutable_deadline_despite_clock_advance(monkeypatch, tmp_path):
+    import hashlib
+    import types
+    m = _slot(monkeypatch)
+    clock = iter(float(1_000_000 + i) for i in range(100))               # +1 s per time.time() call
+    monkeypatch.setattr(m.time, "time", lambda: next(clock))
+    life = m.slot_deadline_s()
+    readings = __import__("json").loads((ROOT / m.PRICE_FILE).read_text())["readings"]["reserve_life_s"]
+    price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+    first = 1_000_000.0                                                   # the single candidate's clock reading
+    dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price,
+                                            deadline_epoch=first + life + m.VALIDATION_SETUP_S + readings + m.CONTROL_SLACK_S)}
+    fake = types.SimpleNamespace(
+        Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+        App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+        Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+            spawn=lambda *a: types.SimpleNamespace(object_id="fc-x"))))
+    monkeypatch.setattr(m, "modal", fake)
+    monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+    monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+    monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+    m.spawn()                                                             # exactly at the horizon boundary: accepted
+    prov = __import__("json").loads((tmp_path / m.GROUP / m.SLOT / "launch_provenance.json").read_text())
+    reg = dicts["m4-sgm-p2p5-pk-campaign-control-registry"][m.APP_NAME]
+    assert prov["deadline_epoch"] == dicts[m.GUARD_DICT]["deadline_epoch"] == reg["deadline_epoch"] == first + life

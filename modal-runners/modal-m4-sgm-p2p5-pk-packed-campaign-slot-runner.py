@@ -213,8 +213,10 @@ def spawn() -> None:
         "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
     cp = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cp)
+    now = time.time()
+    candidate = now + slot_deadline_s()            # ONE immutable deadline for preflight/provenance/guard/register
     control = dict(modal.Dict.from_name(CONTROL_GUARD_DICT).items())          # READ-ONLY preflights first
-    problem = controller_preflight(cp, control, now_deadline=time.time() + slot_deadline_s(),
+    problem = controller_preflight(cp, control, now_deadline=candidate,
                                    live_id=lambda: modal.App.lookup(CONTROL_APP_NAME).app_id,
                                    live_state=lambda app_id: app_state(app_id))
     if problem:
@@ -224,9 +226,8 @@ def spawn() -> None:
         raise SystemExit("guard Dict already used: this slot was spawned before")
     root = Path(LOCAL_OUT) / GROUP / SLOT
     root.mkdir(parents=True, exist_ok=False)
-    now = time.time()
     prov = {"slot": SLOT, "expected_identity": expected_identity(), "spawn_epoch": now,
-            "deadline_epoch": now + slot_deadline_s(), "app_name": APP_NAME,
+            "deadline_epoch": candidate, "app_name": APP_NAME,
             "git_head": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
             "deployed_app_id": modal.App.lookup(APP_NAME).app_id}
     (root / "launch_provenance.json").write_text(json.dumps(prov, indent=2))

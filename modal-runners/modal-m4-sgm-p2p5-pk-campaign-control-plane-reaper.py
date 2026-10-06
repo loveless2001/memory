@@ -76,6 +76,9 @@ def launch_stop(name: str, app_id: str):
 def finish_tick(cp, out: dict, self_due: bool, write_evidence, self_stop, timeout_s: float = 20.0) -> dict:
     """Evidence FIRST (bounded owned child), THEN the bounded self-stop (codex 21602 #2): a failed or hung
     write cannot delay shutdown, and an immediate self-termination cannot lose the terminal map."""
+    # terminal intent + the FULL outcome map go to the container log synchronously BEFORE any writer or
+    # self-stop (codex 21606 #2): survives writer launch failure / nonzero exit / timeout and immediate termination
+    print(json.dumps({"m4_pk_control_tick": {"self_stop_due": self_due, "outcomes": out}}, default=str), flush=True)
     try:                                       # writer setup/launch failures are contained (codex 21604 #2)
         status = {"evidence": cp.run_owned({"evidence": write_evidence(out)}, timeout_s)["evidence"]}
     except Exception as e:

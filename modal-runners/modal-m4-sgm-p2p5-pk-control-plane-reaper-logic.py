@@ -37,15 +37,18 @@ def due(entry, now: float) -> bool:
 def run_owned(procs: dict, timeout_s: float, poll_s: float = 0.05) -> dict:
     """{name: Popen} -> {name: outcome}; survivors past the deadline are killed and reaped."""
     deadline, out = time.monotonic() + timeout_s, {}
-    while len(out) < len(procs) and time.monotonic() < deadline:
-        for n, p in procs.items():
-            if n not in out and p.poll() is not None:
-                out[n] = "stopped_verified" if p.returncode == 0 else f"unverified (child rc {p.returncode})"
-        time.sleep(poll_s)
-    for n, p in procs.items():
-        if n not in out:
-            kill_group(p)                                     # the whole session: no orphaned descendant
-            out[n] = "stop/verify timeout (child killed and reaped)"
+    try:
+        while len(out) < len(procs) and time.monotonic() < deadline:
+            for n, p in procs.items():
+                if n not in out and p.poll() is not None:
+                    out[n] = "stopped_verified" if p.returncode == 0 else f"unverified (child rc {p.returncode})"
+                    kill_group(p)                             # leader done: its group's descendants too (21606 #1)
+            time.sleep(poll_s)
+    finally:
+        for n, p in procs.items():                            # timeout OR exception: clean every owned group
+            if n not in out:
+                kill_group(p)
+                out[n] = "stop/verify timeout (child killed and reaped)"
     return out
 
 
