@@ -1,0 +1,6 @@
+samples 698 span +0.0s..+349.2s from sampler start; cadence 500 ms; query timestamp,utilization.gpu,utilization.memory,memory.used
+utilization.gpu = % of sample period with >=1 kernel executing (NVIDIA); NOT SM occupancy / concurrency headroom. Descriptive only.
+learned    P1: measured-updates window   75.6s  n=151  mean util.gpu  16.1%  max mem.used  18191 MiB | dev-eval 9.1s n=18 util  16.2%
+learned    P2: measured-updates window  119.1s  n=238  mean util.gpu  15.9%  max mem.used  28387 MiB | dev-eval 8.0s n=16 util  16.8%
+memory_off P1: measured-updates window   17.6s  n= 36  mean util.gpu  25.4%  max mem.used   3235 MiB | dev-eval 3.5s n=7 util  25.6%
+memory_off P2: measured-updates window   27.3s  n= 54  mean util.gpu  26.0%  max mem.used   3235 MiB | dev-eval 3.4s n=7 util  26.1%
