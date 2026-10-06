@@ -164,3 +164,16 @@ def test_canonical_walk_rejects_cycles_and_mismatched_links(cell):
     with pytest.raises(ValueError, match="inherited_from"):
         es.canonical_walk(bad, max_len=4)
     assert [r["epoch"] for r in es.canonical_walk(r2, 4)] == [1, 2] and r1["epoch"] == 1
+
+
+def test_snapshot_digest_binding(cell):
+    r1 = _started(cell, 1, [1])
+    _publish(cell, r1, 1, 2)
+    r2 = _started(cell, 2, [1, 2])
+    assert es.record_digest(r2["predecessor_snapshot"]) == r2["inherited_from"]["record_sha256"]
+    for mutate in (lambda r: r["inherited_from"].__setitem__("record_sha256", "0" * 64),
+                   lambda r: r["predecessor_snapshot"]["chain"].clear()):
+        bad = json.loads(json.dumps(r2))
+        mutate(bad)
+        with pytest.raises(ValueError, match="digest"):
+            es.canonical_walk(bad, max_len=4)

@@ -104,7 +104,7 @@ def logical_chain(cell_dir: Path, walk: list[dict], steps: int, grad_reg: dict) 
 
 
 def load_cell(scen_dir: Path, cell: str, pilot: dict, grid: dict, registry: dict, admitted: list[int],
-              expected: dict | None, gpu: bool) -> dict:
+              expected: dict | None, gpu: bool, schema: dict | None = None) -> dict:
     from safetensors.torch import load_file
     from memsub.sgm.packed_slot_cell_output_validation import validate_cell_outputs
     cdir = scen_dir / "cells" / cell
@@ -117,7 +117,10 @@ def load_cell(scen_dir: Path, cell: str, pilot: dict, grid: dict, registry: dict
     att = scen_dir / rec["outputs"]["attempt"]
     o = att / "out"
     memsub = (expected or rec["identity"])["memsub"]
-    problem = validate_cell_outputs(o, rec["outputs"]["files"], pilot, grid["eval"], memsub, reg)
+    problem = validate_cell_outputs(o, rec["outputs"]["files"], pilot, grid["eval"], memsub, reg,
+                                    (schema or {}).get("by_arm", {}).get(pilot["arm"]) if schema else None)
+    if schema is not None and pilot["arm"] not in schema.get("by_arm", {}):
+        problem = problem or f"no frozen output schema for arm {pilot['arm']}"
     if problem:
         raise Fail(f"{cell}: output validation: {problem}")
     out.update(chain=logical_chain(cdir, walk, pilot["steps"], reg["grad_names_shapes"]),
@@ -128,9 +131,10 @@ def load_cell(scen_dir: Path, cell: str, pilot: dict, grid: dict, registry: dict
     return out
 
 
-def validate_timing(tdir: Path, spec: dict) -> dict:
-    """T gate: complete status, all 18 configs ok in order, finite positive eval/serialize/commit
-    timings and byte sizes for every rank/seed, child exit 0 with 3 commit probes."""
+def validate_timing(tdir: Path, spec: dict, expected: dict | None, gpu: bool = True) -> dict:
+    """T gate (codex 21570 #2): complete; all 18 configs in order; per config exactly k workers AND k
+    eval/checkpoint entries with the frozen seeds, arm/N, update coverage; finite positive timing and
+    size fields; GPU / source / helper / spec binding; commit probes sized from the real checkpoint."""
     try:
         t = json.loads((tdir / "timing" / "timing.json").read_text())
         ex = json.loads((tdir / "timing.exit.json").read_text())
@@ -138,21 +142,49 @@ def validate_timing(tdir: Path, spec: dict) -> dict:
         raise Fail(f"timing evidence missing: {e!r:.120}")
     want = [(a, n, p) for a, n in spec["slot_types"] for p in sorted(int(x) for x in spec["phases"])]
     got = [(c.get("arm"), c.get("n"), c.get("phase")) for c in t.get("configs", [])]
-    if t.get("status") != "complete" or [tuple(x) for x in got] != [(a, n, p) for a, n, p in want]:
+    if t.get("status") != "complete" or got != want:
         raise Fail(f"timing incomplete: status {t.get('status')}, {len(got)}/{len(want)} configs")
-    pos = lambda v: isinstance(v, (int, float)) and math.isfinite(v) and v > 0       # noqa: E731
+    if t.get("timing_spec") != spec:
+        raise Fail("timing spec differs from the frozen grid")
+    if gpu and ("A100" not in str(t.get("gpu")) or t.get("gpu") == "smoke-cpu"):
+        raise Fail(f"timing GPU {t.get('gpu')!r} is not the proof SKU")
+    if expected is not None and (t.get("memsub_source_sha256") != expected["memsub"]
+                                 or t.get("packing_helpers_sha256") != expected["packing_helpers"]):
+        raise Fail("timing source / helper binding differs from the launch identity")
+    pos = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and v > 0  # noqa: E731
+    fields = ("dev_eval_batch_s", "artifact_eval_batch_s", "checkpoint_serialize_s", "checkpoint_bytes",
+              "checkpoint_optimizer_states")
+    k, n_up, max_bytes = spec["k"], spec["warmup"] + spec["measured"], 0
     for c in t["configs"]:
+        tag = f"timing {c['arm']} N{c['n']} P{c['phase']}"
+        ws, ec = c.get("workers") or [], c.get("eval_and_checkpoint") or []
         if c.get("status") != "ok" or not pos(c.get("fixed_work_updates_per_s")):
-            raise Fail(f"timing {c.get('arm')} N{c.get('n')} P{c.get('phase')}: not ok")
-        if sorted(w["seed"] for w in c["workers"]) != list(spec["seeds"]):
-            raise Fail(f"timing {c['arm']} N{c['n']} P{c['phase']}: seeds differ")
-        for w in c["eval_and_checkpoint"]:
-            if not all(pos(w.get(k)) for k in ("dev_eval_batch_s", "artifact_eval_batch_s",
-                                               "checkpoint_serialize_s", "checkpoint_bytes", "checkpoint_optimizer_states")):
-                raise Fail(f"timing {c['arm']} N{c['n']} P{c['phase']}: eval/checkpoint fields not finite positive")
+            raise Fail(f"{tag}: not ok")
+        if len(ws) != k or len(ec) != k or sorted(w.get("seed") for w in ws) != sorted(spec["seeds"]):
+            raise Fail(f"{tag}: workers/entries/seeds do not cover exactly k = {k} ranks")
+        for w, e in zip(ws, ec):
+            if (w.get("arm"), w.get("n"), w.get("phase")) != (c["arm"], c["n"], c["phase"]) or len(w.get("updates", [])) != n_up:
+                raise Fail(f"{tag}: worker workload / update coverage differs")
+            if not all(pos(e.get(f)) for f in fields) or any(e.get(f) != w.get(f) for f in fields):
+                raise Fail(f"{tag}: eval/checkpoint fields not finite positive or not the worker's own")
+            max_bytes = max(max_bytes, e["checkpoint_bytes"])
     if ex.get("child_exit") != 0 or len(ex.get("commit_s", [])) != 3 or not all(pos(x) for x in ex["commit_s"]):
         raise Fail("timing child exit / commit probes invalid")
-    return {"configs": len(t["configs"]), "commit_s": ex["commit_s"]}
+    if ex.get("commit_probe_bytes") != max_bytes:
+        raise Fail("commit probes were not sized from the real checkpoint")
+    return {"configs": len(t["configs"]), "commit_s": ex["commit_s"], "checkpoint_bytes_max": max_bytes}
+
+
+def check_consumed_inputs(paths: dict, registry: dict, schema: dict, expected: dict) -> None:
+    """The comparator's own inputs are the launch's bound inputs (codex 21570 #3)."""
+    import hashlib
+    sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()       # noqa: E731
+    for key in ("comparator", "registry", "schema", "grid"):
+        if sha(paths[key]) != expected.get(key):
+            raise Fail(f"consumed {key} differs from the launch identity")
+    for name, frozen in (("registry", registry), ("schema", schema)):
+        if frozen.get("grid_sha256") != expected["grid"] or frozen.get("memsub_source_sha256") != expected["memsub"]:
+            raise Fail(f"frozen {name} was built for a different grid / source")
 
 
 def check_clocks(x, where: str) -> None:
@@ -241,7 +273,7 @@ def compare(ref: dict, cand: dict, bitwise: bool, cell: str) -> dict:
 
 
 def evaluate(evidence: Path, grid: dict, registry: dict, admission: dict, expected: dict | None,
-             gpu: bool, require_timing: bool = True) -> dict:
+             gpu: bool, require_timing: bool = True, schema: dict | None = None) -> dict:
     from memsub.sgm.packed_slot_supervisor import expand_cells
     scen, pilots = grid["scenarios"], expand_cells(grid)
     rep = {"scenarios": {}, "pass": False}
@@ -253,7 +285,7 @@ def evaluate(evidence: Path, grid: dict, registry: dict, admission: dict, expect
             admitted = sorted(int(k.rsplit("-", 1)[1]) for k in admission if k.startswith(f"{s}-start-"))
             if not admitted:
                 raise Fail(f"{s}: no admitted start recorded")
-            cells[s] = {c: load_cell(evidence / s, c, pilots[c], grid, registry, admitted, expected, gpu)
+            cells[s] = {c: load_cell(evidence / s, c, pilots[c], grid, registry, admitted, expected, gpu, schema)
                         for c in spec["cells"]}
         for s, cs in cells.items():
             for c, d in cs.items():
@@ -280,7 +312,7 @@ def evaluate(evidence: Path, grid: dict, registry: dict, admission: dict, expect
             out.update(_scenario_checks(s, cells[s], scen[s], evidence))
             rep["scenarios"][s] = out
         if require_timing:
-            rep["timing"] = validate_timing(evidence, grid["timing"])
+            rep["timing"] = validate_timing(evidence, grid["timing"], expected, gpu)
         rep["pass"] = True
     except Fail as e:
         rep["failure"] = str(e)
@@ -329,18 +361,23 @@ def main():
     ap.add_argument("--evidence", type=Path, required=True)
     ap.add_argument("--grid", type=Path, default=ROOT / "configs/m4_sgm_p2p5_packed_proof_grid.json")
     ap.add_argument("--registry", type=Path, default=ROOT / "configs/m4_sgm_p2p5_packed_proof_registry.json")
+    ap.add_argument("--schema", type=Path, default=ROOT / "configs/m4_sgm_p2p5_packed_proof_output_schema.json")
     ap.add_argument("--admission", type=Path, required=True, help="exported admission Dict (JSON)")
     ap.add_argument("--provenance", type=Path, required=True, help="launch_provenance.json (expected identity)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     if a.out.exists():
         raise SystemExit(f"refusing to overwrite {a.out}")
-    grid, registry = json.loads(a.grid.read_text()), json.loads(a.registry.read_text())
+    grid, registry, schema = (json.loads(x.read_text()) for x in (a.grid, a.registry, a.schema))
     import hashlib
-    if registry["grid_sha256"] != hashlib.sha256(a.grid.read_bytes()).hexdigest():
-        raise SystemExit("registry was frozen for a different grid")
-    rep = evaluate(a.evidence, grid, registry, json.loads(a.admission.read_text()),
-                   json.loads(a.provenance.read_text())["expected_identity"], gpu=True)
+    expected = json.loads(a.provenance.read_text())["expected_identity"]
+    try:
+        check_consumed_inputs({"comparator": __file__, "registry": a.registry, "schema": a.schema, "grid": a.grid},
+                              registry, schema, expected)
+        rep = evaluate(a.evidence, grid, registry, json.loads(a.admission.read_text()), expected, gpu=True,
+                       schema=schema)
+    except Fail as e:
+        rep = {"pass": False, "failure": str(e)}
     rep["comparator_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     a.out.write_text(json.dumps(rep, indent=2, default=str))
     print("PASS" if rep["pass"] else f"FAIL: {rep.get('failure')}")

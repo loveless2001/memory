@@ -36,6 +36,7 @@ import modal
 APP_NAME, GROUP = "memsub-m4-sgm-p2p5-pk-proof", "p2p5-pk-proof-v1"
 GRID_FILE = "configs/m4_sgm_p2p5_packed_proof_grid.json"
 REGISTRY_FILE = "configs/m4_sgm_p2p5_packed_proof_registry.json"
+SCHEMA_FILE = "configs/m4_sgm_p2p5_packed_proof_output_schema.json"
 COMPARATOR = "scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py"
 TIMING_SCRIPT = "scripts/sgm-p2p5-pk-packed-slot-timing-profile.py"
 PACKING_HELPERS = "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py"
@@ -122,6 +123,7 @@ def identity_now(root: str = "/root/repo") -> dict:
             "timing_script": file_sha(Path(root) / TIMING_SCRIPT),
             "packing_helpers": file_sha(Path(root) / PACKING_HELPERS),
             "registry": file_sha(Path(root) / REGISTRY_FILE), "comparator": file_sha(Path(root) / COMPARATOR),
+            "schema": file_sha(Path(root) / SCHEMA_FILE),
             "reaper_logic": file_sha(Path(__file__).with_name(LOGIC_FILE)),
             "env": {"python": platform.python_version(), "torch": torch.__version__, "cuda": torch.version.cuda,
                     "transformers": transformers.__version__, "tf32_matmul": torch.backends.cuda.matmul.allow_tf32},
@@ -170,11 +172,13 @@ def _slot(scenario: str, expected: dict) -> dict:
     from memsub.sgm.packed_slot_supervisor import ContainerFault, SlotSupervisor, expand_cells
     grid = json.loads(Path("/root/repo", GRID_FILE).read_text())
     registry = json.loads(Path("/root/repo", REGISTRY_FILE).read_text())
+    schema = json.loads(Path("/root/repo", SCHEMA_FILE).read_text())
     spec, cells_all = grid["scenarios"][scenario], expand_cells(grid)
     cells = {c: cells_all[c] for c in spec["cells"]}
     arms = {p["arm"] for p in cells.values()}
     if len(arms) != 1:
         return {"unit": scenario, "status": "refused", "reason": "a slot holds one arm"}
+    arm = arms.pop()
     artifacts.reload()
     sup = SlotSupervisor(root=Path("/artifacts/m4-sgm") / GROUP / scenario, cells=cells, epoch=epoch,
                          admitted=admitted, identity={**got, "runner_expected": expected},
@@ -184,7 +188,7 @@ def _slot(scenario: str, expected: dict) -> dict:
                          ack_timeout_s=ACK_TIMEOUT_S, proof_capture=True,
                          faults=spec["faults"] if epoch == 1 else None,
                          provenance={"container_id": os.environ.get("MODAL_TASK_ID"), "admitted_at": time.time()},
-                         registry=registry["by_arm"][arms.pop()])
+                         registry=registry["by_arm"][arm], schema=schema["by_arm"][arm])
     try:
         res = sup.run()
     except ContainerFault as e:                                  # proof fault -> platform restart (fresh container)
@@ -267,12 +271,12 @@ def expected_identity() -> dict:
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256
     return {"runner": file_sha(__file__), "memsub": source_tree_sha256(Path("memsub")), "grid": file_sha(GRID_FILE),
             "timing_script": file_sha(TIMING_SCRIPT), "packing_helpers": file_sha(PACKING_HELPERS),
-            "registry": file_sha(REGISTRY_FILE), "comparator": file_sha(COMPARATOR),
+            "registry": file_sha(REGISTRY_FILE), "comparator": file_sha(COMPARATOR), "schema": file_sha(SCHEMA_FILE),
             "reaper_logic": file_sha(Path(__file__).with_name(LOGIC_FILE))}
 
 
 def spawn() -> None:
-    tracked = ["memsub", __file__, GRID_FILE, REGISTRY_FILE, COMPARATOR, TIMING_SCRIPT, PACKING_HELPERS,
+    tracked = ["memsub", __file__, GRID_FILE, REGISTRY_FILE, SCHEMA_FILE, COMPARATOR, TIMING_SCRIPT, PACKING_HELPERS,
                f"modal-runners/{LOGIC_FILE}"]
     if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
                       check=True).stdout.strip():

@@ -34,6 +34,7 @@ EXP = {"memsub": source_tree_sha256(ROOT / "memsub"), "runner": "test-runner"}
 ID = {**EXP, "env": "cpu", "runner_expected": EXP}
 CELLS = expand_cells(TINY)
 REG = {"by_arm": {"learned": parameter_registry(CELLS["learned-n4-s99"])}}
+SCHEMA = json.loads((ROOT / "configs/m4_sgm_p2p5_packed_proof_output_schema.json").read_text())
 
 
 def run_scenario(root: Path, name: str, admission: dict) -> None:
@@ -48,7 +49,8 @@ def run_scenario(root: Path, name: str, admission: dict) -> None:
                              checkpoint_every=TINY["checkpoint_every"], eval_cfg=TINY["eval"], commit=lambda: None,
                              reload=lambda: None, ack_timeout_s=120, proof_capture=True,
                              faults=sc["faults"] if epoch == 1 else None, poll_s=0.01,
-                             provenance={"container_id": f"ta-{name}-{epoch}"}, registry=REG["by_arm"]["learned"])
+                             provenance={"container_id": f"ta-{name}-{epoch}"}, registry=REG["by_arm"]["learned"],
+                             schema=SCHEMA["by_arm"]["learned"])
         try:
             sup.run()
             return
@@ -68,7 +70,7 @@ def proof(tmp_path_factory):
 
 def evaluate(ev, gpu=True, expected=EXP, admission=None):
     adm = admission if admission is not None else json.loads((ev / "admission.json").read_text())
-    return acc.evaluate(ev, TINY, REG, adm, expected, gpu=gpu, require_timing=False)
+    return acc.evaluate(ev, TINY, REG, adm, expected, gpu=gpu, require_timing=False, schema=SCHEMA)
 
 
 def test_tiny_proof_passes_with_all_bindings(proof):
@@ -146,7 +148,7 @@ def test_unstable_control_stops(proof, tmp_path):
 
 @pytest.mark.parametrize("mutate, needle", [
     (lambda m: m["final"]["heldout_none"].__setitem__("accuracy", float("nan")), "non-strict JSON"),
-    (lambda m: m.pop("n_queries"), "fields differ"),
+    (lambda m: m.pop("n_queries"), "output schema"),       # now caught per run, before pairwise
     (lambda m: m.__setitem__("wall_seconds", -1.0), "clock"),
 ])
 def test_semantic_metric_defects_fail_after_rebinding(proof, tmp_path, mutate, needle):
@@ -187,3 +189,119 @@ def test_relaunched_failed_cell_fails(proof, tmp_path):
     (es.epoch_dir(ev / "D" / "cells" / "learned-n4-s100", 2) / "attempt-1").mkdir(parents=True)
     rep = evaluate(ev)
     assert not rep["pass"] and "relaunched" in rep["failure"]
+
+
+def _complete_outs(ev):
+    for s_, sc in TINY["scenarios"].items():
+        for c in sc["cells"]:
+            if s_ == "D" and c.endswith("s100"):
+                continue
+            yield s_, c, ev / s_ / acc.authority(ev / s_ / "cells" / c, [1, 2])[1]["outputs"]["attempt"] / "out"
+
+
+def test_joint_metric_field_omission_fails(proof, tmp_path):
+    ev = _copy(proof, tmp_path)
+    for s_, c, o in _complete_outs(ev):                       # every run, jointly
+        m = json.loads((o / "metrics.json").read_text())
+        m.pop("n_queries")
+        m["final"] = {k: ({} if v is not None else None) for k, v in m["final"].items()}
+        (o / "metrics.json").write_text(json.dumps(m))
+        _rebind(ev, s_, c)
+    rep = evaluate(ev)
+    assert not rep["pass"] and "output schema" in rep["failure"], rep.get("failure")
+
+
+def test_joint_telemetry_gutting_fails(proof, tmp_path):
+    ev = _copy(proof, tmp_path)
+    for s_, c, o in _complete_outs(ev):
+        rows = [json.loads(x) for x in (o / "routing_telemetry.jsonl").read_text().splitlines()]
+        rows = [{"step": r["step"], "eval": {}} if "eval" in r else {"step": r["step"], "loss": 0.0} for r in rows]
+        (o / "routing_telemetry.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+        _rebind(ev, s_, c)
+    rep = evaluate(ev)
+    assert not rep["pass"] and "output schema" in rep["failure"], rep.get("failure")
+
+
+def test_supervisor_refuses_gutted_outputs_with_the_frozen_schema(proof, tmp_path):
+    src = next(o for s_, c, o in _complete_outs(proof) if s_ == "E")
+    sup = SlotSupervisor(root=tmp_path, cells={"learned-n4-s99": CELLS["learned-n4-s99"]}, epoch=1, admitted=[1],
+                         identity=ID, checkpoint_every=2, eval_cfg=TINY["eval"], commit=lambda: None,
+                         reload=lambda: None, registry=REG["by_arm"]["learned"], schema=SCHEMA["by_arm"]["learned"])
+    sup.acknowledge()
+    rec = sup.records["learned-n4-s99"]
+    rec["chain"], rec["state"] = [{"epoch": 1, "g": 4, "step": 8, "file": "x", "sha256": "y"}], es.TRAINED
+    out = sup.attempt_dir("learned-n4-s99") / "out"
+    shutil.copytree(src, out)
+    m = json.loads((out / "metrics.json").read_text())
+    m["final"] = {k: ({} if v is not None else None) for k, v in m["final"].items()}
+    (out / "metrics.json").write_text(json.dumps(m))
+    files = {str(p.relative_to(out)): es.file_sha256(p) for p in sorted(out.rglob("*")) if p.is_file()}
+    (out.parent / "done.json").write_text(json.dumps({"outputs": files}))
+    sup.finish("learned-n4-s99", 0)
+    final = es.read_record(tmp_path / "cells" / "learned-n4-s99", 1)
+    assert final["state"] == es.FAILED and "output schema" in final["reason"]
+
+
+def test_zeroed_snapshot_digests_fail(proof, tmp_path):
+    ev = _copy(proof, tmp_path)
+    cdir = ev / "B" / "cells" / "learned-n4-s99"
+    rec = es.read_record(cdir, 2)
+    rec["inherited_from"]["record_sha256"] = "0" * 64
+    es.write_record(cdir, rec)
+    rep = evaluate(ev)
+    assert not rep["pass"] and "digest" in rep["failure"]
+
+
+# -- T gate (validator level; a clearly labelled SYNTHETIC exit stub stands in for GPU commit evidence) --
+SMOKE_T = ROOT / "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/timing-smoke-cpu-local-v2"
+TEXP = {"memsub": "M", "packing_helpers": "H"}
+
+
+def _t(tmp_path, mutate=None, exit_mutate=None):
+    d = tmp_path / "t"
+    (d / "timing").mkdir(parents=True)
+    t = json.loads((SMOKE_T / "timing.json").read_text())
+    t.update(gpu="NVIDIA A100-SXM4-80GB", memsub_source_sha256="M", packing_helpers_sha256="H")
+    if mutate:
+        mutate(t)
+    (d / "timing" / "timing.json").write_text(json.dumps(t))
+    nbytes = max(e["checkpoint_bytes"] for c in t["configs"] for e in (c.get("eval_and_checkpoint") or [{"checkpoint_bytes": 0}]))
+    ex = {"child_exit": 0, "commit_s": [0.5, 0.6, 0.7], "commit_probe_bytes": nbytes, "SYNTHETIC_STUB": True}
+    if exit_mutate:
+        exit_mutate(ex)
+    (d / "timing.exit.json").write_text(json.dumps(ex))
+    return d
+
+
+def test_timing_gate_accepts_a_complete_matrix(tmp_path):
+    assert acc.validate_timing(_t(tmp_path), GRID["timing"], TEXP, gpu=True)["configs"] == 18
+
+
+@pytest.mark.parametrize("mutate, exit_mutate, needle", [
+    (lambda t: [c.__setitem__("eval_and_checkpoint", []) for c in t["configs"]], None, "exactly k"),
+    (lambda t: t["configs"][3]["workers"].pop(), None, "exactly k"),
+    (lambda t: t.__setitem__("gpu", "smoke-cpu"), None, "SKU"),
+    (lambda t: t.__setitem__("timing_spec", {**t["timing_spec"], "measured": 2}), None, "spec"),
+    (lambda t: t.__setitem__("memsub_source_sha256", "other"), None, "binding"),
+    (lambda t: t["configs"][0]["workers"][0]["updates"].pop(), None, "update coverage"),
+    (None, lambda ex: ex.__setitem__("commit_probe_bytes", 1), "sized"),
+    (None, lambda ex: ex.__setitem__("commit_s", [0.5, 0.6]), "commit probes"),
+])
+def test_timing_gate_rejections(tmp_path, mutate, exit_mutate, needle):
+    with pytest.raises(acc.Fail, match=needle):
+        acc.validate_timing(_t(tmp_path, mutate, exit_mutate), GRID["timing"], TEXP, gpu=True)
+
+
+def test_consumed_input_bindings(tmp_path):
+    import hashlib
+    sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()          # noqa: E731
+    paths = {"comparator": SPEC.origin, "registry": ROOT / "configs/m4_sgm_p2p5_packed_proof_registry.json",
+             "schema": ROOT / "configs/m4_sgm_p2p5_packed_proof_output_schema.json",
+             "grid": ROOT / "configs/m4_sgm_p2p5_packed_proof_grid.json"}
+    reg, sch = (json.loads(Path(paths[k]).read_text()) for k in ("registry", "schema"))
+    exp = {k: sha(v) for k, v in paths.items()} | {"memsub": source_tree_sha256(ROOT / "memsub")}
+    acc.check_consumed_inputs(paths, reg, sch, exp)
+    with pytest.raises(acc.Fail, match="comparator"):
+        acc.check_consumed_inputs(paths, reg, sch, {**exp, "comparator": "x"})
+    with pytest.raises(acc.Fail, match="different grid / source"):
+        acc.check_consumed_inputs(paths, {**reg, "memsub_source_sha256": "x"}, sch, exp)

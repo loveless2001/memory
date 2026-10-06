@@ -55,6 +55,11 @@ def read_record(cell_dir: Path, epoch: int) -> dict | None:
     return rec if rec.get("acknowledged") is True else None
 
 
+def record_digest(rec: dict) -> str:
+    """sha256 of the record exactly as write_record serialises it (= the state.json bytes)."""
+    return hashlib.sha256(json.dumps(rec, indent=2, sort_keys=True).encode()).hexdigest()
+
+
 def write_record(cell_dir: Path, rec: dict) -> None:
     """Atomic replace of THIS epoch's record (the caller commits the volume afterwards)."""
     d = epoch_dir(cell_dir, rec["epoch"])
@@ -162,5 +167,7 @@ def canonical_walk(rec: dict, max_len: int) -> list[dict]:
             raise ValueError("predecessor chain is cyclic, non-decreasing or longer than the admitted starts")
         if out[0]["inherited_from"]["epoch"] != prev["epoch"]:
             raise ValueError("inherited_from does not match the predecessor snapshot")
+        if record_digest(prev) != out[0]["inherited_from"]["record_sha256"]:   # codex 21570 #3
+            raise ValueError("predecessor snapshot does not match its inherited digest")
         out.insert(0, prev)
     return out

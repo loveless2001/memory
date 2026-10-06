@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from pathlib import Path
 
 from .packed_slot_epoch_state import file_sha256
@@ -58,8 +59,65 @@ def parameter_registry(pilot: dict) -> dict:
     return {"grad_names_shapes": grads, "state_names_shapes": state}
 
 
+def selected_layer_ids(pilot: dict) -> set[str]:
+    from .synthetic_pilot import TINY_SGM_DEFAULTS
+    if pilot["backbone"] == "tiny":
+        layers = TINY_SGM_DEFAULTS["selected_layers"]
+    else:
+        from .pinned_pretrained_qwen3_backbone import P2P5_SGM_DEFAULTS
+        layers = P2P5_SGM_DEFAULTS["selected_layers"]
+    return {str(x) for x in (pilot.get("sgm") or {}).get("selected_layers", layers)}
+
+
+def structural_schema(obj, layers: set[str], seen: set) -> dict:
+    """Recursive key / type / N-A description; selected-layer keys are normalised ('6' -> '{L}',
+    'L6/q_proj' -> 'L{L}/q_proj') and recorded in `seen` (codex 21570 #1: frozen field schema)."""
+    if isinstance(obj, dict):
+        keys = {}
+        for k, v in obj.items():
+            nk, m = k, re.match(r"^L(\d+)/(.*)$", k)
+            if k in layers:
+                nk = "{L}"
+                seen.add(k)
+            elif m and m.group(1) in layers:
+                nk = "L{L}/" + m.group(2)
+                seen.add(m.group(1))
+            sv = structural_schema(v, layers, seen)
+            if nk in keys and keys[nk] != sv:
+                raise ValueError(f"layer-normalised key {nk} has inconsistent schemas")
+            keys[nk] = sv
+        return {"dict": dict(sorted(keys.items()))}
+    if isinstance(obj, list):
+        items = [structural_schema(x, layers, seen) for x in obj]
+        if any(i != items[0] for i in items):
+            raise ValueError("heterogeneous list")
+        return {"list": items[0] if items else None}
+    if obj is None:
+        return {"null": True}
+    if isinstance(obj, bool):
+        return {"bool": True}
+    if isinstance(obj, (int, float)):
+        return {"num": True}
+    if isinstance(obj, str):
+        return {"str": True}
+    raise ValueError(f"unsupported type {type(obj).__name__}")
+
+
+def output_schemas(out: Path, pilot: dict) -> tuple[dict, set]:
+    """Schemas of metrics.json and of the telemetry eval / train rows of one run."""
+    layers, seen = selected_layer_ids(pilot), set()
+    metrics = strict_json((out / "metrics.json").read_text())
+    tele = [strict_json(x) for x in (out / "routing_telemetry.jsonl").read_text().splitlines()]
+    ev = [structural_schema(r, layers, seen) for r in tele if "eval" in r]
+    tr = [structural_schema(r, layers, seen) for r in tele if "loss" in r]
+    if any(x != ev[0] for x in ev) or any(x != tr[0] for x in tr):
+        raise ValueError("telemetry rows of one kind have different schemas")
+    return {"metrics": structural_schema(metrics, layers, seen), "telemetry_eval_row": ev[0] if ev else None,
+            "telemetry_train_row": tr[0] if tr else None}, seen
+
+
 def validate_cell_outputs(out: Path, done_outputs: dict, pilot: dict, eval_cfg: dict, memsub_sha: str,
-                          registry: dict | None = None) -> str | None:
+                          registry: dict | None = None, schema: dict | None = None) -> str | None:
     """None = valid; else the first problem."""
     out = Path(out)
     missing = [f for f in REQUIRED_OUTPUTS if f not in done_outputs]
@@ -101,6 +159,25 @@ def validate_cell_outputs(out: Path, done_outputs: dict, pilot: dict, eval_cfg: 
     trains = [r for r in tele if "loss" in r]
     if (len(evals), len(trains)) != (exp["telemetry_eval_rows"], exp["telemetry_train_rows"]) or len(tele) != len(evals) + len(trains):
         return f"telemetry rows eval/train {len(evals)}/{len(trains)} != {exp['telemetry_eval_rows']}/{exp['telemetry_train_rows']}"
+    if [r.get("step") for r in evals] != list(range(0, pilot["steps"] + 1, pilot["eval_every"])) or \
+            [r.get("step") for r in trains] != [s for s in range(pilot["steps"]) if s % 10 == 0]:
+        return "telemetry steps differ from the expected eval / training steps"
+    for r in rows:
+        if not (all(isinstance(r[k], int) and not isinstance(r[k], bool)
+                    for k in ("batch", "episode", "query", "key", "label", "pred"))
+                and isinstance(r["correct"], bool) and isinstance(r["episode_hash"], str)
+                and isinstance(r["intervention"], str)):
+            return "per-example row types differ"
+    if schema is not None:                               # frozen field / type / N-A schema
+        try:
+            got, seen = output_schemas(out, pilot)
+        except ValueError as e:
+            return f"output schema: {e}"
+        for k in ("metrics", "telemetry_eval_row", "telemetry_train_row"):
+            if got[k] != schema[k]:
+                return f"output schema: {k} differs from the frozen schema"
+        if seen != selected_layer_ids(pilot):
+            return f"output schema: per-layer keys cover {sorted(seen)} != selected layers"
     if registry is not None:
         from safetensors.torch import load_file
         import torch

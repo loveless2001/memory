@@ -51,7 +51,7 @@ class SlotSupervisor:
                  checkpoint_every: int, eval_cfg: dict, commit, reload, newer_start=lambda: False,
                  threads: int = 2, ack_timeout_s: float = 900.0, proof_capture: bool = False,
                  faults: dict | None = None, poll_s: float = 0.05, provenance: dict | None = None,
-                 registry: dict | None = None):
+                 registry: dict | None = None, schema: dict | None = None):
         self.root, self.cells, self.epoch, self.admitted = Path(root), cells, epoch, admitted
         self.identity, self.C, self.eval_cfg = identity, checkpoint_every, eval_cfg
         self.commit, self.reload, self.newer_start = commit, reload, newer_start
@@ -59,6 +59,7 @@ class SlotSupervisor:
         self.faults, self.poll_s = faults or {}, poll_s
         self.provenance = provenance or {}       # e.g. container id: recorded, never part of continuity
         self.registry = registry                 # frozen name/shape registry for output validation
+        self.schema = schema                     # frozen metrics / telemetry field schema
         self.records, self.procs, self.acked, self.finished = {}, {}, {}, set()
         self.fault_armed = False
 
@@ -147,7 +148,7 @@ class SlotSupervisor:
         try:
             done = json.loads((att / "done.json").read_text())["outputs"]
             problem = validate_cell_outputs(att / "out", done, self.cells[cell], self.eval_cfg,
-                                            self.identity["memsub"], self.registry)
+                                            self.identity["memsub"], self.registry, self.schema)
         except (OSError, ValueError, KeyError, TypeError) as e:
             done, problem = {}, f"done.json unusable: {e!r:.200}"
         if problem is None and self.records[cell]["state"] != es.TRAINED:
