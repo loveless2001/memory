@@ -19,6 +19,7 @@ frozen reference memsub tree for the speed-up parity check).
     timeout --kill-after=15s 1200 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py \
         --script scripts/sgm-p2p5-sgm-path-hotspot-profile.py --out <local dir> [--args "..."]
     (--script pytest --args "tests/test_x.py -q" runs pytest; the out dir then holds its log)
+    (--gpu a100-80gb: option-B packing test on one A100-80GB, 8 cores / 64 GiB hard tuples)
 """
 
 import io
@@ -36,12 +37,15 @@ import modal
 APP_NAME = "memsub-m4-sgm-p2p5-dev-gpu-test"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
 GPU, CPU_CORES, MEMORY_GIB = "L40S", 4.0, 32
+# option B packing test (user 21528): one A100-80GB with room for k concurrent processes
+A100_GPU, A100_CPU_CORES, A100_MEMORY_GIB, A100_GPU_USD_S = "A100-80GB", 8.0, 64, 0.000694
 FUNCTION_S, CHILD_S = 1440, 1380
 INPUTS_DIR = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/inputs"
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000542, 0.0000131, 0.00000222   # modal.com/pricing
 # ONE function execution at FUNCTION_S only — NOT a cumulative bound (restarts, build, teardown excluded;
 # codex 21489). The per-run reservation is posted in #gravity before launch.
 FUNCTION_ONLY_CHARGE_USD = FUNCTION_S * (GPU_USD_S + CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S)
+A100_FUNCTION_ONLY_USD = FUNCTION_S * (A100_GPU_USD_S + A100_CPU_CORES * CPU_USD_CORE_S + A100_MEMORY_GIB * MEM_USD_GIB_S)
 
 
 def _build_environment():
@@ -71,6 +75,17 @@ image = (modal.Image.debian_slim(python_version="3.12")
 @app.function(image=image, gpu=GPU, cpu=(CPU_CORES, CPU_CORES), memory=(MEMORY_GIB * 1024, MEMORY_GIB * 1024),
               timeout=FUNCTION_S, retries=0, max_containers=1)
 def run_remote(script: str, args: str) -> dict:
+    return _run_body(script, args)
+
+
+@app.function(image=image, gpu=A100_GPU, cpu=(A100_CPU_CORES, A100_CPU_CORES),
+              memory=(A100_MEMORY_GIB * 1024, A100_MEMORY_GIB * 1024), timeout=FUNCTION_S, retries=0,
+              max_containers=1)
+def run_remote_a100_80gb(script: str, args: str) -> dict:
+    return _run_body(script, args)
+
+
+def _run_body(script: str, args: str) -> dict:
     out = Path("/tmp/dev-out")
     out.mkdir()
     if script == "pytest":
@@ -92,12 +107,17 @@ def run_remote(script: str, args: str) -> dict:
 
 
 @app.local_entrypoint()
-def main(script: str, out: str, args: str = ""):
+def main(script: str, out: str, args: str = "", gpu: str = "l40s"):
+    fns = {"l40s": (run_remote, GPU), "a100-80gb": (run_remote_a100_80gb, A100_GPU)}
+    if gpu not in fns:
+        raise SystemExit(f"--gpu must be one of {sorted(fns)}")
+    fn, gpu_name = fns[gpu]
     dest = Path(out)
     dest.mkdir(parents=True, exist_ok=False)
     started = time.time()
     meta = {"app_id": app.app_id, "script": script, "args": args, "started": started,
-            "function_only_charge_usd": round(FUNCTION_ONLY_CHARGE_USD, 4), "gpu": GPU, "outcome": "started"}
+            "function_only_charge_usd": round(FUNCTION_ONLY_CHARGE_USD if gpu == "l40s" else A100_FUNCTION_ONLY_USD, 4),
+            "gpu": gpu_name, "outcome": "started"}
     # "started" left on disk = the client never reached the end (host loss / SIGKILL);
     # the launch wrapper's EXIT_STATUS (124 = outer timeout) is recorded beside it
     (dest / "run.json").write_text(json.dumps(meta, indent=2))
@@ -107,7 +127,7 @@ def main(script: str, out: str, args: str = ""):
     signal.signal(signal.SIGTERM, on_sigterm)
     meta["outcome"] = "remote call failed"
     try:
-        res = run_remote.remote(script, args)
+        res = fn.remote(script, args)
         with tarfile.open(fileobj=io.BytesIO(res.pop("tar")), mode="r:gz") as tar:
             tar.extractall(dest, filter="data")
         meta.update(res, outcome="ok" if res["returncode"] == 0 else "child failed")
