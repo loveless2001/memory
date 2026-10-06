@@ -92,38 +92,40 @@ def main():
     global PROGRESS
     PROGRESS = args.out / "progress.jsonl"
     watchdog = Watchdog(WALL_LIMIT_S)          # hard total deadline, armed before any model load
-    progress({"stage": "start", "wall_limit_s": WALL_LIMIT_S})
-    report = {"environment": {"python": platform.python_version(), "torch": torch.__version__,
-                              "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0),
-                              "gpu_total_bytes": torch.cuda.get_device_properties(0).total_memory,
-                              "tf32_matmul": torch.backends.cuda.matmul.allow_tf32},
-              "memsub_source_sha256": source_tree_sha256(ROOT / "memsub"),
-              "contract": "full-gradient token-serial, fp32, TF32 off, batch 16, N32, seed 99",
-              "configs": [], "status": "running"}
-    started = time.monotonic()
-    for arm, phase in CONFIGS:
-        if time.monotonic() - started > WALL_LIMIT_S:
-            report["status"] = "stopped: 30-minute wall bound reached"
-            break
-        try:
-            report["configs"].append(profile_config(arm, phase))
-            print("profiled", arm, f"phase{phase}", report["configs"][-1]["mean_measured_s_per_update"], flush=True)
-        except torch.cuda.OutOfMemoryError as e:
-            report["status"] = f"stopped: OOM at {arm} phase {phase}"
-            report["error"] = str(e)[:500]
-            break
-        except Exception as e:                                  # first error stops the profile
-            report["status"] = f"stopped: error at {arm} phase {phase}"
-            report["error"] = repr(e)[:500]
-            break
-        finally:
-            torch.cuda.empty_cache()
-    else:
-        report["status"] = "complete"
-    report["wall_s"] = time.monotonic() - started
-    (args.out / "profile.json").write_text(json.dumps(report, indent=2))
-    progress({"stage": "end", "status": report["status"]})
-    watchdog.cancel()
+    try:   # every step after arming (setup, loop, cleanup, writes) cancels the watchdog on exit
+        progress({"stage": "start", "wall_limit_s": WALL_LIMIT_S})
+        report = {"environment": {"python": platform.python_version(), "torch": torch.__version__,
+                                  "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0),
+                                  "gpu_total_bytes": torch.cuda.get_device_properties(0).total_memory,
+                                  "tf32_matmul": torch.backends.cuda.matmul.allow_tf32},
+                  "memsub_source_sha256": source_tree_sha256(ROOT / "memsub"),
+                  "contract": "full-gradient token-serial, fp32, TF32 off, batch 16, N32, seed 99",
+                  "configs": [], "status": "running"}
+        started = time.monotonic()
+        for arm, phase in CONFIGS:
+            if time.monotonic() - started > WALL_LIMIT_S:
+                report["status"] = "stopped: 30-minute wall bound reached"
+                break
+            try:
+                report["configs"].append(profile_config(arm, phase))
+                print("profiled", arm, f"phase{phase}", report["configs"][-1]["mean_measured_s_per_update"], flush=True)
+            except torch.cuda.OutOfMemoryError as e:
+                report["status"] = f"stopped: OOM at {arm} phase {phase}"
+                report["error"] = str(e)[:500]
+                break
+            except Exception as e:                                  # first error stops the profile
+                report["status"] = f"stopped: error at {arm} phase {phase}"
+                report["error"] = repr(e)[:500]
+                break
+            finally:
+                torch.cuda.empty_cache()
+        else:
+            report["status"] = "complete"
+        report["wall_s"] = time.monotonic() - started
+        (args.out / "profile.json").write_text(json.dumps(report, indent=2))
+        progress({"stage": "end", "status": report["status"]})
+    finally:
+        watchdog.cancel()
     print(report["status"])
     sys.exit(0 if report["status"] == "complete" else 1)
 
