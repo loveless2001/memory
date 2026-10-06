@@ -1,67 +1,99 @@
-# P2.5 — frozen Qwen3-0.6B synthetic screen (PREREG DRAFT v0.1)
+# P2.5 — frozen Qwen3-0.6B residual-readout screen (PREREG DRAFT v0.2)
 
-Status: DRAFT for codex audit. User 21420 ("go P2.5 then") = draft + build. Registered follow-up from the spec review
-(M4-SGM.md "Agreed amendments" 1: Qwen3-0.6B pilot). Base: `a6afc29` (P2C closed).
-Spec anchors: §13 (P0–P2 local work → reference pilot), §15 baselines, §16 exploratory synthetic screen, §8 causal checks.
-Evidence class: **frozen-qwen3-0.6b-base + taskhead, synthetic** — first pretrained-backbone result; still no P3,
-recovery, pretrained-LM-readout, scaling or real-text claim.
+v0.2 amends v0.1 (`59ca18d`) per codex audit `plans/reports/codex-261006-p2p5-prereg-v01-audit.md` (R1–R5).
+User 21420 ("go P2.5 then") = draft + build. Registered follow-up from the spec review (Qwen3-0.6B pilot).
+Spec anchors: §13, §15 baselines, §16 exploratory synthetic screen, §8 causal checks.
+Evidence class: **frozen-qwen3-0.6b-base + residual-head, synthetic** — a synthetic classifier interface screen on a
+pretrained residual stream. Not LM-answer, teacher-KL, P3, recovery, scaling, matched-storage or real-text evidence.
 
 ## Gates
-1. Prereg clearance → implementation + CPU tests + a **local GPU profile** (RTX 3060 laptop, $0; ≤ 50 updates per
-   profiled config, no registered cell, no reserved-seed use; timing/memory only, accuracy not read).
-2. The priced Modal GPU ledger + cap come from that profile; the registered cells need the implementation audit AND
-   a fresh scoped user cap approval (local training needs the same approval).
-3. One reserved-seed readings run only after every cell validates and parity passes. No early stop, selection,
-   tuning, automatic retry, missing-seed headline or expansion; any failure stops the readings.
+1. Prereg clearance → implementation + CPU tests + the bounded profile (§Profile). No registered cell, no artifact or
+   reserved seed, accuracy never read in the profile.
+2. Profile outcome → frozen GPU SKU, environment, deadlines and a complete charged ledger. If the local GPU cannot fit
+   the shape-faithful step (OOM), that is reported for review; a paid Modal profile needs its own user approval.
+3. Registered cells (Modal or local) need the implementation audit AND a fresh scoped user cap approval.
+4. Exactly one reserved-population readings run, after every cell validates and parity passes. No early stop,
+   selection, tuning, automatic training retry, missing-seed headline or expansion. Stop conditions are reading
+   gates after the fixed runs, never adaptive.
 
 ## Question
-S(N), N ∈ {16, 32}: on a frozen pretrained backbone, does learned SGM (trained with the P2C curriculum) pass the spec
-§16 screening rule — ≥ 5 pp exact-answer gain over the stronger of the local-only and fixed/random-address controls,
-paired interval excluding 0, both seeds — with memory use? Read per N.
+S(N), N ∈ {16, 32}, exploratory (two seeds): with every arm read through the same trained head on the final normalized
+query residual of the frozen pretrained model, does learned SGM (P2C curriculum) beat **every** control — local-only,
+fixed single bank and fixed/random addresses — by the screening margin, with memory use, at a load where the oracle
+interface is established? Read per N.
 
-## Fixed protocol
-- Backbone: `Qwen/Qwen3-0.6B-Base` revision `da87bfb608c14b7cf20ba1ce41287e8de496c0cd` (28 layers, hidden 1024),
-  frozen, fp32 compute, weights hash-bound. Same synthetic binding task and token-id ranges as P2 (all inside the
-  151,936 vocab), filler 40, 4 queries, task-head readout over memory reads.
-- SGM (spec-proportional to the 4B default [8,17,26,35]/36): layers (6, 13, 20, 27), 4 heads, d_k = d_v = 32,
-  address_hidden 64, address_scale 8, local window 32 + 4 sinks (every binding is outside local KV at query time),
-  max_cells 2048, **feature_shift 1** (spec default; the tiny-backbone shift deviation is not carried over).
-- Training (every trained arm identical): 1500 updates, batch 16, lr 3e-3, P2C curriculum
-  `filler_len_schedule ((0,0),(1000,40))`, seeds 0/1, fixed endpoint, filler writes ON, evals at filler 40, E=on.
-- Seeds: artifact eval 9_300_011+s; reserved readings population **9_600_011+s** (P2G/P2C consumed 9_400/9_500).
-- Rules reused unchanged: P2D `paired`/`memory_use`, P2G `classify` (ordered), interval/telemetry fail-closed checks.
+## Model, memory and readout (R1, R5)
+- Backbone `Qwen/Qwen3-0.6B-Base` revision `da87bfb608c14b7cf20ba1ce41287e8de496c0cd`; config and every weight-file
+  hash bound; frozen (never in the optimizer); FP32 compute; TF32 disabled (CUDA matmul and cuDNN).
+- SGM: layers (6, 13, 20, 27), 4 heads, d_k = d_v = 32, address_hidden 64, address_scale 8, local window 32 + 4 sinks,
+  max_cells 2048 (realized deviation from the spec's 1024 default; resident bytes/access and trained parameters
+  reported; no matched-storage claim), feature_shift 1. FP32, feature_shift 1, layers and the schedule are fixed
+  settings, never rescue knobs.
+- **Readout (R1):** every arm has the same 64-class linear head (identical init seed, objective, updates, data) on
+  `final_norm(h)` at the query's last position — after the last selected layer's injection, its MLP and the final norm.
+  Each query is answered from an independent snapshot of the post-source state.
+- Arms: `learned`; `single_cell` (fixed single bank); `random_fixed` (fixed/random addresses); `memory_off` = genuine
+  local-only: source re-ingested with SGM disabled (local window + sinks only), the same trained head; `oracle`
+  (diagnostic; oracle addresses only in this arm).
 
-## Cells (14 trained + eval-only)
-- Trained, N16 and N32 × s0/s1: `learned`, `single_cell` (fixed single bank), `random_fixed` (fixed/random address).
-- Diagnostic, N32 × s0/s1: `oracle` (interface check; never a headline).
-- Eval-only: `memory_off` (local-only; with the task-head readout it is chance by construction — reported, and kept in
-  the "stronger control" set so the rule is applied as written).
+## Training (R4: gradient contract)
+Every trained arm: 1500 updates, batch 16, lr 3e-3, P2C curriculum `((0,0),(1000,40))`, seeds 0/1, filler writes ON,
+evals at filler 40. Full-gradient token-serial ingestion; fresh episode state after every update; no `no_grad` on the
+student path; no detached-source substitute; no activation checkpointing; no bf16, quantization, offload, chunking
+or reduced global batch. An OOM never authorizes any of these; an alternative needs its own protocol.
 
-## Readings (per N)
-- Prerequisite I (interface): oracle N32 heldout ≥ 0.5 both seeds. If it fails → "interface not established on the
-  pretrained backbone; screen not read" (stop condition).
-- Stronger control per seed = the control with the higher reserved-population accuracy among {memory_off, single_cell,
-  random_fixed}; contrast = paired(learned − that control), per seed (choosing the stronger control only makes the rule harder).
-- screen = classify(contrast); mem = memory_use(learned) both seeds; dead routing = read_offset contrast lo ≤ 0 for a seed.
-- Table (total): screen gain ∧ mem → "SCREEN PASS at N"; gain ∧ ¬mem → "gain without registered memory use";
-  ¬gain → "screen not passed; learned−control is <label>". Dead routing / unused memory are reported as the spec's P3
-  stop conditions.
-- Descriptive: all arm accuracies, gate telemetry, address telemetry, dev curves; no paired comparison with tiny-backbone cohorts.
-- Limits: synthetic task over real token embeddings, task-head readout (not LM answer NLL/KL); 2 seeds (spec wants
-  ≥3 for the reference pilot); recipe/backbone contrast, no mechanism.
+## Cells
+- Trained (16): `learned`, `single_cell`, `random_fixed`, `memory_off` × N16, N32 × s0, s1.
+- Diagnostic (2): `oracle` N32 × s0, s1. Its N16 interface check is an explicitly labeled **transfer diagnostic**: the
+  same two N32-trained oracle checkpoints evaluated on the N16 population (bound checkpoint + population; no inferred pass).
 
-## Engineering (implementation scope)
-1. Device plumbing: adapters, banks, head and batches follow the backbone device; CPU behaviour bitwise unchanged
-   (P2G/P2C parity fixtures + default-trainer fingerprints re-run).
-2. Pinned pretrained backbone builder (local HF cache / image-baked weights, revision + file hashes bound).
-3. GPU Modal runner (non-preemptible, deploy + spawn, same claims/watchdog/collector/stop-verify contract), GPU pricing
-   in the ledger, weights baked into the image (no network at run time).
-4. P2.5 readings reusing the common observer and rules.
+## Populations and evaluation (R3)
+- Training stream seed = cell seed. Dev population 4242 (4 × 16 = 64 episodes) for in-run evals and telemetry.
+  Artifact eval (in-run, Modal) 9_300_011+s. **Reserved readings population 9_600_011+s**: 16 batches × 16 = 256
+  episodes × 4 queries; interventions none / bank_derange / read_offset for memory arms (3,072 rows), none only for
+  `memory_off` (1,024 rows). Episode hashes must match across every paired corner (abort otherwise); full schema/
+  completeness/finite checks; CPU sampling and canonical row hashing before any device movement.
+- Order inside the one readings run: bindings + parity → **oracle interface at N32, then N16 (transfer)** →
+  only for an N whose interface passed: the remaining arms on that N's reserved population. An N whose interface
+  fails keeps its other reserved corners unevaluated (population untouched).
 
-## Ledger (provisional; replaced by the profile-based dry-run)
-Rough: 14 trained cells × ~1.5–3 h on a 24 GB GPU (A10G/L4 class) → **≈ $25–50** expected; cap proposal after the
-local profile. Guard policy: per-cell watchdog from profiled wall × 1.4, existing startup/replay/margin structure.
+## Readings (per N; R2, R3)
+- Interface(N): oracle accuracy ≥ 0.50 on both seeds (N32: trained load; N16: transfer diagnostic).
+- For each control c ∈ {memory_off, single_cell, random_fixed}: label_c = `classify(learned − c)` (P2G ordered
+  classifier; normal paired intervals as in P2 — an explicit screening deviation from the spec's proposed episode bootstrap).
+- all_gain = every label_c is "reproducible gain" (conjunction; no selected control). The largest control mean is descriptive only.
+- mem = P2D `memory_use(learned)` both seeds. Read-offset lo ≤ 0 → "read-address use not established" (not proof of dead routing).
+- Ordered, total table:
+  1. a bound input is missing/invalid/non-finite, or parity failed → "unavailable: <reason>" (no headline at any N).
+  2. Interface(N) fails → "interface not established at N; screen not read".
+  3. all_gain ∧ mem → "SCREEN PASS at N".
+  4. all_gain ∧ ¬mem → "gain over every control without registered memory use".
+  5. ¬all_gain → "screen not passed at N; per-control labels: {…}".
+- Null/unavailable values are preserved, never coerced.
+- Descriptive only: accuracies, 16-head gate telemetry (layers {6,13,20,27} × heads 0–3; telemetry undefined for
+  `memory_off` is "unavailable", not a zero population), address telemetry, dev curves, resident bytes/access.
+- Limits: exploratory 2 seeds (the reference pilot needs ≥3); N8 omitted by scope; synthetic classifier screen; recipe
+  contrast, no mechanism; P2C's success does not validate this backbone/readout/geometry.
 
-## Unresolved (for the auditor)
-- 2 seeds vs the spec's 3 (screen, not the reference pilot); N8 omitted (works on tiny); oracle only at N32.
-- fp32 vs bf16 backbone compute; GPU type (A10G vs L4) pending the profile.
+## Profile (R4; bounded, $0 local)
+- Environment: a separate pinned CUDA venv (`.venv-gpu`: torch 2.7.1 CUDA build, transformers 4.55.2,
+  safetensors 0.5.3); the CPU `.venv` and its pins stay untouched.
+- Matrix (4 configs): {learned, memory_off} × N32 × {phase 1 (filler 0), phase 2 (filler 40)}; batch 16, the
+  registered gradient contract; seed 99 training stream (never 0/1, never artifact/reserved populations); per config 2
+  warmup + 8 measured complete forward/backward/optimizer updates (40 total ≤ 50), one dev-eval batch timing;
+  wall bound 30 min total; first OOM or error stops the profile and is reported.
+- Output: s/update per config, peak memory, eval s/batch; no accuracy. A 6 GB laptop result is not a 24 GB Modal
+  measurement: any transfer assumption is stated in the ledger.
+
+## Implementation checks (R5)
+Bound P2.5 builder/readout/observer (no tiny defaults), 16-head telemetry set, arm-aware ingest. Tests: legacy
+P2G/P2C parity fixtures and default-trainer fingerprints unchanged; disabled-SGM equivalence (pretrained, window ≥
+length: runtime final hidden = HF forward within FP32 tolerance); backbone excluded from the optimizer;
+output-path gradients reach every adapter incl. layer 27's output/mix; causal leakage rejection; CPU-vs-CUDA tolerance
+on a tiny config (not bitwise); snapshot and replay checks. Start/end binding of model files, resolved
+SGM/readout/compute config, analysis/runner/source/prereg/grid/index bytes, environment and checkpoints.
+
+## Ledger
+Provisional ≈ $30–60 for 18 GPU cells (memory_off cheaper). Frozen SKU, preemption policy, deadlines (profiled wall ×
+1.4) and every charge (GPU + CPU/RAM, both phases, dev/artifact evals, builds/startup/shutdown, readings/parity,
+fixed margin) come from the profile; the cap is requested only then.
