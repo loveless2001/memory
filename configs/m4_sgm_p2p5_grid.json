@@ -1,0 +1,16 @@
+{
+  "_comment": "M4-SGM P2.5 (prereg v0.2 3bf8737, sha 0ce61a09...): 18 trained cells, group p2p5-qwen3-0p6b-screen-v1. Frozen pinned Qwen3-0.6B-Base, residual-head readout for every arm (memory_off = genuine local-only, head trained), P2C curriculum for every trained arm, FP32, full-gradient token-serial. Run ids are '{tag}-n{N}-s{seed}' (P2.5 runner expand). Artifact eval on the published population artifact_eval_seed_base+s; readings_seed_base+s (9600011+s) RESERVED for the single post-validation readings run.",
+  "artifact_eval_seed_base": 9300011,
+  "readings_seed_base": 9600011,
+  "base": {"arm": "learned", "readout": "residual_head", "n_queries": 4, "filler_len": 40, "steps": 1500,
+           "batch": 16, "lr": 0.003, "eval_every": 100, "eval_batches": 4, "sgm": {},
+           "filler_writes": true, "aux_address_lambda": 0.0, "checkpoint_steps": [], "beta_bias_init": null,
+           "filler_len_schedule": [[0, 0], [1000, 40]], "backbone": "qwen3-0.6b-base", "device": "cuda"},
+  "blocks": [
+    {"tag": "learned", "n_bindings": [16, 32], "seeds": [0, 1], "override": {"arm": "learned"}},
+    {"tag": "singlecell", "n_bindings": [16, 32], "seeds": [0, 1], "override": {"arm": "single_cell"}},
+    {"tag": "randomfixed", "n_bindings": [16, 32], "seeds": [0, 1], "override": {"arm": "random_fixed"}},
+    {"tag": "memoryoff", "n_bindings": [16, 32], "seeds": [0, 1], "override": {"arm": "memory_off"}},
+    {"tag": "oracle", "n_bindings": [32], "seeds": [0, 1], "override": {"arm": "oracle"}}
+  ]
+}

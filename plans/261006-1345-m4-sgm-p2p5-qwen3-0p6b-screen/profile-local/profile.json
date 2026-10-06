@@ -1,0 +1,16 @@
+{
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.7.1+cu126",
+    "cuda": "12.6",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_total_bytes": 6441926656,
+    "tf32_matmul": false
+  },
+  "memsub_source_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "contract": "full-gradient token-serial, fp32, TF32 off, batch 16, N32, seed 99",
+  "configs": [],
+  "status": "stopped: OOM at learned phase 1",
+  "error": "CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 6.00 GiB of which 0 bytes is free. Including non-PyTorch memory, this process has 17179869184.00 GiB memory in use. Of the allocated memory 11.21 GiB is allocated by PyTorch, and 519.13 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org",
+  "wall_s": 49.441318772005616
+}

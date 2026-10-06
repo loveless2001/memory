@@ -148,8 +148,10 @@ def _snapshot(runtime) -> dict[str, list[torch.Tensor]]:
             for l, a in runtime.adapters.items() for n, ps in a.param_groups().items()}
 
 
-def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
-    """Train; returns {"telemetry": [...], "runtime", "backend", "head"}."""
+def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None) -> dict:
+    """Train; returns {"telemetry": [...], "runtime", "backend", "head"}.
+    on_update(update, seconds): optional timing hook (P2.5 profile), called after
+    each optimizer step with the device synchronized; None changes nothing."""
     runtime, backend, head = build(pcfg)
     params = [p for p in list(runtime.adapters.parameters()) + list(head.parameters())
               if p.requires_grad]
@@ -193,6 +195,10 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
         before = _snapshot(runtime) if logging else {}
         grads = _group_norms(runtime) if logging else {}
         opt.step()
+        if on_update is not None:
+            if runtime.device.type == "cuda":
+                torch.cuda.synchronize(runtime.device)
+            on_update(step, time.monotonic() - t0)
         if logging:
             after = _snapshot(runtime)
             upd = {k: sum(float((a - b).norm()) for a, b in zip(after[k], before[k]))
