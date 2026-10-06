@@ -71,7 +71,7 @@ class SparseGrowingMemoryBackend:
 
     def evaluate_query(self, state: SGMSessionState, prompt_ids: torch.Tensor, *,
                        enabled: bool = True, oracle_addresses: torch.Tensor | None = None,
-                       detach: bool = False, logits: bool = True) -> dict:
+                       detach: bool = False, logits: bool = True, final_hidden: bool = False) -> dict:
         """Read-only query from the pre-query snapshot. detach=True for
         evaluation; training queries keep the graph into the bank and KV."""
         state.check_valid(self.policy_id, state.redaction_generation,
@@ -81,4 +81,4 @@ class SparseGrowingMemoryBackend:
         if enabled and oracle_addresses is not None:
             oracle = {"read": oracle_addresses, "write": oracle_addresses}
         return self.runtime.step(scratch, prompt_ids, write=False, enabled=enabled,
-                                 oracle=oracle, logits=logits)
+                                 oracle=oracle, logits=logits, final_hidden=final_hidden)

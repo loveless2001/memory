@@ -54,8 +54,15 @@ class PilotConfig:
     # P2C label-free curriculum: ((start_update, filler_len), ...) sorted, first start 0.
     # Only TRAINING episodes change; filler_len (dev/final evals) is untouched. () = unchanged.
     filler_len_schedule: tuple = ()
+    # P2.5: frozen pretrained backbone ("qwen3-0.6b-base") and execution device;
+    # defaults keep the tiny random backbone on CPU, bitwise unchanged.
+    backbone: str = "tiny"
+    device: str = "cpu"
 
     def result_label(self) -> str:
+        if self.backbone != "tiny":   # P2.5 evidence class (oracle stays labelled a diagnostic)
+            base = f"frozen-{self.backbone}+{self.readout.replace('_', '-')}"
+            return base + ("+DIAGNOSTIC-oracle-address" if self.arm == "oracle" else "")
         if self.arm == "oracle":
             return "DIAGNOSTIC-oracle-address"
         base = "tiny-random-lm+taskhead" if self.readout == "taskhead" else "tiny-random-lm+lm-readout"
@@ -101,11 +108,22 @@ def build(pcfg: PilotConfig):
     if pcfg.arm not in ARMS:
         raise ValueError(f"unknown arm {pcfg.arm}")
     mode = {"memory_off": "learned"}.get(pcfg.arm, pcfg.arm)
-    cfg = SGMConfig(**{**TINY_SGM_DEFAULTS, **pcfg.sgm, "address_mode": mode})
-    runtime = SGMModelRuntime(build_tiny_backbone(0), cfg, seed=pcfg.seed)
+    if pcfg.backbone == "tiny":
+        cfg = SGMConfig(**{**TINY_SGM_DEFAULTS, **pcfg.sgm, "address_mode": mode})
+        runtime = SGMModelRuntime(build_tiny_backbone(0).to(pcfg.device), cfg, seed=pcfg.seed)
+    elif pcfg.backbone == "qwen3-0.6b-base":
+        from .pinned_pretrained_qwen3_backbone import P2P5_SGM_DEFAULTS, load_frozen_qwen3_0p6b_base
+        cfg = SGMConfig(**{**P2P5_SGM_DEFAULTS, **pcfg.sgm, "address_mode": mode})
+        runtime = SGMModelRuntime(load_frozen_qwen3_0p6b_base(pcfg.device), cfg, seed=pcfg.seed)
+    else:
+        raise ValueError(f"unknown backbone {pcfg.backbone}")
+    if pcfg.readout not in ("taskhead", "lm", "residual_head"):
+        raise ValueError(f"unknown readout {pcfg.readout}")
     c = runtime.cfg
     torch.manual_seed(10_000 + pcfg.seed)
-    head = nn.Linear(len(c.selected_layers) * c.memory_heads * c.value_dim, N_VALUES)
+    in_features = (c.hidden_size if pcfg.readout == "residual_head"
+                   else len(c.selected_layers) * c.memory_heads * c.value_dim)
+    head = nn.Linear(in_features, N_VALUES).to(pcfg.device)
     if pcfg.beta_bias_init is not None:   # after every RNG draw: other parameters stay bitwise v2
         with torch.no_grad():
             for adapter in runtime.adapters.values():
@@ -146,8 +164,8 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
         if evaluate_fn and step % pcfg.eval_every == 0:
             telemetry.append({"step": step, "eval": evaluate_fn(backend, head, step)})
             log(telemetry[-1])
-        if step == pcfg.steps or pcfg.arm == "memory_off":
-            continue  # memory_off has no trainable path that sees the bindings
+        if step == pcfg.steps or (pcfg.arm == "memory_off" and pcfg.readout != "residual_head"):
+            continue  # raw-read memory_off has no trainable path; residual-head memory_off trains its head
         t0 = time.monotonic()
         train_spec = (spec if not pcfg.filler_len_schedule else   # same generator/model/optimizer across phases
                       BindingTaskSpec(spec.n_bindings, spec.n_queries, pcfg.training_filler_len(step)))
@@ -160,8 +178,9 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None) -> dict:
             logits, qtrace = query_logits(backend, head, state, batch, q, pcfg.arm,
                                           pcfg.readout, detach=False)
             q_traces.append(qtrace)
-            loss = loss + nn.functional.cross_entropy(logits, batch.labels[:, q])
-            hits += int((logits.argmax(-1) == batch.labels[:, q]).sum())
+            labels = batch.labels[:, q].to(logits.device)          # no-op on CPU
+            loss = loss + nn.functional.cross_entropy(logits, labels)
+            hits += int((logits.argmax(-1) == labels).sum())
         loss = loss / spec.n_queries
         aux = None
         if pcfg.aux_address_lambda > 0:        # training split only; AddressMLP-only graph

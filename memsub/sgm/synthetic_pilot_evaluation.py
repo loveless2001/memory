@@ -35,13 +35,16 @@ def query_logits(backend, head, state, batch, q: int, arm: str, readout: str,
     oracle = batch.oracle_query[:, q:q + 1] if arm == "oracle" and enabled else None
     out = backend.evaluate_query(state, batch.query_keys[:, q:q + 1], enabled=enabled,
                                  oracle_addresses=oracle, detach=detach,
-                                 logits=readout == "lm")
+                                 logits=readout == "lm", final_hidden=readout == "residual_head")
     if readout == "lm":
         return out["logits"][:, VALUE_BASE:VALUE_BASE + N_VALUES], out["trace"]
+    if readout == "residual_head":   # P2.5: same head for every arm, incl. local-only memory_off
+        return head(out["final_hidden"]), out["trace"]
     c = backend.runtime.cfg
     if not enabled:
         feats = torch.zeros(batch.source.shape[0],
-                            len(c.selected_layers) * c.memory_heads * c.value_dim)
+                            len(c.selected_layers) * c.memory_heads * c.value_dim,
+                            device=backend.runtime.device)
     else:
         feats = torch.cat([out["reads"][l][:, -1].flatten(1) for l in c.selected_layers], dim=-1)
     return head(feats), out["trace"]
@@ -141,7 +144,7 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
                 logits, trace = query_logits(backend, head, state, batch, q, arm, readout,
                                              detach=True,
                                              query_enabled=intervention != "query_off")
-                pred = logits.argmax(-1)
+                pred = logits.argmax(-1).cpu()        # rows are built on CPU (no-op on CPU)
                 hit = pred == batch.labels[:, q]
                 correct += int(hit.sum()); total += hit.numel()
                 ep_hits += hit.float()

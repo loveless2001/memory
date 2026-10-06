@@ -79,7 +79,7 @@ def test_grid_pilots_round_trip_through_the_manifest_equality_check():
     spec.loader.exec_module(v1)
     cells = v1.expand(json.loads((ROOT / "configs" / "m4_sgm_p2g_grid.json").read_text()))
     assert len(cells) == 6
-    later_defaults = {"filler_len_schedule": []}   # PilotConfig fields added after P2G (P2C), at defaults
+    later_defaults = {"filler_len_schedule": [], "backbone": "tiny", "device": "cpu"}   # added after P2G (P2C, P2.5)
     for _rid, tag, pilot in cells:              # validator requires manifest pilot_config == grid pilot
         written = json.loads(json.dumps(asdict(PilotConfig(**pilot))))
         assert {k: v for k, v in written.items() if k in pilot} == pilot      # P2G source wrote exactly this

@@ -81,8 +81,11 @@ def test_grid_pilots_round_trip_through_the_manifest_equality_check():
     grid = json.loads((ROOT / "configs" / "m4_sgm_p2c_grid.json").read_text())
     cells = v1.expand(grid)
     assert len(cells) == 4 and {t for _r, t, _p in cells} == {"curriculum"}
+    later_defaults = {"backbone": "tiny", "device": "cpu"}   # PilotConfig fields added after P2C (P2.5)
     for _rid, _tag, pilot in cells:
-        assert json.loads(json.dumps(asdict(PilotConfig(**pilot)))) == pilot
+        written = json.loads(json.dumps(asdict(PilotConfig(**pilot))))
+        assert {k: v for k, v in written.items() if k in pilot} == pilot      # P2C source wrote exactly this
+        assert {k: v for k, v in written.items() if k not in pilot} == later_defaults
         assert pilot["filler_len_schedule"] == SCHEDULE and pilot["filler_len"] == 40 and pilot["filler_writes"] is True
     assert (grid["artifact_eval_seed_base"], grid["readings_seed_base"]) == (9_300_011, 9_500_011)
 
@@ -112,7 +115,12 @@ def test_exact_cells_timeouts_and_reservation_under_the_approved_cap(runner):
     assert ledger["cell_timeouts_s"] == {"curriculum-learned-n32-s0": 8773, "curriculum-learned-n32-s1": 6952,
                                          "curriculum-learned-n64-s0": 11797, "curriculum-learned-n64-s1": 10809}
     assert ledger["reserved_total_usd"] == pytest.approx(11.12716980, abs=1e-8) and ledger["admitted"]
-    assert prov["memsub_source_sha256"] == runner.SOURCE_SHA == source_tree_sha256(ROOT / "memsub")
+    # P2C is closed: its runner stays pinned to the source it launched (later memsub changes,
+    # e.g. P2.5, must not move it); the launch provenance records the same source.
+    assert prov["memsub_source_sha256"] == runner.SOURCE_SHA == "09b05c16459c2caba55cddee651bd232e9de4ac5a87ce5ad11f3f18a8ab6d966"
+    launch = ROOT / "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1/launch_provenance.json"
+    if launch.exists():
+        assert json.loads(launch.read_text())["memsub_source_sha256"] == runner.SOURCE_SHA
     assert prov["artifact_eval_seed_base"] == 9_300_011 and prov["readings_seed_base_reserved"] == 9_500_011
 
 
@@ -183,6 +191,8 @@ def test_readings_reject_training_artifacts_on_the_reserved_seed(tmp_path):
 
 
 def test_prereg_file_is_bound_at_validation_and_in_the_identity(monkeypatch):
+    # binding logic only: accept the live memsub (P2C itself is pinned to 09b05c16 and closed)
+    monkeypatch.setattr(PRE2C.PRE, "p2g_source_sha", lambda: source_tree_sha256(ROOT / "memsub"))
     index = json.loads(PRE2C.INPUTS.read_text())
     ident = PRE2C.PRE.observer_identity()
     assert ident["prereg_sha256"] == index["prereg"]["sha256"] == hashlib.sha256(

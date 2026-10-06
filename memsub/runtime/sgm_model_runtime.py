@@ -37,9 +37,11 @@ class SGMModelRuntime(nn.Module):
         for p in self.backbone.parameters():
             p.requires_grad_(False)
         self.cfg = cfg.resolve(model.config)
-        self.adapters = nn.ModuleDict(
-            {str(l): SGMLayerAdapter(self.cfg, l, seed) for l in self.cfg.selected_layers})
         self.device = next(model.parameters()).device
+        # adapters are initialized on CPU (seeded generator), then follow the backbone
+        # device (a no-op on CPU, so CPU initialization stays bitwise unchanged)
+        self.adapters = nn.ModuleDict(
+            {str(l): SGMLayerAdapter(self.cfg, l, seed) for l in self.cfg.selected_layers}).to(self.device)
         # Diagnostic-only read-address intervention (cells); 0 in every arm.
         self.diag_read_offset = 0.0
         self.runtime_uuid = uuid.uuid4().hex[:16]
@@ -65,9 +67,12 @@ class SGMModelRuntime(nn.Module):
     # -- one forward block ------------------------------------------------------------
     def step(self, state: SGMSessionState, input_ids: torch.Tensor, *, write: bool,
              enabled: bool = True, oracle: dict | None = None,
-             logits: bool = False) -> dict:
+             logits: bool = False, final_hidden: bool = False) -> dict:
         """Append input_ids [B, n] to state (mutates it; callers fork for
         transactions). Persistent writes require write=True and n == 1."""
+        input_ids = input_ids.to(self.device)          # CPU-sampled episodes; no-op on CPU
+        if oracle is not None:
+            oracle = {k: v.to(self.device) for k, v in oracle.items()}
         B, n = input_ids.shape
         if write and n != 1:
             raise ValueError("token-serial ingest: writes take one token per step")
@@ -97,6 +102,8 @@ class SGMModelRuntime(nn.Module):
         out = {"reads": reads, "trace": trace}
         if logits:
             out["logits"] = self.backbone.lm_head(inner.norm(h[:, -1])).float()
+        if final_hidden:   # P2.5 residual readout: after every injection, MLP and the final norm
+            out["final_hidden"] = inner.norm(h[:, -1]).float()
         return out
 
     def _sgm_layer(self, layer, i, h, state, kw, write, oracle, reads, trace):
