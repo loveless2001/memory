@@ -25,6 +25,7 @@ from .backend import SparseGrowingMemoryBackend
 from .config import SGMConfig
 from .synthetic_binding_task import N_VALUES, BindingTaskSpec, sample_batch
 from .address_supervision import address_pair_loss, bound_value_positions
+from .training_resume_checkpoint import restore_training_state, training_state
 from .synthetic_pilot_evaluation import bank_telemetry, ingest, query_logits
 
 ARMS = ("learned", "single_cell", "random_fixed", "oracle", "memory_off")
@@ -148,10 +149,15 @@ def _snapshot(runtime) -> dict[str, list[torch.Tensor]]:
             for l, a in runtime.adapters.items() for n, ps in a.param_groups().items()}
 
 
-def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None) -> dict:
+def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None, *,
+          checkpoint_every: int = 0, on_checkpoint=None, resume: dict | None = None) -> dict:
     """Train; returns {"telemetry": [...], "runtime", "backend", "head"}.
     on_update(update, seconds): optional timing hook (P2.5 profile), called after
-    each optimizer step with the device synchronized; None changes nothing."""
+    each optimizer step with the device synchronized; None changes nothing.
+    Resume (P2.5 option A): on_checkpoint(step, state) receives a training_state
+    snapshot at the start of every iteration step % checkpoint_every == 0
+    (0 < step < steps); resume=<such a state> continues the run from that step.
+    Defaults (0 / None / None) change nothing."""
     runtime, backend, head = build(pcfg)
     params = [p for p in list(runtime.adapters.parameters()) + list(head.parameters())
               if p.requires_grad]
@@ -159,7 +165,14 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None) -> dic
     opt = torch.optim.AdamW(params, lr=pcfg.lr, weight_decay=0.0)
     spec, gen = pcfg.task_spec(), torch.Generator().manual_seed(pcfg.seed)
     telemetry, checkpoints = [], {}
-    for step in range(pcfg.steps + 1):
+    start = 0
+    if resume is not None:          # telemetry rows already logged by the interrupted attempt
+        start = restore_training_state(resume, pcfg, runtime, head, opt, gen)
+        telemetry, checkpoints = list(resume["telemetry"]), dict(resume["checkpoints"])
+    for step in range(start, pcfg.steps + 1):
+        if (on_checkpoint is not None and checkpoint_every > 0 and step % checkpoint_every == 0
+                and 0 < step < pcfg.steps and step != start):
+            on_checkpoint(step, training_state(step, pcfg, runtime, head, opt, gen, telemetry, checkpoints))
         if step in pcfg.checkpoint_steps:      # state after exactly `step` updates
             checkpoints[step] = {"adapters": {k: v.detach().clone() for k, v in runtime.adapters.state_dict().items()},
                                  "head": {k: v.detach().clone() for k, v in head.state_dict().items()}}

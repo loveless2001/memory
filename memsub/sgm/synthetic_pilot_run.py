@@ -56,7 +56,16 @@ def _versions() -> dict:
 
 def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
               final_batch_size: int = 16, extra_manifest: dict | None = None,
-              final_seed_base: int = EVAL_SEED_FINAL) -> dict:
+              final_seed_base: int = EVAL_SEED_FINAL, train_checkpoint: Path | None = None,
+              checkpoint_every: int = 0) -> dict:
+    """train_checkpoint (P2.5 option A resume): training state is saved there every
+    `checkpoint_every` updates; if the file already exists, training RESUMES from it
+    (the out_dir is still fresh: the interrupted attempt's telemetry rows are
+    re-written from the checkpoint). Defaults change nothing."""
+    from .training_resume_checkpoint import load as load_checkpoint, save_atomic
+    resume = None
+    if train_checkpoint is not None and Path(train_checkpoint).exists():
+        resume = load_checkpoint(train_checkpoint)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=False)
     started = time.time()
@@ -69,12 +78,18 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
     def log(row):
         tele_f.write(json.dumps(row, default=float) + "\n"); tele_f.flush()
 
+    for row in (resume or {}).get("telemetry", []):
+        log(row)
+
     def dev_eval(backend, head, step):
         return evaluate(backend, head, spec, pcfg.arm, pcfg.readout, split="heldout",
                         batches=pcfg.eval_batches, batch_size=pcfg.batch, seed=EVAL_SEED_DEV,
                         filler_writes=pcfg.filler_writes)
 
-    result = train(pcfg, log=log, evaluate_fn=dev_eval)
+    result = train(pcfg, log=log, evaluate_fn=dev_eval, resume=resume,
+                   checkpoint_every=checkpoint_every if train_checkpoint is not None else 0,
+                   on_checkpoint=(None if train_checkpoint is None
+                                  else lambda _step, state: save_atomic(state, train_checkpoint)))
     backend, head = result["backend"], result["head"]
     manifest = {"experiment": "m4-sgm-v0", "phase": "P2", "mode": "research_only",
                 "result_label": pcfg.result_label(), "pilot_config": asdict(pcfg),
@@ -87,6 +102,8 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
                 "trained_parameters_sha256": save_trained_parameters(
                     result["runtime"], head, out_dir / "trained_parameters.safetensors"),
                 **(extra_manifest or {})}
+    if resume is not None:
+        manifest["resumed_from_step"] = int(resume["step"])
     per_example: list[dict] = []
     metrics = {"result_label": pcfg.result_label(), "arm": pcfg.arm,
                "n_bindings": pcfg.n_bindings, "seed": pcfg.seed, "steps": pcfg.steps,
