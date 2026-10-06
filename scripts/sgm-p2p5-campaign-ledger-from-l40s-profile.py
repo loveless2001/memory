@@ -10,6 +10,9 @@ prices; touches no Modal API. Two bases, both reported:
 Preemption is NOT priced: a lost cell is not retried under the current protocol.
 
     .venv/bin/python scripts/sgm-p2p5-campaign-ledger-from-l40s-profile.py
+    (re-pricing, e.g. the v2 re-timing: --profile <profile.json> --out <NEW file> --runner <runner>
+     --artifact-eval-batches 52 --artifact-eval-batches-memory-off 20; defaults reproduce the
+     original v1 ledger byte for byte, codex 21469/21471: original outputs are preserved)
 """
 
 import importlib.util
@@ -25,6 +28,8 @@ OUT = EVID / "campaign-ledger-from-profile.json"
 
 DEADLINE_FACTOR, SINKS, PROFILED_N = 1.4, 4, 32
 ARTIFACT_EVAL_BATCHES = 16      # ASSUMPTION: the 18-cell runner is not built yet; 256 episodes like readings
+ARTIFACT_EVAL_BATCHES_MEMORY_OFF = 16   # same assumption (overridable: run_pilot reuse = 52 memory / 20 off)
+RUNNER = "modal-runners/modal-m4-sgm-p2p5-l40s-timing-profile.py"
 READINGS_BATCHES = 16           # prereg: 16 batches x 16 per (arm, N, seed) population
 MEMORY_INTERVENTIONS = 3        # none / bank_derange / read_offset; memory_off: none only
 PARITY_ALLOWANCE = 0.10         # ASSUMPTION: legacy/episode parity re-evaluation inside the readings run
@@ -32,7 +37,7 @@ FIXED_MARGIN_USD = 5.0
 
 
 def runner():
-    spec = importlib.util.spec_from_file_location("p2p5_prof", ROOT / "modal-runners/modal-m4-sgm-p2p5-l40s-timing-profile.py")
+    spec = importlib.util.spec_from_file_location("p2p5_prof", ROOT / RUNNER)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
@@ -56,7 +61,7 @@ def cell_seconds(cfgs: dict, timing_arm: str, n: int, base: dict, scale: bool, s
              + phase2_updates * cfgs[(timing_arm, f1)]["mean_measured_s_per_update"] * k(f1))
     eval_batch = max(cfgs[(timing_arm, f)]["dev_eval_batch_s"] for f in (f0, f1)) * k(eval_f)
     dev = (steps // base["eval_every"] + 1) * base["eval_batches"] * eval_batch
-    art = ARTIFACT_EVAL_BATCHES * eval_batch
+    art = (ARTIFACT_EVAL_BATCHES_MEMORY_OFF if timing_arm == "memory_off" else ARTIFACT_EVAL_BATCHES) * eval_batch
     return {"train_s": train, "dev_eval_s": dev, "artifact_eval_s": art, "startup_s": startup_s,
             "wall_s": train + dev + art + startup_s, "eval_batch_s": eval_batch}
 
@@ -109,7 +114,10 @@ def ledger() -> dict:
     out["assumptions"] = [
         "single_cell, random_fixed and oracle are priced at the measured 'learned' timing (not profiled)",
         "bound: N16 at the measured N32 timing; estimate: N16 scaled by serial step count (intercept shown)",
-        f"artifact eval {ARTIFACT_EVAL_BATCHES} batches per cell; parity allowance {PARITY_ALLOWANCE:.0%} of readings",
+        (f"artifact eval {ARTIFACT_EVAL_BATCHES} batches per cell; parity allowance {PARITY_ALLOWANCE:.0%} of readings"
+         if ARTIFACT_EVAL_BATCHES == ARTIFACT_EVAL_BATCHES_MEMORY_OFF else
+         f"artifact eval {ARTIFACT_EVAL_BATCHES} batches per memory cell, {ARTIFACT_EVAL_BATCHES_MEMORY_OFF} per "
+         f"memory_off cell; parity allowance {PARITY_ALLOWANCE:.0%} of readings"),
         "startup = profile runner STARTUP_S per container; list prices from the profile runner (modal.com 2026-10-06)",
         "preemption not priced: cells run hours on preemptible L40S and a lost cell is not retried",
     ]
@@ -117,6 +125,18 @@ def ledger() -> dict:
 
 
 if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--profile", type=Path, default=PROFILE)
+    ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--runner", default=RUNNER)
+    ap.add_argument("--artifact-eval-batches", type=int, default=ARTIFACT_EVAL_BATCHES)
+    ap.add_argument("--artifact-eval-batches-memory-off", type=int, default=ARTIFACT_EVAL_BATCHES_MEMORY_OFF)
+    a = ap.parse_args()
+    if a.out.resolve() != OUT.resolve() and a.out.exists():
+        raise SystemExit(f"refusing to overwrite {a.out}")
+    PROFILE, OUT, RUNNER = a.profile, a.out, a.runner
+    ARTIFACT_EVAL_BATCHES, ARTIFACT_EVAL_BATCHES_MEMORY_OFF = a.artifact_eval_batches, a.artifact_eval_batches_memory_off
     led = ledger()
     OUT.write_text(json.dumps(led, indent=2))
     for b, v in led["bases"].items():
