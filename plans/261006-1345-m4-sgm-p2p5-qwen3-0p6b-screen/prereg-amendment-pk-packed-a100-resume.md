@@ -1,9 +1,11 @@
-# P2.5 Amendment PK — packed A100-80GB execution with durable checkpoint/resume (DRAFT v0.3)
+# P2.5 Amendment PK — packed A100-80GB execution with durable checkpoint/resume (DRAFT v0.4)
 
 Amends prereg v0.2 (`3bf8737`, sha 0ce61a09…; file unchanged). User 21549 chose "A: plan a packed P2.5".
 History: v0.1 `5c7f74f`; v0.2 `2c99725` (codex 21551); **v0.3 = codex 21553 items 1–6** (cell state machine,
 durable generations/ownership, terminal TRAINED/eval-only state, cross-container proof, frozen proof acceptance and
-budget, restart lifetime) + one disclosed ledger correction (PK5: artifact-eval batch counts).
+budget, restart lifetime) + one disclosed ledger correction (PK6: artifact-eval batch counts); **v0.4 = codex 21556
+items 1–4** (fenced epoch-scoped state, logical vs physical update accounting, frozen comparison schema with a
+stability gate on the control, restart pricing incl. repeated evaluation; frozen proof eval multiplicities).
 Basis (dev evidence, audited; not a price or correctness claim): stage-1 GPU parity (`c17cfcc`), registered L40S
 re-timing v2 (`4e22bae`), packing test (`6686215`: A100-80GB fixed-work P2 k=2 1.928×, P1 k=3 2.118×).
 
@@ -30,17 +32,32 @@ their bytes. New outputs go only to new paths.
   induced OOM) can still end both; a container loss follows PK2's restart rule, a worker exit does not.
 
 ## PK2 — Durable cell state machine (volume `memsub-artifacts`, `m4-sgm/<group>/cells/<cell>/`)
-States (in `state.json`, the cell's single durable pointer): **NEW** (no state file) → **STARTED** → **TRAINED** →
+**Fencing by epoch-scoped immutable state (codex 21556 #1; Modal Volumes are last-write-wins without locks).** There
+is NO shared mutable pointer. Admitted start m of a slot (epoch m, from the atomic Dict claim `slot-<k>-start-<m>`)
+writes ONLY inside `cells/<cell>/epoch-<m>/` (its own `state.json`, its own immutable generations
+`gen-<g>-step<s>.pt`, its own attempt dirs); no epoch ever writes into another epoch's directory, so a stale writer
+cannot overwrite or mix into newer state. **Authority** = the highest admitted epoch (Dict) that has an
+acknowledged record for the cell; its `state.json` records the exact inherited predecessor (epoch, generation,
+sha) and therefore one consistent chain. Records an older epoch writes after a newer epoch acknowledged its
+inheritance are retained but never selected. **Acknowledge-before-work:** at every start, before any training or
+evaluation of a cell, the epoch writes and commits its STARTED/inheritance record (identity, predecessor) — so an
+admitted epoch without an acknowledged record for a cell did no work on it. **Declared recovery policy:** a cell's
+state is that of the latest acknowledged record along the admission order; if no epoch ever acknowledged it, it is
+NEW-by-recovery (recorded as such, with the admitted-but-unacknowledged epochs listed); it never silently becomes NEW
+once any record exists. Terminal records (FAILED, LOST, COMPLETE) are inherited and never re-run. A CPU interleaving
+test changes ownership between an old epoch's check and its publication and asserts the newer chain is selected.
+
+States (in each epoch's `state.json`; authority as above): **NEW** (no state file) → **STARTED** → **TRAINED** →
 **COMPLETE**; terminal side states **FAILED** and **LOST**. Precedence on every start: COMPLETE, FAILED and LOST are
 terminal and never re-run, whatever later container losses happen; TRAINED → eval-only consumer; STARTED → resume
 from the acked generation, or (no acked generation yet) a declared from-scratch replay of ≤ C updates (the fresh
 build is deterministic from the cell seed; the replay is recorded); NEW → fresh start.
 - **Attempt directories:** every start of a cell uses a fresh `attempt-<a>/` (run_pilot's out_dir must not exist).
   Interrupted attempt directories are never deleted; they are marked `interrupted` in the pointer history.
-- **Immutable checkpoint generations:** `ckpt/gen-<g>-step<s>.pt` (format `m4-sgm-train-resume-v1`), written once,
-  sha256 recorded. Generation g is DURABLE only after the slot supervisor (the container's main process) has (i)
-  verified the file hash, (ii) atomically replaced `state.json` to point at it, (iii) called `Volume.commit()` and
-  (iv) written the worker's ack. The worker BLOCKS after each checkpoint until its ack, so no update runs past a
+- **Immutable checkpoint generations:** `epoch-<m>/gen-<g>-step<s>.pt` (format `m4-sgm-train-resume-v1`), written
+  once, sha256 recorded. Generation g is DURABLE only after the slot supervisor (the container's main process) has
+  (i) verified the file hash, (ii) atomically replaced its OWN epoch's `state.json` to point at it, (iii) called
+  `Volume.commit()` and (iv) written the worker's ack. The worker BLOCKS after each checkpoint until its ack, so no update runs past a
   non-durable checkpoint: lost work on any container loss is ≤ C updates (+ the in-flight update).
 - **Cadence:** C = 50 updates for campaign cells (checkpoints at 50, 100, …, 1450) plus the **terminal generation
   at step = steps (1500)**, taken at the start of the final loop iteration (before the step-1500 dev eval), which
@@ -58,10 +75,9 @@ build is deterministic from the cell seed; the replay is recorded); NEW → fres
   the cell's grid expansion; memsub source sha, slot-runner sha, pinned environment (python/torch/CUDA/transformers,
   TF32 off) and model-file hashes == the slot's first-start identity (stored in the pointer); format string; step ∈
   {C, 2C, …, steps}; checkpoint file sha == pointer sha. RNG/optimizer/data state come from the checkpoint.
-- **Ownership:** one owner per cell = the current admitted attempt of its slot. Each admitted start atomically claims
-  `slot-<k>-start-<n>` in a Modal Dict and writes it as `owner` into the pointers it touches; before every commit the
-  supervisor re-reads the slot's current-attempt key and refuses (stops its workers, writes nothing) if it is no
-  longer the owner (stale-writer refusal). Every start calls `Volume.reload()` before reading pointers.
+- **Ownership:** each epoch owns only its own directory (above). As a liveness courtesy (not the safety
+  mechanism) a supervisor that sees a newer admitted start in the Dict stops its workers and writes nothing more.
+  Every start calls `Volume.reload()` before reading predecessor records.
 
 ## PK3 — Restart lifetime (R)
 - R = 3 restarts ⇒ **at most 4 admitted starts per slot**. Admission = atomic Dict claim (survives host loss) +
@@ -72,10 +88,16 @@ build is deterministic from the cell seed; the replay is recorded); NEW → fres
 - No worker-level retry; no operator retry, rescue, reseeding, recipe/precision/batch change or re-pairing.
 
 ## PK4 — Per-cell validation additions
-Pointer history consistent (generations strictly increasing, every resume's from-step == an acked generation step,
-TRAINED only after the terminal generation, COMPLETE only after validated outputs); telemetry rows continuous with no
-duplicated or missing update ids; co-tenant recorded and == PK1; exactly 1500 optimizer updates in total per cell
-(update-id ledger across attempts). Everything else exactly as v0.2.
+Authoritative chain consistent (each epoch's predecessor link exists with matching sha, generations strictly
+increasing along the chain, every resume's from-step == an acknowledged generation step, TRAINED only after the
+terminal generation, COMPLETE only after validated outputs); co-tenant recorded and == PK1.
+**Update accounting (codex 21556 #2):** exactly **1500 logical updates** along the selected chain (proof: 8):
+logical update u is the one whose result is carried by the chain's next generation. **Physical executions** (all
+updates actually run, incl. those lost after the last acknowledged generation and replayed, and any discarded stale-
+epoch work) are retained with their attempt/epoch and charged separately (e.g. a loss at physical step 75 after
+durable step 50 gives 1525 executions, 1500 logical updates). Eval-only recovery adds zero updates. The final
+telemetry is the chain's: rows of logical updates only, continuous, no duplicate or missing ids.
+Everything else exactly as v0.2.
 
 ## PK5 — Proof before any campaign spend (needs its own user approval; budget = a computed reservation)
 Runs the REAL slot runner + supervisor + resume consumer in proof mode on A100-80GB. Proof mode = a separate grid
@@ -89,29 +111,46 @@ artifact 8_800_011+s, train-split 8_800_021+s (never 4242 / 555_001 / 9_100_003 
    COMPLETE. Both container ids and generation hashes retained.
 3. **Terminal/eval interruption C:** fault injected during the artifact eval after TRAINED → fresh container →
    eval-only consumer → COMPLETE; the update ledger shows exactly 8 updates; the partial eval attempt preserved.
-4. **FAILED persistence D:** worker rank 1 injected to exit 3 at step 2 (FAILED), then a container fault after rank
-   0's step-4 ack → fresh container: rank 1 stays FAILED (not started), rank 0 resumes → COMPLETE.
+4. **FAILED persistence D:** worker rank 1 injected to exit 3 at step 2; its FAILED record is **acknowledged
+   (committed) before** a container fault injected after rank 0's step-4 ack → fresh container: rank 1 stays FAILED
+   (not started), rank 0 resumes → COMPLETE.
 5. **Packed vs alone E:** seed-99 learned alone (k = 1 slot) vs its packed run in A.
 6. **Packed timing T (all 9 slot types × phases 1, 2 = 18 configs):** k = 2, 2 warmup + 4 measured updates, one
    dev-shaped and one artifact-shaped eval batch per config, one repeat, threads 2; plus checkpoint+commit time.
    Any OOM/error/incomplete config ⇒ no ledger.
-**Acceptance (frozen):** comparisons over per-update loss, name-bound gradients (full expected parameter name list
-and shapes), final weights, dev/artifact predictions and accuracies; all values finite; bitwise status reported.
-If A ≡ A′ bitwise, then B, C, D-rank-0 and E must be bitwise ≡ A on that scope; otherwise each value must satisfy
-|x − x_A| ≤ max(1e-5 · max|x_A|, 1e-8) per tensor, with identical predictions. Training-telemetry numeric fields are
-compared too (finite, |Δ| ≤ same rule). Any failure in 1–5 stops the packed plan (report + options); any T failure
+**Proof eval multiplicities (frozen; codex 21556 #4):** in-run dev evals at steps 0, 4, 8 × 1 batch × 16; the
+run_pilot artifact eval with final_batches = 1 per intervention and the train-split eval at its implemented
+max(2, final_batches // 4) = **2** batches: learned/random_fixed/oracle 5 × 1 + 2 = 7 batches, single_cell 4 × 1 + 2
+= 6 (coord_shuffle N/A), memory_off 1 + 2 = 3. T configs: exactly one dev-shaped (filler 40, batch 16) and one
+artifact-shaped eval batch per config.
+**Comparison schema (frozen; codex 21556 #3).** Scientific equivalence scope: per-logical-update loss; gradients by
+the full expected parameter-name list with shapes (adapters of layers 6/13/20/27 + residual head; the frozen
+backbone never appears); final weights (all adapter + head tensors, names and shapes); every dev/artifact metric
+numeric field and every per-example row (ids, predictions, correctness); training-telemetry numeric fields except
+scheduling clocks. Explicit N/A values are compared as N/A and must match exactly: `aux_address_mse = None` (λ = 0),
+single_cell `heldout_coord_shuffle = None`, memory_off intervention set = {none}. **Excluded** from equivalence but
+validated (finite, ≥ 0, within the run's deadline): `sec_per_step`, `wall_seconds`, timestamps, hosts, container/
+attempt/epoch ids and other provenance. Any missing field, extra field, shape mismatch, NaN/inf or N/A mismatch FAILS.
+**Control first:** A′ is compared to A. Bitwise ⇒ B, C, D-rank-0 and E must be bitwise ≡ A on the scope. Not bitwise
+⇒ A′ must itself pass |x − x_A| ≤ max(1e-5 · max|x_A|, 1e-8) per tensor/field with identical predictions, else the
+control is UNSTABLE and the proof stops (no tolerance branch); if it passes, B, C, D-rank-0 and E must pass the same
+rule. Any failure in 1–5 stops the packed plan (report + options); any T failure
 blocks the ledger. No automatic scope reduction or retry. Budget: a complete charged reservation (every container
 start, model loads, timing configs, commits, teardown, image build, margin, 2× CPU/RAM basis) is computed and
 posted before the approval request; ≲ $2 is a target only.
 
 ## PK6 — Priced estimate / reservation (only after PK5 PASS; not a price guarantee)
-Per slot: life = max(paired cell walls) at the PK5 k = 2 timings (+ measured checkpoint/commit overhead) × 1.4 +
-startup + 3 restarts × (startup + ≤ C updates + checkpoint reload); artifact eval at the run_pilot batches **as
+Per slot: life = max(paired cell walls) at the PK5 k = 2 timings (+ measured checkpoint/serialization/commit
+overhead per generation) × 1.4 + startup + **3 restarts × (startup + model load + checkpoint reload + C updates +
+the in-flight update + one complete repeat of the longest evaluation attempt** (a loss near the end of the terminal
+dev/artifact evaluation repeats the whole evaluation attempt)), all inside the slot's four-start lifetime deadline; artifact eval at the run_pilot batches **as
 implemented: 5 interventions × 16 + 4 train-split = 84 batches (learned/random_fixed/oracle), 68 (single_cell,
 coord_shuffle not applicable), 20 (memory_off)** — correcting the earlier 52/20 basis, which assumed 3 interventions;
 all 9 slots (parallel), readings run, parity, image build, reaper, teardown, fixed margin; A100-80GB + 8 cores +
 64 GiB list prices on the audited 2× CPU/RAM basis. Assumptions stated (preemption rate, restart count, queueing).
-The user cap is requested on the planning reserve.
+The user cap is requested on the planning reserve. For reference only (old L40S single-process model, not a packed
+quote): codex's pure-CPU correction of the v2 ledger to 84/68/20 gives $160.43 estimate / $273.79 reserve (was
+$158.38 / $270.52; `plans/reports/codex-261006-p2p5-pk-392b6bb-ledger-correction.json`).
 
 ## Gates
 1. Amendment PK clearance → implementation (slot runner, supervisor commit/ack protocol, state machine, eval-only
