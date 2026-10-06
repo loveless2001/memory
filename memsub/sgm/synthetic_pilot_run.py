@@ -47,6 +47,18 @@ def save_trained_parameters(runtime, head, path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _backbone_label(pcfg: PilotConfig) -> str:
+    """Manifest backbone description. The tiny text is unchanged (tiny manifests stay byte-identical);
+    the pretrained path names its pinned checkpoint — before Amendment PK the tiny text was written for
+    every backbone (codex 21585: stale label in the 10 PK-proof manifests, preserved as-is)."""
+    if pcfg.backbone == "tiny":
+        return "tiny-qwen3-random-v1 (frozen, random init seed 0)"
+    from .pinned_pretrained_qwen3_backbone import QWEN3_0P6B_BASE
+    if pcfg.backbone == "qwen3-0.6b-base":
+        return f"{QWEN3_0P6B_BASE['repo']}@{QWEN3_0P6B_BASE['revision']} (frozen, pinned, sha256-checked)"
+    raise ValueError(f"unknown backbone {pcfg.backbone}")
+
+
 def _versions() -> dict:
     import transformers
     return {"torch": torch.__version__, "transformers": transformers.__version__,
@@ -101,7 +113,7 @@ def run_pilot(pcfg: PilotConfig, out_dir: Path, *, final_batches: int = 16,
     manifest = {"experiment": "m4-sgm-v0", "phase": "P2", "mode": "research_only",
                 "result_label": pcfg.result_label(), "pilot_config": asdict(pcfg),
                 "sgm_config": result["sgm_config"], "policy_id": result["policy_id"],
-                "backbone": "tiny-qwen3-random-v1 (frozen, random init seed 0)",
+                "backbone": _backbone_label(pcfg),
                 "ingest": "token_serial_full_gradient", "state_horizon_tokens": spec.source_len(),
                 "gradient_horizon_tokens": spec.source_len(), "versions": _versions(),
                 "final_eval_seed": final_seed_base + pcfg.seed,
