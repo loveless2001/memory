@@ -1,0 +1,261 @@
+{
+  "suite": "qwen-gpu",
+  "rtol": 1e-05,
+  "ref_memsub_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "cand_memsub_sha256": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085",
+  "cases": [
+    {
+      "config": {
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda",
+        "readout": "residual_head",
+        "arm": "learned",
+        "n_bindings": 32,
+        "batch": 16,
+        "steps": 2,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "filler_len": 40,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 140,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 33.432138061,
+      "cand_train_s": 19.695138977999996
+    },
+    {
+      "config": {
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda",
+        "readout": "residual_head",
+        "arm": "learned",
+        "n_bindings": 32,
+        "batch": 16,
+        "steps": 2,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "filler_len": 40,
+        "filler_len_schedule": [
+          [
+            0,
+            40
+          ]
+        ]
+      },
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 140,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 45.07587181700001,
+      "cand_train_s": 29.331666581000007
+    },
+    {
+      "config": {
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda",
+        "readout": "residual_head",
+        "arm": "oracle",
+        "n_bindings": 32,
+        "batch": 4,
+        "steps": 2,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "filler_len": 40,
+        "filler_len_schedule": [
+          [
+            0,
+            40
+          ]
+        ]
+      },
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 108,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 26.337049276000016,
+      "cand_train_s": 23.823538745999997
+    },
+    {
+      "config": {
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda",
+        "readout": "residual_head",
+        "arm": "single_cell",
+        "n_bindings": 32,
+        "batch": 4,
+        "steps": 2,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "filler_len": 40,
+        "filler_len_schedule": [
+          [
+            0,
+            40
+          ]
+        ]
+      },
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 108,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 24.096217281999998,
+      "cand_train_s": 22.092116467999972
+    },
+    {
+      "config": {
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda",
+        "readout": "residual_head",
+        "arm": "random_fixed",
+        "n_bindings": 32,
+        "batch": 4,
+        "steps": 2,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "filler_len": 40,
+        "filler_len_schedule": [
+          [
+            0,
+            40
+          ]
+        ]
+      },
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 108,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 27.93458889799996,
+      "cand_train_s": 23.88596795000001
+    },
+    {
+      "config": {
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda",
+        "readout": "residual_head",
+        "arm": "memory_off",
+        "n_bindings": 32,
+        "batch": 4,
+        "steps": 2,
+        "seed": 99,
+        "eval_every": 1000000000,
+        "filler_len": 40,
+        "filler_len_schedule": [
+          [
+            0,
+            40
+          ]
+        ]
+      },
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 52,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 8.26475730499999,
+      "cand_train_s": 8.474744873999953
+    }
+  ],
+  "self_test": {
+    "pass": false,
+    "max_rel": 0.9908984654940161,
+    "worst": "final/adapters.13.beta_proj.bias",
+    "problem": null,
+    "n_problems": 0
+  },
+  "self_test_perturbation_detected": true,
+  "isolation": {
+    "ok": true,
+    "leaks": [],
+    "ref_modules": {
+      "memsub_ref": "/tmp/memsub-ref-29asn_hj/memsub_ref/__init__.py",
+      "memsub_ref.sgm.config": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/config.py",
+      "memsub_ref.sgm": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/__init__.py",
+      "memsub_ref.errors": "/tmp/memsub-ref-29asn_hj/memsub_ref/errors.py",
+      "memsub_ref.runtime.compacted_prefix_cache": "/tmp/memsub-ref-29asn_hj/memsub_ref/runtime/compacted_prefix_cache.py",
+      "memsub_ref.hashing": "/tmp/memsub-ref-29asn_hj/memsub_ref/hashing.py",
+      "memsub_ref.fingerprint": "/tmp/memsub-ref-29asn_hj/memsub_ref/fingerprint.py",
+      "memsub_ref.runtime.hf_model_runtime": "/tmp/memsub-ref-29asn_hj/memsub_ref/runtime/hf_model_runtime.py",
+      "memsub_ref.runtime": "/tmp/memsub-ref-29asn_hj/memsub_ref/runtime/__init__.py",
+      "memsub_ref.sgm.delta_memory": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/delta_memory.py",
+      "memsub_ref.sgm.interpolation": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/interpolation.py",
+      "memsub_ref.sgm.layer_adapter": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/layer_adapter.py",
+      "memsub_ref.sgm.sparse_cell_bank": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/sparse_cell_bank.py",
+      "memsub_ref.sgm.session_state": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/session_state.py",
+      "memsub_ref.runtime.sgm_model_runtime": "/tmp/memsub-ref-29asn_hj/memsub_ref/runtime/sgm_model_runtime.py",
+      "memsub_ref.sgm.backend": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/backend.py",
+      "memsub_ref.sgm.synthetic_binding_task": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/synthetic_binding_task.py",
+      "memsub_ref.sgm.address_supervision": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/address_supervision.py",
+      "memsub_ref.sgm.synthetic_pilot_evaluation": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/synthetic_pilot_evaluation.py",
+      "memsub_ref.sgm.synthetic_pilot": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/synthetic_pilot.py",
+      "memsub_ref.sgm.pinned_pretrained_qwen3_backbone": "/tmp/memsub-ref-29asn_hj/memsub_ref/sgm/pinned_pretrained_qwen3_backbone.py"
+    },
+    "cand_modules": {
+      "memsub": "/root/repo/memsub/__init__.py",
+      "memsub.sgm.config": "/root/repo/memsub/sgm/config.py",
+      "memsub.sgm": "/root/repo/memsub/sgm/__init__.py",
+      "memsub.sgm.synthetic_binding_task": "/root/repo/memsub/sgm/synthetic_binding_task.py",
+      "memsub.errors": "/root/repo/memsub/errors.py",
+      "memsub.runtime.compacted_prefix_cache": "/root/repo/memsub/runtime/compacted_prefix_cache.py",
+      "memsub.hashing": "/root/repo/memsub/hashing.py",
+      "memsub.fingerprint": "/root/repo/memsub/fingerprint.py",
+      "memsub.runtime.hf_model_runtime": "/root/repo/memsub/runtime/hf_model_runtime.py",
+      "memsub.runtime": "/root/repo/memsub/runtime/__init__.py",
+      "memsub.sgm.delta_memory": "/root/repo/memsub/sgm/delta_memory.py",
+      "memsub.sgm.interpolation": "/root/repo/memsub/sgm/interpolation.py",
+      "memsub.sgm.layer_adapter": "/root/repo/memsub/sgm/layer_adapter.py",
+      "memsub.sgm.sparse_cell_bank": "/root/repo/memsub/sgm/sparse_cell_bank.py",
+      "memsub.sgm.session_state": "/root/repo/memsub/sgm/session_state.py",
+      "memsub.runtime.sgm_model_runtime": "/root/repo/memsub/runtime/sgm_model_runtime.py",
+      "memsub.sgm.backend": "/root/repo/memsub/sgm/backend.py",
+      "memsub.sgm.address_supervision": "/root/repo/memsub/sgm/address_supervision.py",
+      "memsub.sgm.training_resume_checkpoint": "/root/repo/memsub/sgm/training_resume_checkpoint.py",
+      "memsub.sgm.synthetic_pilot_evaluation": "/root/repo/memsub/sgm/synthetic_pilot_evaluation.py",
+      "memsub.sgm.synthetic_pilot": "/root/repo/memsub/sgm/synthetic_pilot.py",
+      "memsub.sgm.synthetic_pilot_run": "/root/repo/memsub/sgm/synthetic_pilot_run.py",
+      "memsub.sgm.pinned_pretrained_qwen3_backbone": "/root/repo/memsub/sgm/pinned_pretrained_qwen3_backbone.py"
+    }
+  },
+  "pass": true
+}
