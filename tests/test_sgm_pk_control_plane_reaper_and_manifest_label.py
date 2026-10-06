@@ -20,16 +20,31 @@ class FakeDict(dict):
         return True
 
 
-V = lambda n, i: True                                                   # noqa: E731  verifier: stopped
+import subprocess  # noqa: E402
+
+
+def launcher(kind, calls=None):
+    """Owned children: 'ok' exits 0 (verified), 'unverified' exits 3, 'hung' sleeps (unique tag)."""
+    def launch(name, app_id):
+        if calls is not None:
+            calls.append((name, app_id))
+        k = kind(name) if callable(kind) else kind
+        cmd = {"ok": ["true"], "unverified": ["sh", "-c", "exit 3"], "hung": ["sleep", "41.4243"]}[k]
+        return subprocess.Popen(cmd)
+    return launch
+
+
+def alive(tag="41.4243"):
+    return len(subprocess.run(["pgrep", "-fx", f"sleep {tag}"], capture_output=True, text=True).stdout.split())
 
 
 def test_only_overdue_apps_are_stopped_by_their_bound_ids():
     reg = {"slot-a": {"app_id": "ap-a", "deadline_epoch": 100.0}, "slot-b": {"app_id": "ap-b", "deadline_epoch": 500.0},
            "readings": {"app_id": "ap-r", "deadline_epoch": 50.0}}
     calls = []
-    out = cp.control_tick(reg, 200.0, lambda n, i: calls.append((n, i)), V)
+    out, self_due = cp.control_tick(reg, 200.0, launcher("ok", calls))
     assert sorted(calls) == [("readings", "ap-r"), ("slot-a", "ap-a")] and out["slot-b"] == "not due"
-    assert out["slot-a"] == "stopped_verified" and out["__unresolved__"] == []
+    assert out["slot-a"] == "stopped_verified" and out["__unresolved__"] == [] and not self_due
 
 
 @pytest.mark.parametrize("bad", [{"app_id": "ap-x"}, {"deadline_epoch": 1.0}, {"app_id": None, "deadline_epoch": 1.0},
@@ -38,46 +53,82 @@ def test_only_overdue_apps_are_stopped_by_their_bound_ids():
                                  {"app_id": "ap", "deadline_epoch": -5.0}, "garbage"])
 def test_malformed_entries_are_quarantined_never_name_only_stopped(bad):
     calls = []
-    out = cp.control_tick({"x": bad, "ok": {"app_id": "ap-ok", "deadline_epoch": 1.0}}, 10.0,
-                          lambda n, i: calls.append((n, i)), V)
+    out, _ = cp.control_tick({"x": bad, "ok": {"app_id": "ap-ok", "deadline_epoch": 1.0}}, 10.0, launcher("ok", calls))
     assert calls == [("ok", "ap-ok")] and out["x"].startswith("quarantined") and "x" in out["__unresolved__"]
     with pytest.raises(ValueError):
         cp.register(FakeDict(), "x", bad.get("app_id") if isinstance(bad, dict) else None,
                     bad.get("deadline_epoch") if isinstance(bad, dict) else None)
 
 
+def test_deadline_beyond_controller_horizon_is_held_not_ignored():
+    ctl = {"app_name": "control", "app_id": "ap-c", "deadline_epoch": 300.0}
+    out, self_due = cp.control_tick({"late": {"app_id": "ap-l", "deadline_epoch": 900.0}}, 301.0, launcher("ok"), ctl,
+                                    fallback_s=100.0)
+    assert out["late"].startswith("quarantined") and not self_due and out["__control__"] == "holding: unresolved targets"
+    with pytest.raises(ValueError):
+        cp.register(FakeDict(), "late", "ap-l", 900.0, horizon=300.0)
+
+
 def test_registration_is_write_once_and_never_reset():
     store = FakeDict()
     assert cp.register(store, "slot-a", "ap-a", 100.0)
-    assert not cp.register(store, "slot-a", "ap-other", 9e9)            # deadline can never be extended
+    assert not cp.register(store, "slot-a", "ap-other", 9e9)
     assert store["slot-a"] == {"app_id": "ap-a", "deadline_epoch": 100.0}
 
 
-def test_self_stop_holds_while_targets_unresolved_then_finite_fallback():
+def test_self_stop_holds_while_unresolved_then_finite_fallback():
     reg = {"slot-a": {"app_id": "ap-a", "deadline_epoch": 100.0}}
     ctl = {"app_name": "control", "app_id": "ap-c", "deadline_epoch": 300.0}
-    selfs, failing = [], lambda n, i: (_ for _ in ()).throw(RuntimeError("stop failed"))
-    out = cp.control_tick(reg, 301.0, failing, lambda n, i: False, ctl, lambda n, i: selfs.append(n), fallback_s=100.0)
-    assert selfs == [] and out["__control__"] == "holding: unresolved targets" and out["__unresolved__"] == ["slot-a"]
-    out = cp.control_tick(reg, 401.0, failing, lambda n, i: False, ctl, lambda n, i: selfs.append(n), fallback_s=100.0)
-    assert selfs == ["control"] and "fallback" in out["__control__"]
-    out = cp.control_tick(reg, 301.0, lambda n, i: None, V, ctl, lambda n, i: selfs.append(n))
-    assert out["__control__"] == "self stop issued"                     # all resolved: stops at its deadline
+    out, due1 = cp.control_tick(reg, 301.0, launcher("unverified"), ctl, fallback_s=100.0)
+    assert not due1 and out["__unresolved__"] == ["slot-a"]
+    out, due2 = cp.control_tick(reg, 401.0, launcher("unverified"), ctl, fallback_s=100.0)
+    assert due2 and "fallback" in out["__control__"]
+    out, due3 = cp.control_tick(reg, 301.0, launcher("ok"), ctl)
+    assert due3 and out["__control__"] == "self stop due"
 
 
-def test_hung_stop_request_cannot_starve_other_targets():
-    import threading
+def test_repeated_ticks_with_multiple_hung_targets_leave_no_workers():
     import time as _t
-    release = threading.Event()
-    reg = {"a-hung": {"app_id": "ap-h", "deadline_epoch": 1.0}, "b-ok": {"app_id": "ap-b", "deadline_epoch": 1.0}}
+    reg = {f"h{i}": {"app_id": f"ap-h{i}", "deadline_epoch": 1.0} for i in range(3)} | {"ok": {"app_id": "ap-ok", "deadline_epoch": 1.0}}
+    for _ in range(2):
+        t0 = _t.monotonic()
+        out, _ = cp.control_tick(reg, 10.0, launcher(lambda n: "ok" if n == "ok" else "hung"), request_timeout_s=0.4)
+        assert out["ok"] == "stopped_verified" and all("killed and reaped" in out[f"h{i}"] for i in range(3))
+        assert _t.monotonic() - t0 < 2 and alive() == 0                  # owned children killed AND reaped
 
-    def stopper(n, i):
-        if n == "a-hung":
-            release.wait(5)
-    t0 = _t.monotonic()
-    out = cp.control_tick(reg, 10.0, stopper, V, request_timeout_s=0.5)
-    release.set()
-    assert out["b-ok"] == "stopped_verified" and out["a-hung"] == "stop/verify timeout" and _t.monotonic() - t0 < 2
+
+def _ctl_app():
+    spec = importlib.util.spec_from_file_location("ctl3", ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-campaign-control-plane-reaper.py")
+    ctl = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ctl)
+    return ctl
+
+
+def test_finish_tick_persists_evidence_before_a_bounded_self_stop():
+    ctl, order = _ctl_app(), []
+    w = lambda o: (order.append("evidence"), subprocess.Popen(["true"]))[1]       # noqa: E731
+    st = ctl.finish_tick(cp, {"x": 1}, True, w, lambda: (order.append("self"), subprocess.Popen(["true"]))[1])
+    assert order == ["evidence", "self"] and st == {"evidence": "stopped_verified", "self_stop": "stopped_verified"}
+    bad = ctl.finish_tick(cp, {}, True, lambda o: subprocess.Popen(["sh", "-c", "exit 1"]),
+                          lambda: subprocess.Popen(["true"]))                     # write failure still self-stops
+    assert bad["evidence"].startswith("unverified") and bad["self_stop"] == "stopped_verified"
+    hung = ctl.finish_tick(cp, {}, True, lambda o: subprocess.Popen(["true"]),
+                           lambda: subprocess.Popen(["sleep", "41.4243"]), timeout_s=0.4)
+    assert "killed and reaped" in hung["self_stop"] and alive() == 0
+    written = []
+
+    def immediate():                                                              # self-stop terminates us at once
+        raise SystemExit("terminated")
+    with pytest.raises(SystemExit):
+        ctl.finish_tick(cp, {"term": 1}, True, lambda o: (written.append(o), subprocess.Popen(["true"]))[1], immediate)
+    assert written == [{"term": 1}]                                               # evidence already persisted
+
+
+def test_slot_runner_horizon_constants_match_the_controller():
+    ctl = _ctl_app()
+    src = (ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py").read_text()
+    assert f"VALIDATION_SETUP_S, CONTROL_SLACK_S = {ctl.VALIDATION_SETUP_S}, {ctl.SLACK_S}" in src
+    assert f'CONTROL_GUARD_DICT = "{ctl.CONTROL_GUARD}"' in src and f'"{ctl.REGISTRY_DICT}"' in src
 
 
 def test_unarmed_controller_is_not_due_on_its_first_tick():

@@ -55,27 +55,55 @@ def control_view(guard, now: float, own_app_id) -> dict:
             "deadline_epoch": deadline}
 
 
-def verify_stopped(app_name: str, app_id: str) -> bool:
-    """Read-only: the bound app is stopped with no tasks (or no longer listed)."""
+# owned child: stop-first by BOUND id, then verify stopped (exit 0) or not (exit 3); killed + reaped on deadline
+CHILD = ("import importlib.util, json, subprocess, sys\n"
+         "spec = importlib.util.spec_from_file_location('s', sys.argv[3]); s = importlib.util.module_from_spec(spec)\n"
+         "spec.loader.exec_module(s)\n"
+         "try:\n    s.stop_bound_app(sys.argv[1], sys.argv[2], 'main')\nexcept Exception:\n    pass\n"
+         "rows = json.loads(subprocess.run([sys.executable, '-m', 'modal', 'app', 'list', '--json'], check=True,"
+         " capture_output=True, text=True, timeout=15).stdout)\n"
+         "mine = [r for r in rows if r.get('app_id') == sys.argv[2]]\n"
+         "sys.exit(0 if not mine or (str(mine[0].get('state', '')).lower() == 'stopped'"
+         " and str(mine[0].get('tasks')) == '0') else 3)\n")
+
+
+def launch_stop(name: str, app_id: str):
     import subprocess
-    rows = json.loads(subprocess.run([sys.executable, "-m", "modal", "app", "list", "--json"], check=True,
-                                     capture_output=True, text=True, timeout=15).stdout)
-    mine = [r for r in rows if r.get("app_id") == app_id]
-    return not mine or (str(mine[0].get("state", "")).lower() == "stopped" and str(mine[0].get("tasks")) == "0")
+    return subprocess.Popen([sys.executable, "-c", CHILD, name, app_id, str(Path(__file__).with_name(SHARED))],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def finish_tick(cp, out: dict, self_due: bool, write_evidence, self_stop, timeout_s: float = 20.0) -> dict:
+    """Evidence FIRST (bounded owned child), THEN the bounded self-stop (codex 21602 #2): a failed or hung
+    write cannot delay shutdown, and an immediate self-termination cannot lose the terminal map."""
+    status = {"evidence": cp.run_owned({"evidence": write_evidence(out)}, timeout_s)["evidence"]}
+    if self_due:
+        status["self_stop"] = cp.run_owned({"self": self_stop()}, timeout_s)["self"]
+    return status
 
 
 @app.function(image=image, schedule=modal.Period(seconds=PERIOD_S), cpu=0.125, memory=256, timeout=110,
               max_containers=1, retries=0)
 def control() -> dict:
-    cp, shared = _load(LOGIC), _load(SHARED)
+    import subprocess
+    import tempfile
+    cp = _load(LOGIC)
     registry = dict(modal.Dict.from_name(REGISTRY_DICT, create_if_missing=True).items())
     guard = modal.Dict.from_name(CONTROL_GUARD, create_if_missing=True)
-    stop = lambda name, app_id: shared.stop_bound_app(name, app_id, ENVIRONMENT)       # noqa: E731  (id-bound)
-    own = lambda: modal.App.lookup(APP_NAME, environment_name=ENVIRONMENT).app_id     # noqa: E731
-    out = cp.control_tick(registry, time.time(), stop, verify_stopped, control_view(guard, time.time(), own), stop,
-                          request_timeout_s=REQUEST_TIMEOUT_S, fallback_s=FALLBACK_S)
-    modal.Dict.from_name(f"{CONTROL_GUARD}-ticks", create_if_missing=True).put(str(int(time.time())), out)
-    return out
+    own = lambda: modal.App.lookup(APP_NAME, environment_name=ENVIRONMENT).app_id       # noqa: E731
+    view = control_view(guard, time.time(), own)
+    out, self_due = cp.control_tick(registry, time.time(), launch_stop, view, REQUEST_TIMEOUT_S, FALLBACK_S)
+
+    def write_evidence(o):
+        f = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        json.dump(o, f)
+        f.close()
+        code = ("import json, sys, time, modal\n"
+                f"modal.Dict.from_name('{CONTROL_GUARD}-ticks', create_if_missing=True)"
+                ".put(str(int(time.time())), json.load(open(sys.argv[1])))\n")
+        return subprocess.Popen([sys.executable, "-c", code, f.name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return {**out, "__finish__": finish_tick(cp, out, self_due, write_evidence,
+                                             lambda: launch_stop(APP_NAME, view["app_id"]))}
 
 
 def arm() -> None:

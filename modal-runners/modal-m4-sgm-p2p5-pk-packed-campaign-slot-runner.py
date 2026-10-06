@@ -27,6 +27,8 @@ GRID_FILE = "configs/m4_sgm_p2p5_grid.json"
 REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "configs/m4_sgm_p2p5_campaign_output_schema.json"
 PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
 CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
+CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-guard"
+VALIDATION_SETUP_S, CONTROL_SLACK_S = 3600, 1800          # must equal the control app's (tested)
 GROUP, LOCAL_OUT = "p2p5-qwen3-0p6b-screen-v1", "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
 GPU, CPU_CORES, MEMORY_GIB, MAX_STARTS, C, EARLY_S = "A100-80GB", 8.0, 64, 4, 50, 120
@@ -193,8 +195,15 @@ def spawn() -> None:
         "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
     cp = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cp)
+    control_deadline = modal.Dict.from_name(CONTROL_GUARD_DICT).get("deadline_epoch", None)
+    if not cp.finite_pos(control_deadline):
+        raise SystemExit("control-plane reaper not armed: refusing to spawn")
+    readings_reserve = json.loads(Path(PRICE_FILE).read_text())["readings"]["reserve_life_s"]
+    latest_ok = control_deadline - VALIDATION_SETUP_S - readings_reserve - CONTROL_SLACK_S
+    if prov["deadline_epoch"] > latest_ok:                 # the controller must cover this slot AND the readings after it
+        raise SystemExit(f"slot deadline beyond the controller horizon by {prov['deadline_epoch'] - latest_ok:.0f} s")
     if not cp.register(modal.Dict.from_name(CONTROL_REGISTRY_DICT, create_if_missing=True), APP_NAME,
-                       prov["deployed_app_id"], prov["deadline_epoch"]):
+                       prov["deployed_app_id"], prov["deadline_epoch"], horizon=control_deadline):
         raise SystemExit("slot already registered with the control-plane reaper")
     call = modal.Function.from_name(APP_NAME, "run_slot").spawn(prov["expected_identity"]).object_id
     (root / "call.json").write_text(json.dumps({"call_id": call}))
