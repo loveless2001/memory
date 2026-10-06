@@ -1,6 +1,6 @@
 # M4-SGM — Sparse Growing Memory (research-only)
 
-Status: **P0–P2 complete; P2D and P2G diagnostics CLOSED (2026-10-06); P3 not authorized** (started 2026-10-05). Authorized in #gravity
+Status: **P0–P2 complete; P2D, P2G and P2C diagnostics CLOSED (2026-10-06); P3 not authorized** (started 2026-10-05). Authorized in #gravity
 msg 21068 ("commit the changes first then go, use modal for compute").
 Design brief: [plans/261005-0210-m4-sgm-p0-p2/m4-sgm-design-spec-v0.1.md](plans/261005-0210-m4-sgm-p0-p2/m4-sgm-design-spec-v0.1.md).
 Reviews: claude msg 21059 / [report](plans/reports/claude-261005-0155-m4-sgm-spec-review.md),
@@ -868,3 +868,87 @@ AUROCs; zero reserved-seed evaluations by the audit (audit JSON SHA256
 This closes the registered P2G study. Follow-up training, a curriculum
 variant or a P3 run is not authorized by it; any of these needs its own
 registration and user approval.
+
+## P2C — filler-length training curriculum (2026-10-06, CLOSED)
+
+**Registration and gates.** Prereg v0.2
+`plans/261006-0316-m4-sgm-p2c-filler-length-curriculum/prereg.md` (`0c8d358`,
+SHA256 `b1bafbbd…`), amended per codex v0.1 audit and cleared (#gravity 21387).
+User chose this pilot (21382). Implementation `e64266e` was held by codex
+(21390: toy readings smokes evaluated on the reserved seed VALUES — toy
+N4/16-episode tasks, not the registered N32/N64/256-episode population; the
+P2C wrapper did not bind the prereg file) and fixed at `8c3161a` (smokes on
+dev seeds with seed spies; prereg hash in the executed identity and inputs
+validation). Preflight r1 was aborted before output; r2 at `8c3161a` passed
+(8/8 parity, schedule smoke, start/end identity); full suite 206 passed with
+an explicit exit status (21393/21395). Final technical gate (21397); user
+approval (21398) scoped by codex to four cells, $12 cap, no retries (21400);
+codex bound the cap at `d47fe17` and cleared launch (21403).
+
+**Design.** Four 1500-update cells (P2 v2 `learned` recipe), group
+`p2c-filler-curriculum-v1`, `curriculum` N32/N64 s0/s1:
+`PilotConfig.filler_len_schedule = ((0, 0), (1000, 40))` changes only the
+filler LENGTH of training episodes (updates 0–999 no filler, 1000–1499 filler
+40); memsub source `09b05c16…`; the default empty schedule is bitwise the
+pre-knob trainer. No filler-token identity labels and no oracle write masks
+are used in training or evaluation; training still uses the task's
+supervised answer targets. Every registered evaluation is E=on with
+filler_len 40. Comparators: v2 at the same N, and the filler-off-trained
+reference evaluated E=on (P2G filleroff N32; P2D filleroff N64 s0 and top-up
+s1). Artifact eval on 9_300_011+s; reserved readings population 9_500_011+s.
+
+**Run.** App `ap-WCxVagWdH2A0O7sEhZnofv` (deploy + spawn, non-preemptible,
+`d47fe17`), spawned 10:10, all four `done`, app `stopped_verified` at 12:42;
+no failures, replays, untracked calls or HALT. Validation 4/4 `stream_ok`.
+App-filtered spend **$3.94734272** (provisional), under the $12 cap. Codex
+spawn, training-artifact and lifecycle/billing audits PASS (21405, 21408).
+
+**Registered readings** (single run at `d47fe17`; report
+`plans/261006-0316-m4-sgm-p2c-filler-length-curriculum/readings-v1/p2c-readings.json`,
+SHA256 `2fe1ab12be204abfa17e12292d73506954fb708bcee4677537821497dd04904b`;
+parity re-run 8/8 byte-equal; start/end identity equal). Heldout accuracy,
+E=on, s0 / s1:
+
+| N | v2 | reference (filler-off-trained) | curriculum |
+|---|---|---|---|
+| 32 | 2.8% / 2.8% | 76.9% / 72.7% | 60.5% / 64.9% |
+| 64 | 2.0% / 1.7% | 2.1% / 2.0% | 2.0% / 1.7% |
+
+- **N32: "SUPPORTS: the label-free filler-length curriculum reproducibly
+  beats v2 at N and recovers ≥ half of the filler-off-training reference."**
+  Curriculum − v2 +57.71 [54.31, 61.12] / +62.11 [59.10, 65.12]; reference −
+  v2 +74.02 / +69.82 (prerequisite met); half +20.70 [17.36, 24.04] / +27.20
+  [24.11, 30.29]; memory use passes both seeds. Descriptive gain fractions
+  77.97% / 88.95% are not a separate registered claim.
+- **N64: "no reproducible gain; curriculum−v2 contrast is positive gain ≥5pp
+  excluded."** Reference − v2 is also ≥5pp excluded, so half is null
+  (unavailable); memory use fails in every corner.
+- **Joint:** both-N support is false; there is no claim at both loads.
+
+**Descriptive only** (no registered suppression or mechanism test; no
+authority for an extension): curriculum pooled ρ 0.916 / 0.849 (v2 1.164 /
+1.088 at N32), so the N32 gain does not come with registered pooled filler
+suppression. The full-filler dev accuracy of the curriculum runs stays near
+chance through updates 0–900 and rises after filler is introduced (N32:
+9% / 34% at update 1200, 61% / 70% at 1500, not yet flat at the fixed
+endpoint). It measures transfer to full-filler episodes, not what was learned
+on no-filler episodes, and selects nothing.
+
+**Interpretation limits** (codex 21410): a recipe/distribution contrast, not
+a mechanism; filler_len 0 also shortens episodes, so "no filler" and "shorter
+episodes" are not separated; equal updates are not equal token or compute
+exposure. The N64 negative contrasts do not identify a different blocker and
+do not show that every earlier intervention was ineffective there. Cohorts
+differ in source and host; the Step 2 seed-0 prefix discrepancy remains
+unresolved. Synthetic tiny random backbone + task head; no R3, pretrained,
+scaling or P3 claim.
+
+**Audit.** Codex results audit PASS (21411): all 36,864 saved reserved-population
+rows, 12 corners, intervals, memory tests, half intervals, classifiers,
+readings and the joint flag recomputed; a dev-4242 replay matches every
+corner's four-head counts/means, ρ and AUROCs to 1e-12; zero reserved-seed
+re-evaluations (audit JSON SHA256 `b0bfc99e…`). Closure bundle with
+`RESULTS.md`, replay archive and checksums: `1260538` (21412).
+
+This closes the registered P2C study. No extension, follow-up training or P3
+run is authorized by it.
