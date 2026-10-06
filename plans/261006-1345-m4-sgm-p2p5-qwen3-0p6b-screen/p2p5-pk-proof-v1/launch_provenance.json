@@ -1,0 +1,47 @@
+{
+  "expected_identity": {
+    "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+    "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+    "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4",
+    "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+    "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+    "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c"
+  },
+  "ledger": {
+    "gpu_container_lifetime_usd": 8.1242784,
+    "reaper_usd": 0.017364599999999997,
+    "image_reserve_usd": 0.168384,
+    "fixed_margin_usd": 0.25,
+    "reserved_total_usd": 8.560027,
+    "expected_usd_hard_tuples": 4.4033184,
+    "expected_usd_2x_basis": 5.5587168,
+    "max_concurrent_gpu_containers": 1,
+    "app_lifetime_s": 6600,
+    "expected_serial_wall_s": 4680,
+    "max_starts": {
+      "A": 1,
+      "Aprime": 1,
+      "E": 1,
+      "B": 2,
+      "C": 2,
+      "D": 2
+    },
+    "unit_timeout_s": 2400,
+    "startup_timeout_s": 300,
+    "usd_per_container_hour_2x": 4.275936,
+    "assumptions": [
+      "the in-app reaper stops the whole app within one period + stop latency of the deadline",
+      "CPU/RAM requests charged at 2x (audited conservative basis); not a platform cash ceiling",
+      "list prices modal.com/pricing 2026-10-06",
+      "expected wall: 9 slot starts x ~5.5 min + timing ~28.5 min (packing/profile timings)"
+    ]
+  },
+  "spawn_epoch": 1791313081.805205,
+  "deadline_epoch": 1791319681.805205,
+  "runner_sha256": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+  "git_head": "d62602cafb81872e362fa334fd2e3d62755e5339",
+  "deployed_app_id": "ap-NtWFBICc4quJgMn9gUqeTB"
+}
