@@ -1,0 +1,23 @@
+P-on v2-n32-s0 evaluating
+P-on v2-n32-s1 evaluating
+P-on v2-n64-s0 evaluating
+P-on v2-n64-s1 evaluating
+P-off filleroff-n16-s0 evaluating
+P-off filleroff-n16-s1 evaluating
+P-off filleroff-n32-s0 evaluating
+P-off filleroff-n32-s1 evaluating
+N32 s0 v2 main-learned-n32-s0
+N32 s0 reference filleroff-learned-n32-s0
+N32 s0 curriculum curriculum-learned-n32-s0
+N32 s1 v2 main-learned-n32-s1
+N32 s1 reference filleroff-learned-n32-s1
+N32 s1 curriculum curriculum-learned-n32-s1
+N32 SUPPORTS: the label-free filler-length curriculum reproducibly beats v2 at N and recovers >= half of the filler-off-training reference
+N64 s0 v2 main-learned-n64-s0
+N64 s0 reference filleroff-learned-n64-s0
+N64 s0 curriculum curriculum-learned-n64-s0
+N64 s1 v2 main-learned-n64-s1
+N64 s1 reference filleroff-learned-n64-s1
+N64 s1 curriculum curriculum-learned-n64-s1
+N64 no reproducible gain; curriculum-v2 contrast is positive gain >=5pp excluded
+READINGS DONE 2fe1ab12be204abfa17e12292d73506954fb708bcee4677537821497dd04904b
