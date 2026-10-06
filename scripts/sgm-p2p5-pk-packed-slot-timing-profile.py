@@ -33,7 +33,7 @@ T = GRID["timing"]
 pk.WARMUP, pk.MEASURED = T["warmup"], T["measured"]          # 2 + 4 (the packing test used 2 + 6)
 pk.THREADS = T["threads"]
 DEV_POP = GRID["eval"]["dev_seed"]
-WALL_S = 50 * 60
+WALL_S = 2200                  # inside the runner's 2280 s child bound / 2400 s function timeout
 
 
 def worker(arm: str, n: int, phase: int, rank: int, k: int, barrier: Path, out: Path, parent: int,

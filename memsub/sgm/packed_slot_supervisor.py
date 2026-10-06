@@ -50,12 +50,13 @@ class SlotSupervisor:
     def __init__(self, *, root: Path, cells: dict[str, dict], epoch: int, admitted: list[int], identity: dict,
                  checkpoint_every: int, eval_cfg: dict, commit, reload, newer_start=lambda: False,
                  threads: int = 2, ack_timeout_s: float = 900.0, proof_capture: bool = False,
-                 faults: dict | None = None, poll_s: float = 0.05):
+                 faults: dict | None = None, poll_s: float = 0.05, provenance: dict | None = None):
         self.root, self.cells, self.epoch, self.admitted = Path(root), cells, epoch, admitted
         self.identity, self.C, self.eval_cfg = identity, checkpoint_every, eval_cfg
         self.commit, self.reload, self.newer_start = commit, reload, newer_start
         self.threads, self.ack_timeout_s, self.proof_capture = threads, ack_timeout_s, proof_capture
         self.faults, self.poll_s = faults or {}, poll_s
+        self.provenance = provenance or {}       # e.g. container id: recorded, never part of continuity
         self.records, self.procs, self.acked, self.finished = {}, {}, {}, set()
         self.fault_armed = False
 
@@ -71,6 +72,7 @@ class SlotSupervisor:
         for cell, pilot in self.cells.items():
             rec = es.inherit(self.cell_dir(cell), self.epoch, self.admitted, self.identity, pilot["steps"])
             prev = rec.get("history", [])
+            rec["provenance"] = self.provenance
             rec["physical"] = {"observed_updates": 0, "last_observed_update": None,
                                "resume_step": es.resume_point(rec)["step"] if rec["chain"] else 0}
             if prev:     # the predecessor's unobserved physical tail is bounded, never counted exactly
