@@ -43,7 +43,8 @@ EXTRA_COMMITS_PER_SLOT = 1   # final commit after the supervisor returns
 RELOAD_S = 30.0              # checkpoint + generation load on a resumed start (allowance)
 READ_LOAD_S = 30.0           # readings: trained-parameter load + validation per population (allowance)
 N_APPS = 10                  # 9 slot apps + 1 readings app, each its own guard/deadline (+ one control app)
-CONTROL_SLACK_S = 1800       # v4: ONE control-plane reaper schedule; its own deadline = longest app life + slack
+CONTROL_SLACK_S = 1800       # v4: ONE control-plane reaper schedule
+SPAWN_OFFSET_S, VALIDATION_SETUP_S, CONTROL_FALLBACK_S = 1800, 3600, 1800   # v5 (codex 21600 #1/#3) horizon
 READ_BATCHES, READ_INTERVENTIONS, PARITY, IMAGE_USD, MARGIN_USD = 16, 3, 0.10, 0.168384, 5.0
 
 
@@ -114,7 +115,9 @@ def main():
     longest = max(v["reserve_life_s"] for v in slots.values())
     tail = REAPER_PERIOD_S + STOP_LATENCY_S
     readings_life = readings_s * FACTOR                # ONE admitted start, retries 0: no restart allowance
-    control_life = max(longest, readings_life) + CONTROL_SLACK_S + tail
+    # v5: the controller covers the COMPLETE sequential horizon + its finite fallback window
+    control_life = (SPAWN_OFFSET_S + longest + VALIDATION_SETUP_S + readings_life + CONTROL_SLACK_S
+                    + CONTROL_FALLBACK_S + tail)
     reaper = control_life / REAPER_PERIOD_S * 110 * (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S)
     import subprocess
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256

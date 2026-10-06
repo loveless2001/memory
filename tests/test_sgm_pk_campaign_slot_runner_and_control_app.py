@@ -37,7 +37,7 @@ def test_unknown_slot_is_refused(monkeypatch):
 
 def test_each_slot_has_unique_identities_registered_pairing_and_deadline(monkeypatch):
     grid = json.loads((ROOT / "configs/m4_sgm_p2p5_grid.json").read_text())
-    price = json.loads((ROOT / "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v4.json").read_text())
+    price = json.loads((ROOT / "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json").read_text())
     names, cells_all = set(), set()
     for slot in SLOTS:
         m = load_slot(monkeypatch, slot)
@@ -56,6 +56,8 @@ def test_slot_admission_bound_and_deadline(monkeypatch):
     assert [m.admit(adm, guard, float(i))[0] for i in range(5)] == [1, 2, 3, 4, None]
     assert "deadline" in m.admit(FakeDict(), FakeDict(deadline_epoch=100.0), 101.0)[1]
     assert "deadline" in m.admit(FakeDict(), FakeDict(), 1.0)[1]
+    for bad in (float("nan"), float("inf"), True, -1.0):              # finite positive only (codex 21600 #4)
+        assert m.admit(FakeDict(), FakeDict(deadline_epoch=bad), 1.0)[0] is None
     assert m.EVAL == {"final_batches": 16, "final_batch_size": 16, "final_seed_base": 9_300_011, "dev_seed": 4242,
                       "train_eval_seed_base": 555_001}                 # registered populations; never 9_600_011
 
@@ -66,8 +68,8 @@ def test_control_app_deadline_armed_or_abandoned(monkeypatch):
     ctl = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctl)
     armed = FakeDict(app_id="ap-c", deadline_epoch=500.0)
-    assert ctl.control_view(armed, 10.0)["deadline_epoch"] == 500.0
+    assert ctl.control_view(armed, 10.0, lambda: "ap-c")["deadline_epoch"] == 500.0
     never = FakeDict()
-    v1 = ctl.control_view(never, 10.0)
-    v2 = ctl.control_view(never, 99.0)                                # first tick is write-once
+    v1 = ctl.control_view(never, 10.0, lambda: "ap-c")
+    v2 = ctl.control_view(never, 99.0, lambda: "ap-c")                  # first tick is write-once
     assert v1["deadline_epoch"] == v2["deadline_epoch"] == 10.0 + ctl.ABANDON_S

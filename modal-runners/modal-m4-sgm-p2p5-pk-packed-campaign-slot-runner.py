@@ -25,7 +25,7 @@ import modal
 
 GRID_FILE = "configs/m4_sgm_p2p5_grid.json"
 REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "configs/m4_sgm_p2p5_campaign_output_schema.json"
-PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v4.json"
+PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
 CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
 GROUP, LOCAL_OUT = "p2p5-qwen3-0p6b-screen-v1", "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
@@ -88,9 +88,11 @@ def slot_deadline_s() -> float:
 
 
 def admit(adm, guard, now: float) -> tuple[int | None, str | None]:
+    import math
     deadline = guard.get("deadline_epoch", None)
-    if not isinstance(deadline, (int, float)) or now > deadline:
-        return None, "past the slot deadline (or deadline unset)"
+    if not (isinstance(deadline, (int, float)) and not isinstance(deadline, bool) and math.isfinite(deadline)
+            and deadline > 0) or now > deadline:                     # finite positive only (codex 21600 #4)
+        return None, "past the slot deadline (or deadline unset / non-finite)"
     for n in range(1, MAX_STARTS + 1):
         if adm.put(f"start-{n}", now, skip_if_exists=True):
             return n, None
