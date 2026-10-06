@@ -148,3 +148,57 @@ def test_manifest_backbone_label_names_the_pinned_checkpoint():
     assert _backbone_label(PilotConfig()) == "tiny-qwen3-random-v1 (frozen, random init seed 0)"   # unchanged
     q = _backbone_label(PilotConfig(backbone="qwen3-0.6b-base"))
     assert QWEN3_0P6B_BASE["repo"] in q and QWEN3_0P6B_BASE["revision"] in q and "tiny" not in q
+
+
+# -- codex 21604: process groups, contained writer launch, complete controller binding --
+def test_hung_descendants_are_killed_with_their_group_over_repeated_ticks():
+    def launch(name, app_id):                     # parent spawns a hung DESCENDANT (like the nested CLI)
+        return subprocess.Popen(["sh", "-c", "sleep 51.5151 & sleep 51.5152; wait"], start_new_session=True)
+    for _ in range(2):
+        out, _ = cp.control_tick({"h": {"app_id": "ap-h", "deadline_epoch": 1.0}}, 10.0, launch, request_timeout_s=0.4)
+        assert "killed and reaped" in out["h"]
+        import time as _t
+        _t.sleep(0.2)
+        assert alive("51.5151") == 0 and alive("51.5152") == 0
+
+
+def test_writer_launch_failure_still_self_stops_with_fallback_evidence():
+    ctl, stops = _ctl_app(), []
+
+    def bad_writer(o):
+        raise OSError("tempfile unavailable")
+    st = ctl.finish_tick(cp, {"k": 1}, True, bad_writer, lambda: (stops.append(1), subprocess.Popen(["true"]))[1])
+    assert stops == [1] and st["evidence"].startswith("writer launch error") and st["fallback_evidence"] == {"k": 1}
+    st2 = ctl.finish_tick(cp, {}, True, lambda o: subprocess.Popen(["true"]),
+                          lambda: (_ for _ in ()).throw(OSError("no fork")))
+    assert st2["self_stop"].startswith("self-stop launch error")
+
+
+def _slot(monkeypatch):
+    monkeypatch.setenv("M4_PK_SLOT", "learned-n32")
+    monkeypatch.chdir(ROOT)
+    spec = importlib.util.spec_from_file_location("slotp", ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_controller_preflight_fails_closed_on_partial_stale_or_mismatched_state(monkeypatch):
+    import hashlib
+    m = _slot(monkeypatch)
+    price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+    good = {"app_id": "ap-c", "deadline_epoch": 1e10, "price_sha256": price}
+    ok = dict(live_id=lambda: "ap-c", live_state=lambda i: "deployed")
+    assert m.controller_preflight(cp, good, 1e9, **ok) is None
+    cases = [({"deadline_epoch": 1e10, "price_sha256": price}, ok, "incomplete"),
+             ({**good, "deadline_epoch": float("nan")}, ok, "incomplete"),
+             ({**good, "price_sha256": "x"}, ok, "different price"),
+             (good, dict(live_id=lambda: "ap-other", live_state=lambda i: "deployed"), "differs"),
+             (good, dict(live_id=lambda: "ap-c", live_state=lambda i: "stopped"), "not running"),
+             (good, dict(live_id=lambda: (_ for _ in ()).throw(RuntimeError("x")), live_state=lambda i: "x"), "lookup failed"),
+             ({**good, "deadline_epoch": 1e9 + 10}, ok, "beyond the controller horizon")]
+    for control, live, needle in cases:
+        assert needle in m.controller_preflight(cp, control, 1e9, **live)
+    src = (ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py").read_text()
+    body = src[src.index("def spawn() -> None:"):]
+    assert body.index("controller_preflight(") < body.index("GUARD_DICT, create_if_missing") < body.index("root.mkdir(")

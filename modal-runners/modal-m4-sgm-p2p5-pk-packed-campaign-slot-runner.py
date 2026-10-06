@@ -28,6 +28,7 @@ REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "conf
 PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
 CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
 CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-guard"
+CONTROL_APP_NAME = "memsub-m4-sgm-p2p5-pk-campaign-control"
 VALIDATION_SETUP_S, CONTROL_SLACK_S = 3600, 1800          # must equal the control app's (tested)
 GROUP, LOCAL_OUT = "p2p5-qwen3-0p6b-screen-v1", "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
@@ -171,11 +172,53 @@ def expected_identity() -> dict:
             "price": file_sha(PRICE_FILE)}
 
 
+def controller_preflight(cp, control: dict, now_deadline: float, live_id, live_state) -> str | None:
+    """None iff the control plane is completely bound and live (codex 21604 #3): write-once app id + finite
+    deadline + price sha in its guard; the live controller app id equals the bound id and is not stopped; the
+    price sha equals this runner's bound price; this slot's deadline leaves the validation/readings/slack window
+    before the controller deadline. Read-only; runs before any slot state is consumed."""
+    import hashlib
+    if not (isinstance(control.get("app_id"), str) and control["app_id"] and cp.finite_pos(control.get("deadline_epoch"))
+            and isinstance(control.get("price_sha256"), str)):
+        return f"controller binding incomplete: {sorted(control)}"
+    if control["price_sha256"] != hashlib.sha256(Path(PRICE_FILE).read_bytes()).hexdigest():
+        return "controller was armed for a different price/horizon file"
+    try:
+        if live_id() != control["app_id"]:
+            return "live controller app id differs from the bound id"
+        if str(live_state(control["app_id"])).lower() in ("stopped", "stopping", "none", ""):
+            return "controller app is not running"
+    except Exception as e:
+        return f"controller lookup failed: {e!r:.120}"
+    readings = json.loads(Path(PRICE_FILE).read_text())["readings"]["reserve_life_s"]
+    if now_deadline > control["deadline_epoch"] - VALIDATION_SETUP_S - readings - CONTROL_SLACK_S:
+        return "slot deadline beyond the controller horizon"
+    return None
+
+
+def app_state(app_id: str) -> str:
+    rows = json.loads(subprocess.run([sys.executable, "-m", "modal", "app", "list", "--json"], check=True,
+                                     capture_output=True, text=True, timeout=30).stdout)
+    mine = [r for r in rows if r.get("app_id") == app_id]
+    return str(mine[0].get("state")) if mine else "none"
+
+
 def spawn() -> None:
     tracked = ["memsub", __file__, GRID_FILE, REGISTRY_FILE, SCHEMA_FILE, PRICE_FILE]
     if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
                       check=True).stdout.strip():
         raise SystemExit("refusing to spawn from a dirty tree")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
+    cp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cp)
+    control = dict(modal.Dict.from_name(CONTROL_GUARD_DICT).items())          # READ-ONLY preflights first
+    problem = controller_preflight(cp, control, now_deadline=time.time() + slot_deadline_s(),
+                                   live_id=lambda: modal.App.lookup(CONTROL_APP_NAME).app_id,
+                                   live_state=lambda app_id: app_state(app_id))
+    if problem:
+        raise SystemExit(f"controller preflight failed: {problem}")
     guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
     if len(guard.keys()):
         raise SystemExit("guard Dict already used: this slot was spawned before")
@@ -190,20 +233,8 @@ def spawn() -> None:
     if not (guard.put("app_id", prov["deployed_app_id"], skip_if_exists=True)
             and guard.put("deadline_epoch", prov["deadline_epoch"], skip_if_exists=True)):
         raise SystemExit("guard app id / deadline already set")
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
-    cp = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(cp)
-    control_deadline = modal.Dict.from_name(CONTROL_GUARD_DICT).get("deadline_epoch", None)
-    if not cp.finite_pos(control_deadline):
-        raise SystemExit("control-plane reaper not armed: refusing to spawn")
-    readings_reserve = json.loads(Path(PRICE_FILE).read_text())["readings"]["reserve_life_s"]
-    latest_ok = control_deadline - VALIDATION_SETUP_S - readings_reserve - CONTROL_SLACK_S
-    if prov["deadline_epoch"] > latest_ok:                 # the controller must cover this slot AND the readings after it
-        raise SystemExit(f"slot deadline beyond the controller horizon by {prov['deadline_epoch'] - latest_ok:.0f} s")
     if not cp.register(modal.Dict.from_name(CONTROL_REGISTRY_DICT, create_if_missing=True), APP_NAME,
-                       prov["deployed_app_id"], prov["deadline_epoch"], horizon=control_deadline):
+                       prov["deployed_app_id"], prov["deadline_epoch"], horizon=control["deadline_epoch"]):
         raise SystemExit("slot already registered with the control-plane reaper")
     call = modal.Function.from_name(APP_NAME, "run_slot").spawn(prov["expected_identity"]).object_id
     (root / "call.json").write_text(json.dumps({"call_id": call}))

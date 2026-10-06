@@ -44,10 +44,21 @@ def run_owned(procs: dict, timeout_s: float, poll_s: float = 0.05) -> dict:
         time.sleep(poll_s)
     for n, p in procs.items():
         if n not in out:
-            p.kill()
-            p.wait()                                          # reaped: no leaked worker
+            kill_group(p)                                     # the whole session: no orphaned descendant
             out[n] = "stop/verify timeout (child killed and reaped)"
     return out
+
+
+def kill_group(p) -> None:
+    """Children are started with start_new_session=True: kill their WHOLE process group (codex 21604 #1:
+    a nested CLI must not outlive its killed parent), then reap the leader."""
+    import os
+    import signal
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except (ProcessLookupError, PermissionError, OSError):
+        p.kill()
+    p.wait()
 
 
 def control_tick(registry: dict, now: float, launch, control: dict | None = None,

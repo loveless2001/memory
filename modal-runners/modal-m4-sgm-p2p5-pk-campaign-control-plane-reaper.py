@@ -70,15 +70,21 @@ CHILD = ("import importlib.util, json, subprocess, sys\n"
 def launch_stop(name: str, app_id: str):
     import subprocess
     return subprocess.Popen([sys.executable, "-c", CHILD, name, app_id, str(Path(__file__).with_name(SHARED))],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
 
 
 def finish_tick(cp, out: dict, self_due: bool, write_evidence, self_stop, timeout_s: float = 20.0) -> dict:
     """Evidence FIRST (bounded owned child), THEN the bounded self-stop (codex 21602 #2): a failed or hung
     write cannot delay shutdown, and an immediate self-termination cannot lose the terminal map."""
-    status = {"evidence": cp.run_owned({"evidence": write_evidence(out)}, timeout_s)["evidence"]}
+    try:                                       # writer setup/launch failures are contained (codex 21604 #2)
+        status = {"evidence": cp.run_owned({"evidence": write_evidence(out)}, timeout_s)["evidence"]}
+    except Exception as e:
+        status = {"evidence": f"writer launch error {e!r:.160}", "fallback_evidence": out}
     if self_due:
-        status["self_stop"] = cp.run_owned({"self": self_stop()}, timeout_s)["self"]
+        try:
+            status["self_stop"] = cp.run_owned({"self": self_stop()}, timeout_s)["self"]
+        except Exception as e:
+            status["self_stop"] = f"self-stop launch error {e!r:.160}"
     return status
 
 
@@ -101,7 +107,8 @@ def control() -> dict:
         code = ("import json, sys, time, modal\n"
                 f"modal.Dict.from_name('{CONTROL_GUARD}-ticks', create_if_missing=True)"
                 ".put(str(int(time.time())), json.load(open(sys.argv[1])))\n")
-        return subprocess.Popen([sys.executable, "-c", code, f.name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return subprocess.Popen([sys.executable, "-c", code, f.name], stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL, start_new_session=True)
     return {**out, "__finish__": finish_tick(cp, out, self_due, write_evidence,
                                              lambda: launch_stop(APP_NAME, view["app_id"]))}
 
@@ -114,8 +121,11 @@ def arm() -> None:
                + price["readings"]["reserve_life_s"])
     guard = modal.Dict.from_name(CONTROL_GUARD, create_if_missing=True)
     app_id = modal.App.lookup(APP_NAME).app_id
+    import hashlib
+    price_sha = hashlib.sha256(Path(PRICE_FILE).read_bytes()).hexdigest()
     if not (guard.put("app_id", app_id, skip_if_exists=True)
-            and guard.put("deadline_epoch", time.time() + longest + SLACK_S, skip_if_exists=True)):
+            and guard.put("deadline_epoch", time.time() + longest + SLACK_S, skip_if_exists=True)
+            and guard.put("price_sha256", price_sha, skip_if_exists=True)):
         raise SystemExit("control guard already armed")
     print(json.dumps({"app_id": app_id, "deadline_epoch": guard.get("deadline_epoch")}))
 
