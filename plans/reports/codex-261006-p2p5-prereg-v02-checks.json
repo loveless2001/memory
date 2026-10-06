@@ -1,0 +1,141 @@
+{
+  "prereg_commit": "3bf87370a7140168c87397e4d0f29b27b5810f22",
+  "prereg_sha256": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002",
+  "review": "document clearance only; implementation not yet verified",
+  "prereg_clearance": "CLEARED_IMPLEMENTATION_AND_BOUNDED_LOCAL_PREPARATION",
+  "paid_or_registered_training_clearance": false,
+  "model_forward_calls": 0,
+  "optimizer_updates": 0,
+  "paid_launches": 0,
+  "trained_cells": [
+    "learned-n16-s0",
+    "learned-n16-s1",
+    "learned-n32-s0",
+    "learned-n32-s1",
+    "single_cell-n16-s0",
+    "single_cell-n16-s1",
+    "single_cell-n32-s0",
+    "single_cell-n32-s1",
+    "random_fixed-n16-s0",
+    "random_fixed-n16-s1",
+    "random_fixed-n32-s0",
+    "random_fixed-n32-s1",
+    "memory_off-n16-s0",
+    "memory_off-n16-s1",
+    "memory_off-n32-s0",
+    "memory_off-n32-s1",
+    "oracle-n32-s0",
+    "oracle-n32-s1"
+  ],
+  "trained_count": 18,
+  "oracle_evaluation_loads": [
+    32,
+    16
+  ],
+  "oracle_n16_evidence": "transfer diagnostic from N32-trained checkpoints",
+  "conditional_coverage": {
+    "neither": {
+      "eligible_loads": [],
+      "oracle_corners": 4,
+      "primary_corners": 0,
+      "total_corners": 4,
+      "reserved_rows_max_if_oracle_files_complete": 12288
+    },
+    "16": {
+      "eligible_loads": [
+        16
+      ],
+      "oracle_corners": 4,
+      "primary_corners": 8,
+      "total_corners": 12,
+      "reserved_rows_max_if_oracle_files_complete": 32768
+    },
+    "32": {
+      "eligible_loads": [
+        32
+      ],
+      "oracle_corners": 4,
+      "primary_corners": 8,
+      "total_corners": 12,
+      "reserved_rows_max_if_oracle_files_complete": 32768
+    },
+    "16,32": {
+      "eligible_loads": [
+        16,
+        32
+      ],
+      "oracle_corners": 4,
+      "primary_corners": 16,
+      "total_corners": 20,
+      "reserved_rows_max_if_oracle_files_complete": 53248
+    }
+  },
+  "decision_table_cases": 512,
+  "decision_table_counts": {
+    "interface not established": 128,
+    "gain over every control without registered memory use": 1,
+    "screen not passed": 126,
+    "SCREEN PASS": 1,
+    "unavailable": 256
+  },
+  "decision_table_total_and_conjunction_pass": true,
+  "counterexample_false_pass_rejected_by_all_control_conjunction": true,
+  "local_profile": {
+    "configs": [
+      {
+        "arm": "learned",
+        "n": 32,
+        "filler_len": 0,
+        "batch": 16,
+        "seed": 99,
+        "warmup_updates": 2,
+        "measured_updates": 8
+      },
+      {
+        "arm": "learned",
+        "n": 32,
+        "filler_len": 40,
+        "batch": 16,
+        "seed": 99,
+        "warmup_updates": 2,
+        "measured_updates": 8
+      },
+      {
+        "arm": "memory_off",
+        "n": 32,
+        "filler_len": 0,
+        "batch": 16,
+        "seed": 99,
+        "warmup_updates": 2,
+        "measured_updates": 8
+      },
+      {
+        "arm": "memory_off",
+        "n": 32,
+        "filler_len": 40,
+        "batch": 16,
+        "seed": 99,
+        "warmup_updates": 2,
+        "measured_updates": 8
+      }
+    ],
+    "training_updates_max": 40,
+    "timed_dev_eval_batches_max": 4,
+    "wall_bound_s": 1800,
+    "stop_first_oom_or_error": true,
+    "accuracy_read": false,
+    "artifact_or_reserved_seed_use": false
+  },
+  "prior_read_only_environment_model_evidence": {
+    "path": "plans/reports/codex-261006-p2p5-prereg-v01-checks.json",
+    "sha256": "65a9bd2440c6f49be51c409f9043ab17ca04616b841f7f51253ef0de0a7b1155"
+  },
+  "implementation_and_profile_still_required": true,
+  "ledger_limitations": [
+    "Only learned and memory_off N32, filler 0/40, are profiled.",
+    "Fresh-init 10-update profiles do not measure 1000/1500-update routing allocation.",
+    "No measured oracle/random_fixed/single_cell/N16 training throughput.",
+    "6GB RTX3060 measurements are proxies for later frozen Modal GPU SKU."
+  ],
+  "pass": true
+}
