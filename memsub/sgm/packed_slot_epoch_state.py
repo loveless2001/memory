@@ -10,12 +10,16 @@ No epoch writes into another epoch's directory, so a stale writer cannot overwri
 into newer state (Modal Volumes are last-write-wins without locks). AUTHORITY for a cell at
 start m = the highest admitted epoch < m with an acknowledged record. A new record COPIES
 the predecessor's full chain of generations (epoch, g, step, file, sha256), so a late
-mutation of an old epoch's state.json never changes a newer chain. Terminal states
-(COMPLETE / FAILED / LOST) are inherited and never re-run.
+mutation of an old epoch's state.json never changes a newer chain. It also stores an
+IMMUTABLE SNAPSHOT of the whole predecessor record (`predecessor_snapshot`, recursively),
+so the canonical chain is read from the authoritative record alone, never from mutable
+older files (codex 21567 #3). Terminal states (COMPLETE / FAILED / LOST) are inherited
+and never re-run.
 """
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
@@ -101,6 +105,7 @@ def inherit(cell_dir: Path, epoch: int, admitted: list[int], identity: dict, ste
         return rec
     m, prev = auth
     rec["inherited_from"] = {"epoch": m, "record_sha256": file_sha256(epoch_dir(cell_dir, m) / "state.json")}
+    rec["predecessor_snapshot"] = copy.deepcopy(prev)              # immutable canonical chain
     rec["chain"] = [dict(link) for link in prev["chain"]]           # copied: immune to late old-epoch edits
     rec["history"] = list(prev.get("history", [])) + [{"epoch": m, "state": prev["state"]}]
     if prev["state"] in TERMINAL:
@@ -145,3 +150,17 @@ def mark(rec: dict, state: str, **fields) -> None:
     if state not in TERMINAL:
         raise ValueError(f"not a terminal state: {state}")
     rec.update(state=state, **fields)
+
+
+def canonical_walk(rec: dict, max_len: int) -> list[dict]:
+    """Oldest-first records along the predecessor SNAPSHOTS of an authoritative record;
+    epochs strictly decrease along the links (acyclic) and the walk is at most `max_len`."""
+    out = [rec]
+    while out[0].get("predecessor_snapshot") is not None:
+        prev = out[0]["predecessor_snapshot"]
+        if prev.get("epoch") is None or prev["epoch"] >= out[0]["epoch"] or len(out) >= max_len:
+            raise ValueError("predecessor chain is cyclic, non-decreasing or longer than the admitted starts")
+        if out[0]["inherited_from"]["epoch"] != prev["epoch"]:
+            raise ValueError("inherited_from does not match the predecessor snapshot")
+        out.insert(0, prev)
+    return out

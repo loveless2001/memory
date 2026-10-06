@@ -2,7 +2,9 @@
 workers, real run_pilot, injected container faults). Outputs of an interrupted-and-resumed
 slot must equal the uninterrupted slot bitwise on the scientific files (CPU)."""
 
+import copy
 import json
+from pathlib import Path
 
 import pytest
 
@@ -15,7 +17,8 @@ BASE = dict(arm="learned", readout="residual_head", backbone="tiny", device="cpu
 CELLS = {"learned-n4-s99": {**BASE, "seed": 99}, "learned-n4-s100": {**BASE, "seed": 100}}
 EVAL = dict(final_batches=1, final_batch_size=2, final_seed_base=8_800_011, dev_seed=8_800_000,
             train_eval_seed_base=8_800_021)
-ID = {"memsub": "test", "runner": "test", "env": "cpu"}
+from memsub.sgm.synthetic_pilot_run import source_tree_sha256  # noqa: E402
+ID = {"memsub": source_tree_sha256(Path(__file__).resolve().parents[1] / "memsub"), "runner": "test", "env": "cpu"}
 A, B = "learned-n4-s99", "learned-n4-s100"
 
 
@@ -94,3 +97,59 @@ def test_superseded_start_stops_and_writes_nothing_more(tmp_path):
     assert res["status"] == "superseded"
     chains = [len(es.read_record(tmp_path / "cells" / c, 1)["chain"]) for c in CELLS]
     assert sum(chains) == 1                                   # exactly one generation was published
+
+
+def test_crash_between_output_commit_and_complete_recovers_eval_only(tmp_path, reference, monkeypatch):
+    """Commit boundary: outputs committed, then the container dies before COMPLETE is published."""
+    real = SlotSupervisor.publish
+
+    def publish(self, cell, mutate):
+        probe = copy.deepcopy(self.records[cell])
+        mutate(probe)
+        if probe["state"] == es.COMPLETE and cell == A and self.epoch == 1:
+            raise ContainerFault(72)
+        return real(self, cell, mutate)
+    monkeypatch.setattr(SlotSupervisor, "publish", publish)
+    with pytest.raises(ContainerFault):
+        slot(tmp_path, 1, [1]).run()
+    monkeypatch.setattr(SlotSupervisor, "publish", real)
+    assert es.read_record(tmp_path / "cells" / A, 1)["state"] == es.TRAINED
+    slot(tmp_path, 2, [1, 2]).run()
+    rec = es.read_record(tmp_path / "cells" / A, 2)
+    assert rec["recovery"] == "eval_only" and rec["state"] == es.COMPLETE
+    assert (es.epoch_dir(tmp_path / "cells" / A, 1) / "attempt-1" / "done.json").exists()   # first outputs kept
+    assert outputs(tmp_path, A) == reference[A]
+
+
+def test_empty_done_outputs_are_failed_not_complete(tmp_path):
+    sup = slot(tmp_path, 1, [1])
+    sup.acknowledge()
+    rec = sup.records[A]
+    rec["chain"] = [{"epoch": 1, "g": 1, "step": 6, "file": "x", "sha256": "y"}]
+    rec["state"] = es.TRAINED
+    att = sup.attempt_dir(A)
+    (att / "out").mkdir(parents=True)
+    (att / "done.json").write_text(json.dumps({"outputs": {}}))
+    sup.finish(A, 0)
+    final = es.read_record(tmp_path / "cells" / A, 1)
+    assert final["state"] == es.FAILED and "required outputs missing" in final["reason"]
+
+
+def test_generation_metadata_payload_mismatch_refused_before_any_update(tmp_path):
+    from memsub.sgm.synthetic_pilot import PilotConfig, train
+    states = {}
+    train(PilotConfig(**CELLS[A]), log=lambda _r: None, checkpoint_every=2,
+          on_checkpoint=lambda s, st: states.__setitem__(s, st))
+    rec = es.inherit(tmp_path / "cells" / A, 1, [1], ID, 6)
+    d = es.epoch_dir(tmp_path / "cells" / A, 1)
+    d.mkdir(parents=True, exist_ok=True)
+    import torch
+    torch.save(states[2], d / "gen-2-step4.pt")                 # payload is step 2, metadata says step 4
+    es.add_generation(rec, 2, 4, "gen-2-step4.pt", es.file_sha256(d / "gen-2-step4.pt"))
+    es.write_record(tmp_path / "cells" / A, rec)
+    res = SlotSupervisor(root=tmp_path, cells={A: CELLS[A]}, epoch=2, admitted=[1, 2], identity=ID, checkpoint_every=2,
+                         eval_cfg=EVAL, commit=lambda: None, reload=lambda: None, ack_timeout_s=60, poll_s=0.01).run()
+    assert res["states"][A] == es.FAILED
+    rec2 = es.read_record(tmp_path / "cells" / A, 2)
+    assert "worker exit" in rec2["reason"] and rec2["physical"]["observed_updates"] == 0
+    assert "continuity: generation payload step 2 != 4" in (es.epoch_dir(tmp_path / "cells" / A, 2) / "attempt-1" / "worker.log").read_text()

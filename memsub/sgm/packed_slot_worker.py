@@ -93,6 +93,8 @@ def main(args_path: str) -> None:
         if file_sha256(Path(a["resume_file"])) != a["resume_sha256"]:
             raise SystemExit("resume generation sha mismatch")
         resume = load(Path(a["resume_file"]))
+        if resume.get("step") != a["resume_step"]:              # metadata/payload mismatch: refuse
+            raise SystemExit(f"continuity: generation payload step {resume.get('step')} != {a['resume_step']}")
     if a["mode"] == "eval_only" and (resume is None or resume["step"] != a["pilot_config"]["steps"]):
         raise SystemExit("eval_only needs the terminal generation")
     next_g = [a["next_g"]]
@@ -117,13 +119,22 @@ def main(args_path: str) -> None:
         if fault.get("exit_at_update") == update:
             os._exit(3)                                         # proof-mode worker fault
 
-    real_train = spr.train
+    real_train, real_evaluate, artifact = spr.train, spr.evaluate, {"on": False}
 
-    def train_then_mark(*args, **kw):
+    def train_then_flag(*args, **kw):
         out = real_train(*args, **kw)
-        (attempt / "eval-phase").touch()                       # training returned; artifact eval next
+        artifact["on"] = True                                   # every later evaluate() is artifact eval
         return out
-    spr.train = train_then_mark
+
+    def evaluate_logged(*args, **kw):
+        out = real_evaluate(*args, **kw)
+        if artifact["on"]:                                      # completed artifact-eval unit, then the marker
+            with open(attempt / "artifact-eval-progress.jsonl", "a") as f:
+                f.write(json.dumps({"split": kw.get("split"), "intervention": kw.get("intervention", "none"),
+                                    "seed": kw.get("seed"), "batches": kw.get("batches"), "t": time.time()}) + "\n")
+            (attempt / "eval-phase").touch()                    # INSIDE artifact eval with partial work done
+        return out
+    spr.train, spr.evaluate = train_then_flag, evaluate_logged
     ev = a["eval"]
     spr.run_pilot(pilot.PilotConfig(**a["pilot_config"]), attempt / "out",
                   final_batches=ev["final_batches"], final_batch_size=ev["final_batch_size"],

@@ -50,13 +50,15 @@ class SlotSupervisor:
     def __init__(self, *, root: Path, cells: dict[str, dict], epoch: int, admitted: list[int], identity: dict,
                  checkpoint_every: int, eval_cfg: dict, commit, reload, newer_start=lambda: False,
                  threads: int = 2, ack_timeout_s: float = 900.0, proof_capture: bool = False,
-                 faults: dict | None = None, poll_s: float = 0.05, provenance: dict | None = None):
+                 faults: dict | None = None, poll_s: float = 0.05, provenance: dict | None = None,
+                 registry: dict | None = None):
         self.root, self.cells, self.epoch, self.admitted = Path(root), cells, epoch, admitted
         self.identity, self.C, self.eval_cfg = identity, checkpoint_every, eval_cfg
         self.commit, self.reload, self.newer_start = commit, reload, newer_start
         self.threads, self.ack_timeout_s, self.proof_capture = threads, ack_timeout_s, proof_capture
         self.faults, self.poll_s = faults or {}, poll_s
         self.provenance = provenance or {}       # e.g. container id: recorded, never part of continuity
+        self.registry = registry                 # frozen name/shape registry for output validation
         self.records, self.procs, self.acked, self.finished = {}, {}, {}, set()
         self.fault_armed = False
 
@@ -93,6 +95,7 @@ class SlotSupervisor:
                     "epoch_dir": str(es.epoch_dir(self.cell_dir(cell), self.epoch)), "attempt_dir": str(att),
                     "resume_file": str(es.epoch_dir(self.cell_dir(cell), last["epoch"]) / last["file"]) if last else None,
                     "resume_sha256": last["sha256"] if last else None, "next_g": (last["g"] + 1) if last else 1,
+                    "resume_step": last["step"] if last else 0,
                     "checkpoint_every": self.C, "eval": self.eval_cfg, "parent_pid": __import__("os").getpid(),
                     "threads": self.threads, "ack_timeout_s": self.ack_timeout_s,
                     "proof_capture": self.proof_capture,
@@ -135,16 +138,25 @@ class SlotSupervisor:
                 self.fault_armed = True        # fires once every `require_terminal` cell is acknowledged terminal
 
     def finish(self, cell: str, rc: int) -> None:
+        """COMPLETE only for validated outputs that were committed FIRST (codex 21567 #3)."""
+        from .packed_slot_cell_output_validation import validate_cell_outputs
         att = self.attempt_dir(cell)
         if rc != 0:
             self.publish(cell, lambda rec: es.mark(rec, es.FAILED, reason=f"worker exit {rc}"))
             return
-        done = json.loads((att / "done.json").read_text())
-        bad = [f for f, h in done["outputs"].items() if es.file_sha256(att / "out" / f) != h]
-        if bad or self.records[cell]["state"] != es.TRAINED:
-            self.publish(cell, lambda rec: es.mark(rec, es.FAILED, reason=f"output validation: {bad or 'not TRAINED'}"))
+        try:
+            done = json.loads((att / "done.json").read_text())["outputs"]
+            problem = validate_cell_outputs(att / "out", done, self.cells[cell], self.eval_cfg,
+                                            self.identity["memsub"], self.registry)
+        except (OSError, ValueError, KeyError, TypeError) as e:
+            done, problem = {}, f"done.json unusable: {e!r:.200}"
+        if problem is None and self.records[cell]["state"] != es.TRAINED:
+            problem = "outputs without the terminal generation"
+        if problem:
+            self.publish(cell, lambda rec: es.mark(rec, es.FAILED, reason=f"output validation: {problem}"))
             return
-        outputs = {"attempt": str(att.relative_to(self.root)), "files": done["outputs"]}
+        self.commit()                                  # outputs durable BEFORE the COMPLETE pointer
+        outputs = {"attempt": str(att.relative_to(self.root)), "files": done}
         self.publish(cell, lambda rec: es.mark(rec, es.COMPLETE, outputs=outputs))
 
     def kill_all(self) -> None:

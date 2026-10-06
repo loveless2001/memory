@@ -136,3 +136,31 @@ def test_malformed_or_foreign_record_raises(cell):
     (d / "state.json").write_text(json.dumps({"format": es.FORMAT, "epoch": 2, "cell": cell.name}))
     with pytest.raises(ValueError, match="foreign or malformed"):
         es.read_record(cell, 1)
+
+
+def test_canonical_walk_uses_immutable_snapshots(cell):
+    r1 = _started(cell, 1, [1])
+    _publish(cell, r1, 1, 2)
+    r2 = _started(cell, 2, [1, 2])
+    _publish(cell, r2, 2, 4)
+    r3 = _started(cell, 3, [1, 2, 3])
+    es.mark(r1, es.FAILED, reason="late stale edit")            # old epoch mutated after handoff
+    es.write_record(cell, r1)
+    walk = es.canonical_walk(es.read_record(cell, 3), max_len=4)
+    assert [r["epoch"] for r in walk] == [1, 2, 3] and walk[0]["state"] == es.STARTED   # snapshot, not the edit
+    with pytest.raises(ValueError, match="longer"):
+        es.canonical_walk(r3, max_len=2)
+
+
+def test_canonical_walk_rejects_cycles_and_mismatched_links(cell):
+    r1 = _started(cell, 1, [1])
+    r2 = es.inherit(cell, 2, [1, 2], ID, 8)
+    bad = json.loads(json.dumps(r2))
+    bad["predecessor_snapshot"]["epoch"] = 2                    # not strictly decreasing
+    with pytest.raises(ValueError, match="cyclic"):
+        es.canonical_walk(bad, max_len=4)
+    bad = json.loads(json.dumps(r2))
+    bad["inherited_from"]["epoch"] = 7
+    with pytest.raises(ValueError, match="inherited_from"):
+        es.canonical_walk(bad, max_len=4)
+    assert [r["epoch"] for r in es.canonical_walk(r2, 4)] == [1, 2] and r1["epoch"] == 1
