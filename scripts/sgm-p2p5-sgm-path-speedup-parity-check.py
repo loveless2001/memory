@@ -134,39 +134,67 @@ def run(pkg: str, kw: dict) -> dict:
     dev = ev.evaluate(res["backend"], res["head"], pcfg.task_spec(), pcfg.arm, pcfg.readout, split="heldout",
                       batches=1, batch_size=pcfg.batch, seed=4242, per_example=per_example,
                       filler_writes=pcfg.filler_writes)
+    rt, head = res["runtime"], res["head"]            # train()'s optimizer order: adapters then head
+    names = ([f"adapters.{n}" for n, q in rt.adapters.named_parameters() if q.requires_grad]
+             + [f"head.{n}" for n, q in head.named_parameters() if q.requires_grad])
     return {"init": init, "loss": list(CAPTURE["loss"]), "grads": list(CAPTURE["grads"]), "train_s": train_s,
+            "param_names": names,
             "weights": {k: v.detach().cpu() for k, v in weights.items()}, "dev": dev,
             "preds": [r["pred"] for r in per_example], "telemetry": res["telemetry"]}
 
 
-def diff(a: torch.Tensor, b: torch.Tensor) -> tuple[float, float, bool]:
+def diff(a: torch.Tensor, b: torch.Tensor) -> tuple[float, float, bool, str | None]:
+    """(max abs, max rel to max|ref|, bitwise equal, problem). Fail-closed (codex 21488):
+    shape/dtype mismatch or ANY non-finite value on either side is a problem."""
+    if a.shape != b.shape or a.dtype != b.dtype:
+        return float("inf"), float("inf"), False, f"shape/dtype {tuple(a.shape)}/{a.dtype} vs {tuple(b.shape)}/{b.dtype}"
     a, b = a.double(), b.double()
+    if not (torch.isfinite(a).all() and torch.isfinite(b).all()):
+        return float("inf"), float("inf"), False, "non-finite value"
     d = float((a - b).abs().max()) if a.numel() else 0.0
-    return d, d / max(float(a.abs().max()) if a.numel() else 0.0, 1e-30), torch.equal(a, b)
+    scale = float(a.abs().max()) if a.numel() else 0.0
+    return d, (d / scale if scale > 0 else (0.0 if d == 0 else float("inf"))), torch.equal(a, b), None
 
 
 def compare(ref: dict, cand: dict, rtol: float) -> dict:
-    rows = []
-    for k in ref["init"]:
-        rows.append(("init/" + k, *diff(ref["init"][k], cand["init"][k])))
-    if len(ref["loss"]) != len(cand["loss"]) or len(ref["grads"]) != len(cand["grads"]):
-        return {"pass": False, "problem": "update count differs"}
-    for u, (la, lb) in enumerate(zip(ref["loss"], cand["loss"])):
-        rows.append((f"loss/u{u}", *diff(la, lb)))
+    """Strict structure (codex 21488): identical init (bitwise), key sets, update counts,
+    per-update gradient name lists and presence; then tolerance on values."""
+    problems, rows = [], []
+    if ref["init"].keys() != cand["init"].keys():
+        problems.append("init key sets differ")
+    for k in ref["init"].keys() & cand["init"].keys():
+        d = diff(ref["init"][k], cand["init"][k])
+        if not d[2]:
+            problems.append(f"init/{k} not bitwise equal")
+    if len(ref["loss"]) != len(cand["loss"]) or len(ref["loss"]) == 0:
+        problems.append(f"loss counts {len(ref['loss'])} vs {len(cand['loss'])}")
+    if len(ref["grads"]) != len(cand["grads"]) or len(ref["grads"]) != len(ref["loss"]):
+        problems.append(f"grad update counts {len(ref['grads'])} vs {len(cand['grads'])}")
+    if ref["param_names"] != cand["param_names"]:
+        problems.append("optimizer parameter names/order differ")
+    rows += [(f"loss/u{u}", *diff(la, lb)) for u, (la, lb) in enumerate(zip(ref["loss"], cand["loss"]))]
     for u, (ga, gb) in enumerate(zip(ref["grads"], cand["grads"])):
-        for j, (a, b) in enumerate(zip(ga, gb)):
+        if not (len(ga) == len(gb) == len(ref["param_names"])):
+            problems.append(f"u{u}: gradient list lengths {len(ga)}/{len(gb)} vs {len(ref['param_names'])} params")
+            continue
+        for name, a, b in zip(ref["param_names"], ga, gb):
             if (a is None) != (b is None):
-                return {"pass": False, "problem": f"grad presence differs u{u} p{j}"}
-            if a is not None:
-                rows.append((f"grad/u{u}/p{j}", *diff(a, b)))
-    for k in ref["weights"]:
-        rows.append(("final/" + k, *diff(ref["weights"][k], cand["weights"][k])))
-    worst = max(rows, key=lambda r: r[2])
+                problems.append(f"u{u}: grad presence differs for {name}")
+            elif a is not None:
+                rows.append((f"grad/u{u}/{name}", *diff(a, b)))
+    if ref["weights"].keys() != cand["weights"].keys():
+        problems.append("final weight key sets differ")
+    rows += [("final/" + k, *diff(ref["weights"][k], cand["weights"][k]))
+             for k in ref["weights"].keys() & cand["weights"].keys()]
+    problems += [f"{r[0]}: {r[4]}" for r in rows if r[4]]
+    worst = max(rows, key=lambda r: r[2]) if rows else ("none", float("inf"), float("inf"), False, "no rows")
     dev_same = ref["preds"] == cand["preds"] and ref["dev"]["accuracy"] == cand["dev"]["accuracy"]
-    dev_keys = {k: (ref["dev"][k], cand["dev"][k]) for k in ref["dev"]
-                if isinstance(ref["dev"][k], float) and ref["dev"][k] != cand["dev"][k]}
-    return {"pass": worst[2] <= rtol and dev_same, "bitwise": all(r[3] for r in rows) and not dev_keys,
-            "max_rel": worst[2], "worst": worst[0], "max_abs": max(r[1] for r in rows),
+    dev_keys = {k: (ref["dev"][k], cand["dev"].get(k)) for k in ref["dev"]
+                if isinstance(ref["dev"][k], float) and ref["dev"][k] != cand["dev"].get(k)}
+    return {"pass": not problems and worst[2] <= rtol and dev_same,
+            "bitwise": not problems and all(r[3] for r in rows) and not dev_keys,
+            "problems": problems[:20], "n_problems": len(problems),
+            "max_rel": worst[2], "worst": worst[0], "max_abs": max((r[1] for r in rows), default=float("inf")),
             "n_compared": len(rows), "dev_predictions_identical": dev_same,
             "dev_float_fields_differing": dev_keys,
             "ref_train_s": ref["train_s"], "cand_train_s": cand["train_s"]}
@@ -195,7 +223,8 @@ def main():
             case.update({"pass": False, "problem": f"{type(e).__name__}: {str(e)[:300]}"})
         report["cases"].append(case)
         print(json.dumps({k: case.get(k) for k in ("pass", "bitwise", "max_rel", "worst", "ref_train_s",
-                                                   "cand_train_s", "problem")} | {"arm": kw["arm"]}), flush=True)
+                                                   "cand_train_s", "problem", "n_problems")} | {"arm": kw["arm"]}),
+              flush=True)
         (args.out / "parity.json").write_text(json.dumps(report, indent=2, default=str))
         if kw["device"] == "cuda":
             gc.collect()
@@ -203,7 +232,7 @@ def main():
     try:                                            # self-test: a perturbed candidate must FAIL parity
         with perturbed_candidate():
             st = compare(first_ref[1], run("memsub", first_ref[0]), args.rtol)
-        report["self_test"] = {k: st.get(k) for k in ("pass", "max_rel", "worst", "problem")}
+        report["self_test"] = {k: st.get(k) for k in ("pass", "max_rel", "worst", "problem", "n_problems")}
         report["self_test_perturbation_detected"] = st.get("pass") is False
     except Exception as e:
         report["self_test"], report["self_test_perturbation_detected"] = f"{type(e).__name__}: {e}"[:300], False

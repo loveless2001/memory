@@ -143,3 +143,27 @@ def test_sgm16_access_cost_independent_of_distant_bank_size():
     bank.scatter(0, idx, cells + 1, w)
     assert bank.counters.cells_read - r0 == 2 * 9
     assert bank.counters.cells_written - w0 == 2 * 9
+
+
+def test_no_grad_scatter_cells_own_their_storage():
+    """P2.5 option A keeps the reference no-grad contract: each stored cell is its
+    own clone (no shared write buffer; later input mutation cannot reach the bank)."""
+    bank = _bank()
+    idx, w = stencil_2d(torch.tensor([[[0.2, 0.3]]]))
+    new = torch.ones(1, 1, 9, 2, 3)
+    with torch.no_grad():
+        bank.scatter(0, idx, new, w)
+    new.add_(5.0)
+    for cell in bank.cells[(0, 0, 0)].values():
+        assert torch.equal(cell, torch.ones(2, 3))
+        assert cell.untyped_storage().nbytes() == 2 * 3 * 4
+
+
+def test_grad_scatter_keeps_graph_into_every_cell():
+    bank = _bank()
+    idx, w = stencil_2d(torch.tensor([[[0.2, 0.3]]]))
+    new = torch.randn(1, 1, 9, 2, 3, requires_grad=True)
+    bank.scatter(0, idx, new, w)
+    cells, _ = bank.gather(0, idx)
+    cells.sum().backward()
+    assert torch.equal(new.grad, torch.ones_like(new))

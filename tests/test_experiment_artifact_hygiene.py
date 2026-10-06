@@ -4,6 +4,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# Legacy evidence committed as JSON + a console trailer; bytes are kept unchanged and
+# pinned here (a parsed copy sits beside it as *.parsed-sidecar.json). Any byte change
+# removes the exemption.
+LEGACY_JSON_WITH_CONSOLE_TRAILER = {
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v1/independent-stop-verify.json":
+        "40f6bac90ae5cde26e4c17cd2e9152e7553899d733f8d5517b77882eb1d7a559",
+}
 
 
 def test_all_tracked_json_is_strictly_parseable():
@@ -12,6 +19,12 @@ def test_all_tracked_json_is_strictly_parseable():
     ).splitlines()
     failures = []
     for relative in paths:
+        if relative in LEGACY_JSON_WITH_CONSOLE_TRAILER:
+            import hashlib
+            digest = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+            if digest != LEGACY_JSON_WITH_CONSOLE_TRAILER[relative]:
+                failures.append(f"{relative}: legacy exemption pinned bytes changed ({digest})")
+            continue
         try:
             json.loads(
                 (ROOT / relative).read_text(),

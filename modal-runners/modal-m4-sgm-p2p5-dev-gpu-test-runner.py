@@ -16,7 +16,7 @@ returned 0; run.json always records the outcome (also failures) before exiting.
 Inputs: plans/.../dev-gpu/inputs is mounted read-only at /root/repo/dev-gpu-inputs (the
 frozen reference memsub tree for the speed-up parity check).
 
-    timeout 1500 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py \
+    timeout --kill-after=15s 1200 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py \
         --script scripts/sgm-p2p5-sgm-path-hotspot-profile.py --out <local dir> [--args "..."]
     (--script pytest --args "tests/test_x.py -q" runs pytest; the out dir then holds its log)
 """
@@ -39,7 +39,9 @@ GPU, CPU_CORES, MEMORY_GIB = "L40S", 4.0, 32
 FUNCTION_S, CHILD_S = 1440, 1380
 INPUTS_DIR = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/inputs"
 GPU_USD_S, CPU_USD_CORE_S, MEM_USD_GIB_S = 0.000542, 0.0000131, 0.00000222   # modal.com/pricing
-CHARGE_BOUND_USD = FUNCTION_S * (GPU_USD_S + CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S)
+# ONE function execution at FUNCTION_S only — NOT a cumulative bound (restarts, build, teardown excluded;
+# codex 21489). The per-run reservation is posted in #gravity before launch.
+FUNCTION_ONLY_CHARGE_USD = FUNCTION_S * (GPU_USD_S + CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S)
 
 
 def _build_environment():
@@ -95,7 +97,7 @@ def main(script: str, out: str, args: str = ""):
     dest.mkdir(parents=True, exist_ok=False)
     started = time.time()
     meta = {"app_id": app.app_id, "script": script, "args": args, "started": started,
-            "charge_bound_usd": round(CHARGE_BOUND_USD, 4), "gpu": GPU, "outcome": "started"}
+            "function_only_charge_usd": round(FUNCTION_ONLY_CHARGE_USD, 4), "gpu": GPU, "outcome": "started"}
     # "started" left on disk = the client never reached the end (host loss / SIGKILL);
     # the launch wrapper's EXIT_STATUS (124 = outer timeout) is recorded beside it
     (dest / "run.json").write_text(json.dumps(meta, indent=2))

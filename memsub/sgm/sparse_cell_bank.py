@@ -115,17 +115,20 @@ class SparseBankSet:
                     raise CapacityError(
                         f"bank (b={b}, layer={layer}, head={h}) would hold "
                         f"{len(bank) + new_here} > {self.max_cells} cells")
-        # ONE unbind node per write batch (P2.5 option A speed-up): per-cell
-        # `flat[row]` made one SelectBackward per cell, each materialising a
-        # zero-filled [B*H*9, dk, dv] gradient; unbind routes every cell's
-        # gradient through a single node. Same values, same graph semantics.
-        # Without autograd the rows are views of this write batch, which stays
-        # alive while any of its cells is live (previously one clone per cell).
-        rows = new_cells.reshape(-1, self.key_dim, self.value_dim).unbind(0)
+        flat = new_cells.reshape(-1, self.key_dim, self.value_dim)
+        keep_graph = torch.is_grad_enabled() and flat.requires_grad
+        # Graph path: ONE unbind node per write batch (P2.5 option A speed-up).
+        # Per-cell `flat[row]` made one SelectBackward per cell, each
+        # materialising a zero-filled [B*H*9, dk, dv] gradient; unbind routes
+        # every cell's gradient through a single node (same values and graph).
+        # No-grad path unchanged: one clone per cell, so a stored cell owns its
+        # storage (dead write batches are not retained; later mutation of the
+        # caller's tensor cannot reach the bank).
+        rows = flat.unbind(0) if keep_graph else None
         allocated = 0
         for bank, key, row in plan:
             allocated += key not in bank
-            bank[key] = rows[row]
+            bank[key] = rows[row] if keep_graph else flat[row].clone()
         self.counters.cells_written += len(plan)
         self.counters.cells_allocated += allocated
         return allocated
