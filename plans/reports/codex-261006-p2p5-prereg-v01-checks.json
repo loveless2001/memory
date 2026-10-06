@@ -1,0 +1,145 @@
+{
+  "prereg_commit": "59ca18d",
+  "prereg_sha256": "53aae9c31e48bc51bd65b6c288dec81bc8fc1aef95dea607dae24b39d38e3ae0",
+  "prereg_clearance": "HOLD",
+  "audit_model_forward_calls": 0,
+  "audit_optimizer_updates": 0,
+  "audit_paid_launches": 0,
+  "model_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+  "cached_config": {
+    "architectures": [
+      "Qwen3ForCausalLM"
+    ],
+    "attention_bias": false,
+    "attention_dropout": 0.0,
+    "bos_token_id": 151643,
+    "eos_token_id": 151643,
+    "head_dim": 128,
+    "hidden_act": "silu",
+    "hidden_size": 1024,
+    "initializer_range": 0.02,
+    "intermediate_size": 3072,
+    "max_position_embeddings": 32768,
+    "max_window_layers": 28,
+    "model_type": "qwen3",
+    "num_attention_heads": 16,
+    "num_hidden_layers": 28,
+    "num_key_value_heads": 8,
+    "rms_norm_eps": 1e-06,
+    "rope_scaling": null,
+    "rope_theta": 1000000,
+    "sliding_window": null,
+    "tie_word_embeddings": true,
+    "torch_dtype": "bfloat16",
+    "transformers_version": "4.51.0",
+    "use_cache": true,
+    "use_sliding_window": false,
+    "vocab_size": 151936
+  },
+  "cached_config_sha256": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+  "cached_weights_sha256": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba",
+  "cached_weights_bytes": 1192135096,
+  "stored_parameter_count": 596049920,
+  "stored_weight_dtypes": [
+    "BF16"
+  ],
+  "derived_fp32_weight_bytes": 2384199680,
+  "local_environment": {
+    "torch": "2.7.1+cpu",
+    "cuda_build": null,
+    "cuda_available": false,
+    "transformers": "4.55.2",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB, 610.88"
+  },
+  "stronger_control_counterexample": {
+    "type": "constructed arithmetic example, not model results",
+    "episodes": 256,
+    "queries_per_episode": 4,
+    "learned_accuracy": 0.5,
+    "construction": {
+      "learned": {
+        "0.5": 256
+      },
+      "higher_mean": {
+        "0.25": 52,
+        "0.5": 204
+      },
+      "lower_mean": {
+        "1.0": 114,
+        "0.0": 142
+      }
+    },
+    "controls": {
+      "higher_mean": {
+        "control_accuracy": 0.44921875,
+        "paired": {
+          "diff": 0.05078125,
+          "lo": 0.038435917822917845,
+          "hi": 0.06312658217708216,
+          "n": 256
+        },
+        "gain_pass": true
+      },
+      "lower_mean": {
+        "control_accuracy": 0.4453125,
+        "paired": {
+          "diff": 0.0546875,
+          "lo": -0.006314294889817884,
+          "hi": 0.11568929488981788,
+          "n": 256
+        },
+        "gain_pass": false
+      }
+    },
+    "same_construction_can_be_used_for_both_seeds": true
+  },
+  "review_source_bindings": {
+    "memsub/sgm/synthetic_pilot.py": {
+      "at_review_commit_sha256": "9e3f0bff9ad199f118c7475efae29116dc158788954214076a0cb0edd6804f47",
+      "current_sha256": "9e3f0bff9ad199f118c7475efae29116dc158788954214076a0cb0edd6804f47",
+      "unchanged": true
+    },
+    "memsub/sgm/synthetic_pilot_evaluation.py": {
+      "at_review_commit_sha256": "43034267af1910923ad2d40fc70bf9d6fa8c3f67d3dde2f5b3e5610409b9358a",
+      "current_sha256": "43034267af1910923ad2d40fc70bf9d6fa8c3f67d3dde2f5b3e5610409b9358a",
+      "unchanged": true
+    },
+    "memsub/runtime/sgm_model_runtime.py": {
+      "at_review_commit_sha256": "3cda687ef9c8abb49a2b8ef3469772f9af24408831e48b7884dc633c00fc3616",
+      "current_sha256": "3cda687ef9c8abb49a2b8ef3469772f9af24408831e48b7884dc633c00fc3616",
+      "unchanged": true
+    },
+    "memsub/sgm/synthetic_binding_task.py": {
+      "at_review_commit_sha256": "147631ee6441350a16d2649b9db205c9059f04c85f4af2605173fe68e11f6ed2",
+      "current_sha256": "147631ee6441350a16d2649b9db205c9059f04c85f4af2605173fe68e11f6ed2",
+      "unchanged": true
+    },
+    "scripts/sgm-p2g-common-observer-evaluation.py": {
+      "at_review_commit_sha256": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "current_sha256": "56c7e44b2fd5e6acf85d1c1759dd4f43006c2c87023e6a9a7c4a721c2d788901",
+      "unchanged": true
+    },
+    "scripts/sgm-p2g-decision-rules.py": {
+      "at_review_commit_sha256": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "current_sha256": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+      "unchanged": true
+    },
+    "scripts/sgm-p2d-step2-decision-rules.py": {
+      "at_review_commit_sha256": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "current_sha256": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+      "unchanged": true
+    },
+    "pyproject.toml": {
+      "at_review_commit_sha256": "6141054492342c1a9b2fde112f1ac4d136a299cffde8ffc024a6a087bc002983",
+      "current_sha256": "6141054492342c1a9b2fde112f1ac4d136a299cffde8ffc024a6a087bc002983",
+      "unchanged": true
+    },
+    "plans/261005-0210-m4-sgm-p0-p2/m4-sgm-design-spec-v0.1.md": {
+      "at_review_commit_sha256": "ac5d93b7687afcd60c620597baa0fb18359ac493015c55bcddb75cbba4a079cb",
+      "current_sha256": "ac5d93b7687afcd60c620597baa0fb18359ac493015c55bcddb75cbba4a079cb",
+      "unchanged": true
+    }
+  },
+  "model_config_primary_source": "https://huggingface.co/Qwen/Qwen3-0.6B-Base/raw/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/config.json",
+  "fact_and_counterexample_checks_pass": true
+}
