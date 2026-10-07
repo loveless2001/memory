@@ -32,6 +32,11 @@ SLOTS = ("learned-n16", "learned-n32", "single_cell-n16", "single_cell-n32", "ra
          "oracle-n32", "memory_off-n16", "memory_off-n32")
 MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
 EARLY_S = 120
+# post-hoc validation amendment (user 21710, option B): ONE spec-listed FAILED cell, re-validated write-once locally;
+# the readings script re-validates it on the volume and labels the whole campaign "post-hoc amended"
+AMENDMENT_SPEC = "configs/m4_sgm_p2p5_pk_posthoc_validation_amendment.json"
+AMENDMENT_RECORD = f"{LOCAL_OUT}/pk-campaign-posthoc-amendment/learned-n32-s1-revalidation-record.json"
+AMENDMENT_DOC = f"{LOCAL_OUT}/prereg-amendment-posthoc-validation-learned-n32-s1.md"
 
 
 def _build_environment():
@@ -125,8 +130,23 @@ def expected_identity() -> dict:
     return {"memsub": source_tree_sha256(Path("memsub")), "manifest": file_sha(MANIFEST_FILE)}   # the script re-verifies all
 
 
-def slots_ready(local_root: Path) -> str | None:
-    """Every slot collected with a verified stop and every registered cell COMPLETE + valid (spawn precondition)."""
+def amendment_gate(root: Path = Path(".")) -> tuple[dict | None, str | None]:
+    """(spec, None) iff the frozen amendment spec has a write-once local re-validation record that is amended_valid
+    for this exact spec (sha-bound) and cell."""
+    try:
+        spec = json.loads((root / AMENDMENT_SPEC).read_text())
+        rec = json.loads((root / AMENDMENT_RECORD).read_text())
+    except (OSError, ValueError) as e:
+        return None, f"post-hoc amendment spec/record unreadable: {e!r:.160}"
+    if rec.get("result") != "amended_valid" or rec.get("spec_sha256") != file_sha(root / AMENDMENT_SPEC) \
+            or rec.get("cell") != spec.get("cell"):
+        return None, "post-hoc amendment record is not amended_valid for this spec"
+    return spec, None
+
+
+def slots_ready(local_root: Path, amendment: dict | None = None) -> str | None:
+    """Every slot collected with a verified stop and every registered cell COMPLETE + valid (spawn precondition);
+    with `amendment`, ONLY its cell may instead be FAILED with exactly the original reason."""
     for s in SLOTS:
         try:
             st = json.loads((local_root / s / "collect_status.json").read_text())
@@ -135,7 +155,9 @@ def slots_ready(local_root: Path) -> str | None:
         if (st.get("final_shutdown") or {}).get("status") != "stopped_verified":
             return f"{s}: stop not verified"
         bad = {c: v for c, v in (st.get("cells") or {}).items()
-               if v.get("state") != "COMPLETE" or v.get("validation") != "valid"}
+               if (v.get("state") != "COMPLETE" or v.get("validation") != "valid")
+               and not (amendment and c == amendment["cell"] and v.get("state") == "FAILED"
+                        and v.get("reason") == amendment["original_reason"])}
         if bad or len(st.get("cells") or {}) != 2:
             return f"{s}: cells not all COMPLETE and valid: {sorted(bad)}"
     return None
@@ -159,7 +181,7 @@ def app_state(app_id: str) -> str:
 
 def spawn() -> None:
     tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
-               f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+               f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
     if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
                       check=True).stdout.strip():
         raise SystemExit("refusing to spawn from a dirty tree")
@@ -167,7 +189,8 @@ def spawn() -> None:
     if problem:
         raise SystemExit(f"refusing to spawn: {problem}")
     local = Path(LOCAL_OUT) / GROUP
-    problem = slots_ready(local)
+    amendment, problem = amendment_gate()
+    problem = problem or slots_ready(local, amendment)
     if problem:
         raise SystemExit(f"readings precondition failed: {problem}")
     cp = load_cp()

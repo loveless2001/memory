@@ -118,7 +118,7 @@ def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, k
         App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
         Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
             spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
-    monkeypatch.setattr(r, "slots_ready", lambda local: None)
+    monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
     monkeypatch.setattr(r, "app_state", lambda i: "deployed")
     monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
     monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))

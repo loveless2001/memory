@@ -21,6 +21,11 @@ Order (prereg "Order inside the one readings run"; fail closed, write-once outpu
      keeps its other reserved corners unevaluated; the other N is still read (independent per-N gating).
   5. Per N: control labels (all-control conjunction), memory use (learned, both seeds), read-address use,
      the ordered reading table (sgm-p2p5-decision-rules.py). Descriptive: accuracies, 16-head gate telemetry.
+
+POST-HOC AMENDMENT (user 21710, option B; sgm-p2p5-pk-posthoc-validation-amendment.py): step 1 first binds under
+the ORIGINAL prereg gate (recorded: the original outcome, "unavailable" if any cell is not COMPLETE), then binds
+again accepting ONLY the one spec-listed FAILED cell under the amended validation. The whole campaign and every N
+reading are labelled "post-hoc amended" with the original reading kept next to each.
 """
 
 import argparse
@@ -46,6 +51,7 @@ EVAL = {"final_batches": 16, "final_batch_size": 16, "final_seed_base": 9_300_01
         "train_eval_seed_base": 555_001}
 READINGS_BASE = 9_600_011
 MANIFEST = ROOT / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
+AMENDMENT = ROOT / "configs/m4_sgm_p2p5_pk_posthoc_validation_amendment.json"
 
 
 def _load(name: str):
@@ -57,6 +63,7 @@ def _load(name: str):
 
 POBS, DR = _load("sgm-p2p5-pretrained-observer"), _load("sgm-p2p5-decision-rules")
 MAN = _load("sgm-p2p5-pk-campaign-analysis-dependency-manifest")
+AMD = _load("sgm-p2p5-pk-posthoc-validation-amendment")
 P2D = POBS.RULES.P2D
 
 
@@ -68,8 +75,10 @@ def slot_of(pilot: dict) -> str:
     return f"{pilot['arm']}-n{pilot['n_bindings']}"
 
 
-def bind_cells(root: Path, admitted: dict, memsub: str, grid: dict, registry: dict, schema: dict) -> tuple[dict, str | None]:
-    """{cell: out_dir} for all 18 registered cells, or (partial, first problem)."""
+def bind_cells(root: Path, admitted: dict, memsub: str, grid: dict, registry: dict, schema: dict,
+               amendment: dict | None = None) -> tuple[dict, str | None]:
+    """{cell: out_dir} for all 18 registered cells, or (partial, first problem). `amendment` None = the original
+    prereg gate; else ONLY the spec's cell may be FAILED, and only if it passes the amended validation."""
     cells, problem = {}, None
     for cid, pilot in sorted(expand_cells(grid).items()):
         cdir, adm = root / slot_of(pilot) / "cells" / cid, admitted.get(slot_of(pilot), [])
@@ -79,6 +88,13 @@ def bind_cells(root: Path, admitted: dict, memsub: str, grid: dict, registry: di
                 raise ValueError(f"epochs {epochs} not all admitted {adm}")
             rec = next(r for m in reversed(epochs) if (r := es.read_record(cdir, m)) is not None)
             es.canonical_walk(rec, max_len=len(adm))
+            if rec["state"] != es.COMPLETE and amendment is not None and cid == amendment["cell"]:
+                bad = AMD.amended_cell_problem(root / slot_of(pilot), rec, pilot, EVAL, memsub,
+                                               registry["by_arm"][pilot["arm"]], schema["by_arm"][pilot["arm"]], amendment)
+                if bad:
+                    raise ValueError(f"post-hoc amendment: {bad}")
+                cells[cid] = root / slot_of(pilot) / amendment["attempt"] / "out"
+                continue
             if rec["state"] != es.COMPLETE:
                 raise ValueError(f"state {rec['state']}")
             out = root / slot_of(pilot) / rec["outputs"]["attempt"] / "out"
@@ -119,7 +135,7 @@ def reserved_rows(cid: str, out: Path, pilot: dict, n: int, ivs: tuple, dest: Pa
 
 def analysis_closure() -> set[str]:
     """This script + every script module it reaches (observer, decision rules and their dynamic dependencies)."""
-    return {Path(__file__).resolve().relative_to(ROOT.resolve()).as_posix()} | MAN.script_closure([POBS, DR, MAN], ROOT)
+    return {Path(__file__).resolve().relative_to(ROOT.resolve()).as_posix()} | MAN.script_closure([POBS, DR, MAN, AMD], ROOT)
 
 
 def _rel(p: Path) -> str:
@@ -140,7 +156,7 @@ def binding_problem(expected: dict, ckpts: dict | None = None) -> str | None:
     problem = MAN.manifest_problem(ROOT, manifest, identity["memsub"], closure=analysis_closure())
     if problem:
         return problem
-    unlisted = [str(p) for p in (GRID, REGISTRY, SCHEMA) if _rel(p) not in manifest["analysis"]]
+    unlisted = [str(p) for p in (GRID, REGISTRY, SCHEMA, AMENDMENT) if _rel(p) not in manifest["analysis"]]
     if unlisted:                                             # the consumed inputs ARE the frozen ones
         return f"consumed inputs not in the dependency manifest: {unlisted}"
     changed = sorted(c for c, (path, want) in (ckpts or {}).items() if sha(path) != want)
@@ -176,8 +192,14 @@ def readings(root: Path, admitted: dict, expected: dict, out: Path) -> dict:
     problem, cells, ckpts = binding_problem(expected), {}, {}    # BEFORE any evidence or population access
     if not problem:
         grid, registry, schema = (json.loads(p.read_text()) for p in (GRID, REGISTRY, SCHEMA))
+        amendment = AMD.load_spec(AMENDMENT)
         pilots = expand_cells(grid)
-        cells, problem = bind_cells(root, admitted, report["identity"]["memsub"], grid, registry, schema)
+        _orig, original = bind_cells(root, admitted, report["identity"]["memsub"], grid, registry, schema)
+        report["posthoc_amendment"] = {
+            "label": AMD.LABEL, "cell": amendment["cell"], "spec_sha256": sha(AMENDMENT), "original_gate": original,
+            "original_reading": {str(n): DR.screen_reading(n, original, None, None, None) for n in (32, 16)}
+            if original else None}
+        cells, problem = bind_cells(root, admitted, report["identity"]["memsub"], grid, registry, schema, amendment)
         ckpts = {c: (o / "trained_parameters.safetensors", sha(o / "trained_parameters.safetensors")) for c, o in cells.items()}
         problem = problem or parity(cells, pilots)
     if problem:                                               # reserved population untouched
@@ -204,6 +226,12 @@ def readings(root: Path, admitted: dict, expected: dict, out: Path) -> dict:
         for n, v in report["n"].items():
             v["reading_before_end_binding_failure"] = v.get("reading")
             v["reading"] = DR.screen_reading(int(n), end, None, None, None)
+    amended = report.get("posthoc_amendment") or {}
+    report["campaign_label"] = AMD.LABEL                      # the whole campaign + every N reading, original kept
+    for n, v in report["n"].items():
+        v["label"] = AMD.LABEL
+        v["original_reading"] = ("not computed: binding failed before the gates" if not amended else
+                                 (amended["original_reading"] or {}).get(n, "same as the amended reading"))
     (out / "readings.json").write_text(json.dumps(report, indent=2, default=str))
     return report
 

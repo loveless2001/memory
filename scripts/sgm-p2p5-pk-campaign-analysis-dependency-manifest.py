@@ -26,6 +26,7 @@ FORMAT = "m4-sgm-p2p5-pk-campaign-analysis-manifest-v1"
 PLAN = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 ANALYSIS_INPUTS = ("configs/m4_sgm_p2p5_grid.json", "configs/m4_sgm_p2p5_campaign_registry.json",
                    "configs/m4_sgm_p2p5_campaign_output_schema.json", f"{PLAN}/prereg.md",
+                   "configs/m4_sgm_p2p5_pk_posthoc_validation_amendment.json",
                    f"{PLAN}/prereg-amendment-pk-packed-a100-resume.md")
 LAUNCH_INPUTS = ("modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py",
                  "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py",
@@ -34,7 +35,9 @@ LAUNCH_INPUTS = ("modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py
                  "modal-runners/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py",
                  "modal-runners/modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py",
                  f"{PLAN}/pk6/priced-estimate-v6.json", f"{PLAN}/pk-campaign-execution-supplement.md",
-                 f"{PLAN}/pk-campaign-source-bridge-manifest-label.md")
+                 f"{PLAN}/pk-campaign-source-bridge-manifest-label.md",
+                 f"{PLAN}/prereg-amendment-posthoc-validation-learned-n32-s1.md",
+                 f"{PLAN}/pk-campaign-posthoc-amendment/learned-n32-s1-revalidation-record.json")
 
 
 def sha(p: Path) -> str:
