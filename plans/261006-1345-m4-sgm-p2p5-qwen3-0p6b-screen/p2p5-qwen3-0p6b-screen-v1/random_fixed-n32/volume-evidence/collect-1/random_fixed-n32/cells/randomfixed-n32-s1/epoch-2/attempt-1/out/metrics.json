@@ -1,0 +1,247 @@
+{
+  "result_label": "frozen-qwen3-0.6b-base+residual-head",
+  "arm": "random_fixed",
+  "n_bindings": 32,
+  "seed": 1,
+  "steps": 1500,
+  "readout": "residual_head",
+  "n_queries": 4,
+  "final_episodes": 256,
+  "final": {
+    "heldout_none": {
+      "accuracy": 0.10546875,
+      "correct": 108,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.20009036550618475,
+      "query_read_address_std_cells": 0.9233659505844116,
+      "occupancy_mean": 15.6171875,
+      "occupancy_max": 24.0625,
+      "effective_cells_mean": 8.448738456082081,
+      "neural_bytes": 16375808.0,
+      "beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.019027699973154462
+    },
+    "heldout_bank_derange": {
+      "accuracy": 0.1015625,
+      "correct": 104,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.20006796989036957,
+      "query_read_address_std_cells": 0.9233148097991943,
+      "occupancy_mean": 15.6171875,
+      "occupancy_max": 24.0625,
+      "effective_cells_mean": 8.448738456082081,
+      "neural_bytes": 16375808.0,
+      "beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.018961137613111016
+    },
+    "heldout_coord_shuffle": {
+      "accuracy": 0.0908203125,
+      "correct": 93,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.2027877035579877,
+      "query_read_address_std_cells": 0.9143811464309692,
+      "occupancy_mean": 15.6171875,
+      "occupancy_max": 24.0625,
+      "effective_cells_mean": 8.448738456082081,
+      "neural_bytes": 16375808.0,
+      "beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.01706904770239186
+    },
+    "heldout_read_offset": {
+      "accuracy": 0.03125,
+      "correct": 32,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.9909587057773024,
+      "query_read_address_std_cells": 0.8842729330062866,
+      "occupancy_mean": 15.6171875,
+      "occupancy_max": 24.0625,
+      "effective_cells_mean": 8.448738456082081,
+      "neural_bytes": 16375808.0,
+      "beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.010504288339978667
+    },
+    "heldout_query_off": {
+      "accuracy": 0.03125,
+      "correct": 32,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": null,
+      "query_read_address_std_cells": null,
+      "occupancy_mean": 15.6171875,
+      "occupancy_max": 24.0625,
+      "effective_cells_mean": 8.448738456082081,
+      "neural_bytes": 16375808.0,
+      "beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9365726854884997,
+        "value": 0.9344991294201463,
+        "filler": 0.9361336429603397
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.010504288339978667
+    },
+    "train_split_none": {
+      "accuracy": 0.12109375,
+      "correct": 31,
+      "total": 256,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.19955150937312283,
+      "query_read_address_std_cells": 0.9252204895019531,
+      "occupancy_mean": 15.6669921875,
+      "occupancy_max": 25.0,
+      "effective_cells_mean": 8.462891086886684,
+      "neural_bytes": 16428032.0,
+      "beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9359281631186604,
+        "value": 0.9338311469182372,
+        "filler": 0.9358435686677694
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.8224957138299942,
+        "key": 0.9359281631186604,
+        "value": 0.9338311469182372,
+        "filler": 0.9358435686677694
+      },
+      "episodes": 64,
+      "accuracy_ci95_halfwidth_episode": 0.03272528919584041
+    }
+  },
+  "checkpoints": {},
+  "train_last": {
+    "step": 1490,
+    "loss": 3.5405120849609375,
+    "train_acc": 0.125,
+    "aux_address_mse": null,
+    "grad_norm": {
+      "L6/q_proj": 0.09806125106131676,
+      "L6/k_proj": 0.03018496259495947,
+      "L6/value": 0.03832518339794808,
+      "L6/beta": 0.005305853301087724,
+      "L6/address_mlp": null,
+      "L6/out_proj": 0.1144993665846333,
+      "L6/alpha": 0.04953205999981641,
+      "L13/q_proj": 0.01563936091381154,
+      "L13/k_proj": 0.0170707920010391,
+      "L13/value": 0.03355871032396649,
+      "L13/beta": 0.00044502720375911886,
+      "L13/address_mlp": null,
+      "L13/out_proj": 0.12549540577416515,
+      "L13/alpha": 0.018918944842480773,
+      "L20/q_proj": 0.08610088898610191,
+      "L20/k_proj": 0.03232444722766168,
+      "L20/value": 0.03601720719575437,
+      "L20/beta": 0.00037825702451093577,
+      "L20/address_mlp": null,
+      "L20/out_proj": 0.12317248396993322,
+      "L20/alpha": 0.04767648382657658,
+      "L27/q_proj": 0.006424585002966418,
+      "L27/k_proj": 0.017944864667511756,
+      "L27/value": 0.026233415434574484,
+      "L27/beta": 1.9853915652886357e-06,
+      "L27/address_mlp": null,
+      "L27/out_proj": 0.1699688068340001,
+      "L27/alpha": 0.008488863747550864
+    },
+    "update_norm": {
+      "L6/q_proj": 0.4118955135345459,
+      "L6/k_proj": 0.3032051622867584,
+      "L6/value": 0.3247937262058258,
+      "L6/beta": 0.03959605423733592,
+      "L6/address_mlp": 0.0,
+      "L6/out_proj": 0.37048324942588806,
+      "L6/alpha": 0.0006442070007324219,
+      "L13/q_proj": 0.21719279885292053,
+      "L13/k_proj": 0.16845396161079407,
+      "L13/value": 0.2155127078294754,
+      "L13/beta": 0.016425104171503335,
+      "L13/address_mlp": 0.0,
+      "L13/out_proj": 0.28072378039360046,
+      "L13/alpha": 0.00017452239990234375,
+      "L20/q_proj": 0.25301989912986755,
+      "L20/k_proj": 0.1704234778881073,
+      "L20/value": 0.2934510111808777,
+      "L20/beta": 0.005146336057805456,
+      "L20/address_mlp": 0.0,
+      "L20/out_proj": 0.23899134993553162,
+      "L20/alpha": 0.0004382133483886719,
+      "L27/q_proj": 0.05287722870707512,
+      "L27/k_proj": 0.13809648156166077,
+      "L27/value": 0.22078010439872742,
+      "L27/beta": 0.0060405225594877265,
+      "L27/address_mlp": 0.0,
+      "L27/out_proj": 0.1713065803050995,
+      "L27/alpha": 0.0002980232238769531
+    },
+    "alpha": {
+      "6": 0.01743590645492077,
+      "13": 0.015792585909366608,
+      "20": 0.015336950309574604,
+      "27": 0.015303264372050762
+    },
+    "sec_per_step": 12.558235702001184,
+    "occupancy_mean": 15.5078125,
+    "occupancy_max": 23,
+    "effective_cells_mean": 8.485037593295383,
+    "neural_bytes": 16261120
+  },
+  "wall_seconds": 12628.910079240799
+}

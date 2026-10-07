@@ -1,0 +1,247 @@
+{
+  "result_label": "frozen-qwen3-0.6b-base+residual-head",
+  "arm": "learned",
+  "n_bindings": 16,
+  "seed": 1,
+  "steps": 1500,
+  "readout": "residual_head",
+  "n_queries": 4,
+  "final_episodes": 256,
+  "final": {
+    "heldout_none": {
+      "accuracy": 0.0224609375,
+      "correct": 23,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.8153835149714723,
+      "query_read_address_std_cells": 3.8079657554626465,
+      "occupancy_mean": 30.431396484375,
+      "occupancy_max": 82.0625,
+      "effective_cells_mean": 12.123820178856946,
+      "neural_bytes": 31909632.0,
+      "beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.00918421548213502
+    },
+    "heldout_bank_derange": {
+      "accuracy": 0.0185546875,
+      "correct": 19,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.8153938591713086,
+      "query_read_address_std_cells": 3.8079657554626465,
+      "occupancy_mean": 30.431396484375,
+      "occupancy_max": 82.0625,
+      "effective_cells_mean": 12.123820178856946,
+      "neural_bytes": 31909632.0,
+      "beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.00848831510529757
+    },
+    "heldout_coord_shuffle": {
+      "accuracy": 0.015625,
+      "correct": 16,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.8153835335979238,
+      "query_read_address_std_cells": 3.8079910278320312,
+      "occupancy_mean": 30.431396484375,
+      "occupancy_max": 82.0625,
+      "effective_cells_mean": 12.123820178856946,
+      "neural_bytes": 31909632.0,
+      "beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.007907340998506809
+    },
+    "heldout_read_offset": {
+      "accuracy": 0.01953125,
+      "correct": 20,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.9097944339737296,
+      "query_read_address_std_cells": 3.808453321456909,
+      "occupancy_mean": 30.431396484375,
+      "occupancy_max": 82.0625,
+      "effective_cells_mean": 12.123820178856946,
+      "neural_bytes": 31909632.0,
+      "beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.00867001586457094
+    },
+    "heldout_query_off": {
+      "accuracy": 0.0224609375,
+      "correct": 23,
+      "total": 1024,
+      "chance": 0.015625,
+      "query_empty_read_weight": null,
+      "query_read_address_std_cells": null,
+      "occupancy_mean": 30.431396484375,
+      "occupancy_max": 82.0625,
+      "effective_cells_mean": 12.123820178856946,
+      "neural_bytes": 31909632.0,
+      "beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7009800137020648,
+        "value": 0.6979300831444561,
+        "filler": 0.7062348351813853
+      },
+      "episodes": 256,
+      "accuracy_ci95_halfwidth_episode": 0.00918421548213502
+    },
+    "train_split_none": {
+      "accuracy": 0.03125,
+      "correct": 8,
+      "total": 256,
+      "chance": 0.015625,
+      "query_empty_read_weight": 0.8152133938856423,
+      "query_read_address_std_cells": 3.8097801208496094,
+      "occupancy_mean": 30.318359375,
+      "occupancy_max": 76.0,
+      "effective_cells_mean": 12.12357232973157,
+      "neural_bytes": 31791104.0,
+      "beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7008519163355231,
+        "value": 0.6985904583707452,
+        "filler": 0.7075944472104311
+      },
+      "effective_beta_by_token_class": {
+        "sink": 0.6775240749120712,
+        "key": 0.7008519163355231,
+        "value": 0.6985904583707452,
+        "filler": 0.7075944472104311
+      },
+      "episodes": 64,
+      "accuracy_ci95_halfwidth_episode": 0.020416666666666666
+    }
+  },
+  "checkpoints": {},
+  "train_last": {
+    "step": 1490,
+    "loss": 4.249865531921387,
+    "train_acc": 0.03125,
+    "aux_address_mse": null,
+    "grad_norm": {
+      "L6/q_proj": 9.049322113152623e-06,
+      "L6/k_proj": 8.363081611914407e-07,
+      "L6/value": 1.2799807724116968e-07,
+      "L6/beta": 2.329984177025185e-09,
+      "L6/address_mlp": 4.3416262691474875e-06,
+      "L6/out_proj": 2.0408138112624682e-06,
+      "L6/alpha": 1.025875288054593e-08,
+      "L13/q_proj": 4.419345020710852e-08,
+      "L13/k_proj": 1.960854513154109e-08,
+      "L13/value": 9.124008396841835e-10,
+      "L13/beta": 4.718432946184174e-09,
+      "L13/address_mlp": 2.0851860934923428e-07,
+      "L13/out_proj": 2.00687646751579e-09,
+      "L13/alpha": 9.672507153947574e-10,
+      "L20/q_proj": 5.0989027936288666e-11,
+      "L20/k_proj": 3.6519801092775214e-10,
+      "L20/value": 3.921883739311485e-12,
+      "L20/beta": 6.714622934439332e-11,
+      "L20/address_mlp": 9.23793710302706e-10,
+      "L20/out_proj": 1.5933559236890097e-11,
+      "L20/alpha": 6.607263599515318e-13,
+      "L27/q_proj": 0.018544848556433884,
+      "L27/k_proj": 0.023082944660670884,
+      "L27/value": 0.02565623247405045,
+      "L27/beta": 6.09030246963156e-05,
+      "L27/address_mlp": 0.2369781658168721,
+      "L27/out_proj": 0.15908430319159553,
+      "L27/alpha": 0.10727328080058972
+    },
+    "update_norm": {
+      "L6/q_proj": 0.00032563519198447466,
+      "L6/k_proj": 0.00013848135131411254,
+      "L6/value": 2.7653943106997758e-05,
+      "L6/beta": 3.584179069093807e-07,
+      "L6/address_mlp": 7.919184406546265e-05,
+      "L6/out_proj": 6.637361366301775e-05,
+      "L6/alpha": 0.0,
+      "L13/q_proj": 8.623522444395348e-05,
+      "L13/k_proj": 8.751219138503075e-05,
+      "L13/value": 7.572733738925308e-05,
+      "L13/beta": 3.71292517229449e-05,
+      "L13/address_mlp": 5.414061465813802e-08,
+      "L13/out_proj": 0.00019557762425392866,
+      "L13/alpha": 0.0,
+      "L20/q_proj": 6.295711500570178e-06,
+      "L20/k_proj": 5.90872832617606e-06,
+      "L20/value": 4.0863250205802615e-07,
+      "L20/beta": 6.699108325847192e-07,
+      "L20/address_mlp": 4.992390678637548e-08,
+      "L20/out_proj": 2.779359817850491e-07,
+      "L20/alpha": 0.0,
+      "L27/q_proj": 0.09514071047306061,
+      "L27/k_proj": 0.08224346488714218,
+      "L27/value": 0.15819455683231354,
+      "L27/beta": 0.08477994380518794,
+      "L27/address_mlp": 0.007251524715684354,
+      "L27/out_proj": 0.17561990022659302,
+      "L27/alpha": 0.00017261505126953125
+    },
+    "alpha": {
+      "6": 0.018904009833931923,
+      "13": 0.016507022082805634,
+      "20": 0.018347840756177902,
+      "27": 0.018558338284492493
+    },
+    "sec_per_step": 14.600039798999205,
+    "occupancy_mean": 30.6640625,
+    "occupancy_max": 76,
+    "effective_cells_mean": 12.267750188289922,
+    "neural_bytes": 32153600
+  },
+  "wall_seconds": 16135.627110481262
+}

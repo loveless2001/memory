@@ -1,0 +1,55 @@
+{
+  "cell": "randomfixed-n32-s1",
+  "epoch": 2,
+  "attempt": 1,
+  "pilot_config": {
+    "arm": "random_fixed",
+    "readout": "residual_head",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 1500,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 100,
+    "eval_batches": 4,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        1000,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda",
+    "n_bindings": 32,
+    "seed": 1
+  },
+  "mode": "train",
+  "epoch_dir": "/artifacts/m4-sgm/p2p5-qwen3-0p6b-screen-v1/random_fixed-n32/cells/randomfixed-n32-s1/epoch-2",
+  "attempt_dir": "/artifacts/m4-sgm/p2p5-qwen3-0p6b-screen-v1/random_fixed-n32/cells/randomfixed-n32-s1/epoch-2/attempt-1",
+  "resume_file": "/artifacts/m4-sgm/p2p5-qwen3-0p6b-screen-v1/random_fixed-n32/cells/randomfixed-n32-s1/epoch-1/gen-7-step350.pt",
+  "resume_sha256": "53ab3ec56f8aeb8ec409eed3a8ae57e5cfc72e7f089614a3c5e91a3406d3a587",
+  "next_g": 8,
+  "resume_step": 350,
+  "checkpoint_every": 50,
+  "eval": {
+    "final_batches": 16,
+    "final_batch_size": 16,
+    "final_seed_base": 9300011,
+    "dev_seed": 4242,
+    "train_eval_seed_base": 555001
+  },
+  "parent_pid": 2,
+  "threads": 2,
+  "ack_timeout_s": 900,
+  "proof_capture": false,
+  "fault": null
+}

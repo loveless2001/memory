@@ -1,0 +1,55 @@
+{
+  "cell": "memoryoff-n32-s0",
+  "epoch": 1,
+  "attempt": 1,
+  "pilot_config": {
+    "arm": "memory_off",
+    "readout": "residual_head",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 1500,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 100,
+    "eval_batches": 4,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        1000,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda",
+    "n_bindings": 32,
+    "seed": 0
+  },
+  "mode": "train",
+  "epoch_dir": "/artifacts/m4-sgm/p2p5-qwen3-0p6b-screen-v1/memory_off-n32/cells/memoryoff-n32-s0/epoch-1",
+  "attempt_dir": "/artifacts/m4-sgm/p2p5-qwen3-0p6b-screen-v1/memory_off-n32/cells/memoryoff-n32-s0/epoch-1/attempt-1",
+  "resume_file": null,
+  "resume_sha256": null,
+  "next_g": 1,
+  "resume_step": 0,
+  "checkpoint_every": 50,
+  "eval": {
+    "final_batches": 16,
+    "final_batch_size": 16,
+    "final_seed_base": 9300011,
+    "dev_seed": 4242,
+    "train_eval_seed_base": 555001
+  },
+  "parent_pid": 2,
+  "threads": 2,
+  "ack_timeout_s": 900,
+  "proof_capture": false,
+  "fault": null
+}

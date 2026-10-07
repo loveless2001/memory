@@ -1,0 +1,40 @@
+{
+  "status": "PRELIMINARY: fetched 2026-10-07T17:44:48Z; the 17:00 UTC hour was still open (readings stopped 17:42:47Z) and the controller ticks until its armed deadline 21:26:57Z. Final figures come from a re-fetch after the controller self-stops.",
+  "source": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-campaign-launch/attempt-2/94-billing-hourly-prelim-20261007T1744Z.json",
+  "source_sha256": "ebb69e4889f20dac625e0cedfec31aca6da8f7416d519d3e21e527317c4a21c9",
+  "filter": "description startswith memsub-m4-sgm-p2p5-pk-campaign (excludes echo-puzzle-a12 ap-Pu6Dy71P8DakYgOma6JC0A, not ours)",
+  "window": "2026-10-07T00:00Z .. 2026-10-07T17:00Z hour (hourly)",
+  "attempt_1": {
+    "control ap-eqwdT119XvSoBJC1I2kDqC": 4.958e-05,
+    "failed_slot_image_build": "not app-attributed in the hourly report (unresolved; covered by the $0.50 attempt-1 allocation)"
+  },
+  "attempt_2": {
+    "slot_apps": {
+      "memoryoff-n32 ap-8m9pZ6KD77ivuvmSQ1vb5k": 4.64863281,
+      "learned-n16 ap-ETP6e541BpdsPf11yzZGTe": 15.39625127,
+      "memoryoff-n16 ap-FHeNdce7VkCSVBQWzTRmjk": 2.9447095,
+      "oracle-n32 ap-Q3tBU1VKHFfO7etg4jmeTz": 22.05052527,
+      "singlecell-n16 ap-RmkZbuerKMTGWBWtoY3E7r": 14.27187984,
+      "randomfixed-n32 ap-ifA2HmtzYE3CNXIcommxBa": 15.40371779,
+      "learned-n32 ap-seAC6uskFnK96xlpe0wLIQ": 20.10492774,
+      "singlecell-n32 ap-vAEMByn2pbJjoL46iekO9X": 13.2935916,
+      "randomfixed-n16 ap-vaN80Zc8IAet0r37n4bC5q": 11.15671847
+    },
+    "slot_apps_total": 119.27095429,
+    "readings ap-MvPw7JVom3vnRTxVVyzldN": 7.08987892,
+    "control ap-suOdTgdc8PNSfZ3jbnsesa (through 17:00 hour)": 0.08021808
+  },
+  "campaign_total_app_attributed": 126.44110087,
+  "reference": {
+    "v6_estimate_usd": 116.31395302286052,
+    "conditional_reserve_usd": 259.98622130744764,
+    "reserve_lines": {
+      "slot_apps": 236.14486072799997,
+      "readings_app": 16.707700454518204,
+      "images": 1.852224,
+      "reaper": 0.2814361249294577,
+      "margin": 5.0
+    }
+  },
+  "separate": "P2.5 PK packed proof hold $8.57 (Oct 6) is not in this window and stays separate."
+}

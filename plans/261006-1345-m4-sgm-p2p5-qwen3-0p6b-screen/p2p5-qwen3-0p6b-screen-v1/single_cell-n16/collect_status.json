@@ -1,0 +1,63 @@
+{
+  "slot": "single_cell-n16",
+  "call_id": "fc-01M4AJA7BNFA25ZZQPT3RSEHKY",
+  "poll": "result",
+  "result": {
+    "slot": "single_cell-n16",
+    "status": "done",
+    "epoch": 1,
+    "states": {
+      "singlecell-n16-s0": "COMPLETE",
+      "singlecell-n16-s1": "COMPLETE"
+    }
+  },
+  "past_deadline": false,
+  "final_shutdown": {
+    "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+    "verification": {
+      "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+      "verified": true,
+      "app_rows": [
+        {
+          "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n16",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:43:04+07:00",
+          "stopped_at": "2026-10-07 18:11:41+07:00"
+        }
+      ],
+      "container_rows": []
+    },
+    "status": "stopped_verified"
+  },
+  "evidence": {
+    "returncode": 0,
+    "stderr_tail": ""
+  },
+  "dicts": {
+    "guard": 2,
+    "admission": 1
+  },
+  "evidence_dir": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/single_cell-n16/volume-evidence/collect-1",
+  "cells": {
+    "singlecell-n16-s0": {
+      "state": "COMPLETE",
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "validation": "valid"
+    },
+    "singlecell-n16-s1": {
+      "state": "COMPLETE",
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "validation": "valid"
+    }
+  }
+}

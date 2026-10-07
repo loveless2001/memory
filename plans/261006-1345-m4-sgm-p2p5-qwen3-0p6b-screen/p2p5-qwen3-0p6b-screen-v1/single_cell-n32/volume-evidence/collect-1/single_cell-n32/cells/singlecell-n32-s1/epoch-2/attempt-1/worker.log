@@ -1,0 +1,35 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/root/repo/memsub/sgm/packed_slot_worker.py", line 153, in <module>
+    main(sys.argv[1])
+  File "/root/repo/memsub/sgm/packed_slot_worker.py", line 139, in main
+    spr.run_pilot(pilot.PilotConfig(**a["pilot_config"]), attempt / "out",
+  File "/root/repo/memsub/sgm/synthetic_pilot_run.py", line 109, in run_pilot
+    result = train(pcfg, log=log, evaluate_fn=dev_eval, resume=resume, on_update=on_update,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/sgm/packed_slot_worker.py", line 125, in train_then_flag
+    out = real_train(*args, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/sgm/synthetic_pilot.py", line 192, in train
+    state = ingest(backend, batch, pcfg.arm, src_traces,       # graph kept into the bank
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/sgm/synthetic_pilot_evaluation.py", line 61, in ingest
+    return backend.ingest_source(state, batch.source, SourceRef("synthetic-episode"),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/sgm/backend.py", line 65, in ingest_source
+    out = self.runtime.step(work, token_ids[:, t:t + 1], write=write,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/runtime/sgm_model_runtime.py", line 111, in step
+    h = self._sgm_layer(layer, i, h, state, kw, write, oracle, reads, trace)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/runtime/sgm_model_runtime.py", line 138, in _sgm_layer
+    trace["allocated"] += self._write(state.banks, i, p, oracle, trace)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/runtime/sgm_model_runtime.py", line 188, in _write
+    return banks.scatter(i, idx, new, w, coords=coords, nonzero=nonzero)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/repo/memsub/sgm/sparse_cell_bank.py", line 127, in scatter
+    rows = flat.unbind(0) if keep_graph else None
+           ^^^^^^^^^^^^^^
+KeyboardInterrupt

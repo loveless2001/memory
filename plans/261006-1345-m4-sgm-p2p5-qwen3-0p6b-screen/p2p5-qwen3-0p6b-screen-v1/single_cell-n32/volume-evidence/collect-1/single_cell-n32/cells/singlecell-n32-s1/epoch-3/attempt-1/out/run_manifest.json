@@ -1,0 +1,90 @@
+{
+  "experiment": "m4-sgm-v0",
+  "phase": "P2",
+  "mode": "research_only",
+  "result_label": "frozen-qwen3-0.6b-base+residual-head",
+  "pilot_config": {
+    "arm": "single_cell",
+    "readout": "residual_head",
+    "n_bindings": 32,
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 1500,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 100,
+    "eval_batches": 4,
+    "seed": 1,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        1000,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda"
+  },
+  "sgm_config": {
+    "selected_layers": [
+      6,
+      13,
+      20,
+      27
+    ],
+    "memory_heads": 4,
+    "key_dim": 32,
+    "value_dim": 32,
+    "address_hidden": 64,
+    "address_scale": 8.0,
+    "address_init_spread": 1.0,
+    "local_recent_tokens": 32,
+    "pinned_sink_tokens": 4,
+    "max_cells_per_bank": 2048,
+    "alpha_init_logit": -4.0,
+    "out_init_std": 0.02,
+    "feature_shift": 1,
+    "address_mode": "single_cell",
+    "stencil": "quadratic_bspline_3x3_v1",
+    "update": "weighted_delta_v1",
+    "read_order": "read_before_write_v1",
+    "ingest": "token_serial_v1",
+    "resolved": {
+      "hidden_size": 1024,
+      "num_hidden_layers": 28,
+      "model_type": "qwen3"
+    }
+  },
+  "policy_id": "m4-sgm:single_cell:sha256:6dc9842d53380346",
+  "backbone": "Qwen/Qwen3-0.6B-Base@da87bfb608c14b7cf20ba1ce41287e8de496c0cd (frozen, pinned, sha256-checked)",
+  "ingest": "token_serial_full_gradient",
+  "state_horizon_tokens": 108,
+  "gradient_horizon_tokens": 108,
+  "versions": {
+    "torch": "2.7.1+cu126",
+    "transformers": "4.55.2",
+    "python": "3.12.10",
+    "host": "modal",
+    "threads": 2
+  },
+  "final_eval_seed": 9300012,
+  "memsub_source_sha256": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+  "trained_parameters_sha256": "485bfdf94aa07ee5b927b925364ba27217cf78b805cce5f8f73c6e9835e0ba30",
+  "pk": {
+    "cell": "singlecell-n32-s1",
+    "epoch": 3,
+    "attempt": 1,
+    "mode": "train"
+  },
+  "resumed_from_step": 250,
+  "checkpoint_parameters_sha256": {},
+  "wall_seconds": 10259.697201013565
+}

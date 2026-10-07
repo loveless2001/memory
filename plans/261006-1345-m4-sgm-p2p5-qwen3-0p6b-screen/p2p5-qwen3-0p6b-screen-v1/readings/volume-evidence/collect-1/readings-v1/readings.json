@@ -1,0 +1,2768 @@
+{
+  "identity": {
+    "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+    "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+  },
+  "expected": {
+    "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+    "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+  },
+  "readings_seed_base": 9600011,
+  "environment": {
+    "python": "3.12.10",
+    "torch": "2.7.1+cu126",
+    "cuda": "NVIDIA A100-SXM4-80GB"
+  },
+  "n": {
+    "32": {
+      "corners": {
+        "oracle-n32-s0-on-n32": {
+          "rows_sha256": "66bba746a8e6c541560087d177ac858b64914949c5263fe5896f7a1fa928ffdc",
+          "accuracy_none": 1.0,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 0.9998264377616958,
+            "auroc_mean_defined": 0.5980763554573059,
+            "auroc_min_defined": 0.4866943359375,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.6079936027526855,
+                "binding_projected_mean": 0.9995860827475553,
+                "binding_effective_mean": 0.9995860827475553,
+                "filler_projected_mean": 0.9992815695004538,
+                "filler_effective_mean": 0.9992815695004538,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.4873961448669434,
+                "binding_projected_mean": 0.9989579769244301,
+                "binding_effective_mean": 0.9989579769244301,
+                "filler_projected_mean": 0.9995264930184931,
+                "filler_effective_mean": 0.9995264930184931,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5978818893432617,
+                "binding_projected_mean": 0.9997379298729356,
+                "binding_effective_mean": 0.9997379298729356,
+                "filler_projected_mean": 0.9996667433530092,
+                "filler_effective_mean": 0.9996667433530092,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5663771152496337,
+                "binding_projected_mean": 0.9965861553318973,
+                "binding_effective_mean": 0.9965861553318973,
+                "filler_projected_mean": 0.9999718062812463,
+                "filler_effective_mean": 0.9999718062812463,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.6307938575744629,
+                "binding_projected_mean": 0.0037359140294769473,
+                "binding_effective_mean": 0.0037359140294769473,
+                "filler_projected_mean": 1.8318710541487285e-08,
+                "filler_effective_mean": 1.8318710541487285e-08,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.7615956783294677,
+                "binding_projected_mean": 0.9999773963354528,
+                "binding_effective_mean": 0.9999773963354528,
+                "filler_projected_mean": 0.9999840194126591,
+                "filler_effective_mean": 0.9999840194126591,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.6818220138549804,
+                "binding_projected_mean": 0.9999971055076458,
+                "binding_effective_mean": 0.9999971055076458,
+                "filler_projected_mean": 0.999997538793832,
+                "filler_effective_mean": 0.999997538793832,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.7770290851593018,
+                "binding_projected_mean": 0.9999998360872269,
+                "binding_effective_mean": 0.9999998360872269,
+                "filler_projected_mean": 0.9999996630940586,
+                "filler_effective_mean": 0.9999996630940586,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.5354973316192627,
+                "binding_projected_mean": 9.419309612667543e-10,
+                "binding_effective_mean": 9.419309612667543e-10,
+                "filler_projected_mean": 3.153635745348095e-15,
+                "filler_effective_mean": 3.153635745348095e-15,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.49365234375,
+                "binding_projected_mean": 0.9999999512801878,
+                "binding_effective_mean": 0.9999999512801878,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.4866943359375,
+                "binding_projected_mean": 0.9999997918494046,
+                "binding_effective_mean": 0.9999997918494046,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.4974365234375,
+                "binding_projected_mean": 0.9999999961873982,
+                "binding_effective_mean": 0.9999999961873982,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.9450517654418945,
+                "binding_projected_mean": 0.9999389717268059,
+                "binding_effective_mean": 0.9999389717268059,
+                "filler_projected_mean": 0.9976596430875361,
+                "filler_effective_mean": 0.9976596430875361,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "oracle-n32-s1-on-n32": {
+          "rows_sha256": "841bb5ea6c53b6d4388c469d158fd84fc999d9fe405da7add889a58872e881db",
+          "accuracy_none": 0.978515625,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 1.0200006550492897,
+            "auroc_mean_defined": 0.5519164860248565,
+            "auroc_min_defined": 0.3681640625,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5215911388397216,
+                "binding_projected_mean": 0.9984693160076858,
+                "binding_effective_mean": 0.9984693160076858,
+                "filler_projected_mean": 0.9989821841008961,
+                "filler_effective_mean": 0.9989821841008961,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.44485087394714357,
+                "binding_projected_mean": 0.9892087891635256,
+                "binding_effective_mean": 0.9892087891635256,
+                "filler_projected_mean": 0.9942040477311821,
+                "filler_effective_mean": 0.9942040477311821,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5544223308563232,
+                "binding_projected_mean": 0.9996891919436166,
+                "binding_effective_mean": 0.9996891919436166,
+                "filler_projected_mean": 0.9996437247376889,
+                "filler_effective_mean": 0.9996437247376889,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.573976993560791,
+                "binding_projected_mean": 0.9995005752134603,
+                "binding_effective_mean": 0.9995005752134603,
+                "filler_projected_mean": 0.9994041947415099,
+                "filler_effective_mean": 0.9994041947415099,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.8556228160858155,
+                "binding_projected_mean": 0.9999956855608616,
+                "binding_effective_mean": 0.9999956855608616,
+                "filler_projected_mean": 0.9999877380672842,
+                "filler_effective_mean": 0.9999877380672842,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.5650063991546631,
+                "binding_projected_mean": 0.8981963726379362,
+                "binding_effective_mean": 0.8981963726379362,
+                "filler_projected_mean": 0.9848715567157342,
+                "filler_effective_mean": 0.9848715567157342,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.6560362339019775,
+                "binding_projected_mean": 0.9999991123331711,
+                "binding_effective_mean": 0.9999991123331711,
+                "filler_projected_mean": 0.9999994613230229,
+                "filler_effective_mean": 0.9999994613230229,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.8028337478637695,
+                "binding_projected_mean": 0.9999255356378853,
+                "binding_effective_mean": 0.9999255356378853,
+                "filler_projected_mean": 0.9998572885990142,
+                "filler_effective_mean": 0.9998572885990142,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.4998779296875,
+                "binding_projected_mean": 0.9999999999708962,
+                "binding_effective_mean": 0.9999999999708962,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.4996337890625,
+                "binding_projected_mean": 0.9999999999126885,
+                "binding_effective_mean": 0.9999999999126885,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.491943359375,
+                "binding_projected_mean": 0.9999997712729964,
+                "binding_effective_mean": 0.9999997712729964,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.496826171875,
+                "binding_projected_mean": 0.99365234375,
+                "binding_effective_mean": 0.99365234375,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.3681640625,
+                "binding_projected_mean": 0.7850299101266695,
+                "binding_effective_mean": 0.7850299101266695,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.4998779296875,
+                "binding_projected_mean": 0.9999999999417923,
+                "binding_effective_mean": 0.9999999999417923,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "learned-n32-s0": {
+          "rows_sha256": "f48278b986c7c25d6a9d94189705ea585c9a08a798a3095d0676b6d3e2dc9400",
+          "accuracy_none": 0.0693359375,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 1.0013529566720307,
+            "auroc_mean_defined": 0.46230422258377074,
+            "auroc_min_defined": 0.14974088668823243,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5795620441436767,
+                "binding_projected_mean": 0.9993523485900369,
+                "binding_effective_mean": 0.9993523485900369,
+                "filler_projected_mean": 0.9991318399552256,
+                "filler_effective_mean": 0.9991318399552256,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.4940019607543945,
+                "binding_projected_mean": 0.9282563967208262,
+                "binding_effective_mean": 0.9282563967208262,
+                "filler_projected_mean": 0.9389000961789862,
+                "filler_effective_mean": 0.9389000961789862,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.46124491691589353,
+                "binding_projected_mean": 0.0038484348393694745,
+                "binding_effective_mean": 0.0038484348393694745,
+                "filler_projected_mean": 0.003967434561323558,
+                "filler_effective_mean": 0.003967434561323558,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5568014621734619,
+                "binding_projected_mean": 0.999195540571236,
+                "binding_effective_mean": 0.999195540571236,
+                "filler_projected_mean": 0.9990586202591658,
+                "filler_effective_mean": 0.9990586202591658,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.14983787536621093,
+                "binding_projected_mean": 1.3758654997715353e-06,
+                "binding_effective_mean": 1.3758654997715353e-06,
+                "filler_projected_mean": 5.217178326677452e-06,
+                "filler_effective_mean": 5.217178326677452e-06,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.783250379562378,
+                "binding_projected_mean": 0.999995526028215,
+                "binding_effective_mean": 0.999995526028215,
+                "filler_projected_mean": 0.9999900836497545,
+                "filler_effective_mean": 0.9999900836497545,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.14974088668823243,
+                "binding_projected_mean": 3.262605522039678e-08,
+                "binding_effective_mean": 3.262605522039678e-08,
+                "filler_projected_mean": 1.1550589119190556e-07,
+                "filler_effective_mean": 1.1550589119190556e-07,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.2018876075744629,
+                "binding_projected_mean": 1.051323805620558e-05,
+                "binding_effective_mean": 1.051323805620558e-05,
+                "filler_projected_mean": 2.6441275412669717e-05,
+                "filler_effective_mean": 2.6441275412669717e-05,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.6700449466705323,
+                "binding_projected_mean": 6.543066621220153e-16,
+                "binding_effective_mean": 6.543066621220153e-16,
+                "filler_projected_mean": 5.620470625668827e-16,
+                "filler_effective_mean": 5.620470625668827e-16,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5831743240356445,
+                "binding_projected_mean": 0.9968546691610527,
+                "binding_effective_mean": 0.9968546691610527,
+                "filler_projected_mean": 0.9998668506275863,
+                "filler_effective_mean": 0.9998668506275863,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.6173601627349854,
+                "binding_projected_mean": 0.9999999892024789,
+                "binding_effective_mean": 0.9999999892024789,
+                "filler_projected_mean": 0.9999996251193807,
+                "filler_effective_mean": 0.9999996251193807,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5001953125,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 0.9999999999534339,
+                "filler_effective_mean": 0.9999999999534339,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.149765682220459,
+                "binding_projected_mean": 1.5763283714417378e-23,
+                "binding_effective_mean": 1.5763283714417378e-23,
+                "filler_projected_mean": 3.1002563398922274e-22,
+                "filler_effective_mean": 3.1002563398922274e-22,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "learned-n32-s1": {
+          "rows_sha256": "47750f33d3ec240dba01bbf4128f09eee6ab438e0c5712f87f26580a4e81506f",
+          "accuracy_none": 0.05859375,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 0.9993317200457268,
+            "auroc_mean_defined": 0.3625789284706116,
+            "auroc_min_defined": 0.04481067657470703,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5794177532196045,
+                "binding_projected_mean": 0.9121328024339164,
+                "binding_effective_mean": 0.9121328024339164,
+                "filler_projected_mean": 0.8992333282483742,
+                "filler_effective_mean": 0.8992333282483742,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.4906616687774658,
+                "binding_projected_mean": 0.33362486545692605,
+                "binding_effective_mean": 0.33362486545692605,
+                "filler_projected_mean": 0.3373898236246532,
+                "filler_effective_mean": 0.3373898236246532,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5198742389678955,
+                "binding_projected_mean": 0.9952372019615723,
+                "binding_effective_mean": 0.9952372019615723,
+                "filler_projected_mean": 0.9959362691268325,
+                "filler_effective_mean": 0.9959362691268325,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5334893226623535,
+                "binding_projected_mean": 0.9998982934775995,
+                "binding_effective_mean": 0.9998982934775995,
+                "filler_projected_mean": 0.9999834195710718,
+                "filler_effective_mean": 0.9999834195710718,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.1414358139038086,
+                "binding_projected_mean": 7.675757617561579e-06,
+                "binding_effective_mean": 7.675757617561579e-06,
+                "filler_projected_mean": 3.6282274210541755e-06,
+                "filler_effective_mean": 3.6282274210541755e-06,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.13191399574279786,
+                "binding_projected_mean": 0.00020609587840825228,
+                "binding_effective_mean": 0.00020609587840825228,
+                "filler_projected_mean": 0.0004682711191520639,
+                "filler_effective_mean": 0.0004682711191520639,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.9519417762756348,
+                "binding_projected_mean": 0.9999980613793014,
+                "binding_effective_mean": 0.9999980613793014,
+                "filler_projected_mean": 0.999983797641471,
+                "filler_effective_mean": 0.999983797641471,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.22958054542541503,
+                "binding_projected_mean": 0.001268060335033615,
+                "binding_effective_mean": 0.001268060335033615,
+                "filler_projected_mean": 0.0020235496922737183,
+                "filler_effective_mean": 0.0020235496922737183,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.04481067657470703,
+                "binding_projected_mean": 1.05505233797634e-05,
+                "binding_effective_mean": 1.05505233797634e-05,
+                "filler_projected_mean": 1.2856228071033527e-05,
+                "filler_effective_mean": 1.2856228071033527e-05,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.14358038902282716,
+                "binding_projected_mean": 2.0088061785969405e-05,
+                "binding_effective_mean": 2.0088061785969405e-05,
+                "filler_projected_mean": 1.779587916964722e-09,
+                "filler_effective_mean": 1.779587916964722e-09,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.23896389007568358,
+                "binding_projected_mean": 0.00019314052814173413,
+                "binding_effective_mean": 0.00019314052814173413,
+                "filler_projected_mean": 2.5489065994511816e-05,
+                "filler_effective_mean": 2.5489065994511816e-05,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.158072566986084,
+                "binding_projected_mean": 2.4650401552240982e-08,
+                "binding_effective_mean": 2.4650401552240982e-08,
+                "filler_projected_mean": 5.843563946369918e-09,
+                "filler_effective_mean": 5.843563946369918e-09,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.498779296875,
+                "binding_projected_mean": 0.9978516504561742,
+                "binding_effective_mean": 0.9978516504561742,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.658987283706665,
+                "binding_projected_mean": 0.001976931945856499,
+                "binding_effective_mean": 0.001976931945856499,
+                "filler_projected_mean": 5.83728067778508e-22,
+                "filler_effective_mean": 5.83728067778508e-22,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.21719083786010743,
+                "binding_projected_mean": 4.9380086820565526e-05,
+                "binding_effective_mean": 4.9380086820565526e-05,
+                "filler_projected_mean": 0.0039111953119016305,
+                "filler_effective_mean": 0.0039111953119016305,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.26256279945373534,
+                "binding_projected_mean": 2.535518249261965e-07,
+                "binding_effective_mean": 2.535518249261965e-07,
+                "filler_projected_mean": 2.378575060227361e-19,
+                "filler_effective_mean": 2.378575060227361e-19,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "singlecell-n32-s0": {
+          "rows_sha256": "464e8eb1a2ed74abf101dda09e88865246cc96d299e9780980f419808722aeec",
+          "accuracy_none": 0.0859375,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 0.9882125170789731,
+            "auroc_mean_defined": 0.5248696863651275,
+            "auroc_min_defined": 0.20967454910278321,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.4310807228088379,
+                "binding_projected_mean": 0.006704274926474743,
+                "binding_effective_mean": 0.006704274926474743,
+                "filler_projected_mean": 0.0003440008361520801,
+                "filler_effective_mean": 0.0003440008361520801,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.5098938941955566,
+                "binding_projected_mean": 0.000849147439990261,
+                "binding_effective_mean": 0.000849147439990261,
+                "filler_projected_mean": 0.0007151320882116341,
+                "filler_effective_mean": 0.0007151320882116341,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.41921491622924806,
+                "binding_projected_mean": 0.8212709097606421,
+                "binding_effective_mean": 0.8212709097606421,
+                "filler_projected_mean": 0.9031385306610901,
+                "filler_effective_mean": 0.9031385306610901,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.3982373237609863,
+                "binding_projected_mean": 0.06734127262519968,
+                "binding_effective_mean": 0.06734127262519968,
+                "filler_projected_mean": 0.06510542778521895,
+                "filler_effective_mean": 0.06510542778521895,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.49997525215148925,
+                "binding_projected_mean": 0.9999999864958227,
+                "binding_effective_mean": 0.9999999864958227,
+                "filler_projected_mean": 0.9999999995809048,
+                "filler_effective_mean": 0.9999999995809048,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.8373500347137451,
+                "binding_projected_mean": 0.9726870712690605,
+                "binding_effective_mean": 0.9726870712690605,
+                "filler_projected_mean": 0.9034174205479246,
+                "filler_effective_mean": 0.9034174205479246,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.7643423080444336,
+                "binding_projected_mean": 0.9999704849615227,
+                "binding_effective_mean": 0.9999704849615227,
+                "filler_projected_mean": 0.9999576262896881,
+                "filler_effective_mean": 0.9999576262896881,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.7109123706817627,
+                "binding_projected_mean": 0.9999997662671376,
+                "binding_effective_mean": 0.9999997662671376,
+                "filler_projected_mean": 0.9999998714309186,
+                "filler_effective_mean": 0.9999998714309186,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.49934072494506837,
+                "binding_projected_mean": 0.9999999996798579,
+                "binding_effective_mean": 0.9999999996798579,
+                "filler_projected_mean": 0.9999999999534339,
+                "filler_effective_mean": 0.9999999999534339,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.4996337890625,
+                "binding_projected_mean": 0.9997555085428758,
+                "binding_effective_mean": 0.9997555085428758,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.2242558479309082,
+                "binding_projected_mean": 7.708092806078813e-11,
+                "binding_effective_mean": 7.708092806078813e-11,
+                "filler_projected_mean": 8.773661329033766e-11,
+                "filler_effective_mean": 8.773661329033766e-11,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.49658203125,
+                "binding_projected_mean": 0.9946465560506225,
+                "binding_effective_mean": 0.9946465560506225,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.8974212169647217,
+                "binding_projected_mean": 0.45564914493315056,
+                "binding_effective_mean": 0.45564914493315056,
+                "filler_projected_mean": 2.1033267448564224e-05,
+                "filler_effective_mean": 2.1033267448564224e-05,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.20967454910278321,
+                "binding_projected_mean": 0.10110312396107182,
+                "binding_effective_mean": 0.10110312396107182,
+                "filler_projected_mean": 0.424452900625392,
+                "filler_effective_mean": 0.424452900625392,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "singlecell-n32-s1": {
+          "rows_sha256": "9f7589e27ef4935fc1a974b4bb86c2378fd1234450b79eadd58e531fa66bc137",
+          "accuracy_none": 0.0595703125,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 1.0058732561360633,
+            "auroc_mean_defined": 0.5422608524560928,
+            "auroc_min_defined": 0.19583892822265625,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5625590324401856,
+                "binding_projected_mean": 0.9553648957161158,
+                "binding_effective_mean": 0.9553648957161158,
+                "filler_projected_mean": 0.9670987137913472,
+                "filler_effective_mean": 0.9670987137913472,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.5497503280639648,
+                "binding_projected_mean": 0.9800967875619335,
+                "binding_effective_mean": 0.9800967875619335,
+                "filler_projected_mean": 0.9883039077511058,
+                "filler_effective_mean": 0.9883039077511058,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.48242626190185545,
+                "binding_projected_mean": 0.9817818890990964,
+                "binding_effective_mean": 0.9817818890990964,
+                "filler_projected_mean": 0.9963005474070087,
+                "filler_effective_mean": 0.9963005474070087,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.6610390186309815,
+                "binding_projected_mean": 0.9987272013822803,
+                "binding_effective_mean": 0.9987272013822803,
+                "filler_projected_mean": 0.9978495527058839,
+                "filler_effective_mean": 0.9978495527058839,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.8425713062286377,
+                "binding_projected_mean": 0.999964717644616,
+                "binding_effective_mean": 0.999964717644616,
+                "filler_projected_mean": 0.9998860924271866,
+                "filler_effective_mean": 0.9998860924271866,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.8272826671600342,
+                "binding_projected_mean": 0.9999975106184138,
+                "binding_effective_mean": 0.9999975106184138,
+                "filler_projected_mean": 0.9999926849501207,
+                "filler_effective_mean": 0.9999926849501207,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.29354152679443357,
+                "binding_projected_mean": 3.192989778672689e-05,
+                "binding_effective_mean": 3.192989778672689e-05,
+                "filler_projected_mean": 5.6924745384367983e-05,
+                "filler_effective_mean": 5.6924745384367983e-05,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.720430326461792,
+                "binding_projected_mean": 0.99988027868676,
+                "binding_effective_mean": 0.99988027868676,
+                "filler_projected_mean": 0.9997763284482062,
+                "filler_effective_mean": 0.9997763284482062,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.19583892822265625,
+                "binding_projected_mean": 8.338124932138924e-31,
+                "binding_effective_mean": 8.338124932138924e-31,
+                "filler_projected_mean": 1.555817443111741e-18,
+                "filler_effective_mean": 1.555817443111741e-18,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.6431889057159423,
+                "binding_projected_mean": 0.9999999937717803,
+                "binding_effective_mean": 0.9999999937717803,
+                "filler_projected_mean": 0.999999768147245,
+                "filler_effective_mean": 0.999999768147245,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.37422990798950195,
+                "binding_projected_mean": 7.586323919012454e-13,
+                "binding_effective_mean": 7.586323919012454e-13,
+                "filler_projected_mean": 0.03069223731070437,
+                "filler_effective_mean": 0.03069223731070437,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5047607421875,
+                "binding_projected_mean": 1.7345536785377394e-32,
+                "binding_effective_mean": 1.7345536785377394e-32,
+                "filler_projected_mean": 0.0,
+                "filler_effective_mean": 0.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5191650390625,
+                "binding_projected_mean": 6.714605436291422e-22,
+                "binding_effective_mean": 6.714605436291422e-22,
+                "filler_projected_mean": 0.0,
+                "filler_effective_mean": 0.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.4993896484375,
+                "binding_projected_mean": 0.9999999984866008,
+                "binding_effective_mean": 0.9999999984866008,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "randomfixed-n32-s0": {
+          "rows_sha256": "7ca8270e54e5f05f0193d2d05979a9183d26464957c8b568f063687ec1d3178e",
+          "accuracy_none": 0.125,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 1.001670767827758,
+            "auroc_mean_defined": 0.5285905569791793,
+            "auroc_min_defined": 0.32745814323425293,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5201395511627197,
+                "binding_projected_mean": 0.836629331336951,
+                "binding_effective_mean": 0.836629331336951,
+                "filler_projected_mean": 0.8508504830785342,
+                "filler_effective_mean": 0.8508504830785342,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.5018366813659668,
+                "binding_projected_mean": 0.9978752467795857,
+                "binding_effective_mean": 0.9978752467795857,
+                "filler_projected_mean": 0.9986948733916506,
+                "filler_effective_mean": 0.9986948733916506,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5204833984375,
+                "binding_projected_mean": 0.8202632826139512,
+                "binding_effective_mean": 0.8202632826139512,
+                "filler_projected_mean": 0.8318044020850944,
+                "filler_effective_mean": 0.8318044020850944,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5443899631500244,
+                "binding_projected_mean": 0.9878652074121419,
+                "binding_effective_mean": 0.9878652074121419,
+                "filler_projected_mean": 0.9857666848052759,
+                "filler_effective_mean": 0.9857666848052759,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.7761032104492187,
+                "binding_projected_mean": 0.9999929440527922,
+                "binding_effective_mean": 0.9999929440527922,
+                "filler_projected_mean": 0.9999814470531418,
+                "filler_effective_mean": 0.9999814470531418,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.7675748348236084,
+                "binding_projected_mean": 0.9999740101484349,
+                "binding_effective_mean": 0.9999740101484349,
+                "filler_projected_mean": 0.9999341781716794,
+                "filler_effective_mean": 0.9999341781716794,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.4998290538787842,
+                "binding_projected_mean": 0.9999999995925464,
+                "binding_effective_mean": 0.9999999995925464,
+                "filler_projected_mean": 0.9999999999534339,
+                "filler_effective_mean": 0.9999999999534339,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.498486852645874,
+                "binding_projected_mean": 0.9999999991268851,
+                "binding_effective_mean": 0.9999999991268851,
+                "filler_projected_mean": 0.9999999998137354,
+                "filler_effective_mean": 0.9999999998137354,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.32745814323425293,
+                "binding_projected_mean": 2.4828363108950748e-09,
+                "binding_effective_mean": 2.4828363108950748e-09,
+                "filler_projected_mean": 1.2186090922750346e-09,
+                "filler_effective_mean": 1.2186090922750346e-09,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5000731945037842,
+                "binding_projected_mean": 0.9999677193991374,
+                "binding_effective_mean": 0.9999677193991374,
+                "filler_projected_mean": 0.9999999999534339,
+                "filler_effective_mean": 0.9999999999534339,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5011229515075684,
+                "binding_projected_mean": 0.9999999991850927,
+                "binding_effective_mean": 0.9999999991850927,
+                "filler_projected_mean": 0.9999999984167516,
+                "filler_effective_mean": 0.9999999984167516,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.49995107650756837,
+                "binding_projected_mean": 0.999999994673999,
+                "binding_effective_mean": 0.999999994673999,
+                "filler_projected_mean": 0.9999999999534339,
+                "filler_effective_mean": 0.9999999999534339,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "randomfixed-n32-s1": {
+          "rows_sha256": "fc4bf04345c5b64619150a97af143bd2784b42f18e8bcc625c41bef40bbceaed",
+          "accuracy_none": 0.0888671875,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 4096
+            },
+            "rho_pooled_effective": 1.0006103997787834,
+            "auroc_mean_defined": 0.5979694306850434,
+            "auroc_min_defined": 0.3645650863647461,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5159366130828857,
+                "binding_projected_mean": 0.9994667314604158,
+                "binding_effective_mean": 0.9994667314604158,
+                "filler_projected_mean": 0.9994818095117808,
+                "filler_effective_mean": 0.9994818095117808,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.615641736984253,
+                "binding_projected_mean": 0.9944806332860026,
+                "binding_effective_mean": 0.9944806332860026,
+                "filler_projected_mean": 0.9916827096691122,
+                "filler_effective_mean": 0.9916827096691122,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5775949478149414,
+                "binding_projected_mean": 0.9872002724274012,
+                "binding_effective_mean": 0.9872002724274012,
+                "filler_projected_mean": 0.9940219213458477,
+                "filler_effective_mean": 0.9940219213458477,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5955063819885253,
+                "binding_projected_mean": 0.9946988718147622,
+                "binding_effective_mean": 0.9946988718147622,
+                "filler_projected_mean": 0.9934150273678825,
+                "filler_effective_mean": 0.9934150273678825,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.872529125213623,
+                "binding_projected_mean": 0.9999971764918882,
+                "binding_effective_mean": 0.9999971764918882,
+                "filler_projected_mean": 0.9999906100798398,
+                "filler_effective_mean": 0.9999906100798398,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.8125484943389892,
+                "binding_projected_mean": 0.9996504503624237,
+                "binding_effective_mean": 0.9996504503624237,
+                "filler_projected_mean": 0.9999115662649274,
+                "filler_effective_mean": 0.9999115662649274,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.9046750545501709,
+                "binding_projected_mean": 0.9999936780513963,
+                "binding_effective_mean": 0.9999936780513963,
+                "filler_projected_mean": 0.9999709017109126,
+                "filler_effective_mean": 0.9999709017109126,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.8168642044067382,
+                "binding_projected_mean": 0.9990155159591723,
+                "binding_effective_mean": 0.9990155159591723,
+                "filler_projected_mean": 0.9997715647565201,
+                "filler_effective_mean": 0.9997715647565201,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.4778571128845215,
+                "binding_projected_mean": 0.9997381678695092,
+                "binding_effective_mean": 0.9997381678695092,
+                "filler_projected_mean": 0.9999954437138513,
+                "filler_effective_mean": 0.9999954437138513,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.4981689453125,
+                "binding_projected_mean": 0.9981001631422706,
+                "binding_effective_mean": 0.9981001631422706,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5003905296325684,
+                "binding_projected_mean": 0.9999994901154423,
+                "binding_effective_mean": 0.9999994901154423,
+                "filler_projected_mean": 0.9999999984167516,
+                "filler_effective_mean": 0.9999999984167516,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5197734355926513,
+                "binding_projected_mean": 0.9999999858264346,
+                "binding_effective_mean": 0.9999999858264346,
+                "filler_projected_mean": 0.9999998674029484,
+                "filler_effective_mean": 0.9999998674029484,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5000731945037842,
+                "binding_projected_mean": 0.9999999987485353,
+                "binding_effective_mean": 0.9999999987485353,
+                "filler_projected_mean": 0.9999999998137354,
+                "filler_effective_mean": 0.9999999998137354,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.49550809860229494,
+                "binding_projected_mean": 0.9963637129099885,
+                "binding_effective_mean": 0.9963637129099885,
+                "filler_projected_mean": 0.9996093741621215,
+                "filler_effective_mean": 0.9996093741621215,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.3645650863647461,
+                "binding_projected_mean": 9.445260391420123e-06,
+                "binding_effective_mean": 9.445260391420123e-06,
+                "filler_projected_mean": 3.9876269211170864e-07,
+                "filler_effective_mean": 3.9876269211170864e-07,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.4998779296875,
+                "binding_projected_mean": 0.9999999993597157,
+                "binding_effective_mean": 0.9999999993597157,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 4096,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "memoryoff-n32-s0": {
+          "rows_sha256": "ce9773a01a1077d227c1bb9e0346476539aa65fec2bdffeb96617a2f3486246e",
+          "accuracy_none": 0.0146484375,
+          "gate_telemetry_descriptive": {
+            "status": "unavailable: SGM disabled (local-only control)"
+          }
+        },
+        "memoryoff-n32-s1": {
+          "rows_sha256": "fe9113ebf109293832c6adbd65b531e76a8778ee95bfc234ec57711501ca5627",
+          "accuracy_none": 0.0185546875,
+          "gate_telemetry_descriptive": {
+            "status": "unavailable: SGM disabled (local-only control)"
+          }
+        }
+      },
+      "interface": true,
+      "per_control": {
+        "memory_off": {
+          "0": {
+            "diff": 0.0546875,
+            "lo": 0.03734746827085812,
+            "hi": 0.07202753172914188,
+            "n": 256
+          },
+          "1": {
+            "diff": 0.0400390625,
+            "lo": 0.021206033158724404,
+            "hi": 0.05887209184127559,
+            "n": 256
+          }
+        },
+        "single_cell": {
+          "0": {
+            "diff": -0.0166015625,
+            "lo": -0.03478248940389543,
+            "hi": 0.0015793644038954273,
+            "n": 256
+          },
+          "1": {
+            "diff": -0.0009765625,
+            "lo": -0.017135888192074334,
+            "hi": 0.015182763192074334,
+            "n": 256
+          }
+        },
+        "random_fixed": {
+          "0": {
+            "diff": -0.0556640625,
+            "lo": -0.0754378650774705,
+            "hi": -0.035890259922529505,
+            "n": 256
+          },
+          "1": {
+            "diff": -0.0302734375,
+            "lo": -0.05103954980298962,
+            "hi": -0.00950732519701038,
+            "n": 256
+          }
+        }
+      },
+      "labels": {
+        "memory_off": "neither",
+        "single_cell": "positive gain >=5pp excluded",
+        "random_fixed": "positive gain >=5pp excluded"
+      },
+      "memory_use": false,
+      "read_address": "read-address use established",
+      "reading": "screen not passed at N32; per-control labels: memory_off=neither, single_cell=positive gain >=5pp excluded, random_fixed=positive gain >=5pp excluded",
+      "label": "post-hoc amended",
+      "original_reading": "unavailable: learned-n32-s1: state FAILED"
+    },
+    "16": {
+      "corners": {
+        "oracle-n32-s0-on-n16": {
+          "rows_sha256": "7bf5915f4f154c297d5f2666ebb376da73f5198df6750aa21782184ae1d50068",
+          "accuracy_none": 1.0,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 0.9996794513164923,
+            "auroc_mean_defined": 0.6112618565559387,
+            "auroc_min_defined": 0.42777538299560547,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.6234220504760742,
+                "binding_projected_mean": 0.9995858304027934,
+                "binding_effective_mean": 0.9995858304027934,
+                "filler_projected_mean": 0.9992768647382035,
+                "filler_effective_mean": 0.9992768647382035,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.42777538299560547,
+                "binding_projected_mean": 0.9983034043252701,
+                "binding_effective_mean": 0.9983034043252701,
+                "filler_projected_mean": 0.9995449879905209,
+                "filler_effective_mean": 0.9995449879905209,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.6253877639770508,
+                "binding_projected_mean": 0.9997523594065569,
+                "binding_effective_mean": 0.9997523594065569,
+                "filler_projected_mean": 0.9996718593174592,
+                "filler_effective_mean": 0.9996718593174592,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5544544219970703,
+                "binding_projected_mean": 0.9958719549395028,
+                "binding_effective_mean": 0.9958719549395028,
+                "filler_projected_mean": 0.9999756810255349,
+                "filler_effective_mean": 0.9999756810255349,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.6828987121582031,
+                "binding_projected_mean": 0.007435981007601044,
+                "binding_effective_mean": 0.007435981007601044,
+                "filler_projected_mean": 7.817045992182557e-09,
+                "filler_effective_mean": 7.817045992182557e-09,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.8461928367614746,
+                "binding_projected_mean": 0.9999848673469387,
+                "binding_effective_mean": 0.9999848673469387,
+                "filler_projected_mean": 0.9999863128876314,
+                "filler_effective_mean": 0.9999863128876314,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.7609030723571777,
+                "binding_projected_mean": 0.9999973009107634,
+                "binding_effective_mean": 0.9999973009107634,
+                "filler_projected_mean": 0.9999977275729179,
+                "filler_effective_mean": 0.9999977275729179,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.8091805458068848,
+                "binding_projected_mean": 0.9999999102437869,
+                "binding_effective_mean": 0.9999999102437869,
+                "filler_projected_mean": 0.9999997314997018,
+                "filler_effective_mean": 0.9999997314997018,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.4931520462036133,
+                "binding_projected_mean": 1.0598438553626344e-09,
+                "binding_effective_mean": 1.0598438553626344e-09,
+                "filler_projected_mean": 3.5550571615921835e-15,
+                "filler_effective_mean": 3.5550571615921835e-15,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.493896484375,
+                "binding_projected_mean": 0.9999999608844519,
+                "binding_effective_mean": 0.9999999608844519,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.49072265625,
+                "binding_projected_mean": 0.9999999281717464,
+                "binding_effective_mean": 0.9999999281717464,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.499267578125,
+                "binding_projected_mean": 0.9999999995925464,
+                "binding_effective_mean": 0.9999999995925464,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.9729361534118652,
+                "binding_projected_mean": 0.9999899689282756,
+                "binding_effective_mean": 0.9999899689282756,
+                "filler_projected_mean": 0.9979803174268455,
+                "filler_effective_mean": 0.9979803174268455,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "oracle-n32-s1-on-n16": {
+          "rows_sha256": "28be09244cfea3bc5707643e9f569f80b1647e1792608685fe9286cdc574b3cb",
+          "accuracy_none": 0.986328125,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 1.0193511126012058,
+            "auroc_mean_defined": 0.560012263059616,
+            "auroc_min_defined": 0.368896484375,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.48691501617431643,
+                "binding_projected_mean": 0.9977337800373789,
+                "binding_effective_mean": 0.9977337800373789,
+                "filler_projected_mean": 0.9990328930085525,
+                "filler_effective_mean": 0.9990328930085525,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.3725595474243164,
+                "binding_projected_mean": 0.9841122101298378,
+                "binding_effective_mean": 0.9841122101298378,
+                "filler_projected_mean": 0.994479222704831,
+                "filler_effective_mean": 0.994479222704831,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.4926469802856445,
+                "binding_projected_mean": 0.9996227634255774,
+                "binding_effective_mean": 0.9996227634255774,
+                "filler_projected_mean": 0.9996706948848442,
+                "filler_effective_mean": 0.9996706948848442,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5452754020690918,
+                "binding_projected_mean": 0.9993947788898367,
+                "binding_effective_mean": 0.9993947788898367,
+                "filler_projected_mean": 0.999460145784542,
+                "filler_effective_mean": 0.999460145784542,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.9254162788391114,
+                "binding_projected_mean": 0.9999974947422743,
+                "binding_effective_mean": 0.9999974947422743,
+                "filler_projected_mean": 0.99998878268525,
+                "filler_effective_mean": 0.99998878268525,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.6035890579223633,
+                "binding_projected_mean": 0.91697223181556,
+                "binding_effective_mean": 0.91697223181556,
+                "filler_projected_mean": 0.9852701320840425,
+                "filler_effective_mean": 0.9852701320840425,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.7792505264282227,
+                "binding_projected_mean": 0.9999994207173586,
+                "binding_effective_mean": 0.9999994207173586,
+                "filler_projected_mean": 0.9999994616024196,
+                "filler_effective_mean": 0.9999994616024196,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.898098087310791,
+                "binding_projected_mean": 0.9999522012076341,
+                "binding_effective_mean": 0.9999522012076341,
+                "filler_projected_mean": 0.9998634138144553,
+                "filler_effective_mean": 0.9998634138144553,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.492431640625,
+                "binding_projected_mean": 0.9999996879778337,
+                "binding_effective_mean": 0.9999996879778337,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.49560546875,
+                "binding_projected_mean": 0.9912109375,
+                "binding_effective_mean": 0.9912109375,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.368896484375,
+                "binding_projected_mean": 0.7854512561576185,
+                "binding_effective_mean": 0.7854512561576185,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.49951171875,
+                "binding_projected_mean": 0.9999999997089617,
+                "binding_effective_mean": 0.9999999997089617,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "learned-n16-s0": {
+          "rows_sha256": "95e300a780fce50c3aca9ac09035dda21c3e3198a32382dbb5ee9e50c4c9ba5d",
+          "accuracy_none": 0.0390625,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 1.0000817456601654,
+            "auroc_mean_defined": 0.5427739739418029,
+            "auroc_min_defined": 0.24354200363159179,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.43483333587646483,
+                "binding_projected_mean": 0.0005117409462706557,
+                "binding_effective_mean": 0.0005117409462706557,
+                "filler_projected_mean": 0.00040656023885237146,
+                "filler_effective_mean": 0.00040656023885237146,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.521158504486084,
+                "binding_projected_mean": 0.9998070491710678,
+                "binding_effective_mean": 0.9998070491710678,
+                "filler_projected_mean": 0.9998138583265245,
+                "filler_effective_mean": 0.9998138583265245,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.6337002754211426,
+                "binding_projected_mean": 0.9991532159619965,
+                "binding_effective_mean": 0.9991532159619965,
+                "filler_projected_mean": 0.9988922332180664,
+                "filler_effective_mean": 0.9988922332180664,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.6040223121643067,
+                "binding_projected_mean": 0.9979558357445057,
+                "binding_effective_mean": 0.9979558357445057,
+                "filler_projected_mean": 0.9975391613319516,
+                "filler_effective_mean": 0.9975391613319516,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.8432744979858399,
+                "binding_projected_mean": 0.9974474728514906,
+                "binding_effective_mean": 0.9974474728514906,
+                "filler_projected_mean": 0.9992954254616052,
+                "filler_effective_mean": 0.9992954254616052,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.9123004913330078,
+                "binding_projected_mean": 0.9999734817829449,
+                "binding_effective_mean": 0.9999734817829449,
+                "filler_projected_mean": 0.9998529467498883,
+                "filler_effective_mean": 0.9998529467498883,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.4990234375,
+                "binding_projected_mean": 0.9999999991268851,
+                "binding_effective_mean": 0.9999999991268851,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.47783241271972654,
+                "binding_projected_mean": 0.999807919113664,
+                "binding_effective_mean": 0.999807919113664,
+                "filler_projected_mean": 0.9999999992083758,
+                "filler_effective_mean": 0.9999999992083758,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.24354200363159179,
+                "binding_projected_mean": 5.896586666505973e-10,
+                "binding_effective_mean": 5.896586666505973e-10,
+                "filler_projected_mean": 6.743045431266472e-12,
+                "filler_effective_mean": 6.743045431266472e-12,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.499755859375,
+                "binding_projected_mean": 0.9999999999417923,
+                "binding_effective_mean": 0.9999999999417923,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5149404525756835,
+                "binding_projected_mean": 0.9999993736855686,
+                "binding_effective_mean": 0.9999993736855686,
+                "filler_projected_mean": 0.9999999067746103,
+                "filler_effective_mean": 0.9999999067746103,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "learned-n16-s1": {
+          "rows_sha256": "ca23544e20aed191421a60b6e1b669b3ecc7405e177283010d25ac1bd2ef5b53",
+          "accuracy_none": 0.021484375,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 1.0095113393449113,
+            "auroc_mean_defined": 0.5098712027072907,
+            "auroc_min_defined": 0.3647315979003906,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.4644163131713867,
+                "binding_projected_mean": 0.11537223897312288,
+                "binding_effective_mean": 0.11537223897312288,
+                "filler_projected_mean": 0.12146035502009908,
+                "filler_effective_mean": 0.12146035502009908,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.5158164024353027,
+                "binding_projected_mean": 0.1090841295726932,
+                "binding_effective_mean": 0.1090841295726932,
+                "filler_projected_mean": 0.10536534885177389,
+                "filler_effective_mean": 0.10536534885177389,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.544927978515625,
+                "binding_projected_mean": 0.998200742265908,
+                "binding_effective_mean": 0.998200742265908,
+                "filler_projected_mean": 0.9981680224649608,
+                "filler_effective_mean": 0.9981680224649608,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.6704124450683594,
+                "binding_projected_mean": 0.9994505120266695,
+                "binding_effective_mean": 0.9994505120266695,
+                "filler_projected_mean": 0.9991315932478756,
+                "filler_effective_mean": 0.9991315932478756,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.3647315979003906,
+                "binding_projected_mean": 0.09718308437409265,
+                "binding_effective_mean": 0.09718308437409265,
+                "filler_projected_mean": 0.15899992650540357,
+                "filler_effective_mean": 0.15899992650540357,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.5531440734863281,
+                "binding_projected_mean": 0.9999884638236836,
+                "binding_effective_mean": 0.9999884638236836,
+                "filler_projected_mean": 0.9999866566387936,
+                "filler_effective_mean": 0.9999866566387936,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.5333431243896485,
+                "binding_projected_mean": 0.007699991003493129,
+                "binding_effective_mean": 0.007699991003493129,
+                "filler_projected_mean": 0.0014197562314607187,
+                "filler_effective_mean": 0.0014197562314607187,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.454757022857666,
+                "binding_projected_mean": 0.00015262297800678714,
+                "binding_effective_mean": 0.00015262297800678714,
+                "filler_projected_mean": 0.00018208871217084281,
+                "filler_effective_mean": 0.00018208871217084281,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.6017390251159668,
+                "binding_projected_mean": 0.9914512929804005,
+                "binding_effective_mean": 0.9914512929804005,
+                "filler_projected_mean": 0.9762414539848805,
+                "filler_effective_mean": 0.9762414539848805,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.4962775230407715,
+                "binding_projected_mean": 0.9985330436920776,
+                "binding_effective_mean": 0.9985330436920776,
+                "filler_projected_mean": 0.9993887027027085,
+                "filler_effective_mean": 0.9993887027027085,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5001462936401367,
+                "binding_projected_mean": 0.9999999995925464,
+                "binding_effective_mean": 0.9999999995925464,
+                "filler_projected_mean": 0.9999999997671694,
+                "filler_effective_mean": 0.9999999997671694,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5001953125,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 0.9999999893363565,
+                "filler_effective_mean": 0.9999999893363565,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.49224147796630857,
+                "binding_projected_mean": 0.9858970722186036,
+                "binding_effective_mean": 0.9858970722186036,
+                "filler_projected_mean": 0.9986415133170414,
+                "filler_effective_mean": 0.9986415133170414,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.499755859375,
+                "binding_projected_mean": 0.999999999650754,
+                "binding_effective_mean": 0.999999999650754,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.49658203125,
+                "binding_projected_mean": 0.9936523129581474,
+                "binding_effective_mean": 0.9936523129581474,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.4694527626037598,
+                "binding_projected_mean": 0.9044181267887413,
+                "binding_effective_mean": 0.9044181267887413,
+                "filler_projected_mean": 0.9486355335814795,
+                "filler_effective_mean": 0.9486355335814795,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "singlecell-n16-s0": {
+          "rows_sha256": "2ab102117033e5f1f5d3e91041b895bc7a6400a27169d503469b7289a1c433bd",
+          "accuracy_none": 0.0400390625,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 0.9953101790125676,
+            "auroc_mean_defined": 0.48265534043312075,
+            "auroc_min_defined": 0.1477375030517578,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5225767135620117,
+                "binding_projected_mean": 0.9945303829226759,
+                "binding_effective_mean": 0.9945303829226759,
+                "filler_projected_mean": 0.9978988779708743,
+                "filler_effective_mean": 0.9978988779708743,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.599423599243164,
+                "binding_projected_mean": 0.9896761302807136,
+                "binding_effective_mean": 0.9896761302807136,
+                "filler_projected_mean": 0.9923203607817414,
+                "filler_effective_mean": 0.9923203607817414,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5814409255981445,
+                "binding_projected_mean": 0.9426112468172505,
+                "binding_effective_mean": 0.9426112468172505,
+                "filler_projected_mean": 0.9159780314144882,
+                "filler_effective_mean": 0.9159780314144882,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.4874716758728027,
+                "binding_projected_mean": 0.9860614072734961,
+                "binding_effective_mean": 0.9860614072734961,
+                "filler_projected_mean": 0.9983140265801922,
+                "filler_effective_mean": 0.9983140265801922,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.6338691711425781,
+                "binding_projected_mean": 0.06266492638212587,
+                "binding_effective_mean": 0.06266492638212587,
+                "filler_projected_mean": 0.014061701857084528,
+                "filler_effective_mean": 0.014061701857084528,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.49530515670776365,
+                "binding_projected_mean": 0.9999996803235263,
+                "binding_effective_mean": 0.9999996803235263,
+                "filler_projected_mean": 0.9999999995343387,
+                "filler_effective_mean": 0.9999999995343387,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.25319948196411135,
+                "binding_projected_mean": 8.307164031952511e-07,
+                "binding_effective_mean": 8.307164031952511e-07,
+                "filler_projected_mean": 3.5150293500201206e-06,
+                "filler_effective_mean": 3.5150293500201206e-06,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.5002893447875977,
+                "binding_projected_mean": 0.9999999973224476,
+                "binding_effective_mean": 0.9999999973224476,
+                "filler_projected_mean": 0.9999999993480742,
+                "filler_effective_mean": 0.9999999993480742,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5021484375,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 0.9999999994412064,
+                "filler_effective_mean": 0.9999999994412064,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.1477375030517578,
+                "binding_projected_mean": 1.4048443234442246e-24,
+                "binding_effective_mean": 1.4048443234442246e-24,
+                "filler_projected_mean": 2.411369134136776e-28,
+                "filler_effective_mean": 2.411369134136776e-28,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 0.0,
+                "binding_effective_mean": 0.0,
+                "filler_projected_mean": 0.0,
+                "filler_effective_mean": 0.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.4990234375,
+                "binding_projected_mean": 0.999191277565842,
+                "binding_effective_mean": 0.999191277565842,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "singlecell-n16-s1": {
+          "rows_sha256": "64fc66a71384534c55e860d2cb9ae9c8c11157c6c00e41918996aaa5304739c0",
+          "accuracy_none": 0.0390625,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 1.0469468666452566,
+            "auroc_mean_defined": 0.48392694592475893,
+            "auroc_min_defined": 0.2241546630859375,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.4684440612792969,
+                "binding_projected_mean": 0.005937954732010767,
+                "binding_effective_mean": 0.005937954732010767,
+                "filler_projected_mean": 0.0015425963862573666,
+                "filler_effective_mean": 0.0015425963862573666,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.6520584106445313,
+                "binding_projected_mean": 0.9996329362329561,
+                "binding_effective_mean": 0.9996329362329561,
+                "filler_projected_mean": 0.9992242593551055,
+                "filler_effective_mean": 0.9992242593551055,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.5097270011901855,
+                "binding_projected_mean": 0.8340603044357007,
+                "binding_effective_mean": 0.8340603044357007,
+                "filler_projected_mean": 0.8655135221807996,
+                "filler_effective_mean": 0.8655135221807996,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.4584003448486328,
+                "binding_projected_mean": 0.9986580923614383,
+                "binding_effective_mean": 0.9986580923614383,
+                "filler_projected_mean": 0.999876468628645,
+                "filler_effective_mean": 0.999876468628645,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.3820075035095215,
+                "binding_projected_mean": 0.173332622516693,
+                "binding_effective_mean": 0.173332622516693,
+                "filler_projected_mean": 0.20266657314236264,
+                "filler_effective_mean": 0.20266657314236264,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.4509913444519043,
+                "binding_projected_mean": 0.9999998081475496,
+                "binding_effective_mean": 0.9999998081475496,
+                "filler_projected_mean": 0.9999999893829227,
+                "filler_effective_mean": 0.9999999893829227,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.5524435997009277,
+                "binding_projected_mean": 0.02302064443295413,
+                "binding_effective_mean": 0.02302064443295413,
+                "filler_projected_mean": 0.00920752249361972,
+                "filler_effective_mean": 0.00920752249361972,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.4643970489501953,
+                "binding_projected_mean": 2.026551233370879e-06,
+                "binding_effective_mean": 2.026551233370879e-06,
+                "filler_projected_mean": 1.1512989407812073e-06,
+                "filler_effective_mean": 1.1512989407812073e-06,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5192031860351562,
+                "binding_projected_mean": 0.9999999884166755,
+                "binding_effective_mean": 0.9999999884166755,
+                "filler_projected_mean": 0.9999999853316694,
+                "filler_effective_mean": 0.9999999853316694,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5606133460998535,
+                "binding_projected_mean": 4.3665404567723124e-16,
+                "binding_effective_mean": 4.3665404567723124e-16,
+                "filler_projected_mean": 1.4080381586055339e-18,
+                "filler_effective_mean": 1.4080381586055339e-18,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.2241546630859375,
+                "binding_projected_mean": 0.5883828911939373,
+                "binding_effective_mean": 0.5883828911939373,
+                "filler_projected_mean": 0.9967661788363623,
+                "filler_effective_mean": 0.9967661788363623,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 0.0,
+                "binding_effective_mean": 0.0,
+                "filler_projected_mean": 0.0,
+                "filler_effective_mean": 0.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.500390625,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 0.9999999999068677,
+                "filler_effective_mean": 0.9999999999068677,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "randomfixed-n16-s0": {
+          "rows_sha256": "5c5a86b12c24c78114ecf9140c405e7ea19a68e96ff607d3080ec0c339936a61",
+          "accuracy_none": 0.08203125,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 0.9529490743872003,
+            "auroc_mean_defined": 0.5681971669197082,
+            "auroc_min_defined": 0.4597141265869141,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5117206573486328,
+                "binding_projected_mean": 0.9905697606154718,
+                "binding_effective_mean": 0.9905697606154718,
+                "filler_projected_mean": 0.9902616295265034,
+                "filler_effective_mean": 0.9902616295265034,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.5517541885375976,
+                "binding_projected_mean": 0.9691348012144567,
+                "binding_effective_mean": 0.9691348012144567,
+                "filler_projected_mean": 0.9680253213392994,
+                "filler_effective_mean": 0.9680253213392994,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.6249622344970703,
+                "binding_projected_mean": 0.9982613131578546,
+                "binding_effective_mean": 0.9982613131578546,
+                "filler_projected_mean": 0.9976826508296653,
+                "filler_effective_mean": 0.9976826508296653,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.5442276000976562,
+                "binding_projected_mean": 0.99113178497646,
+                "binding_effective_mean": 0.99113178497646,
+                "filler_projected_mean": 0.992187074222602,
+                "filler_effective_mean": 0.992187074222602,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.5696341514587402,
+                "binding_projected_mean": 0.9999960951390676,
+                "binding_effective_mean": 0.9999960951390676,
+                "filler_projected_mean": 0.9999995931982995,
+                "filler_effective_mean": 0.9999995931982995,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.6704886436462403,
+                "binding_projected_mean": 0.9999992864322849,
+                "binding_effective_mean": 0.9999992864322849,
+                "filler_projected_mean": 0.9999996894504875,
+                "filler_effective_mean": 0.9999996894504875,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.6194422721862793,
+                "binding_projected_mean": 0.0012589221836423552,
+                "binding_effective_mean": 0.0012589221836423552,
+                "filler_projected_mean": 2.158133336870125e-07,
+                "filler_effective_mean": 2.158133336870125e-07,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.6501708030700684,
+                "binding_projected_mean": 0.9999928921752144,
+                "binding_effective_mean": 0.9999928921752144,
+                "filler_projected_mean": 0.9999965840019286,
+                "filler_effective_mean": 0.9999965840019286,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.4597141265869141,
+                "binding_projected_mean": 0.9993270561026293,
+                "binding_effective_mean": 0.9993270561026293,
+                "filler_projected_mean": 0.9999999998137354,
+                "filler_effective_mean": 0.9999999998137354,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.49658203125,
+                "binding_projected_mean": 0.9999996141705196,
+                "binding_effective_mean": 0.9999996141705196,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.499755859375,
+                "binding_projected_mean": 0.9999999998835847,
+                "binding_effective_mean": 0.9999999998835847,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5009765625,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 0.9999999942723662,
+                "filler_effective_mean": 0.9999999942723662,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.8907489776611328,
+                "binding_projected_mean": 0.7803459032087358,
+                "binding_effective_mean": 0.7803459032087358,
+                "filler_projected_mean": 0.13585464806514752,
+                "filler_effective_mean": 0.13585464806514752,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5009765625,
+                "binding_projected_mean": 8.265061870134216e-30,
+                "binding_effective_mean": 8.265061870134216e-30,
+                "filler_projected_mean": 0.0,
+                "filler_effective_mean": 0.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "randomfixed-n16-s1": {
+          "rows_sha256": "bade20d7ca710c55d1c47906beeed8d85712ada31230ee0ccbfbd22a885b3652",
+          "accuracy_none": 0.0166015625,
+          "gate_telemetry_descriptive": {
+            "status": "measured",
+            "episodes": 64,
+            "events_per_head": {
+              "filler": 2560,
+              "binding": 2048
+            },
+            "rho_pooled_effective": 0.9968952766178859,
+            "auroc_mean_defined": 0.555103462934494,
+            "auroc_min_defined": 0.3928037643432617,
+            "auroc_defined_heads": 16,
+            "per_head": {
+              "L6h0": {
+                "auroc_applied": 0.5962705612182617,
+                "binding_projected_mean": 0.9907980704173269,
+                "binding_effective_mean": 0.9907980704173269,
+                "filler_projected_mean": 0.9975799976149574,
+                "filler_effective_mean": 0.9975799976149574,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h1": {
+                "auroc_applied": 0.6874159812927246,
+                "binding_projected_mean": 0.9903226920869201,
+                "binding_effective_mean": 0.9903226920869201,
+                "filler_projected_mean": 0.9842782298102974,
+                "filler_effective_mean": 0.9842782298102974,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h2": {
+                "auroc_applied": 0.3928037643432617,
+                "binding_projected_mean": 0.9904203064072661,
+                "binding_effective_mean": 0.9904203064072661,
+                "filler_projected_mean": 0.9959380423708353,
+                "filler_effective_mean": 0.9959380423708353,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L6h3": {
+                "auroc_applied": 0.521519660949707,
+                "binding_projected_mean": 0.9893595466180614,
+                "binding_effective_mean": 0.9893595466180614,
+                "filler_projected_mean": 0.9888234502450359,
+                "filler_effective_mean": 0.9888234502450359,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h0": {
+                "auroc_applied": 0.5802083969116211,
+                "binding_projected_mean": 0.9999997160630301,
+                "binding_effective_mean": 0.9999997160630301,
+                "filler_projected_mean": 0.9999997647944838,
+                "filler_effective_mean": 0.9999997647944838,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h1": {
+                "auroc_applied": 0.4980278015136719,
+                "binding_projected_mean": 0.999341449176427,
+                "binding_effective_mean": 0.999341449176427,
+                "filler_projected_mean": 0.9999997707083821,
+                "filler_effective_mean": 0.9999997707083821,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h2": {
+                "auroc_applied": 0.711423683166504,
+                "binding_projected_mean": 0.049886442705708495,
+                "binding_effective_mean": 0.049886442705708495,
+                "filler_projected_mean": 4.266865809118127e-05,
+                "filler_effective_mean": 4.266865809118127e-05,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L13h3": {
+                "auroc_applied": 0.8939855575561524,
+                "binding_projected_mean": 0.9999897658126429,
+                "binding_effective_mean": 0.9999897658126429,
+                "filler_projected_mean": 0.9999585241777822,
+                "filler_effective_mean": 0.9999585241777822,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L20h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h0": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 0.0,
+                "binding_effective_mean": 0.0,
+                "filler_projected_mean": 0.0,
+                "filler_effective_mean": 0.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h1": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h2": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              },
+              "L27h3": {
+                "auroc_applied": 0.5,
+                "binding_projected_mean": 1.0,
+                "binding_effective_mean": 1.0,
+                "filler_projected_mean": 1.0,
+                "filler_effective_mean": 1.0,
+                "binding_applied_events": 2048,
+                "filler_applied_events": 2560
+              }
+            }
+          }
+        },
+        "memoryoff-n16-s0": {
+          "rows_sha256": "3ac0c68f4a10de835b20d451ce3ed5a483e7950bed5994e1d0c92dfae0c4e493",
+          "accuracy_none": 0.0146484375,
+          "gate_telemetry_descriptive": {
+            "status": "unavailable: SGM disabled (local-only control)"
+          }
+        },
+        "memoryoff-n16-s1": {
+          "rows_sha256": "e90c6e5511093e4ab2b86af35f7f8ca4c08f53866555e9eaa913b308fca57acc",
+          "accuracy_none": 0.0283203125,
+          "gate_telemetry_descriptive": {
+            "status": "unavailable: SGM disabled (local-only control)"
+          }
+        }
+      },
+      "interface": true,
+      "per_control": {
+        "memory_off": {
+          "0": {
+            "diff": 0.0244140625,
+            "lo": 0.011612241651982342,
+            "hi": 0.03721588334801766,
+            "n": 256
+          },
+          "1": {
+            "diff": -0.0068359375,
+            "lo": -0.01938385018440787,
+            "hi": 0.0057119751844078685,
+            "n": 256
+          }
+        },
+        "single_cell": {
+          "0": {
+            "diff": -0.0009765625,
+            "lo": -0.016198250554046126,
+            "hi": 0.014245125554046128,
+            "n": 256
+          },
+          "1": {
+            "diff": -0.017578125,
+            "lo": -0.030115155589063552,
+            "hi": -0.005041094410936449,
+            "n": 256
+          }
+        },
+        "random_fixed": {
+          "0": {
+            "diff": -0.04296875,
+            "lo": -0.060591500408340264,
+            "hi": -0.025345999591659736,
+            "n": 256
+          },
+          "1": {
+            "diff": 0.0048828125,
+            "lo": -0.005778280129441815,
+            "hi": 0.015543905129441815,
+            "n": 256
+          }
+        }
+      },
+      "labels": {
+        "memory_off": "positive gain >=5pp excluded",
+        "single_cell": "positive gain >=5pp excluded",
+        "random_fixed": "positive gain >=5pp excluded"
+      },
+      "memory_use": false,
+      "read_address": "read-address use not established",
+      "reading": "screen not passed at N16; per-control labels: memory_off=positive gain >=5pp excluded, single_cell=positive gain >=5pp excluded, random_fixed=positive gain >=5pp excluded",
+      "label": "post-hoc amended",
+      "original_reading": "unavailable: learned-n32-s1: state FAILED"
+    }
+  },
+  "posthoc_amendment": {
+    "label": "post-hoc amended",
+    "cell": "learned-n32-s1",
+    "spec_sha256": "3bce0817a163ef69a3a5ac6a52a8a1958278f1c1c2d8d4a84e23718513011097",
+    "original_gate": "learned-n32-s1: state FAILED",
+    "original_reading": {
+      "32": "unavailable: learned-n32-s1: state FAILED",
+      "16": "unavailable: learned-n32-s1: state FAILED"
+    }
+  },
+  "end_binding": "verified",
+  "campaign_label": "post-hoc amended"
+}

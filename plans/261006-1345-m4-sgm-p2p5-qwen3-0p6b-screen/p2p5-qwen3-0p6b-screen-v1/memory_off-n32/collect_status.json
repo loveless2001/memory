@@ -1,0 +1,63 @@
+{
+  "slot": "memory_off-n32",
+  "call_id": "fc-01M4AJAGE86T5P5GB6R90K947B",
+  "poll": "result",
+  "result": {
+    "slot": "memory_off-n32",
+    "status": "done",
+    "epoch": 1,
+    "states": {
+      "memoryoff-n32-s0": "COMPLETE",
+      "memoryoff-n32-s1": "COMPLETE"
+    }
+  },
+  "past_deadline": false,
+  "final_shutdown": {
+    "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+    "verification": {
+      "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+      "verified": true,
+      "app_rows": [
+        {
+          "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n32",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:43:13+07:00",
+          "stopped_at": "2026-10-07 15:19:14+07:00"
+        }
+      ],
+      "container_rows": []
+    },
+    "status": "stopped_verified"
+  },
+  "evidence": {
+    "returncode": 0,
+    "stderr_tail": ""
+  },
+  "dicts": {
+    "guard": 2,
+    "admission": 1
+  },
+  "evidence_dir": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/memory_off-n32/volume-evidence/collect-1",
+  "cells": {
+    "memoryoff-n32-s0": {
+      "state": "COMPLETE",
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "validation": "valid"
+    },
+    "memoryoff-n32-s1": {
+      "state": "COMPLETE",
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "validation": "valid"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "slot": "single_cell-n32",
+  "call_id": "fc-01M4AJ9AD7V34WE5J1Z42A1VS5",
+  "poll": "result",
+  "result": {
+    "slot": "single_cell-n32",
+    "status": "done",
+    "epoch": 3,
+    "states": {
+      "singlecell-n32-s0": "COMPLETE",
+      "singlecell-n32-s1": "COMPLETE"
+    }
+  },
+  "past_deadline": false,
+  "final_shutdown": {
+    "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+    "verification": {
+      "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+      "verified": true,
+      "app_rows": [
+        {
+          "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n32",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:42:37+07:00",
+          "stopped_at": "2026-10-07 17:57:32+07:00"
+        }
+      ],
+      "container_rows": []
+    },
+    "status": "stopped_verified"
+  },
+  "evidence": {
+    "returncode": 0,
+    "stderr_tail": ""
+  },
+  "dicts": {
+    "guard": 2,
+    "admission": 3
+  },
+  "evidence_dir": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/single_cell-n32/volume-evidence/collect-1",
+  "cells": {
+    "singlecell-n32-s0": {
+      "state": "COMPLETE",
+      "epoch": 3,
+      "epochs": [
+        1,
+        2,
+        3
+      ],
+      "reason": null,
+      "validation": "valid"
+    },
+    "singlecell-n32-s1": {
+      "state": "COMPLETE",
+      "epoch": 3,
+      "epochs": [
+        1,
+        2,
+        3
+      ],
+      "reason": null,
+      "validation": "valid"
+    }
+  }
+}
