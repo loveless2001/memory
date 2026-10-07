@@ -6,8 +6,8 @@ recovery, §8.5 bounded smoke, §9 full-envelope pricing, and the "reused bank-d
 scientific scope is unchanged.
 
 Status: design PASS for local implementation (codex 21750). User 21748 asked for this proposal ("write the probe then"). This document does NOT
-authorize a launch. The launch needs, in order: codex proposal audit → implementation → local smoke → codex
-implementation audit → the user's explicit cap.
+authorize a launch. The order is: codex proposal audit → implementation and CPU tests → codex implementation
+review → bounded local Qwen smoke (§8.6) → smoke evidence and priced ledger → the user's explicit cap → launch.
 
 Basis: diagnosis rev 2, codex PASS 21747 (`plans/reports/claude-261008-0127-p2p5-saved-evidence-diagnosis/`, d3d4999).
 P2.5 outcomes stay as recorded: the original reading is `unavailable` and the post-hoc amended reading is `screen not
@@ -125,8 +125,11 @@ re-paired.
    - the image mounts memsub, configs, the validator and the shared lifetime-stop logic
    Pure lifecycle code (admission, provenance, cell report, collect orchestration) lives in a separate logic
    module, so it can be tested without Modal. Lifetime is handled by an IN-APP scheduled reaper (CPU, every 120 s)
-   using the shared `modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py` `reap_and_stop` / `stop_bound_app`, the path
-   proven by the P2.5 self-stop proof. There is no campaign controller, no readings horizon and no campaign
+   with the probe's OWN decision (codex 21752): validated deadlines (finite, positive, not bool), the reaper's own
+   app id bound write-once and checked against the spawn-time guard id before ANY deadline or abandonment stop,
+   and bounded abandonment for unbound, interrupted or malformed bindings. Only `stop_bound_app` of the shared
+   lifetime logic is reused (always with a bound id); the historical helper is unchanged. The 120 s period and
+   240 s stop tail are declared operational assumptions in the ledger, not guarantees. There is no campaign controller, no readings horizon and no campaign
    manifest. Tests check the actual bound app, image mounts, decorator resources, Dict names, volume subpath,
    deadline and collect targets, and that no campaign writable identifier remains.
 4. Add an analysis script `scripts/sgm-p2p5-readout-probe-reading.py`, local and CPU-only. It applies §6 to the

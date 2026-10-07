@@ -1,0 +1,44 @@
+{
+  "_comment": "M4-SGM P2.5 readout-recipe rescue probe (EXPLORATORY; proposal v0.2 14e2b43, sha f13f5a71...): 2 cells = learned N32 x seeds 0/1, the P2.5 grid base with ONLY readout residual_head -> taskhead (memory-read features, as P2C). Group p2p5-readout-probe-v1. Artifact eval on artifact_eval_seed_base+s (the P2.5 artifact episodes, paired by hash with the saved residual-head rows). No reserved population, no readings run.",
+  "artifact_eval_seed_base": 9300011,
+  "base": {
+    "arm": "learned",
+    "readout": "taskhead",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 1500,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 100,
+    "eval_batches": 4,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        1000,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda"
+  },
+  "blocks": [
+    {
+      "tag": "taskhead-learned",
+      "n_bindings": [
+        32
+      ],
+      "seeds": [
+        0,
+        1
+      ]
+    }
+  ]
+}
