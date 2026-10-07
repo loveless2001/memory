@@ -1,0 +1,328 @@
+{
+  "baseline": {
+    "rc": 0,
+    "failed": [],
+    "summary": "65 passed in 55.32s",
+    "ok": true
+  },
+  "num_or_null accepts anything": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_conforms_unit_cases",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"6a52727b0890a65ebf0c6255245b395879347963d7df63af3fd7f6cf3ca22580\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_conforms_unit_cases"
+    ],
+    "summary": "1 failed, 64 passed in 51.75s",
+    "ok": true
+  },
+  "training rows not schema-checked": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-False0]",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"5881b5b0dcf09269ec81bb8e2bb15b71b7e4770163a75d692945ca31bb0766f0\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-False0]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-False1]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-False2]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-False3]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-False4]"
+    ],
+    "summary": "5 failed, 60 passed in 51.53s",
+    "ok": true
+  },
+  "required null dropped": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_contract_schema_shape_and_fail_closed",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"c5a6e7cde004dd5b213f112d61ce911dfac7e4659f385e84c0aa37ef74b2c3df\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_probe_schema_accepts_taskhead_and_rejects_the_residual_control",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_contract_schema_shape_and_fail_closed",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-True0]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-True1]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_completes_a_taskhead_cell",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_refuses_a_residual_cell_at_the_schema_stage"
+    ],
+    "summary": "7 failed, 58 passed in 53.06s",
+    "ok": true
+  },
+  "update_norm made nullable": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_contract_schema_shape_and_fail_closed",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"5776139e8eb44df559b300dc7e75d920338cc8c325922a6b298a6cd817c5b6fc\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_probe_schema_accepts_taskhead_and_rejects_the_residual_control",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_contract_schema_shape_and_fail_closed",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-True0]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-True1]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_completes_a_taskhead_cell"
+    ],
+    "summary": "6 failed, 59 passed in 51.70s",
+    "ok": true
+  },
+  "campaign schema extractor used": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"fe6ccdb82fd429059f11606f0e26217d262795831d6d333ba1e654e351a5998f\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-True0]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_enforces_the_contract_on_every_training_row[<lambda>-True1]",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_completes_a_taskhead_cell",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_refuses_a_residual_cell_at_the_schema_stage"
+    ],
+    "summary": "5 failed, 60 passed in 51.30s",
+    "ok": true
+  },
+  "registry check dropped": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"2fc3d3c2096a14b6649a227325f343ea4a9de1e2c10f414bcdeef1f02c0e4b0f\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema"
+    ],
+    "summary": "1 failed, 64 passed in 51.22s",
+    "ok": true
+  },
+  "missing registry/schema allowed": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"a8fa360b1bef8e713dcead214c76eaad3e92bb3ef4294962746e8a8c5ffe28c9\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_validator_keeps_the_campaign_checks_and_needs_registry_and_schema"
+    ],
+    "summary": "1 failed, 64 passed in 51.14s",
+    "ok": true
+  },
+  "COMPLETE uses the campaign validator": {
+    "file": "scripts/sgm-p2p5-readout-probe-output-validation.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_probe_supervisor_complete_transition_uses_the_probe_validator",
+    "refreeze": "rc=0 {\"registry\": \"5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427\", \"schema\": \"d77155b94f4580efe877d9a9946c2e5d47fbbf711d659c23a34ffc59858f4f57\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_probe_supervisor_complete_transition_uses_the_probe_validator",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_completes_a_taskhead_cell",
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_end_to_end_probe_supervisor_refuses_a_residual_cell_at_the_schema_stage"
+    ],
+    "summary": "3 failed, 62 passed in 52.44s",
+    "ok": true
+  },
+  "head width not changed": {
+    "file": "scripts/sgm-p2p5-readout-probe-registry-and-schema-freeze.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_frozen_registry_and_schema_equal_their_derivation",
+    "refreeze": "rc=0 {\"registry\": \"56ca6287fb3457121b5851901f700228166d0e86f92f1f31b2ef0b31241fe45f\", \"schema\": \"44d1136b50b512e7740d56fc9f0b88d4505e6d2c133d339df31978cf115ec932\"} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_frozen_registry_and_schema_equal_their_derivation"
+    ],
+    "summary": "1 failed, 64 passed in 52.93s",
+    "ok": true
+  },
+  "admission ignores the bound app id": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_admission_refuses_unbound_or_malformed_guards[guard0-no bound app id]",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_admission_refuses_unbound_or_malformed_guards[guard0-no bound app id]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_admission_refuses_unbound_or_malformed_guards[guard1-no bound app id]"
+    ],
+    "summary": "2 failed, 63 passed in 51.55s",
+    "ok": true
+  },
+  "bool deadline accepted": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[True]",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[True]"
+    ],
+    "summary": "1 failed, 64 passed in 51.84s",
+    "ok": true
+  },
+  "infinite deadline accepted": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[inf]",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_admission_refuses_unbound_or_malformed_guards[guard4-deadline]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[inf]"
+    ],
+    "summary": "2 failed, 63 passed in 61.10s (0:01:01)",
+    "ok": true
+  },
+  "guard app id mismatch stops anyway": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_missing_or_mismatched_ids_never_stop[store3-ap-self-is not this app]",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_missing_or_mismatched_ids_never_stop[store3-ap-self-is not this app]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reap_and_stop_never_passes_none_and_records_stop_errors"
+    ],
+    "summary": "2 failed, 63 passed in 57.45s",
+    "ok": true
+  },
+  "missing self id stops anyway": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_missing_or_mismatched_ids_never_stop[store0-None-own app id unavailable]",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_missing_or_mismatched_ids_never_stop[store0-None-own app id unavailable]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_missing_or_mismatched_ids_never_stop[store1--own app id unavailable]"
+    ],
+    "summary": "2 failed, 63 passed in 58.84s",
+    "ok": true
+  },
+  "abandonment removed": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_unspawned_and_interrupted_binding_are_abandoned_with_the_self_id",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[nan]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[inf]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[True]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[-1.0]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[x]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_malformed_or_missing_deadline_takes_bounded_abandonment[None]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_unspawned_and_interrupted_binding_are_abandoned_with_the_self_id"
+    ],
+    "summary": "7 failed, 58 passed in 54.27s",
+    "ok": true
+  },
+  "stopper called without the bound id": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reap_and_stop_never_passes_none_and_records_stop_errors",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reap_and_stop_never_passes_none_and_records_stop_errors"
+    ],
+    "summary": "1 failed, 64 passed in 53.50s",
+    "ok": true
+  },
+  "spawn ignores a used guard": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_spawn_guard[guard4-160.0-False]",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_spawn_guard[guard4-160.0-False]",
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_spawn_guard[guard5-160.0-False]"
+    ],
+    "summary": "2 failed, 63 passed in 51.40s",
+    "ok": true
+  },
+  "collect skips the provenance check": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_collect_refuses_without_a_bound_id",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_collect_refuses_without_a_bound_id"
+    ],
+    "summary": "1 failed, 64 passed in 52.05s",
+    "ok": true
+  },
+  "collect ignores a failed fetch": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_collect_past_deadline_stops_and_failed_fetch_is_unavailable",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_collect_past_deadline_stops_and_failed_fetch_is_unavailable"
+    ],
+    "summary": "1 failed, 64 passed in 52.57s",
+    "ok": true
+  },
+  "GPU app max_containers 2": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_decorator_lifetime_arguments",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_decorator_lifetime_arguments"
+    ],
+    "summary": "1 failed, 64 passed in 52.07s",
+    "ok": true
+  },
+  "validator not mounted": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_image_inputs_are_the_bound_probe_files",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_image_inputs_are_the_bound_probe_files"
+    ],
+    "summary": "1 failed, 64 passed in 51.87s",
+    "ok": true
+  },
+  "reading ignores bank dependence": {
+    "file": "scripts/sgm-p2p5-readout-probe-reading.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reading_gain_with_and_without_the_reused_bank_criterion",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reading_gain_with_and_without_the_reused_bank_criterion"
+    ],
+    "summary": "1 failed, 64 passed in 52.62s",
+    "ok": true
+  },
+  "reading skips the pairing check": {
+    "file": "scripts/sgm-p2p5-readout-probe-reading.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reading_not_shown_and_unavailable_paths",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reading_not_shown_and_unavailable_paths"
+    ],
+    "summary": "1 failed, 64 passed in 51.86s",
+    "ok": true
+  },
+  "reading ignores unavailable cells": {
+    "file": "scripts/sgm-p2p5-readout-probe-reading.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reading_not_shown_and_unavailable_paths",
+    "refreeze": null,
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_reading_not_shown_and_unavailable_paths"
+    ],
+    "summary": "1 failed, 64 passed in 51.64s",
+    "ok": true
+  },
+  "ledger prices another slot": {
+    "file": "scripts/sgm-p2p5-readout-probe-priced-ledger.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_ledger_prices_the_full_deadline_from_v6",
+    "refreeze": "rc=0 {\"deadline_s\": 21523.8, \"cap_request_usd\": 28.31, \"expected\": 20.1} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_ledger_prices_the_full_deadline_from_v6"
+    ],
+    "summary": "1 failed, 64 passed in 52.09s",
+    "ok": true
+  },
+  "ledger at billing basis 1.0": {
+    "file": "scripts/sgm-p2p5-readout-probe-priced-ledger.py",
+    "aimed_test": "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_ledger_prices_the_full_deadline_from_v6",
+    "refreeze": "rc=0 {\"deadline_s\": 31946.2, \"cap_request_usd\": 32.71, \"expected\": 20.1} ",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py::test_ledger_prices_the_full_deadline_from_v6"
+    ],
+    "summary": "1 failed, 64 passed in 52.26s",
+    "ok": true
+  },
+  "all_ok": true,
+  "shared_tree_untouched": "mutations applied only under /tmp/claude-1000/-home-lenovo-projects/c31299e5-7d3f-4dd7-a15b-a3fd71648b89/scratchpad/probe-mutations-fbfebe0"
+}
