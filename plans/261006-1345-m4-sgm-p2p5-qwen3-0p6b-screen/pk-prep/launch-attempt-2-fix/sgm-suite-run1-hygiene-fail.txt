@@ -1,0 +1,41 @@
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+........................................................................ [ 46%]
+........................................................................ [ 61%]
+..............................................ss........................ [ 77%]
+........................................................................ [ 92%]
+............................F.....                                       [100%]
+=================================== FAILURES ===================================
+_________________ test_all_tracked_json_is_strictly_parseable __________________
+
+    def test_all_tracked_json_is_strictly_parseable():
+        paths = subprocess.check_output(
+            ["git", "ls-files", "*.json"], cwd=ROOT, text=True
+        ).splitlines()
+        failures = []
+        for relative in paths:
+            if relative in LEGACY_JSON_WITH_CONSOLE_TRAILER:
+                import hashlib
+                digest = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+                if digest != LEGACY_JSON_WITH_CONSOLE_TRAILER[relative]:
+                    failures.append(f"{relative}: legacy exemption pinned bytes changed ({digest})")
+                continue
+            try:
+                json.loads(
+                    (ROOT / relative).read_text(),
+                    parse_constant=lambda value: (_ for _ in ()).throw(
+                        ValueError(f"non-finite constant {value}")),
+                )
+            except (ValueError, json.JSONDecodeError) as exc:
+                failures.append(f"{relative}: {exc}")
+>       assert failures == []
+E       AssertionError: assert ['plans/26100...1 (char 548)'] == []
+E         
+E         Left contains one more item: 'plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/gate3-rev2/mutation-checks.json: Extra data: line 23 column 1 (char 548)'
+E         Use -v to get more diff
+
+tests/test_experiment_artifact_hygiene.py:36: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_experiment_artifact_hygiene.py::test_all_tracked_json_is_strictly_parseable
+1 failed, 463 passed, 2 skipped in 469.18s (0:07:49)
+EXIT_STATUS=1

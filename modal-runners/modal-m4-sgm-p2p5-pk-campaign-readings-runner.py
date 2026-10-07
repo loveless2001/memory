@@ -22,7 +22,7 @@ import modal
 
 APP_NAME = "memsub-m4-sgm-p2p5-pk-campaign-readings"
 GUARD_DICT, ADMIT_DICT = f"{APP_NAME}-guard", f"{APP_NAME}-admission"
-CONTROL_REGISTRY_DICT, CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-registry", "m4-sgm-p2p5-pk-campaign-control-guard"
+CONTROL_REGISTRY_DICT, CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-registry-r2", "m4-sgm-p2p5-pk-campaign-control-guard-r2"
 CONTROL_APP_NAME, CONTROL_SLACK_S = "memsub-m4-sgm-p2p5-pk-campaign-control", 1800
 SCRIPT = "scripts/sgm-p2p5-pk-campaign-readings.py"
 MANIFEST_FILE = "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"

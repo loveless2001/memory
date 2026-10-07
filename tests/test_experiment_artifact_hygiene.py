@@ -10,6 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 LEGACY_JSON_WITH_CONSOLE_TRAILER = {
     "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v1/independent-stop-verify.json":
         "40f6bac90ae5cde26e4c17cd2e9152e7553899d733f8d5517b77882eb1d7a559",
+    # codex-cleared Gate-3 rev2 evidence (indexed in SHA256SUMS-gate3-package-rev2.txt): bytes kept as cleared
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/gate3-rev2/mutation-checks.json":
+        "26710b5553dc27bfc6fcce4adbc4ba246b9402adf2678ee9980e8af51b2fe860",
 }
 
 

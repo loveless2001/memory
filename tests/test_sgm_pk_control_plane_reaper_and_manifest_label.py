@@ -129,6 +129,10 @@ def test_slot_runner_horizon_constants_match_the_controller():
     src = (ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py").read_text()
     assert f"VALIDATION_SETUP_S, CONTROL_SLACK_S = {ctl.VALIDATION_SETUP_S}, {ctl.SLACK_S}" in src
     assert f'CONTROL_GUARD_DICT = "{ctl.CONTROL_GUARD}"' in src and f'"{ctl.REGISTRY_DICT}"' in src
+    rd = (ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py").read_text()
+    assert f'CONTROL_REGISTRY_DICT, CONTROL_GUARD_DICT = "{ctl.REGISTRY_DICT}", "{ctl.CONTROL_GUARD}"' in rd
+    # attempt 1 (2026-10-07) armed the unsuffixed guard write-once; it stays preserved and is never reused
+    assert ctl.CONTROL_GUARD.endswith("-r2") and ctl.REGISTRY_DICT.endswith("-r2")
 
 
 def test_unarmed_controller_is_not_due_on_its_first_tick():
@@ -251,5 +255,5 @@ def test_spawn_uses_one_immutable_deadline_despite_clock_advance(monkeypatch, tm
     monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
     m.spawn()                                                             # exactly at the horizon boundary: accepted
     prov = __import__("json").loads((tmp_path / m.GROUP / m.SLOT / "launch_provenance.json").read_text())
-    reg = dicts["m4-sgm-p2p5-pk-campaign-control-registry"][m.APP_NAME]
+    reg = dicts["m4-sgm-p2p5-pk-campaign-control-registry-r2"][m.APP_NAME]
     assert prov["deadline_epoch"] == dicts[m.GUARD_DICT]["deadline_epoch"] == reg["deadline_epoch"] == first + life

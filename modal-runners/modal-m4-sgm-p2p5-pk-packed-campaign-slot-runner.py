@@ -26,8 +26,8 @@ import modal
 GRID_FILE = "configs/m4_sgm_p2p5_grid.json"
 REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "configs/m4_sgm_p2p5_campaign_output_schema.json"
 PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json"
-CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
-CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-guard"
+CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry-r2"
+CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-guard-r2"
 CONTROL_APP_NAME = "memsub-m4-sgm-p2p5-pk-campaign-control"
 VALIDATION_SETUP_S, CONTROL_SLACK_S = 3600, 1800          # must equal the control app's (tested)
 GROUP, LOCAL_OUT = "p2p5-qwen3-0p6b-screen-v1", "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
@@ -39,7 +39,9 @@ EVAL = {"final_batches": 16, "final_batch_size": 16, "final_seed_base": 9_300_01
 SLOT = os.environ.get("M4_PK_SLOT", "")
 SLOTS = ("learned-n16", "learned-n32", "single_cell-n16", "single_cell-n32", "random_fixed-n16", "random_fixed-n32",
          "oracle-n32", "memory_off-n16", "memory_off-n32")
-if SLOT not in SLOTS:
+# Local refusal only: the image build imports this module in a Modal container BEFORE the `.env` layer that bakes the
+# slot in (launch 2026-10-07: the build died here). Every run container has the env; `run_slot` still fails closed.
+if SLOT not in SLOTS and modal.is_local():
     raise SystemExit(f"M4_PK_SLOT must be one of {SLOTS}, got {SLOT!r}")
 APP_NAME = f"memsub-m4-sgm-p2p5-pk-campaign-{SLOT.replace('_', '')}"
 GUARD_DICT, ADMIT_DICT = f"{APP_NAME}-guard", f"{APP_NAME}-admission"
@@ -122,6 +124,8 @@ def identity_now(root: str = "/root/repo") -> dict:
               retries=modal.Retries(max_retries=MAX_STARTS - 1, initial_delay=1.0, backoff_coefficient=1.0),
               volumes={"/artifacts": artifacts})
 def run_slot(expected: dict) -> dict:
+    if SLOT not in SLOTS:                         # fail closed before any admission claim or evidence access
+        return {"slot": SLOT, "status": "slot_unset"}
     sys.path.insert(0, "/root/repo")
     from memsub.sgm.p2d_launch_guard import Watchdog
     early = Watchdog(EARLY_S)

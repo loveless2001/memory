@@ -35,6 +35,21 @@ def test_unknown_slot_is_refused(monkeypatch):
         load_slot(monkeypatch, "learned-n64")
 
 
+def test_image_build_container_imports_without_the_slot_env_and_run_fails_closed(monkeypatch):
+    """Launch 2026-10-07: the `_build_environment` image step imports this module in a Modal container before the
+    `.env` layer sets M4_PK_SLOT; the local-only refusal must not fire there, and `run_slot` must refuse an unset
+    slot before any admission claim (no Modal Dict is touched)."""
+    import modal
+    monkeypatch.delenv("M4_PK_SLOT", raising=False)
+    monkeypatch.setattr(modal, "is_local", lambda: False)
+    monkeypatch.chdir(ROOT)
+    spec = importlib.util.spec_from_file_location("slot_build", ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)                                       # the failing step of the launch
+    monkeypatch.setattr(modal.Dict, "from_name", lambda *a, **k: (_ for _ in ()).throw(AssertionError("Dict touched")))
+    assert mod.SLOT == "" and mod.run_slot.get_raw_f()({"memsub": "x"}) == {"slot": "", "status": "slot_unset"}
+
+
 def test_each_slot_has_unique_identities_registered_pairing_and_deadline(monkeypatch):
     grid = json.loads((ROOT / "configs/m4_sgm_p2p5_grid.json").read_text())
     price = json.loads((ROOT / "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json").read_text())

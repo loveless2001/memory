@@ -1,0 +1,29 @@
+{
+  "module refusal also fires in the remote image-build container (attempt-1 bug)": {
+    "pytest_rc": 1,
+    "summary": "2 failed, 34 passed in 6.71s",
+    "failed": [
+      "tests/test_sgm_pk_campaign_slot_runner_and_control_app.py::test_image_build_container_imports_without_the_slot_env_and_run_fails_closed",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance"
+    ],
+    "caught": true
+  },
+  "run_slot without the unset-slot fail-closed guard": {
+    "pytest_rc": 1,
+    "summary": "2 failed, 34 passed in 6.28s",
+    "failed": [
+      "tests/test_sgm_pk_campaign_slot_runner_and_control_app.py::test_image_build_container_imports_without_the_slot_env_and_run_fails_closed",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance"
+    ],
+    "caught": true
+  },
+  "controller reuses the attempt-1 (unsuffixed) control Dicts": {
+    "pytest_rc": 1,
+    "summary": "2 failed, 34 passed in 6.33s",
+    "failed": [
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_runner_horizon_constants_match_the_controller",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance"
+    ],
+    "caught": true
+  }
+}

@@ -20,8 +20,10 @@ from pathlib import Path
 import modal
 
 APP_NAME = "memsub-m4-sgm-p2p5-pk-campaign-control"
-REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
-CONTROL_GUARD = "m4-sgm-p2p5-pk-campaign-control-guard"
+# -r2: launch attempt 1 (2026-10-07, slot image build failed before any spawn) armed the unsuffixed guard write-once;
+# those Dicts are preserved as evidence, never reused or deleted
+REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry-r2"
+CONTROL_GUARD = "m4-sgm-p2p5-pk-campaign-control-guard-r2"
 PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json"
 PERIOD_S, ABANDON_S, SLACK_S, ENVIRONMENT = 120, 1800, 1800, "main"
 SPAWN_OFFSET_S, VALIDATION_SETUP_S, FALLBACK_S, REQUEST_TIMEOUT_S = 1800, 3600, 1800, 20.0   # codex 21600 horizon
