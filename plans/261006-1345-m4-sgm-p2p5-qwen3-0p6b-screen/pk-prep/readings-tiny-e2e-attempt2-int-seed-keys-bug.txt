@@ -1,0 +1,32 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_readings_run_exactly_once_and_read_every_n ________________
+
+campaign = (PosixPath('/tmp/pytest-of-lenovo/pytest-106/campaign0'), PosixPath('/tmp/pytest-of-lenovo/pytest-106/campaign0/evidence'), {'learned-n16': [1], 'learned-n32': [1], 'memory_off-n16': [1], 'memory_off-n32': [1], ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7da15d629df0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-106/test_readings_run_exactly_once0')
+
+    def test_readings_run_exactly_once_and_read_every_n(campaign, monkeypatch, tmp_path):
+        base, root, admitted = campaign
+        _bind(monkeypatch, base)
+>       rep = rd.readings(root, admitted, rd.current_identity(), tmp_path / "out")
+
+tests/test_sgm_pk_campaign_readings_tiny_end_to_end.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/sgm-p2p5-pk-campaign-readings.py:139: in readings
+    res["interface"] = DR.interface_ok(acc)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+oracle_accuracy = {0: 0.0185546875, 1: 0.0185546875}
+
+    def interface_ok(oracle_accuracy: dict) -> bool:
+        """Oracle accuracy >= 0.50 on both seeds; finite values in [0, 1] or fail closed."""
+        if set(oracle_accuracy) != set(P2G.SEEDS):
+>           raise SystemExit(f"interface needs seeds {P2G.SEEDS}, got {sorted(oracle_accuracy)}")
+E           SystemExit: interface needs seeds ('0', '1'), got [0, 1]
+
+scripts/sgm-p2p5-decision-rules.py:25: SystemExit
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_campaign_readings_tiny_end_to_end.py::test_readings_run_exactly_once_and_read_every_n
+1 failed, 1 passed in 985.35s (0:16:25)
+EXIT_STATUS=1

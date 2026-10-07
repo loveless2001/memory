@@ -135,7 +135,7 @@ def readings(root: Path, admitted: dict, expected: dict, out: Path) -> dict:
             acc = {}
             for s, cid in oracle.items():
                 _r, info = reserved_rows(cid, cells[cid], pilots[cid], n, ("none",), out)
-                res["corners"][f"{cid}-on-n{n}"], acc[s] = info, float(info["accuracy_none"])
+                res["corners"][f"{cid}-on-n{n}"], acc[str(s)] = info, float(info["accuracy_none"])   # rules key seeds as str
             res["interface"] = DR.interface_ok(acc)
             if res["interface"]:
                 rows = {}
@@ -144,12 +144,13 @@ def readings(root: Path, admitted: dict, expected: dict, out: Path) -> dict:
                         cid = next(c for c, p in pilots.items() if (p["arm"], p["n_bindings"], p["seed"]) == (arm, n, s))
                         ivs = ("none",) if arm == "memory_off" else POBS.FINAL_IVS
                         rows[(arm, s)], res["corners"][cid] = reserved_rows(cid, cells[cid], pilots[cid], n, ivs, out)
-                per_control = {c: {s: P2D.paired(rows[("learned", s)], rows[(c, s)]) for s in (0, 1)} for c in DR.CONTROLS}
+                per_control = {c: {str(s): P2D.paired(rows[("learned", s)], rows[(c, s)]) for s in (0, 1)}
+                               for c in DR.CONTROLS}
                 labels = DR.control_labels(per_control)
                 mem = all(P2D.memory_use(rows[("learned", s)])["pass"] for s in (0, 1))
                 res.update(per_control=per_control, labels=labels, memory_use=mem,
-                           read_address=DR.read_address_use({s: P2D.paired(rows[("learned", s)], rows[("learned", s)],
-                                                                           "none", "read_offset") for s in (0, 1)}),
+                           read_address=DR.read_address_use({str(s): P2D.paired(rows[("learned", s)], rows[("learned", s)],
+                                                                                "none", "read_offset") for s in (0, 1)}),
                            reading=DR.screen_reading(n, None, True, labels, mem))
             else:
                 res["reading"] = DR.screen_reading(n, None, False, None, None)

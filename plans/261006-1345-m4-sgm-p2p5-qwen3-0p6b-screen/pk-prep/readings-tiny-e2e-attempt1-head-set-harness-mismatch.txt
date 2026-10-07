@@ -1,0 +1,42 @@
+F
+=================================== FAILURES ===================================
+_______________ test_readings_run_exactly_once_and_read_every_n ________________
+
+campaign = (PosixPath('/tmp/pytest-of-lenovo/pytest-103/campaign0'), PosixPath('/tmp/pytest-of-lenovo/pytest-103/campaign0/evidence'), {'learned-n16': [1], 'learned-n32': [1], 'memory_off-n16': [1], 'memory_off-n32': [1], ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x766a450f0050>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-103/test_readings_run_exactly_once0')
+
+    def test_readings_run_exactly_once_and_read_every_n(campaign, monkeypatch, tmp_path):
+        base, root, admitted = campaign
+        _bind(monkeypatch, base)
+>       rep = rd.readings(root, admitted, rd.current_identity(), tmp_path / "out")
+
+tests/test_sgm_pk_campaign_readings_tiny_end_to_end.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/sgm-p2p5-pk-campaign-readings.py:137: in readings
+    _r, info = reserved_rows(cid, cells[cid], pilots[cid], n, ("none",), out)
+scripts/sgm-p2p5-pk-campaign-readings.py:110: in reserved_rows
+    "gate_telemetry_descriptive": POBS.gate_telemetry(backend, pcfg)}
+scripts/sgm-p2p5-pretrained-observer.py:68: in gate_telemetry
+    return {"status": "measured", **OBS.gate_summary(gate_events(backend, pcfg), pcfg.n_bindings)}
+scripts/sgm-p2g-common-observer-evaluation.py:135: in gate_summary
+    check_gate_events(ev, want)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ev = {(1, 0): {'binding': {'applied': [0.3206436038017273, 0.28574347496032715, 0.48127245903015137, 0.3876642882823944, 0....72360134125, 0.3204484283924103, 0.774376392364502, 0.8135693073272705, 0.8628928065299988, 0.6278099417686462, ...]}}}
+want = {'binding': 4096, 'filler': 2560}
+
+    def check_gate_events(ev: dict, want: dict) -> None:
+        """Fail closed unless telemetry covers exactly the registered heads with the
+        expected populations, every beta is finite and in [0, 1], and applied events
+        are all-or-none per class: all applied (== effective) or all skipped (effective 0)."""
+        if not isinstance(ev, dict) or set(ev) != REGISTERED_HEADS:
+>           raise SystemExit(f"gate telemetry heads {sorted(ev) if isinstance(ev, dict) else ev} != registered")
+E           SystemExit: gate telemetry heads [(1, 0), (1, 1), (3, 0), (3, 1)] != registered
+
+scripts/sgm-p2g-common-observer-evaluation.py:111: SystemExit
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_campaign_readings_tiny_end_to_end.py::test_readings_run_exactly_once_and_read_every_n
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 964.47s (0:16:04)
+EXIT_STATUS=1

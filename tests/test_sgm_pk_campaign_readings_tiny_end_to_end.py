@@ -58,6 +58,10 @@ def campaign(tmp_path_factory):
 
 
 def _bind(monkeypatch, base):
+    from memsub.sgm.synthetic_pilot import TINY_SGM_DEFAULTS
+    # the P2.5 observer is pinned to the Qwen 16-head set; the TINY harness rebinds it to the tiny geometry
+    monkeypatch.setattr(rd.POBS.OBS, "REGISTERED_HEADS", frozenset(
+        (l, h) for l in TINY_SGM_DEFAULTS["selected_layers"] for h in range(TINY_SGM_DEFAULTS["memory_heads"])))
     monkeypatch.setattr(rd, "GRID", base / "grid.json")
     monkeypatch.setattr(rd, "REGISTRY", base / "registry.json")
     monkeypatch.setattr(rd, "SCHEMA", base / "schema.json")
