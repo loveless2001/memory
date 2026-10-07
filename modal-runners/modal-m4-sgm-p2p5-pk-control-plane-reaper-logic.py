@@ -99,3 +99,27 @@ def register(store, app_name: str, app_id: str, deadline_epoch: float, horizon: 
     if not valid_entry(entry, horizon):
         raise ValueError(f"refusing registration for {app_name}: {entry!r} (horizon {horizon})")
     return bool(store.put(app_name, {"app_id": app_id, "deadline_epoch": float(deadline_epoch)}, skip_if_exists=True))
+
+
+def binding_problem(control: dict, price_sha: str, live_id, live_state, candidate_deadline: float,
+                    window_after_s: float) -> str | None:
+    """None iff the control plane is completely bound and live for an app whose ONE candidate deadline is
+    `candidate_deadline` (codex 21604 #3 / 21606 #3): write-once controller id + finite deadline + price sha; the
+    price sha equals the caller's bound price/horizon file; the live controller id equals the bound id and the app
+    is running; the candidate leaves `window_after_s` (slots: validation + readings + slack; readings: slack)
+    before the controller deadline. Read-only; callers run it before consuming any launch state."""
+    if not (isinstance(control.get("app_id"), str) and control["app_id"] and finite_pos(control.get("deadline_epoch"))
+            and isinstance(control.get("price_sha256"), str)):
+        return f"controller binding incomplete: {sorted(control)}"
+    if control["price_sha256"] != price_sha:
+        return "controller was armed for a different price/horizon file"
+    try:
+        if live_id() != control["app_id"]:
+            return "live controller app id differs from the bound id"
+        if str(live_state(control["app_id"])).lower() in ("stopped", "stopping", "none", ""):
+            return "controller app is not running"
+    except Exception as e:
+        return f"controller lookup failed: {e!r:.120}"
+    if not finite_pos(candidate_deadline) or candidate_deadline > control["deadline_epoch"] - window_after_s:
+        return "candidate deadline beyond the controller horizon"
+    return None

@@ -173,27 +173,12 @@ def expected_identity() -> dict:
 
 
 def controller_preflight(cp, control: dict, now_deadline: float, live_id, live_state) -> str | None:
-    """None iff the control plane is completely bound and live (codex 21604 #3): write-once app id + finite
-    deadline + price sha in its guard; the live controller app id equals the bound id and is not stopped; the
-    price sha equals this runner's bound price; this slot's deadline leaves the validation/readings/slack window
-    before the controller deadline. Read-only; runs before any slot state is consumed."""
+    """Slot binding = the shared control-plane check with the slot window (validation/setup + readings + slack)."""
     import hashlib
-    if not (isinstance(control.get("app_id"), str) and control["app_id"] and cp.finite_pos(control.get("deadline_epoch"))
-            and isinstance(control.get("price_sha256"), str)):
-        return f"controller binding incomplete: {sorted(control)}"
-    if control["price_sha256"] != hashlib.sha256(Path(PRICE_FILE).read_bytes()).hexdigest():
-        return "controller was armed for a different price/horizon file"
-    try:
-        if live_id() != control["app_id"]:
-            return "live controller app id differs from the bound id"
-        if str(live_state(control["app_id"])).lower() in ("stopped", "stopping", "none", ""):
-            return "controller app is not running"
-    except Exception as e:
-        return f"controller lookup failed: {e!r:.120}"
     readings = json.loads(Path(PRICE_FILE).read_text())["readings"]["reserve_life_s"]
-    if now_deadline > control["deadline_epoch"] - VALIDATION_SETUP_S - readings - CONTROL_SLACK_S:
-        return "slot deadline beyond the controller horizon"
-    return None
+    problem = cp.binding_problem(control, hashlib.sha256(Path(PRICE_FILE).read_bytes()).hexdigest(), live_id, live_state,
+                                 now_deadline, VALIDATION_SETUP_S + readings + CONTROL_SLACK_S)
+    return problem.replace("candidate deadline", "slot deadline") if problem else None
 
 
 def app_state(app_id: str) -> str:
