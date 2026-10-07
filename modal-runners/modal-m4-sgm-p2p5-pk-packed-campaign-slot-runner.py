@@ -242,7 +242,118 @@ def spawn() -> None:
     print("spawned", SLOT, call)
 
 
+COLLECT_GRACE_S = 300
+
+
+def cell_report(cell_dir: Path, pilot: dict, admitted: list[int], memsub_sha: str, registry: dict, schema: dict,
+                terminal: bool, validate=None) -> dict:
+    """Authoritative state of one cell from the fetched evidence: the highest ADMITTED epoch with an acknowledged
+    record, its canonical snapshot chain, and (COMPLETE) the shared per-cell output validation. A cell that is
+    not terminal when its slot is terminal / past deadline is reported LOST (never resumed, never relabelled)."""
+    from memsub.sgm import packed_slot_epoch_state as es
+    from memsub.sgm.packed_slot_cell_output_validation import validate_cell_outputs
+    validate = validate or validate_cell_outputs
+    epochs = sorted(int(p.name.split("-")[1]) for p in cell_dir.glob("epoch-*")) if cell_dir.exists() else []
+    if any(m not in admitted for m in epochs):
+        return {"state": "INVALID", "problem": f"epoch dirs {epochs} not all admitted {admitted}"}
+    rec = next((r for m in reversed(epochs) if (r := es.read_record(cell_dir, m)) is not None), None)
+    if rec is None:
+        return {"state": "LOST" if terminal else "NOT_STARTED", "problem": "no acknowledged record"}
+    try:
+        walk = es.canonical_walk(rec, max_len=len(admitted))
+    except ValueError as e:
+        return {"state": "INVALID", "problem": str(e)}
+    out = {"state": rec["state"], "epoch": rec["epoch"], "epochs": [w["epoch"] for w in walk],
+           "reason": rec.get("reason")}
+    if rec["state"] == es.COMPLETE:
+        problem = validate(cell_dir.parents[1] / rec["outputs"]["attempt"] / "out", rec["outputs"]["files"], pilot,
+                           EVAL, memsub_sha, registry, schema)
+        out["validation"] = problem or "valid"
+    elif rec["state"] not in (es.FAILED, es.LOST) and terminal:
+        out.update(state="LOST", problem=f"not terminal ({rec['state']}) when the slot ended")
+    return out
+
+
+def collect(poller=None, stopper=None, verifier=None, fetch=None, export=None, now=None, validate=None) -> dict:
+    """Idempotent. Stops + verifies THIS slot's app by its spawn-time bound id when the call is terminal, untracked
+    or past the deadline (+grace); then pulls the slot's volume evidence, exports its guard/admission Dicts and
+    reports every cell (COMPLETE validated / FAILED / LOST / INVALID). Without launch provenance it refuses:
+    there is no bound id, and a name-only stop is never allowed."""
+    root = Path(LOCAL_OUT) / GROUP / SLOT
+    try:
+        prov = json.loads((root / "launch_provenance.json").read_text())
+    except (OSError, ValueError):
+        raise SystemExit(f"{SLOT}: no launch provenance: refusing (no bound app id; no name-only stop)")
+    try:
+        call = json.loads((root / "call.json").read_text())["call_id"]
+    except (OSError, ValueError, KeyError):
+        call = None
+    kind, payload = (poller(call) if call else ("untracked", None))
+    past = (now if now is not None else time.time()) > prov["deadline_epoch"] + COLLECT_GRACE_S
+    report = {"slot": SLOT, "call_id": call, "poll": kind, "result": payload, "past_deadline": past}
+    if kind not in ("pending", "untracked") or past or call is None:
+        sd = {"app_id": prov["deployed_app_id"]}
+        try:
+            stopper(APP_NAME, prov["deployed_app_id"])
+        except Exception as e:
+            sd["stop_error"] = repr(e)[:200]
+        try:
+            sd["verified"] = bool(verifier(APP_NAME, prov["deployed_app_id"]))
+        except Exception as e:
+            sd["verified"], sd["verify_error"] = False, repr(e)[:200]
+        sd["status"] = "stopped_verified" if sd["verified"] else "shutdown_unresolved"
+        report["final_shutdown"] = sd
+        report["evidence"] = fetch(root)
+        dicts = export(root)
+        report["dicts"] = {k: (len(v) if isinstance(v, dict) else v) for k, v in dicts.items()}
+        admitted = sorted(int(k.split("-")[1]) for k in (dicts.get("admission") or {}) if k.startswith("start-"))
+        reg = json.loads(Path(REGISTRY_FILE).read_text())["by_arm"]
+        sch = json.loads(Path(SCHEMA_FILE).read_text())["by_arm"]
+        ev = root / "volume-evidence" / SLOT / "cells"
+        report["cells"] = {c: cell_report(ev / c, p, admitted, prov["expected_identity"]["memsub"], reg[p["arm"]],
+                                          sch[p["arm"]], terminal=True, validate=validate)
+                           for c, p in slot_cells(json.loads(Path(GRID_FILE).read_text())).items()}
+    tmp = root / "collect_status.json.tmp"
+    tmp.write_text(json.dumps(report, indent=2, default=str))
+    os.replace(tmp, root / "collect_status.json")
+    print(json.dumps({"slot": SLOT, "poll": kind, "final": "final_shutdown" in report}))
+    return report
+
+
+def _real_collect():
+    import importlib.util
+    here = Path(__file__).resolve().parent
+
+    def load(name, mod):
+        spec = importlib.util.spec_from_file_location(mod, here / name)
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        return m
+    tu = load("modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py", "topup")
+    shared = load("modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py", "shared")
+
+    def verifier(name, app_id):
+        return app_state(app_id).lower() in ("stopped", "none")
+
+    def fetch(root):
+        dest = root / "volume-evidence"
+        dest.mkdir(exist_ok=True)
+        g = subprocess.run([sys.executable, "-m", "modal", "volume", "get", "--force", "memsub-artifacts",
+                            f"m4-sgm/{GROUP}/{SLOT}", str(dest)], capture_output=True, text=True, timeout=1800)
+        return {"returncode": g.returncode, "stderr_tail": g.stderr[-500:]}
+
+    def export(root):
+        out = {}
+        for key, name in (("guard", GUARD_DICT), ("admission", ADMIT_DICT)):
+            d = dict(modal.Dict.from_name(name).items())
+            (root / f"{key}.json").write_text(json.dumps(d, indent=2, default=str))
+            out[key] = d
+        return out
+    return collect(poller=tu.poll, stopper=lambda n, i: shared.stop_bound_app(n, i, "main"), verifier=verifier,
+                   fetch=fetch, export=export)
+
+
 if __name__ == "__main__":
     os.chdir(Path(__file__).resolve().parents[1])
     {"plan": lambda: print(json.dumps({"slot": SLOT, "app": APP_NAME, "deadline_s": slot_deadline_s()})),
-     "spawn": spawn}[sys.argv[1]]()
+     "spawn": spawn, "collect": _real_collect}[sys.argv[1]]()

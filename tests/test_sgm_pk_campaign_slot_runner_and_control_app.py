@@ -73,3 +73,84 @@ def test_control_app_deadline_armed_or_abandoned(monkeypatch):
     v1 = ctl.control_view(never, 10.0, lambda: "ap-c")
     v2 = ctl.control_view(never, 99.0, lambda: "ap-c")                  # first tick is write-once
     assert v1["deadline_epoch"] == v2["deadline_epoch"] == 10.0 + ctl.ABANDON_S
+
+
+# -- per-slot collect boundaries (fakes for Modal; real epoch-state records) --
+def _evidence(m, tmp_path, monkeypatch, states):
+    import json as _j
+    from memsub.sgm import packed_slot_epoch_state as es
+    monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+    root = tmp_path / m.GROUP / m.SLOT
+    root.mkdir(parents=True)
+    (root / "launch_provenance.json").write_text(_j.dumps({"deadline_epoch": 1000.0, "deployed_app_id": "ap-slot",
+                                                           "expected_identity": {"memsub": "m"}}))
+    cells = sorted(m.slot_cells(_j.loads((ROOT / m.GRID_FILE).read_text())))
+    for cell, state in zip(cells, states):
+        cdir = root / "volume-evidence" / m.SLOT / "cells" / cell
+        rec = es.inherit(cdir, 1, [1], {"memsub": "m"}, 1500)
+        if state == "COMPLETE":
+            rec["chain"], rec["state"] = [{"epoch": 1, "g": 30, "step": 1500, "file": "x", "sha256": "y"}], es.TRAINED
+            es.mark(rec, es.COMPLETE, outputs={"attempt": f"cells/{cell}/epoch-1/attempt-1", "files": {}})
+        elif state == "FAILED":
+            es.mark(rec, es.FAILED, reason="worker exit 3")
+        es.write_record(cdir, rec)
+    return root, cells
+
+
+def _fakes(stops, verified=True, admission=None):
+    return dict(stopper=lambda n, i: stops.append((n, i)), verifier=lambda n, i: verified,
+                fetch=lambda r: {"returncode": 0}, export=lambda r: {"guard": {}, "admission": admission or {"start-1": 1.0}},
+                validate=lambda *a, **k: None)
+
+
+def test_collect_refuses_without_provenance(monkeypatch, tmp_path):
+    m = load_slot(monkeypatch, "learned-n32")
+    monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+    with pytest.raises(SystemExit, match="name-only"):
+        m.collect(poller=lambda c: ("pending", None), **_fakes([]))
+
+
+def test_collect_pending_before_deadline_does_not_stop(monkeypatch, tmp_path):
+    import json as _j
+    m = load_slot(monkeypatch, "learned-n32")
+    root, _ = _evidence(m, tmp_path, monkeypatch, ["STARTED", "STARTED"])
+    (root / "call.json").write_text(_j.dumps({"call_id": "fc-1"}))
+    stops = []
+    rep = m.collect(poller=lambda c: ("pending", None), now=500.0, **_fakes(stops))
+    assert stops == [] and "final_shutdown" not in rep
+
+
+@pytest.mark.parametrize("call, kind, now", [("fc-1", "result", 500.0), (None, None, 500.0), ("fc-1", "pending", 2000.0)])
+def test_collect_stops_by_bound_id_and_reports_cells(monkeypatch, tmp_path, call, kind, now):
+    import json as _j
+    m = load_slot(monkeypatch, "learned-n32")
+    root, cells = _evidence(m, tmp_path, monkeypatch, ["COMPLETE", "FAILED"])
+    if call:
+        (root / "call.json").write_text(_j.dumps({"call_id": call}))
+    stops = []
+    rep = m.collect(poller=lambda c: (kind, None), now=now, **_fakes(stops))
+    assert stops == [(m.APP_NAME, "ap-slot")] and rep["final_shutdown"]["status"] == "stopped_verified"
+    assert rep["cells"][cells[0]]["state"] == "COMPLETE" and rep["cells"][cells[0]]["validation"] == "valid"
+    assert rep["cells"][cells[1]]["state"] == "FAILED" and "worker exit 3" in rep["cells"][cells[1]]["reason"]
+
+
+def test_collect_marks_non_terminal_cells_lost_and_keeps_unresolved_shutdown(monkeypatch, tmp_path):
+    import json as _j
+    m = load_slot(monkeypatch, "learned-n32")
+    root, cells = _evidence(m, tmp_path, monkeypatch, ["STARTED", "COMPLETE"])
+    (root / "call.json").write_text(_j.dumps({"call_id": "fc-1"}))
+    f = _fakes([], verified=False)
+    f["stopper"] = lambda n, i: (_ for _ in ()).throw(RuntimeError("rpc"))
+    f["validate"] = lambda *a, **k: "rows differ"
+    rep = m.collect(poller=lambda c: ("failed", "boom"), now=500.0, **f)
+    assert rep["final_shutdown"]["status"] == "shutdown_unresolved" and "stop_error" in rep["final_shutdown"]
+    assert rep["cells"][cells[0]]["state"] == "LOST" and rep["cells"][cells[1]]["validation"] == "rows differ"
+
+
+def test_collect_flags_unadmitted_epochs_invalid(monkeypatch, tmp_path):
+    import json as _j
+    m = load_slot(monkeypatch, "learned-n32")
+    root, cells = _evidence(m, tmp_path, monkeypatch, ["COMPLETE", "COMPLETE"])
+    (root / "call.json").write_text(_j.dumps({"call_id": "fc-1"}))
+    rep = m.collect(poller=lambda c: ("result", None), now=500.0, **_fakes([], admission={"start-2": 1.0}))
+    assert all(rep["cells"][c]["state"] == "INVALID" for c in cells)
