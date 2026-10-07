@@ -1,6 +1,7 @@
 # P2.5 PK campaign: terminal package (for codex final artifact audit, codex 21718/21730)
 
-Status: campaign TERMINAL. 9 slot apps + readings app stopped_verified. Controller self-stops at its armed deadline.
+Status: campaign TERMINAL. All 11 attempt-2 apps stopped and verified: 9 slots, readings, and the controller (stopped
+by bound id at 17:50:07Z). The final billing is pending.
 Readings report posted claude 21729. Authority: user 21627 (campaign, $259.99 conditional reserve), user 21710 (option B).
 
 ## Outcome
@@ -32,8 +33,12 @@ All 9 `poll=result`, `final_shutdown=stopped_verified` (per-slot `collect_status
 learned-n32-s1 FAILED (original record bytes unchanged; spec state d4996651…). Slot loop: "ALL 9 SLOTS FINAL" 13:40:27Z.
 
 ## Controller
-ap-suOdTgdc8PNSfZ3jbnsesa (-r2): `deployed`, 0 tasks at 17:47Z. It self-stops at its write-once deadline
-1791408417.25 (21:26:57Z). No manual stop planned. Its state gets re-checked read-only after that, with the final billing.
+ap-suOdTgdc8PNSfZ3jbnsesa (-r2) was STOPPED BY BOUND ID at 17:50:07Z (codex 21731 terminal cleanup), before its
+write-once deadline 1791408417.25 (21:26:57Z). Verified: stopped, 0 tasks, 0 containers. The -r2 Dicts were
+only read, not reset: guard, 10-app registry and 332 ticks are exported. Evidence: `../pk-campaign-launch/attempt-2/98-*`
+(script, start time, bound-verified json, exit 0, stderr). An independent check of all 12 campaign app ids
+(`99-app-list/99-container-list-after-controller-stop.json`): readings and control are stopped with 0 tasks; the other
+10 are unlisted; 0 campaign containers. No memsub app is in any non-stopped state.
 
 ## Billing (PRELIMINARY: `billing-reconciliation-prelim.json`)
 App-attributed, 2026-10-07 00:00Z through the 17:00Z hour (that hour was still open):
@@ -44,7 +49,7 @@ App-attributed, 2026-10-07 00:00Z through the 17:00Z hour (that hour was still o
 
 For reference: v6 estimate $116.31; conditional reserve $259.99, of which readings $16.71. Attempt 1: controller
 $0.00005; the failed slot image build is not app-attributed. learned-n32's 06:00Z hour may include the attempt-1
-deploy (same app id). The $8.57 proof hold is separate (Oct 6). FINAL: re-fetch after the controller self-stops.
+deploy (same app id). The $8.57 proof hold is separate (Oct 6). FINAL: re-fetch at 19:15Z, after the 17:00Z hour closes.
 
 ## In git / not in git
 - Committed: the attempt-2 launch logs (50–94, collect loops), the readings dir, and the per-slot non-binary volume
@@ -53,7 +58,7 @@ deploy (same app id). The $8.57 proof hold is separate (Oct 6). FINAL: re-fetch 
 - Unchanged: frozen prereg/grid/amendment/v5/v6/proof bytes, analysis manifest 882dd4a4, memsub 2eee4228.
 
 ## Unresolved
-- Final billing (after 21:26:57Z) and the controller self-stop confirmation.
+- Final billing: re-fetch at 19:15Z into `attempt-2/97-billing-hourly-final-20261007.json`.
 - Cause/effect of the missing L20 grad_norm in learned-n32-s1: undetermined.
 - Next experiment: none authorized. Codex 21728 recommends inspecting the retained gradient / empty-read /
   write-read alignment evidence before choosing ONE targeted follow-up.
