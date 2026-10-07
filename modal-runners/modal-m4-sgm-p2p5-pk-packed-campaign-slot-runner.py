@@ -210,7 +210,7 @@ def spawn() -> None:
     if problem:
         raise SystemExit(f"controller preflight failed: {problem}")
     guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
-    if len(guard.keys()):
+    if any(True for _ in guard.keys()):   # modal Dict.keys() is a generator; ANY key (even None) = used (attempt 2)
         raise SystemExit("guard Dict already used: this slot was spawned before")
     root = Path(LOCAL_OUT) / GROUP / SLOT
     root.mkdir(parents=True, exist_ok=False)

@@ -1,0 +1,42 @@
+{
+  "slot spawn back to len(guard.keys()) (attempt-2 spawn bug)": {
+    "pytest_rc": 1,
+    "summary": "5 failed, 46 passed in 6.65s",
+    "failed": [
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[used]",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none]",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[false]",
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[empty-str]"
+    ],
+    "caught": true
+  },
+  "slot spawn first-key check (codex 21645: a None key reads as unused)": {
+    "pytest_rc": 1,
+    "summary": "1 failed, 50 passed in 6.64s",
+    "failed": [
+      "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none]"
+    ],
+    "caught": true
+  },
+  "readings spawn back to len(guard.keys())": {
+    "pytest_rc": 1,
+    "summary": "5 failed, 46 passed in 6.83s",
+    "failed": [
+      "tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty]",
+      "tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[used]",
+      "tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[none-key]",
+      "tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[false-key]",
+      "tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty-str-key]"
+    ],
+    "caught": true
+  },
+  "readings spawn first-key check": {
+    "pytest_rc": 1,
+    "summary": "1 failed, 50 passed in 6.59s",
+    "failed": [
+      "tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[none-key]"
+    ],
+    "caught": true
+  }
+}

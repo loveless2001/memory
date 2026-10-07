@@ -1,0 +1,33 @@
+Building image im-tyfeaoOKg6JaYAbmbanr7u
+
+=> Step 0: FROM base
+
+=> Step 1: ENV HF_HUB_OFFLINE=1
+
+=> Step 2: ENV TOKENIZERS_PARALLELISM=false
+
+=> Step 3: ENV M4_SGM_QWEN3_0P6B_DIR=/root/models/qwen3-0.6b-base
+
+=> Step 4: ENV M4_PK_SLOT=memory_off-n32
+Saving image...
+Image saved, took 1.92s
+
+Built image im-tyfeaoOKg6JaYAbmbanr7u in 2.90s
+
+
+✓ Created objects.
+├── 🔨 Created mount 
+│   /home/lenovo/projects/memory/modal-runners/modal-m4-sgm-p2p5-pk-packed-campa
+│   ign-slot-runner.py
+├── 🔨 Created mount 
+│   plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json
+├── 🔨 Created mount /home/lenovo/projects/memory/configs
+├── 🔨 Created mount /home/lenovo/projects/memory/memsub
+├── 🔨 Created function _build_environment.
+└── 🔨 Created function run_slot.
+✓ App deployed in 7.491s! 🎉
+
+View Deployment: 
+https://modal.com/apps/syntracts/main/deployed/memsub-m4-sgm-p2p5-pk-campaign-me
+moryoff-n32
+rc=0

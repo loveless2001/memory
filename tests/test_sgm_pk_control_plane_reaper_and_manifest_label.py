@@ -19,6 +19,9 @@ class FakeDict(dict):
         self[k] = v
         return True
 
+    def keys(self):                                  # modal 1.x Dict.keys() is a generator: len() raises (attempt 2)
+        return (k for k in dict.keys(self))
+
 
 import subprocess  # noqa: E402
 
@@ -257,3 +260,34 @@ def test_spawn_uses_one_immutable_deadline_despite_clock_advance(monkeypatch, tm
     prov = __import__("json").loads((tmp_path / m.GROUP / m.SLOT / "launch_provenance.json").read_text())
     reg = dicts["m4-sgm-p2p5-pk-campaign-control-registry-r2"][m.APP_NAME]
     assert prov["deadline_epoch"] == dicts[m.GUARD_DICT]["deadline_epoch"] == reg["deadline_epoch"] == first + life
+
+
+class _RaisingKeys(FakeDict):
+    def keys(self):
+        raise RuntimeError("dict rpc down")
+
+
+@pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                   FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+    """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+    or a keys() error stops the slot spawn before root, provenance, registration or call."""
+    import hashlib
+    import types
+    m = _slot(monkeypatch)
+    price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+    dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+    calls = []
+    monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+        Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+        App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+        Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+            spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+    monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+    monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+    monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+    err = isinstance(guard, _RaisingKeys)
+    with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+        m.spawn()
+    assert calls == [] and not (tmp_path / m.GROUP / m.SLOT).exists()
+    assert m.APP_NAME not in dicts.get("m4-sgm-p2p5-pk-campaign-control-registry-r2", {})

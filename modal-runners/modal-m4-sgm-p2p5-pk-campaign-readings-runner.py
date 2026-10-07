@@ -178,7 +178,7 @@ def spawn() -> None:
     if problem:
         raise SystemExit(f"controller preflight failed: {problem}")
     guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
-    if len(guard.keys()):
+    if any(True for _ in guard.keys()):   # modal Dict.keys() is a generator; ANY key (even None) = used (attempt 2)
         raise SystemExit("readings guard already used: readings were spawned before (exactly once)")
     root = local / "readings"
     root.mkdir(parents=True, exist_ok=False)

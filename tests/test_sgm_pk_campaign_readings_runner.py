@@ -27,6 +27,9 @@ class FakeDict(dict):
         self[k] = v
         return True
 
+    def keys(self):                                  # modal 1.x Dict.keys() is a generator: len() raises (attempt 2)
+        return (k for k in dict.keys(self))
+
 
 def test_single_admitted_start_and_re_entry_refused(monkeypatch):
     r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr")
@@ -87,3 +90,45 @@ def test_collect_refuses_without_provenance_and_stops_by_bound_id(monkeypatch, t
                      fetch=lambda d: (d.mkdir(parents=True), {"readings-v1": 1})[1], now=50.0)
     assert rep2["final_shutdown"]["status"] == "shutdown_unresolved" and rep2["evidence_complete"] is False
     assert rep2["evidence_dir"].endswith("collect-2")
+
+
+class RaisingKeysDict(FakeDict):
+    def keys(self):
+        raise RuntimeError("dict rpc down")
+
+
+GUARDS = {"empty": FakeDict, "used": lambda: FakeDict(app_id="ap-old"), "none-key": lambda: FakeDict({None: 1}),
+          "false-key": lambda: FakeDict({False: 0}), "empty-str-key": lambda: FakeDict({"": ""}),
+          "keys-error": RaisingKeysDict}
+
+
+@pytest.mark.parametrize("kind", list(GUARDS))
+def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+    """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+    to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+    root, provenance, registration or call (codex 21645)."""
+    import types
+    r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+    price = r.file_sha(r.PRICE_FILE)
+    dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+             r.GUARD_DICT: GUARDS[kind]()}
+    calls = []
+    monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+        Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+        App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+        Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+            spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+    monkeypatch.setattr(r, "slots_ready", lambda local: None)
+    monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+    monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+    monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+    if kind != "empty":
+        with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                           match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+            r.spawn()
+        assert calls == [] and not (tmp_path / r.GROUP / "readings").exists()
+        assert r.APP_NAME not in dicts.get(r.CONTROL_REGISTRY_DICT, {})
+    else:
+        r.spawn()
+        assert len(calls) == 1 and dicts[r.GUARD_DICT]["app_id"] == "ap-r"
+        assert dicts[r.CONTROL_REGISTRY_DICT][r.APP_NAME]["app_id"] == "ap-r"
