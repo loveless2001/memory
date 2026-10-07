@@ -26,18 +26,24 @@ PHASE2_STEP = 1000          # P2C curriculum: filler 0 before step 1000, 40 afte
 INPUTS: dict = {}
 
 
+def bind(p: Path) -> bytes:
+    """Read a consumed file and record its sha256 (every input, incl. imported code, is hash-bound)."""
+    data = p.read_bytes()
+    INPUTS[str(p.relative_to(ROOT))] = hashlib.sha256(data).hexdigest()
+    return data
+
+
 def load_json(p: Path):
-    INPUTS[str(p.relative_to(ROOT))] = hashlib.sha256(p.read_bytes()).hexdigest()
-    return json.loads(p.read_text())
+    return json.loads(bind(p))
 
 
 def load_jsonl(p: Path) -> list:
-    INPUTS[str(p.relative_to(ROOT))] = hashlib.sha256(p.read_bytes()).hexdigest()
-    return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    return [json.loads(l) for l in bind(p).decode().splitlines() if l.strip()]
 
 
-def p2d():
-    s = importlib.util.spec_from_file_location("p2d", ROOT / "scripts/sgm-p2d-step2-decision-rules.py")
+def load_module(rel: str, name: str):
+    bind(ROOT / rel)
+    s = importlib.util.spec_from_file_location(name, ROOT / rel)
     m = importlib.util.module_from_spec(s)
     s.loader.exec_module(m)
     return m
@@ -98,7 +104,9 @@ def curves(tele: list) -> dict:
             if all(v == "missing" for v in vals):
                 continue
             num = [(r["step"], v) for r, v in zip(tr, vals) if isinstance(v, (int, float))]
+            upd = [r["update_norm"].get(k) for r in tr]
             grad[k] = {"logged": len(vals), "none": sum(v is None for v in vals),
+                       "update_norm_positive": sum(isinstance(u, (int, float)) and u > 0 for u in upd),
                        "zero": sum(v == 0.0 for _s, v in num),
                        "first_none_step": next((r["step"] for r, v in zip(tr, vals) if v is None), None),
                        "median_p1": _median([v for s, v in num if s < PHASE2_STEP]),
@@ -144,7 +152,9 @@ def gate_telemetry(readings: dict) -> dict:
 
 
 def main():
-    P2D = p2d()
+    P2D = load_module("scripts/sgm-p2d-step2-decision-rules.py", "p2d")          # paired intervals (frozen rule)
+    EXTRA = load_module("plans/reports/claude-261008-0127-p2p5-saved-evidence-diagnosis/"
+                        "p2p5-diagnosis-extra-evidence-checkpoints-p2c-gate-heads.py", "extra")
     cells = {}
     for cell, out in cell_dirs().items():
         m = load_json(out / "metrics.json")
@@ -159,8 +169,12 @@ def main():
             entry["interventions"] = {"none": {"accuracy": m["final"]["heldout_none"]["accuracy"]}}
         entry["curves"] = curves(tele)
         cells[cell] = entry
-    report = {"format": "p2p5-saved-evidence-diagnosis-v1", "scope": "saved evidence only; no forward pass",
-              "cells": cells, "gate_telemetry_readings": gate_telemetry(load_json(READINGS))}
+    readings = load_json(READINGS)
+    report = {"format": "p2p5-saved-evidence-diagnosis-v2", "scope": "saved evidence only; no forward pass",
+              "cells": cells, "gate_telemetry_readings": gate_telemetry(readings),
+              "gate_heads_readings": EXTRA.gate_heads(readings),
+              "l20_beta_checkpoint_drift": EXTRA.l20_beta_drift(ROOT, bind),
+              "p2c_reference": EXTRA.p2c_reference(ROOT, bind)}
     report["inputs_sha256"] = dict(sorted(INPUTS.items()))
     Path(sys.argv[1]).write_text(json.dumps(report, indent=1, sort_keys=True, default=str) + "\n")
     print(json.dumps({"cells": len(cells), "inputs": len(INPUTS)}))
