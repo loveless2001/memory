@@ -302,7 +302,12 @@ def test_consumed_input_bindings(tmp_path):
              "schema": ROOT / "configs/m4_sgm_p2p5_packed_proof_output_schema.json",
              "grid": ROOT / "configs/m4_sgm_p2p5_packed_proof_grid.json"}
     reg, sch = (json.loads(Path(paths[k]).read_text()) for k in ("registry", "schema"))
-    exp = {k: sha(v) for k, v in paths.items()} | {"memsub": source_tree_sha256(ROOT / "memsub")}
+    # the PROOF's frozen files stay bound to the proof-time source (the later metadata-only label fix changed memsub;
+    # pk-campaign-source-bridge-manifest-label.md): bind to the accepted proof's own launch identity, not the live tree
+    proof = json.loads((ROOT / "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1/launch_provenance.json")
+                       .read_text())["expected_identity"]
+    assert reg["memsub_source_sha256"] == sch["memsub_source_sha256"] == proof["memsub"]
+    exp = {k: sha(v) for k, v in paths.items()} | {"memsub": proof["memsub"]}
     acc.check_consumed_inputs(paths, reg, sch, exp)
     with pytest.raises(acc.Fail, match="comparator"):
         acc.check_consumed_inputs(paths, reg, sch, {**exp, "comparator": "x"})

@@ -3,45 +3,7 @@
 ........................................................................ [ 49%]
 ........................................................................ [ 65%]
 ....................ss.................................................. [ 82%]
-.........F.............................................................. [ 98%]
+........................................................................ [ 98%]
 .......                                                                  [100%]
-=================================== FAILURES ===================================
-_________________________ test_consumed_input_bindings _________________________
-
-tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-110/test_consumed_input_bindings0')
-
-    def test_consumed_input_bindings(tmp_path):
-        import hashlib
-        sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()          # noqa: E731
-        paths = {"comparator": SPEC.origin, "registry": ROOT / "configs/m4_sgm_p2p5_packed_proof_registry.json",
-                 "schema": ROOT / "configs/m4_sgm_p2p5_packed_proof_output_schema.json",
-                 "grid": ROOT / "configs/m4_sgm_p2p5_packed_proof_grid.json"}
-        reg, sch = (json.loads(Path(paths[k]).read_text()) for k in ("registry", "schema"))
-        exp = {k: sha(v) for k, v in paths.items()} | {"memsub": source_tree_sha256(ROOT / "memsub")}
->       acc.check_consumed_inputs(paths, reg, sch, exp)
-
-tests/test_sgm_pk_packed_proof_acceptance_compare.py:306: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-paths = {'comparator': '/home/lenovo/projects/memory/scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py', 'grid': PosixPat...gistry.json'), 'schema': PosixPath('/home/lenovo/projects/memory/configs/m4_sgm_p2p5_packed_proof_output_schema.json')}
-registry = {'by_arm': {'learned': {'grad_names_shapes': {'adapters.13.address_mlp.0.bias': [64], 'adapters.13.address_mlp.0.weigh...432e76cf4e7a959aada2e54da', 'memsub_source_sha256': '2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5'}
-schema = {'by_arm': {'learned': {'metrics': {'dict': {'arm': {'str': True}, 'checkpoints': {'dict': {}}, 'final': {'dict': {......432e76cf4e7a959aada2e54da', 'memsub_source_sha256': '2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5'}
-expected = {'comparator': '173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c', 'grid': '4e32a3ef1e4cc6eef10deaac29...8ce8f9ac7c8d83d44bcd51333687a19b', 'registry': '17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f', ...}
-
-    def check_consumed_inputs(paths: dict, registry: dict, schema: dict, expected: dict) -> None:
-        """The comparator's own inputs are the launch's bound inputs (codex 21570 #3)."""
-        import hashlib
-        sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()       # noqa: E731
-        for key in ("comparator", "registry", "schema", "grid"):
-            if sha(paths[key]) != expected.get(key):
-                raise Fail(f"consumed {key} differs from the launch identity")
-        for name, frozen in (("registry", registry), ("schema", schema)):
-            if frozen.get("grid_sha256") != expected["grid"] or frozen.get("memsub_source_sha256") != expected["memsub"]:
->               raise Fail(f"frozen {name} was built for a different grid / source")
-E               acc.Fail: frozen registry was built for a different grid / source
-
-scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py:213: Fail
-=========================== short test summary info ============================
-FAILED tests/test_sgm_pk_packed_proof_acceptance_compare.py::test_consumed_input_bindings
-1 failed, 436 passed, 2 skipped in 482.91s (0:08:02)
-EXIT_STATUS=1
+437 passed, 2 skipped in 468.44s (0:07:48)
+EXIT_STATUS=0
