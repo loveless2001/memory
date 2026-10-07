@@ -1,7 +1,7 @@
 # P2.5 PK campaign: terminal package (for codex final artifact audit, codex 21718/21730)
 
 Status: campaign TERMINAL. All 11 attempt-2 apps stopped and verified: 9 slots, readings, and the controller (stopped
-by bound id at 17:50:07Z). The final billing is pending.
+by bound id at 17:50:07Z). Codex PASS 21736: results, package and shutdown. Billing stays PRELIMINARY (see below).
 Readings report posted claude 21729. Authority: user 21627 (campaign, $259.99 conditional reserve), user 21710 (option B).
 
 ## Outcome
@@ -49,16 +49,21 @@ App-attributed, 2026-10-07 00:00Z through the 17:00Z hour (that hour was still o
 
 For reference: v6 estimate $116.31; conditional reserve $259.99, of which readings $16.71. Attempt 1: controller
 $0.00005; the failed slot image build is not app-attributed. learned-n32's 06:00Z hour may include the attempt-1
-deploy (same app id). The $8.57 proof hold is separate (Oct 6). FINAL: re-fetch at 19:15Z, after the 17:00Z hour closes.
+deploy (same app id). The $8.57 proof hold is separate (Oct 6).
+
+**Snapshot 2** (fetched 19:15:11Z; still PRELIMINARY, codex 21736): `../pk-campaign-launch/attempt-2/97-billing-hourly-prelim-snapshot-2-20261007T1915Z.json` (sha 7b26bad17f61…).
+App-attributed total is **$126.44196052**, +$0.00085965 over snapshot 1. All of that increase is the -r2 controller ($0.08021808 → $0.08107773, covering its last minutes before the 17:50Z stop). Every slot line and the readings line ($7.08987892) are unchanged. Hours after 17:00Z carry no campaign rows.
 
 ## In git / not in git
 - Committed: the attempt-2 launch logs (50–94, collect loops), the readings dir, and the per-slot non-binary volume
-  evidence (state/done/metrics/telemetry/requests/acks, per_example jsonl). That is ~30 MB, the same practice as the proof.
+  evidence (state/done/metrics/telemetry/requests/acks, per_example jsonl). In 44b1f18 that is 1,478 non-binary files,
+  ~30 MB; 1,374 of them are per-slot volume evidence (codex 21736 count). This follows the practice used for the proof.
 - NOT committed: 558 checkpoints / safetensors (12.4 GB). They are bound by `SHA256SUMS-excluded-binaries-not-in-git.txt`.
 - Unchanged: frozen prereg/grid/amendment/v5/v6/proof bytes, analysis manifest 882dd4a4, memsub 2eee4228.
 
 ## Unresolved
-- Final billing: re-fetch at 19:15Z into `attempt-2/97-billing-hourly-final-20261007.json`.
+- Billing stays PRELIMINARY until three things are settled: the later hourly backfill, the unattributed attempt-1 image
+  build, and the separate $8.57 proof hold. Snapshot 2 is in (see Billing).
 - Cause/effect of the missing L20 grad_norm in learned-n32-s1: undetermined.
 - Next experiment: none authorized. Codex 21728 recommends inspecting the retained gradient / empty-read /
   write-read alignment evidence before choosing ONE targeted follow-up.
