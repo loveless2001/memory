@@ -9,11 +9,16 @@ Order (prereg "Order inside the one readings run"; fail closed, write-once outpu
      registry/schema. Any failure -> "unavailable: <reason>" at every N; the reserved population is NOT touched.
   2. PARITY: for every cell, the first artifact batch (intervention none, 9_300_011+s) is re-evaluated on this
      host and must be byte-equal to the cell's own rows; failure -> unavailable, reserved population untouched.
-  3. ORACLE INTERFACE: oracle N32 s0/s1 on the reserved N32 population, then the SAME checkpoints on the N16
-     population (transfer diagnostic); interface_ok per N (>= 0.50 both seeds).
-  4. Only for an N whose interface passed: learned / single_cell / random_fixed (none, bank_derange, read_offset)
-     and memory_off (none) on that N's reserved population 9_600_011+s; an N whose interface failed keeps its
-     other reserved corners unevaluated.
+  0. BINDING (prereg R5; codex 21617 R2), before ANY population access and again at the end: memsub tree + the
+     frozen dependency manifest (configs/m4_sgm_p2p5_campaign_analysis_manifest.json, its sha passed by the
+     launcher): every analysis file's bytes and the EXACT reached script closure; at the end also every bound
+     checkpoint's bytes. An end mismatch turns every reading "unavailable" (computed values kept, labelled).
+  3. ORACLE INTERFACES, phase 1 (codex 21617 R1): oracle N32 s0/s1 on the reserved N32 population, THEN the same
+     N32-trained checkpoints on the N16 population (transfer diagnostic) — both before any other reserved access.
+     Oracle is a memory arm: none / bank_derange / read_offset (prereg populations); interface uses 'none'.
+  4. Phase 2, only for an N whose interface passed: learned / single_cell / random_fixed (none, bank_derange,
+     read_offset) and memory_off (none) on that N's reserved population 9_600_011+s; an N whose interface failed
+     keeps its other reserved corners unevaluated; the other N is still read (independent per-N gating).
   5. Per N: control labels (all-control conjunction), memory use (learned, both seeds), read-address use,
      the ordered reading table (sgm-p2p5-decision-rules.py). Descriptive: accuracies, 16-head gate telemetry.
 """
@@ -40,6 +45,7 @@ REGISTRY, SCHEMA = ROOT / "configs/m4_sgm_p2p5_campaign_registry.json", ROOT / "
 EVAL = {"final_batches": 16, "final_batch_size": 16, "final_seed_base": 9_300_011, "dev_seed": 4242,
         "train_eval_seed_base": 555_001}
 READINGS_BASE = 9_600_011
+MANIFEST = ROOT / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
 
 
 def _load(name: str):
@@ -50,6 +56,7 @@ def _load(name: str):
 
 
 POBS, DR = _load("sgm-p2p5-pretrained-observer"), _load("sgm-p2p5-decision-rules")
+MAN = _load("sgm-p2p5-pk-campaign-analysis-dependency-manifest")
 P2D = POBS.RULES.P2D
 
 
@@ -110,53 +117,93 @@ def reserved_rows(cid: str, out: Path, pilot: dict, n: int, ivs: tuple, dest: Pa
                   "gate_telemetry_descriptive": POBS.gate_telemetry(backend, pcfg)}
 
 
+def analysis_closure() -> set[str]:
+    """This script + every script module it reaches (observer, decision rules and their dynamic dependencies)."""
+    return {Path(__file__).resolve().relative_to(ROOT.resolve()).as_posix()} | MAN.script_closure([POBS, DR, MAN], ROOT)
+
+
+def _rel(p: Path) -> str:
+    p = Path(p).resolve()
+    return p.relative_to(ROOT.resolve()).as_posix() if p.is_relative_to(ROOT.resolve()) else str(p)
+
+
 def current_identity() -> dict:
-    return {"memsub": source_tree_sha256(ROOT / "memsub"), "grid": sha(GRID), "registry": sha(REGISTRY),
-            "schema": sha(SCHEMA), "script": sha(Path(__file__))}
+    return {"memsub": source_tree_sha256(ROOT / "memsub"), "manifest": sha(MANIFEST)}
+
+
+def binding_problem(expected: dict, ckpts: dict | None = None) -> str | None:
+    """Identity == launcher's expected, frozen manifest verified (files + exact closure), checkpoints unchanged."""
+    identity = current_identity()
+    if set(expected) != set(identity) or any(identity[k] != expected[k] for k in identity):
+        return f"identity differs: {sorted(k for k in identity if identity[k] != expected.get(k))}"
+    manifest = json.loads(MANIFEST.read_text())
+    problem = MAN.manifest_problem(ROOT, manifest, identity["memsub"], closure=analysis_closure())
+    if problem:
+        return problem
+    unlisted = [str(p) for p in (GRID, REGISTRY, SCHEMA) if _rel(p) not in manifest["analysis"]]
+    if unlisted:                                             # the consumed inputs ARE the frozen ones
+        return f"consumed inputs not in the dependency manifest: {unlisted}"
+    changed = sorted(c for c, (path, want) in (ckpts or {}).items() if sha(path) != want)
+    return f"checkpoints changed during readings: {changed}" if changed else None
+
+
+def cell_id(pilots: dict, arm: str, n: int, seed: int) -> str:
+    return next(c for c, p in pilots.items() if (p["arm"], p["n_bindings"], p["seed"]) == (arm, n, seed))
+
+
+def read_n(n: int, res: dict, cells: dict, pilots: dict, out: Path) -> None:
+    """Phase 2 at one N whose interface passed: remaining arms, then the registered reading table."""
+    rows = {}
+    for arm in ("learned", "single_cell", "random_fixed", "memory_off"):
+        for s in (0, 1):
+            cid = cell_id(pilots, arm, n, s)
+            ivs = ("none",) if arm == "memory_off" else POBS.FINAL_IVS
+            rows[(arm, s)], res["corners"][cid] = reserved_rows(cid, cells[cid], pilots[cid], n, ivs, out)
+    per_control = {c: {str(s): P2D.paired(rows[("learned", s)], rows[(c, s)]) for s in (0, 1)} for c in DR.CONTROLS}
+    labels = DR.control_labels(per_control)                  # rules key seeds as str
+    mem = all(P2D.memory_use(rows[("learned", s)])["pass"] for s in (0, 1))
+    res.update(per_control=per_control, labels=labels, memory_use=mem,
+               read_address=DR.read_address_use({str(s): P2D.paired(rows[("learned", s)], rows[("learned", s)],
+                                                                    "none", "read_offset") for s in (0, 1)}),
+               reading=DR.screen_reading(n, None, True, labels, mem))
 
 
 def readings(root: Path, admitted: dict, expected: dict, out: Path) -> dict:
-    grid, registry, schema = (json.loads(p.read_text()) for p in (GRID, REGISTRY, SCHEMA))
-    pilots = expand_cells(grid)
-    identity = current_identity()
     out.mkdir(parents=True, exist_ok=False)                   # exactly once
-    report = {"identity": identity, "readings_seed_base": READINGS_BASE, "n": {}}
-    mismatch = [k for k in expected if identity.get(k) != expected[k]]
-    cells, problem = ({}, f"identity differs: {mismatch}") if mismatch else bind_cells(root, admitted, identity["memsub"],
-                                                                                       grid, registry, schema)
-    problem = problem or parity(cells, pilots)
+    report = {"identity": current_identity(), "expected": expected, "readings_seed_base": READINGS_BASE,
+              "environment": {"python": sys.version.split()[0], "torch": torch.__version__,
+                              "cuda": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None}, "n": {}}
+    problem, cells, ckpts = binding_problem(expected), {}, {}    # BEFORE any evidence or population access
+    if not problem:
+        grid, registry, schema = (json.loads(p.read_text()) for p in (GRID, REGISTRY, SCHEMA))
+        pilots = expand_cells(grid)
+        cells, problem = bind_cells(root, admitted, report["identity"]["memsub"], grid, registry, schema)
+        ckpts = {c: (o / "trained_parameters.safetensors", sha(o / "trained_parameters.safetensors")) for c, o in cells.items()}
+        problem = problem or parity(cells, pilots)
     if problem:                                               # reserved population untouched
-        report["n"] = {str(n): {"reading": DR.screen_reading(n, problem, None, None, None)} for n in (16, 32)}
+        report["n"] = {str(n): {"reading": DR.screen_reading(n, problem, None, None, None)} for n in (32, 16)}
         report["unavailable"] = problem
     else:
-        oracle = {s: f"oracle-n32-s{s}" for s in (0, 1)}
-        for n in (32, 16):                                    # oracle interface first (N16 = transfer diagnostic)
-            res = {"corners": {}}
-            acc = {}
-            for s, cid in oracle.items():
-                _r, info = reserved_rows(cid, cells[cid], pilots[cid], n, ("none",), out)
-                res["corners"][f"{cid}-on-n{n}"], acc[str(s)] = info, float(info["accuracy_none"])   # rules key seeds as str
+        for n in (32, 16):                                    # phase 1: BOTH oracle interfaces first
+            res, acc = {"corners": {}}, {}
+            for s in (0, 1):
+                cid = cell_id(pilots, "oracle", 32, s)        # N16 = transfer of the N32-trained checkpoints
+                _r, info = reserved_rows(cid, cells[cid], pilots[cid], n, POBS.FINAL_IVS, out)
+                res["corners"][f"{cid}-on-n{n}"], acc[str(s)] = info, float(info["accuracy_none"])
             res["interface"] = DR.interface_ok(acc)
+            report["n"][str(n)] = res
+        for n in (32, 16):                                    # phase 2: per-N gating, independent across N
+            res = report["n"][str(n)]
             if res["interface"]:
-                rows = {}
-                for arm in ("learned", "single_cell", "random_fixed", "memory_off"):
-                    for s in (0, 1):
-                        cid = next(c for c, p in pilots.items() if (p["arm"], p["n_bindings"], p["seed"]) == (arm, n, s))
-                        ivs = ("none",) if arm == "memory_off" else POBS.FINAL_IVS
-                        rows[(arm, s)], res["corners"][cid] = reserved_rows(cid, cells[cid], pilots[cid], n, ivs, out)
-                per_control = {c: {str(s): P2D.paired(rows[("learned", s)], rows[(c, s)]) for s in (0, 1)}
-                               for c in DR.CONTROLS}
-                labels = DR.control_labels(per_control)
-                mem = all(P2D.memory_use(rows[("learned", s)])["pass"] for s in (0, 1))
-                res.update(per_control=per_control, labels=labels, memory_use=mem,
-                           read_address=DR.read_address_use({str(s): P2D.paired(rows[("learned", s)], rows[("learned", s)],
-                                                                                "none", "read_offset") for s in (0, 1)}),
-                           reading=DR.screen_reading(n, None, True, labels, mem))
+                read_n(n, res, cells, pilots, out)
             else:
                 res["reading"] = DR.screen_reading(n, None, False, None, None)
-            report["n"][str(n)] = res
-    if current_identity() != identity:
-        raise SystemExit("sources changed during readings")
+    end = binding_problem(expected, ckpts)
+    report["end_binding"] = end or "verified"
+    if end:                                                   # prereg row 1: a bound input changed -> unavailable
+        for n, v in report["n"].items():
+            v["reading_before_end_binding_failure"] = v.get("reading")
+            v["reading"] = DR.screen_reading(int(n), end, None, None, None)
     (out / "readings.json").write_text(json.dumps(report, indent=2, default=str))
     return report
 
@@ -169,6 +216,8 @@ def main():
     torch.set_num_threads(4)
     rep = readings(a.evidence_root, json.loads(a.admitted.read_text()), json.loads(a.expected.read_text()), a.out)
     print(json.dumps({n: v["reading"] for n, v in rep["n"].items()}))
+    if rep["end_binding"] != "verified":
+        raise SystemExit(f"end binding failed: {rep['end_binding']}")
 
 
 if __name__ == "__main__":

@@ -65,6 +65,11 @@ def _bind(monkeypatch, base):
     monkeypatch.setattr(rd, "GRID", base / "grid.json")
     monkeypatch.setattr(rd, "REGISTRY", base / "registry.json")
     monkeypatch.setattr(rd, "SCHEMA", base / "schema.json")
+    # the tiny inputs are consumed instead of the frozen ones: bind THEM (absolute keys) in a test-local manifest
+    manifest = json.loads(rd.MANIFEST.read_text())
+    manifest["analysis"].update({str(base / f): rd.sha(base / f) for f in ("grid.json", "registry.json", "schema.json")})
+    (base / "manifest.json").write_text(json.dumps(manifest))
+    monkeypatch.setattr(rd, "MANIFEST", base / "manifest.json")
 
 
 def test_readings_run_exactly_once_and_read_every_n(campaign, monkeypatch, tmp_path):

@@ -22,7 +22,7 @@ import modal
 APP_NAME = "memsub-m4-sgm-p2p5-pk-campaign-control"
 REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
 CONTROL_GUARD = "m4-sgm-p2p5-pk-campaign-control-guard"
-PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
+PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json"
 PERIOD_S, ABANDON_S, SLACK_S, ENVIRONMENT = 120, 1800, 1800, "main"
 SPAWN_OFFSET_S, VALIDATION_SETUP_S, FALLBACK_S, REQUEST_TIMEOUT_S = 1800, 3600, 1800, 20.0   # codex 21600 horizon
 LOGIC, SHARED = "modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py", "modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"

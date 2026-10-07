@@ -14,10 +14,15 @@ Per slot (PK1: 2 cells, same arm/N, seeds 0+1), per-worker s/update = k / PRIMAR
   commits       = 67 (66 actual successful-start calls; conservative) x the max measured commit s
   startup       = 300 s
 ESTIMATE = sum of slot lives + readings at the hard-tuple rate.
+READINGS (v6, codex 21617 R6) itemised from the final reader: bind/validation of 18 cells, 18 parity loads + one
+           artifact batch each, 20 reserved populations (oracle N32 + N16 transfer and every memory arm on 3
+           interventions per prereg; memory_off 'none' only) each loaded once, 16 x 4 dev-batch gate telemetry,
+           start/end checkpoint re-hash, startup, + 10% unattributed per-row work (row text/hash/writes, rules).
 RESERVE  = PER-APP LIFECYCLE ENVELOPE: 9 slot apps (deadline = life x 1.4 + 3 restarts x (startup + reload + 51 P2
            updates + one complete final evaluation)) + 1 readings app (ONE admitted start: life x 1.4), each charged
            its whole lifetime + control period + stop latency at the 2x CPU/RAM basis; ONE control-plane reaper
-           schedule; image per app; $5 margin. The single-app line is illustrative only (no reaper line).
+           schedule (each tick billed timeout + startup at the 2x basis); image per app incl. the controller;
+           $5 margin. The single-app line is illustrative only (no reaper line).
 Assumptions are listed in the output; this is a priced estimate, not a price guarantee.
 """
 
@@ -41,11 +46,16 @@ WRITE_MB_S = 50.0            # atomic tmp + fsync + rename of a generation on th
 EXTRA_COMMITS_PER_CELL = 3   # inheritance ack, outputs-before-COMPLETE, COMPLETE publication
 EXTRA_COMMITS_PER_SLOT = 1   # final commit after the supervisor returns
 RELOAD_S = 30.0              # checkpoint + generation load on a resumed start (allowance)
-READ_LOAD_S = 30.0           # readings: trained-parameter load + validation per population (allowance)
+READ_LOAD_S = 30.0           # readings: checkpoint build/load per population AND per parity cell (allowance)
+BIND_S = 30.0                # readings: per-cell record walk + output hashing + row/metric validation (allowance)
+TICK_S, TICK_STARTUP_S = 110, 30   # controller tick: function timeout + container startup allowance
 N_APPS = 10                  # 9 slot apps + 1 readings app, each its own guard/deadline (+ one control app)
+N_IMAGES = N_APPS + 1        # v6: the controller image is charged too (one build per app, no cache assumed)
 CONTROL_SLACK_S = 1800       # v4: ONE control-plane reaper schedule
 SPAWN_OFFSET_S, VALIDATION_SETUP_S, CONTROL_FALLBACK_S = 1800, 3600, 1800   # v5 (codex 21600 #1/#3) horizon
-READ_BATCHES, READ_INTERVENTIONS, PARITY, IMAGE_USD, MARGIN_USD = 16, 3, 0.10, 0.168384, 5.0
+READ_BATCHES, READ_INTERVENTIONS, UNATTRIBUTED, IMAGE_USD, MARGIN_USD = 16, 3, 0.10, 0.168384, 5.0
+TELEMETRY_DEV_BATCHES = 4    # gate telemetry per memory-arm population (dev population 4 x 16)
+V5 = ROOT / "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
 
 
 def rate(basis: float) -> float:
@@ -101,15 +111,26 @@ def main():
                                 "dev_batch_s": dev, "artifact_batch_s": art})["cells"].append(cid)
     if len(slots) != 9 or any(len(v["cells"]) != 2 for v in slots.values()):
         raise SystemExit("slot pairing differs from PK1 (9 slots x 2 cells)")
-    # readings: one run, one container (oracle N32 + N16 transfer; memory_off 'none' only)
-    rd = 0.0
-    for cid, pilot in expand_cells(grid).items():
-        arm, n = pilot["arm"], pilot["n_bindings"]
-        for pn in ([32, 16] if arm == "oracle" else [n]):
-            art = max(e["artifact_eval_batch_s"] for ph in (1, 2) for e in cfg[(arm, 32 if arm == "oracle" else pn, ph)]["eval_and_checkpoint"])
-            rd += READ_BATCHES * (1 if arm == "memory_off" else READ_INTERVENTIONS) * art
-    pops = sum(2 if p["arm"] == "oracle" else 1 for p in expand_cells(grid).values())       # 20 population units
-    readings_s = rd * (1 + PARITY) + STARTUP_S + pops * READ_LOAD_S
+    # readings (v6 itemised, codex 21617 R6): one run, one container, the order of the final reader
+    def batch_s(arm, n, key):          # oracle N16 transfer runs the N32-trained checkpoint on the N16 population
+        return max(e[key] for ph in (1, 2) for e in cfg[(arm, 32 if arm == "oracle" else n, ph)]["eval_and_checkpoint"])
+    cells = expand_cells(grid)
+    pops = [(p["arm"], pn) for p in cells.values() for pn in ([32, 16] if p["arm"] == "oracle" else [p["n_bindings"]])]
+    ckpt_mb = max(e["checkpoint_bytes"] for c in t["configs"] for e in c["eval_and_checkpoint"]) / 1e6
+    rd_parts = {
+        "bind_validation_s": len(cells) * BIND_S,
+        "parity_s": sum(READ_LOAD_S + batch_s(p["arm"], p["n_bindings"], "artifact_eval_batch_s") for p in cells.values()),
+        "reserved_load_s": len(pops) * READ_LOAD_S,
+        "reserved_eval_s": sum(READ_BATCHES * (1 if arm == "memory_off" else READ_INTERVENTIONS)
+                               * batch_s(arm, n, "artifact_eval_batch_s") for arm, n in pops),
+        "gate_telemetry_s": sum(TELEMETRY_DEV_BATCHES * batch_s(arm, n, "dev_eval_batch_s")
+                                for arm, n in pops if arm != "memory_off"),
+        "checkpoint_rehash_s": 2 * len(cells) * ckpt_mb / WRITE_MB_S,
+        "startup_s": STARTUP_S}
+    rd_parts["unattributed_s"] = UNATTRIBUTED * sum(v for k, v in rd_parts.items() if k != "startup_s")
+    readings_s = sum(rd_parts.values())
+    counts = {"checkpoint_builds": len(cells) + len(pops), "parity_cells": len(cells), "reserved_populations": len(pops),
+              "telemetry_dev_batches": TELEMETRY_DEV_BATCHES * sum(arm != "memory_off" for arm, _n in pops)}
     est_s = sum(v["life_s"] for v in slots.values())
     res_s = sum(v["reserve_life_s"] for v in slots.values())
     longest = max(v["reserve_life_s"] for v in slots.values())
@@ -118,7 +139,8 @@ def main():
     # v5: the controller covers the COMPLETE sequential horizon + its finite fallback window
     control_life = (SPAWN_OFFSET_S + longest + VALIDATION_SETUP_S + readings_life + CONTROL_SLACK_S
                     + CONTROL_FALLBACK_S + tail)
-    reaper = control_life / REAPER_PERIOD_S * 110 * (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S)
+    reaper = (control_life / REAPER_PERIOD_S * (TICK_S + TICK_STARTUP_S)
+              * 2 * (0.125 * CPU_USD_CORE_S + 0.25 * MEM_USD_GIB_S))      # v6: 2x requested basis, startup charged
     import subprocess
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256
     out = {
@@ -131,21 +153,28 @@ def main():
                                       "audit": "codex 21585"},
                    "git_head": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
                                               cwd=ROOT).stdout.strip()},
-        "envelope_design": ("per-slot lifecycle envelope: 9 slot apps + 1 readings app; each app has max_containers=1, "
-                            "<= 4 admitted starts, its own guard Dict deadline = that slot's reserve life, and the proven "
-                            "in-app whole-app reaper; pre-admission crash loops, refused starts, startups and teardown of a "
-                            "slot are all inside its own app lifetime. Not yet implemented (campaign runner pending)."),
+        "supersedes": {"v5_sha256": sha(V5), "why": "codex 21617 R6: itemised readings workload of the final reader, "
+                       "controller image + 2x tick basis; v5 bytes preserved"},
+        "envelope_design": ("per-app lifecycle envelope: 9 slot apps (max_containers=1, <= 4 admitted starts each, "
+                            "one immutable guard deadline = that slot's reserve life) + 1 readings app (max_containers=1, "
+                            "ONE admitted start, retries 0, deadline = the readings reserve life); every app is stopped "
+                            "by its bound id at its own deadline by ONE control-plane reaper app (a single 120 s schedule) "
+                            "whose own armed deadline covers the whole sequential horizon + a finite fallback. "
+                            "Implemented: slot runner, readings runner, control-plane reaper (Gate-3 package)."),
         "slots": slots,
         "readings": {"life_s": round(readings_s, 1), "reserve_life_s": round(readings_life, 1), "admitted_starts": 1,
-                     "population_units": pops},
-        "control_plane": {"schedules": 1, "period_s": REAPER_PERIOD_S, "life_s": round(control_life, 1)},
+                     "population_units": len(pops), "items_s": {k: round(v, 1) for k, v in rd_parts.items()},
+                     "counts": counts},
+        "control_plane": {"schedules": 1, "period_s": REAPER_PERIOD_S, "life_s": round(control_life, 1),
+                          "tick_billed_s": TICK_S + TICK_STARTUP_S, "requested": {"cpu": 0.125, "memory_gib": 0.25},
+                          "billing_basis": "2x requested"},
         "estimate": {"slot_gpu_hours": est_s / 3600, "readings_gpu_hours": readings_s / 3600,
                      "usd": (est_s + readings_s) * rate(1.0), "wall_h_slots_parallel": max(v["life_s"] for v in slots.values()) / 3600,
                      "wall_h_end_to_end": (max(v["life_s"] for v in slots.values()) + readings_s) / 3600},
         "planning_reserve_per_app_envelope": {
             "slot_apps_usd": (res_s + 9 * tail) * rate(2.0),
             "readings_app_usd": (readings_life + tail) * rate(2.0),
-            "image_usd": IMAGE_USD * N_APPS, "reaper_usd": reaper, "margin_usd": MARGIN_USD},
+            "image_usd": IMAGE_USD * N_IMAGES, "reaper_usd": reaper, "margin_usd": MARGIN_USD},
         "single_app_lifecycle_for_comparison_usd": 9 * (longest + tail) * rate(2.0)
                                                    + (readings_s * FACTOR + tail) * rate(2.0) + IMAGE_USD + MARGIN_USD,
         "margin_covers": "billing rounding and unmodelled small I/O (log/telemetry writes); NOT restarts, commits, "
@@ -154,16 +183,21 @@ def main():
             "timings = audited proof T (one A100-80GB host, k = 2, 2 warmup + 4 measured updates per config); host variation not modelled",
             "per-worker s/update = k / PRIMARY fixed-work rate; dev/artifact batch = the max measured for that arm/N",
             f"generation write {WRITE_MB_S} MB/s incl. fsync (assumed); all {EXTRA_COMMITS_PER_CELL} extra commits per cell + 1 per slot and every generation commit serialised on the critical path at the max measured commit",
-            f"resumed start reload {RELOAD_S} s; readings parameter load + validation {READ_LOAD_S} s per population",
+            f"resumed start reload {RELOAD_S} s; readings checkpoint build/load {READ_LOAD_S} s per population and per parity cell; bind/validation {BIND_S} s per cell",
+            f"readings itemised from the final reader: {len(cells)} parity + {len(pops)} reserved checkpoint builds, {counts['telemetry_dev_batches']} telemetry dev batches, start/end checkpoint re-hash at {WRITE_MB_S} MB/s, + {UNATTRIBUTED:.0%} unattributed per-row work",
+            "oracle reserved populations (N32 and the N16 transfer) use 3 interventions (prereg: memory arms); the interface reads 'none'",
+            f"images: one {IMAGE_USD} USD build per app ({N_IMAGES} incl. the controller), no cross-app cache assumed",
+            f"controller: each 120 s tick billed {TICK_S} s timeout + {TICK_STARTUP_S} s startup at 2x its requested 0.125 CPU / 0.25 GiB; actual use above the request is billed by Modal and is not bounded here",
             "any comparison with the preserved single-L40S model is arithmetic across differently scoped models, not a measured matched-host saving",
             "readings app: ONE admitted start, retries 0, fails closed on crash re-entry (no restart allowance)",
             "one control-plane reaper schedule stops every app at its own absolute deadline (+ period + stop latency)",
             "at most 3 restarts per slot (4 admitted starts), each replaying <= 50 + 1 P2 updates and one full final evaluation",
-            "deadline factor 1.4 on every slot life; readings x 1.4 with a 10% parity allowance",
+            "deadline factor 1.4 on every slot life and on the itemised readings life",
             "CPU/RAM on the audited 2x basis for the reserve; hard tuples for the estimate; list prices modal.com 2026-10-06; nominal reaper period / stop latency",
             "9 slots run concurrently (A100-80GB availability / queueing not modelled); readings afterwards on one container",
             "preemption rate unknown: the reserve covers 3 restarts per slot, not more",
-            "not a price guarantee and not a platform cash ceiling"]}
+            "Modal timeouts exclude startup and allow some execution overrun; nominal stop latency",
+            "CONDITIONAL planning reserve under these assumptions: not a price guarantee, not a platform cash ceiling, not an unconditional worst case"]}
     out["planning_reserve_per_app_envelope"]["total_usd"] = sum(out["planning_reserve_per_app_envelope"].values())
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(out, indent=2))

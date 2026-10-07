@@ -25,7 +25,7 @@ import modal
 
 GRID_FILE = "configs/m4_sgm_p2p5_grid.json"
 REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "configs/m4_sgm_p2p5_campaign_output_schema.json"
-PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
+PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json"
 CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
 CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-guard"
 CONTROL_APP_NAME = "memsub-m4-sgm-p2p5-pk-campaign-control"
@@ -189,15 +189,14 @@ def app_state(app_id: str) -> str:
 
 
 def spawn() -> None:
-    tracked = ["memsub", __file__, GRID_FILE, REGISTRY_FILE, SCHEMA_FILE, PRICE_FILE]
+    cp = load_cp()
+    tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
     if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
                       check=True).stdout.strip():
         raise SystemExit("refusing to spawn from a dirty tree")
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
-    cp = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(cp)
+    problem = cp.launch_manifest_problem(Path.cwd())
+    if problem:
+        raise SystemExit(f"refusing to spawn: {problem}")
     now = time.time()
     candidate = now + slot_deadline_s()            # ONE immutable deadline for preflight/provenance/guard/register
     control = dict(modal.Dict.from_name(CONTROL_GUARD_DICT).items())          # READ-ONLY preflights first
@@ -234,44 +233,59 @@ def cell_report(cell_dir: Path, pilot: dict, admitted: list[int], memsub_sha: st
                 terminal: bool, validate=None) -> dict:
     """Authoritative state of one cell from the fetched evidence: the highest ADMITTED epoch with an acknowledged
     record, its canonical snapshot chain, and (COMPLETE) the shared per-cell output validation. A cell that is
-    not terminal when its slot is terminal / past deadline is reported LOST (never resumed, never relabelled)."""
+    not terminal when its slot is terminal / past deadline is reported LOST (never resumed, never relabelled).
+    Malformed epoch names / records / schema / I/O are contained per cell as INVALID with the cause (codex 21617 R5):
+    the co-tenant's report and the slot's shutdown evidence are never lost to one bad cell."""
     from memsub.sgm import packed_slot_epoch_state as es
     from memsub.sgm.packed_slot_cell_output_validation import validate_cell_outputs
     validate = validate or validate_cell_outputs
-    epochs = sorted(int(p.name.split("-")[1]) for p in cell_dir.glob("epoch-*")) if cell_dir.exists() else []
-    if any(m not in admitted for m in epochs):
-        return {"state": "INVALID", "problem": f"epoch dirs {epochs} not all admitted {admitted}"}
-    rec = next((r for m in reversed(epochs) if (r := es.read_record(cell_dir, m)) is not None), None)
-    if rec is None:
-        return {"state": "LOST" if terminal else "NOT_STARTED", "problem": "no acknowledged record"}
     try:
+        epochs = sorted(int(p.name.split("-")[1]) for p in cell_dir.glob("epoch-*")) if cell_dir.exists() else []
+        if any(m not in admitted for m in epochs):
+            return {"state": "INVALID", "problem": f"epoch dirs {epochs} not all admitted {admitted}"}
+        rec = next((r for m in reversed(epochs) if (r := es.read_record(cell_dir, m)) is not None), None)
+        if rec is None:
+            return {"state": "LOST" if terminal else "NOT_STARTED", "problem": "no acknowledged record"}
         walk = es.canonical_walk(rec, max_len=len(admitted))
-    except ValueError as e:
-        return {"state": "INVALID", "problem": str(e)}
-    out = {"state": rec["state"], "epoch": rec["epoch"], "epochs": [w["epoch"] for w in walk],
-           "reason": rec.get("reason")}
-    if rec["state"] == es.COMPLETE:
-        problem = validate(cell_dir.parents[1] / rec["outputs"]["attempt"] / "out", rec["outputs"]["files"], pilot,
-                           EVAL, memsub_sha, registry, schema)
-        out["validation"] = problem or "valid"
-    elif rec["state"] not in (es.FAILED, es.LOST) and terminal:
-        out.update(state="LOST", problem=f"not terminal ({rec['state']}) when the slot ended")
-    return out
+        out = {"state": rec["state"], "epoch": rec["epoch"], "epochs": [w["epoch"] for w in walk],
+               "reason": rec.get("reason")}
+        if rec["state"] == es.COMPLETE:
+            problem = validate(cell_dir.parents[1] / rec["outputs"]["attempt"] / "out", rec["outputs"]["files"], pilot,
+                               EVAL, memsub_sha, registry, schema)
+            out["validation"] = problem or "valid"
+        elif rec["state"] not in (es.FAILED, es.LOST) and terminal:
+            out.update(state="LOST", problem=f"not terminal ({rec['state']}) when the slot ended")
+        return out
+    except (ValueError, KeyError, TypeError, IndexError, AttributeError, OSError) as e:
+        return {"state": "INVALID", "problem": f"malformed cell evidence: {e!r:.300}"}
+
+
+def _write_status(root: Path, report: dict) -> None:
+    tmp = root / "collect_status.json.tmp"
+    tmp.write_text(json.dumps(report, indent=2, default=str))
+    os.replace(tmp, root / "collect_status.json")
 
 
 def collect(poller=None, stopper=None, verifier=None, fetch=None, export=None, now=None, validate=None) -> dict:
     """Idempotent. Stops + verifies THIS slot's app by its spawn-time bound id when the call is terminal, untracked
-    or past the deadline (+grace); then pulls the slot's volume evidence, exports its guard/admission Dicts and
-    reports every cell (COMPLETE validated / FAILED / LOST / INVALID). Without launch provenance it refuses:
-    there is no bound id, and a name-only stop is never allowed."""
+    or past the deadline (+grace); then pulls the slot's volume evidence into a FRESH per-collect directory, exports
+    its guard/admission Dicts and reports every cell (COMPLETE validated / FAILED / LOST / INVALID). Provenance is
+    validated BEFORE any poll or side effect (nonempty bound id, finite deadline, identity, this slot): otherwise it
+    refuses (codex 21617 R3). `stopped_verified` needs the independent verifier (stopped/unlisted, zero tasks, no
+    containers; R4). Shutdown evidence is durable before evidence fetch; a failed fetch or Dict export leaves every
+    cell UNAVAILABLE rather than validating older local files (R5)."""
+    cp = load_cp()
     root = Path(LOCAL_OUT) / GROUP / SLOT
     try:
         prov = json.loads((root / "launch_provenance.json").read_text())
     except (OSError, ValueError):
-        raise SystemExit(f"{SLOT}: no launch provenance: refusing (no bound app id; no name-only stop)")
+        prov = None
+    problem = cp.provenance_problem(prov, slot=SLOT)
+    if problem:
+        raise SystemExit(f"{SLOT}: {problem}: refusing")
     try:
         call = json.loads((root / "call.json").read_text())["call_id"]
-    except (OSError, ValueError, KeyError):
+    except (OSError, ValueError, KeyError, TypeError):
         call = None
     kind, payload = (poller(call) if call else ("untracked", None))
     past = (now if now is not None else time.time()) > prov["deadline_epoch"] + COLLECT_GRACE_S
@@ -279,30 +293,45 @@ def collect(poller=None, stopper=None, verifier=None, fetch=None, export=None, n
     if kind not in ("pending", "untracked") or past or call is None:
         sd = {"app_id": prov["deployed_app_id"]}
         try:
-            stopper(APP_NAME, prov["deployed_app_id"])
+            cp.strict_stop(stopper, APP_NAME, prov["deployed_app_id"])
         except Exception as e:
-            sd["stop_error"] = repr(e)[:200]
-        try:
-            sd["verified"] = bool(verifier(APP_NAME, prov["deployed_app_id"]))
-        except Exception as e:
-            sd["verified"], sd["verify_error"] = False, repr(e)[:200]
-        sd["status"] = "stopped_verified" if sd["verified"] else "shutdown_unresolved"
+            sd["stop_error"] = repr(e)[:300]
+        sd["verification"] = verifier(prov["deployed_app_id"])
+        sd["status"] = "stopped_verified" if sd["verification"].get("verified") is True else "shutdown_unresolved"
         report["final_shutdown"] = sd
-        report["evidence"] = fetch(root)
-        dicts = export(root)
-        report["dicts"] = {k: (len(v) if isinstance(v, dict) else v) for k, v in dicts.items()}
-        admitted = sorted(int(k.split("-")[1]) for k in (dicts.get("admission") or {}) if k.startswith("start-"))
-        reg = json.loads(Path(REGISTRY_FILE).read_text())["by_arm"]
-        sch = json.loads(Path(SCHEMA_FILE).read_text())["by_arm"]
-        ev = root / "volume-evidence" / SLOT / "cells"
-        report["cells"] = {c: cell_report(ev / c, p, admitted, prov["expected_identity"]["memsub"], reg[p["arm"]],
-                                          sch[p["arm"]], terminal=True, validate=validate)
-                           for c, p in slot_cells(json.loads(Path(GRID_FILE).read_text())).items()}
-    tmp = root / "collect_status.json.tmp"
-    tmp.write_text(json.dumps(report, indent=2, default=str))
-    os.replace(tmp, root / "collect_status.json")
+        _write_status(root, report)                          # durable BEFORE any evidence handling
+        attempt = 1 + len(list((root / "volume-evidence").glob("collect-*")))
+        dest = root / "volume-evidence" / f"collect-{attempt}"
+        report["evidence"] = fetch(dest)
+        try:
+            dicts = export(root)
+            report["dicts"] = {k: (len(v) if isinstance(v, dict) else v) for k, v in dicts.items()}
+        except Exception as e:
+            dicts, report["dicts_error"] = None, repr(e)[:300]
+        cells = slot_cells(json.loads(Path(GRID_FILE).read_text()))
+        if report["evidence"].get("returncode") != 0 or dicts is None:
+            why = "evidence fetch failed this collect" if report["evidence"].get("returncode") != 0 else "Dict export failed"
+            report["cells"] = {c: {"state": "UNAVAILABLE", "problem": why} for c in cells}
+        else:
+            admitted = sorted(int(k.split("-")[1]) for k in (dicts.get("admission") or {}) if k.startswith("start-"))
+            reg = json.loads(Path(REGISTRY_FILE).read_text())["by_arm"]
+            sch = json.loads(Path(SCHEMA_FILE).read_text())["by_arm"]
+            report["evidence_dir"] = str(dest)
+            report["cells"] = {c: cell_report(dest / SLOT / "cells" / c, p, admitted, prov["expected_identity"]["memsub"],
+                                              reg[p["arm"]], sch[p["arm"]], terminal=True, validate=validate)
+                               for c, p in cells.items()}
+    _write_status(root, report)
     print(json.dumps({"slot": SLOT, "poll": kind, "final": "final_shutdown" in report}))
     return report
+
+
+def load_cp():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
+    cp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cp)
+    return cp
 
 
 def _real_collect():
@@ -316,14 +345,11 @@ def _real_collect():
         return m
     tu = load("modal-m4-sgm-p2d-topup-nonpreemptible-spawn.py", "topup")
     shared = load("modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py", "shared")
+    cp = load_cp()
 
-    def verifier(name, app_id):
-        return app_state(app_id).lower() in ("stopped", "none")
-
-    def fetch(root):
-        dest = root / "volume-evidence"
-        dest.mkdir(exist_ok=True)
-        g = subprocess.run([sys.executable, "-m", "modal", "volume", "get", "--force", "memsub-artifacts",
+    def fetch(dest):
+        dest.mkdir(parents=True, exist_ok=False)
+        g = subprocess.run([sys.executable, "-m", "modal", "volume", "get", "memsub-artifacts",
                             f"m4-sgm/{GROUP}/{SLOT}", str(dest)], capture_output=True, text=True, timeout=1800)
         return {"returncode": g.returncode, "stderr_tail": g.stderr[-500:]}
 
@@ -334,8 +360,8 @@ def _real_collect():
             (root / f"{key}.json").write_text(json.dumps(d, indent=2, default=str))
             out[key] = d
         return out
-    return collect(poller=tu.poll, stopper=lambda n, i: shared.stop_bound_app(n, i, "main"), verifier=verifier,
-                   fetch=fetch, export=export)
+    return collect(poller=tu.poll, stopper=shared.stop_bound_app,
+                   verifier=lambda app_id: cp.verify_stopped(app_id, cp.modal_cli_json), fetch=fetch, export=export)
 
 
 if __name__ == "__main__":

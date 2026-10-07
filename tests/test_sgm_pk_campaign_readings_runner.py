@@ -66,13 +66,24 @@ def test_spawn_preconditions_require_every_slot_verified_and_valid(monkeypatch, 
 def test_collect_refuses_without_provenance_and_stops_by_bound_id(monkeypatch, tmp_path):
     r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr4")
     monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
-    with pytest.raises(SystemExit, match="name-only"):
+    with pytest.raises(SystemExit, match="refusing"):
         r.collect(poller=lambda c: ("pending", None), stopper=None, verifier=None, fetch=None)
     root = tmp_path / r.GROUP / "readings"
     root.mkdir(parents=True)
-    (root / "launch_provenance.json").write_text(json.dumps({"deadline_epoch": 100.0, "deployed_app_id": "ap-r"}))
+    (root / "launch_provenance.json").write_text(json.dumps({"deadline_epoch": 100.0, "deployed_app_id": "ap-r",
+                                                             "expected_identity": {"memsub": "m"}}))
     (root / "call.json").write_text(json.dumps({"call_id": "fc-r"}))
     stops = []
-    rep = r.collect(poller=lambda c: ("result", {"status": "read"}), stopper=lambda n, i: stops.append((n, i)),
-                    verifier=lambda n, i: True, fetch=lambda root: {"ok": 0}, now=50.0)
+
+    def fetch(dest):
+        dest.mkdir(parents=True)
+        return {"readings-v1": 0, "readings-v1.exit.json": 0}
+    rep = r.collect(poller=lambda c: ("result", {"status": "read"}), stopper=lambda n, i, env: stops.append((n, i)),
+                    verifier=lambda app_id: {"verified": True}, fetch=fetch, now=50.0)
     assert stops == [(r.APP_NAME, "ap-r")] and rep["final_shutdown"]["status"] == "stopped_verified"
+    assert rep["evidence_complete"] is True
+    rep2 = r.collect(poller=lambda c: ("result", {"status": "read"}), stopper=lambda n, i, env: None,
+                     verifier=lambda app_id: {"verified": False, "verify_error": "x"},
+                     fetch=lambda d: (d.mkdir(parents=True), {"readings-v1": 1})[1], now=50.0)
+    assert rep2["final_shutdown"]["status"] == "shutdown_unresolved" and rep2["evidence_complete"] is False
+    assert rep2["evidence_dir"].endswith("collect-2")

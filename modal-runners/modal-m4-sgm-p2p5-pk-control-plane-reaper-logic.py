@@ -123,3 +123,83 @@ def binding_problem(control: dict, price_sha: str, live_id, live_state, candidat
     if not finite_pos(candidate_deadline) or candidate_deadline > control["deadline_epoch"] - window_after_s:
         return "candidate deadline beyond the controller horizon"
     return None
+
+
+def provenance_problem(prov, slot: str | None = None) -> str | None:
+    """None iff launch provenance binds a NONEMPTY app id, a finite positive deadline, an expected identity and (slot
+    apps) this slot. Checked BEFORE any poll, stop or fetch (codex 21617 R3): no bound id -> no collector action."""
+    if not isinstance(prov, dict):
+        return "launch provenance is not an object"
+    if not (isinstance(prov.get("deployed_app_id"), str) and prov["deployed_app_id"].strip()):
+        return "launch provenance has no bound app id (a name-only stop is never allowed)"
+    if not finite_pos(prov.get("deadline_epoch")):
+        return "launch provenance deadline missing or non-finite"
+    if not (isinstance(prov.get("expected_identity"), dict) and isinstance(prov["expected_identity"].get("memsub"), str)):
+        return "launch provenance has no expected identity"
+    if slot is not None and prov.get("slot") != slot:
+        return f"launch provenance is for slot {prov.get('slot')!r}, not {slot!r}"
+    return None
+
+
+def strict_stop(stop_bound_app, name: str, app_id) -> None:
+    """Collector stop: a nonempty bound id is REQUIRED (the shared helper skips its live-id check for None and
+    would stop by name); the helper then refuses when the live app under `name` is not the bound one."""
+    if not (isinstance(app_id, str) and app_id.strip()):
+        raise ValueError("no bound app id: name-only stop refused")
+    stop_bound_app(name, app_id, "main")
+
+
+def shutdown_verdict(app_id: str, app_rows: list, container_rows: list) -> bool:
+    """stopped_verified iff every listed row of the bound app is stopped with zero tasks (or it is unlisted) AND no
+    container of it is listed (codex 21617 R4)."""
+    mine = [r for r in app_rows if r.get("app_id") == app_id]
+    app_ok = all(str(r.get("state", "")).lower() == "stopped" and str(r.get("tasks")) == "0" for r in mine)
+    return app_ok and not any(r.get("app_id") == app_id for r in container_rows)
+
+
+def verify_stopped(app_id: str, modal_json) -> dict:
+    """Independent verification by the bound id; the bound app's raw rows and any query error are retained.
+    `modal_json(args)` returns the parsed JSON of `modal <args> --json`; any failure leaves it unverified."""
+    out = {"app_id": app_id, "verified": False}
+    try:
+        apps, conts = modal_json(["app", "list"]), modal_json(["container", "list"])
+        if not (isinstance(apps, list) and isinstance(conts, list)):
+            raise ValueError("unexpected modal JSON shape")
+        out.update(app_rows=[r for r in apps if r.get("app_id") == app_id],
+                   container_rows=[r for r in conts if r.get("app_id") == app_id],
+                   verified=shutdown_verdict(app_id, apps, conts))
+    except Exception as e:
+        out["verify_error"] = repr(e)[:300]
+    return out
+
+
+def modal_cli_json(args: list) -> list:
+    import json
+    import subprocess
+    import sys
+    return json.loads(subprocess.run([sys.executable, "-m", "modal", *args, "--json"], check=True, capture_output=True,
+                                     text=True, timeout=60).stdout)
+
+
+MANIFEST_FILE = "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
+
+
+def launch_manifest_problem(root) -> str | None:
+    """Local spawn check: the clean tree equals the frozen dependency manifest in BOTH sections (analysis + launch)
+    and memsub (codex 21617 R2). Read-only."""
+    import importlib.util
+    import json
+    import sys
+    from pathlib import Path
+    root = Path(root)
+    spec = importlib.util.spec_from_file_location(
+        "pk_manifest", root / "scripts/sgm-p2p5-pk-campaign-analysis-dependency-manifest.py")
+    man = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(man)
+    sys.path.insert(0, str(root))
+    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+    try:
+        manifest = json.loads((root / MANIFEST_FILE).read_text())
+    except (OSError, ValueError) as e:
+        return f"dependency manifest unreadable: {e!r:.120}"
+    return man.manifest_problem(root, manifest, source_tree_sha256(root / "memsub"), sections=("analysis", "launch"))

@@ -5,7 +5,7 @@
 
 ONE GPU function (A100-80GB, max_containers=1, single_use_containers, retries=0) with ONE admitted start (atomic
 Dict claim): any deployed-crash re-entry finds the claim taken and returns BEFORE touching the reserved population.
-Absolute deadline written once at spawn (= the v5 readings reserve life), bound to the control plane, SIGKILL
+Absolute deadline written once at spawn (= the v6 readings reserve life), bound to the control plane, SIGKILL
 watchdog to it. Spawn requires every slot collected with a verified stop and every registered cell COMPLETE and
 valid; the readings script then re-binds every cell itself from the volume (fail closed) and writes once.
 """
@@ -25,9 +25,8 @@ GUARD_DICT, ADMIT_DICT = f"{APP_NAME}-guard", f"{APP_NAME}-admission"
 CONTROL_REGISTRY_DICT, CONTROL_GUARD_DICT = "m4-sgm-p2p5-pk-campaign-control-registry", "m4-sgm-p2p5-pk-campaign-control-guard"
 CONTROL_APP_NAME, CONTROL_SLACK_S = "memsub-m4-sgm-p2p5-pk-campaign-control", 1800
 SCRIPT = "scripts/sgm-p2p5-pk-campaign-readings.py"
-GRID_FILE = "configs/m4_sgm_p2p5_grid.json"
-REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "configs/m4_sgm_p2p5_campaign_output_schema.json"
-PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
+MANIFEST_FILE = "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
+PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json"
 GROUP, LOCAL_OUT = "p2p5-qwen3-0p6b-screen-v1", "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
 SLOTS = ("learned-n16", "learned-n32", "single_cell-n16", "single_cell-n32", "random_fixed-n16", "random_fixed-n32",
          "oracle-n32", "memory_off-n16", "memory_off-n32")
@@ -53,7 +52,10 @@ image = (modal.Image.debian_slim(python_version="3.12")
          .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "M4_SGM_QWEN3_0P6B_DIR": MODEL_DIR})
          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
          .add_local_dir("scripts", "/root/repo/scripts", ignore=["**/__pycache__/**", "**/*.pyc"])
-         .add_local_dir("configs", "/root/repo/configs"))
+         .add_local_dir("configs", "/root/repo/configs")
+         .add_local_file(f"{LOCAL_OUT}/prereg.md", f"/root/repo/{LOCAL_OUT}/prereg.md")
+         .add_local_file(f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md",
+                         f"/root/repo/{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"))
 artifacts = modal.Volume.from_name("memsub-artifacts")
 
 
@@ -94,9 +96,7 @@ def run_readings(expected: dict) -> dict:
     life = Watchdog(max(1.0, deadline - time.time()))
     try:
         from memsub.sgm.synthetic_pilot_run import source_tree_sha256
-        got = {"memsub": source_tree_sha256(Path("/root/repo/memsub")), "script": file_sha(f"/root/repo/{SCRIPT}"),
-               "grid": file_sha(f"/root/repo/{GRID_FILE}"), "registry": file_sha(f"/root/repo/{REGISTRY_FILE}"),
-               "schema": file_sha(f"/root/repo/{SCHEMA_FILE}")}
+        got = {"memsub": source_tree_sha256(Path("/root/repo/memsub")), "manifest": file_sha(f"/root/repo/{MANIFEST_FILE}")}
         if got != expected:
             return {"status": "identity_mismatch", "got": got}
         work = Path("/tmp/readings-inputs")
@@ -122,8 +122,7 @@ def run_readings(expected: dict) -> dict:
 def expected_identity() -> dict:
     sys.path.insert(0, str(Path.cwd()))
     from memsub.sgm.synthetic_pilot_run import source_tree_sha256
-    return {"memsub": source_tree_sha256(Path("memsub")), "script": file_sha(SCRIPT), "grid": file_sha(GRID_FILE),
-            "registry": file_sha(REGISTRY_FILE), "schema": file_sha(SCHEMA_FILE)}
+    return {"memsub": source_tree_sha256(Path("memsub")), "manifest": file_sha(MANIFEST_FILE)}   # the script re-verifies all
 
 
 def slots_ready(local_root: Path) -> str | None:
@@ -159,10 +158,14 @@ def app_state(app_id: str) -> str:
 
 
 def spawn() -> None:
-    tracked = ["memsub", __file__, SCRIPT, GRID_FILE, REGISTRY_FILE, SCHEMA_FILE, PRICE_FILE]
+    tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+               f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
     if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
                       check=True).stdout.strip():
         raise SystemExit("refusing to spawn from a dirty tree")
+    problem = load_cp().launch_manifest_problem(Path.cwd())
+    if problem:
+        raise SystemExit(f"refusing to spawn: {problem}")
     local = Path(LOCAL_OUT) / GROUP
     problem = slots_ready(local)
     if problem:
@@ -194,16 +197,22 @@ def spawn() -> None:
 
 
 def collect(poller=None, stopper=None, verifier=None, fetch=None, now=None) -> dict:
-    """Idempotent: stop + verify the readings app by its bound id once the call is terminal / untracked / past its
-    deadline, then pull the write-once readings output. Refuses without provenance (no name-only stop)."""
+    """Idempotent: once the call is terminal / untracked / past its deadline, stop + independently verify the
+    readings app by its bound id, then pull the write-once readings output into a fresh per-collect directory.
+    Provenance is validated before any poll or side effect (codex 21617 R3); `stopped_verified` needs stopped/
+    unlisted + zero tasks + no containers (R4); shutdown evidence is durable before the fetch (R5)."""
+    cp = load_cp()
     root = Path(LOCAL_OUT) / GROUP / "readings"
     try:
         prov = json.loads((root / "launch_provenance.json").read_text())
     except (OSError, ValueError):
-        raise SystemExit("readings: no launch provenance: refusing (no bound app id; no name-only stop)")
+        prov = None
+    problem = cp.provenance_problem(prov)
+    if problem:
+        raise SystemExit(f"readings: {problem}: refusing")
     try:
         call = json.loads((root / "call.json").read_text())["call_id"]
-    except (OSError, ValueError, KeyError):
+    except (OSError, ValueError, KeyError, TypeError):
         call = None
     kind, payload = (poller(call) if call else ("untracked", None))
     past = (now if now is not None else time.time()) > prov["deadline_epoch"] + 300
@@ -211,15 +220,17 @@ def collect(poller=None, stopper=None, verifier=None, fetch=None, now=None) -> d
     if kind not in ("pending", "untracked") or past or call is None:
         sd = {"app_id": prov["deployed_app_id"]}
         try:
-            stopper(APP_NAME, prov["deployed_app_id"])
+            cp.strict_stop(stopper, APP_NAME, prov["deployed_app_id"])
         except Exception as e:
-            sd["stop_error"] = repr(e)[:200]
-        try:
-            sd["verified"] = bool(verifier(APP_NAME, prov["deployed_app_id"]))
-        except Exception as e:
-            sd["verified"], sd["verify_error"] = False, repr(e)[:200]
-        sd["status"] = "stopped_verified" if sd["verified"] else "shutdown_unresolved"
-        report["final_shutdown"], report["evidence"] = sd, fetch(root)
+            sd["stop_error"] = repr(e)[:300]
+        sd["verification"] = verifier(prov["deployed_app_id"])
+        sd["status"] = "stopped_verified" if sd["verification"].get("verified") is True else "shutdown_unresolved"
+        report["final_shutdown"] = sd
+        (root / "collect_status.json").write_text(json.dumps(report, indent=2, default=str))   # durable first
+        dest = root / "volume-evidence" / f"collect-{1 + len(list((root / 'volume-evidence').glob('collect-*')))}"
+        report["evidence"] = fetch(dest)
+        report["evidence_complete"] = bool(report["evidence"]) and all(rc == 0 for rc in report["evidence"].values())
+        report["evidence_dir"] = str(dest)
     (root / "collect_status.json").write_text(json.dumps(report, indent=2, default=str))
     return report
 
@@ -232,18 +243,18 @@ def _real_collect():
     spec2 = importlib.util.spec_from_file_location("shared", Path(__file__).with_name("modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"))
     shared = importlib.util.module_from_spec(spec2)
     spec2.loader.exec_module(shared)
+    cp = load_cp()
 
-    def fetch(root):
-        dest = root / "volume-evidence"
-        dest.mkdir(exist_ok=True)
+    def fetch(dest):
+        dest.mkdir(parents=True, exist_ok=False)
         out = {}
         for path in (f"m4-sgm/{GROUP}/readings-v1", f"m4-sgm/{GROUP}/readings-v1.exit.json"):
-            g = subprocess.run([sys.executable, "-m", "modal", "volume", "get", "--force", "memsub-artifacts", path,
-                                str(dest)], capture_output=True, text=True, timeout=1800)
+            g = subprocess.run([sys.executable, "-m", "modal", "volume", "get", "memsub-artifacts", path, str(dest)],
+                               capture_output=True, text=True, timeout=1800)
             out[path] = g.returncode
         return out
-    return collect(poller=tu.poll, stopper=lambda n, i: shared.stop_bound_app(n, i, "main"),
-                   verifier=lambda n, i: app_state(i).lower() in ("stopped", "none"), fetch=fetch)
+    return collect(poller=tu.poll, stopper=shared.stop_bound_app,
+                   verifier=lambda app_id: cp.verify_stopped(app_id, cp.modal_cli_json), fetch=fetch)
 
 
 if __name__ == "__main__":
