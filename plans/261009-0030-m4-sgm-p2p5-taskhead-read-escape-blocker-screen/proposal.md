@@ -1,48 +1,73 @@
-# P2.5 taskhead read-escape blocker screen (Stage A), proposal v0.1 (EXPLORATORY)
+# P2.5 taskhead read-escape blocker screen (Stage A), proposal v0.2 (EXPLORATORY)
 
-User "Ok" (#gravity 21971) to claude's offer (21970). This proposal needs codex review. Execution also needs the user's choice of venue (below), and a cap if that venue is paid.
+- v0.1 41ffbd2 was reviewed by codex in 21975 (`plans/reports/codex-261009-p2p5-pk-21973-stage-a-proposal-review/`). v0.2 applies all six points.
+- User 21977: "Check fix then modal run". That is Modal venue (a) at the $4 cap proposed in 21973.
+- Launch still requires codex re-review of the concrete wrapper, index and argv below.
 
 ## Why
-Diagnosis fa0e44d established, descriptively: taskhead reads overlapped the writes at the reconstructed init, and **by update 100** they had separated from the writes by about 10 cells (≥.97 of read weight on absent cells). The separation persists at 1500. Whether H1 (escaping noisy reads) or H2 (step size with similar q vectors) drives it is untested.
+Diagnosis fa0e44d (descriptive): taskhead reads overlapped the writes at the reconstructed init. **By update 100** they had separated by about 10 cells, with pooled absent weight 99.3% (s0) and 99.1% (s1); the separation persists at 1500. Not every read became absent. H1 and H2 are untested, and neither larger models nor more training was tested as a remedy.
 
-## Question (Stage A)
+## Question
 Does an intervention keep taskhead reads on the memory through the first 100 updates, where the unchanged recipe loses them?
 
-This is a **necessary, not sufficient** condition for learning. The working toy (P2C) also stays near ln 64 and at chance dev accuracy throughout phase 1 (filler 0, updates <1000); it learns only in phase 2. Loss and accuracy are therefore **not** pass criteria here.
+This is an operational routing-retention screen. It is **not** a necessary or sufficient learning condition. The working toy (P2C) also stays near ln 64 and chance dev accuracy through phase 1, so loss and accuracy are descriptive only.
 
 ## Arms
-All arms use the probe recipe: frozen Qwen3-0.6B-Base, learned addresses, taskhead readout, N32, curriculum (phase 1 throughout), seed 0, 100 updates.
+All arms use the probe recipe, bound by the sha256 of the probe s0 run_manifest (copy in `inputs/`):
+- frozen Qwen3-0.6B-Base; learned addresses; taskhead; N32; batch 16;
+- curriculum ((0,0),(1000,40)), so all 100 updates are phase 1;
+- seed 0, so the init and train stream are the probe's;
+- FP32 with TF32 off (pinned builder).
 
-| arm | change | tests |
+| arm | change | label |
 |---|---|---|
-| A0 baseline | none | must reproduce the escape in this execution setting, or Stage A is uninformative |
-| A1 low lr | lr 3e-3 → 3e-4, all trainable parameters (existing `lr` field) | step size (H2-type) |
-| A2 aux address | `aux_address_lambda` 0.1 (existing P2D knob; AddressMLP-only, detached q/k) | whether held reads let content alignment begin. Supervised by binding positions, so it is a diagnostic, not a deployable fix |
+| A0 | none | within-setting gate. Runs FIRST. If it is INVALID or not `escaped` at 100, stop before A1/A2 and report the non-replication |
+| A1 | lr 3e-3 → 3e-4 for ALL trainable parameters | global-rate intervention. Not an isolated address-lr test and not a causal H2 test |
+| A2 | `aux_address_lambda` 0.1 | PRIVILEGED training correspondence supervision (binding positions; AddressMLP-only via detached q/k). A constant address map gives zero aux loss (codex verified), so a kept A2 does not establish useful discrimination or an unsupervised remedy. Report collisions, effective cells and geometry. The logged loss is task+aux combined. The manifest carries explicit supervision metadata |
 
-A0–A2 use only existing knobs, so memsub is unchanged. Feature centering/whitening (another H2 lever) needs new code and is deferred to a later round. If codex prefers, it can replace A1.
+No arm replacements or expansion. Max 3 × 100 = 300 updates.
 
-## Readouts (pre-specified, descriptive)
-- **Dev evals.** Updates 0/25/50/75/100, on the same dev population as the diagnosis: heldout split, seed 4242, filler 40.
-- **Primary:** query absent-read weight at update 100.
-  - **escaped:** ≥ 0.9
-  - **kept:** ≤ 0.2 (reference points: init ≈ .05; the toy stays at .03–.11 through update 500)
-  - **partial:** between the two
-- **Geometry.** The cleared diagnosis script runs on each arm's update-100 parameters, giving offsets, alignment, q cosine and cos(q, bound k). This needs a new index entry kind for the Stage-A outputs and a re-review.
-- **Descriptive only:** train loss, address-MLP gradient norms (logged every 10 updates), dev accuracy.
+## Readouts (frozen)
+- **Dev evals** at updates 0/25/50/75/100 via `train()`'s `evaluate_fn`, dev-only: heldout split, seed 4242, 4×16 episodes × 4 queries, eval filler 40. There are no run_pilot final, intervention or train-split evaluations.
+- **Endpoint:** pooled mean query absent-read weight over all layers and heads (`query_empty_read_weight`).
+  - **escaped:** ≥ .9
+  - **kept:** ≤ .2
+  - **partial:** between
+  - These are operational bands, not learning or capability conditions.
+- **INVALID:** a missing, duplicate or non-finite endpoint at any sampled step.
+- **"kept at 100" ≠ "kept through 100".** "Kept through 100" requires ≤ .2 at every sampled point.
+- **Geometry after training (local, $0).** The cleared diagnosis script runs on a NEW three-entry bound index, built from the fetched outputs (kind geometry, final = step 100). It reports per-head absent weight, exact all-absent fractions, offsets, alignment, q cosines, collisions and effective cells. The index builder and argv go to codex before that local run.
+- **Descriptive:** train loss (task+aux for A2), address-MLP gradient norms every 10 updates, dev accuracy.
+
+## Execution (Modal; concrete)
+- **Script:** `scripts/sgm-p2p5-taskhead-read-escape-stage-a-train.py` runs ONE arm and writes run_manifest.json, routing_telemetry.jsonl, trained_parameters.safetensors and stage_a_result.json. It reuses `train`, `evaluate` and `save_trained_parameters` unchanged. memsub is unchanged.
+- **Runner:** `modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py`.
+  - ONE ephemeral `modal run`.
+  - **Hardware:** L40S, CPU (4,4), RAM (32,32) GiB hard tuples; retries 0; max_containers 1. The image is the pinned stack copied from the dev-GPU runner.
+  - **Per-arm whole-worker deadline:** Modal function timeout 1560 s; child subprocess timeout 1500 s. Partial telemetry is flushed and returned.
+  - **Restart accounting:** the first statement is an atomic `Dict.put(arm, …, skip_if_exists=True)` on `m4-sgm-p2p5-stage-a-read-escape-starts-v1`. A second start of an arm refuses before any model work.
+  - **Sequence:** the local entrypoint runs A0 → gate → A1 → A2. Each arm's tar is extracted before the next. The first error, refusal, timeout or INVALID stops the sequence. There are no retries or fallback.
+- **Ledger** (all-in upper bound, `ledger()`): about $3.72 ≤ the $4 cap.
+  - Rate: $0.00066544/s = L40S $0.000542 + 4 × $0.0000131 + 32 × $0.00000222.
+  - Client lifetime 5100 s ($3.394), worst-case image build ($0.084), 3 × 120 s teardown ($0.240).
+  - **Expected about $2.5:** roughly 19 min per arm, extrapolated from the 9.44 s/update L40S profile (residual head) and the probe's ~10 s/update on A100. This is not taskhead or A2 proof.
+- **Launch.** Run ONCE, detached with setsid. The console and exit status are recorded beside the output, outside the out dir:
+  `timeout --signal=TERM --kill-after=30s 5070 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py --out plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1`
+- **Afterwards:** app-filtered billing; geometry index and local diagnosis; result post to codex.
+
+## Evidence (CPU, $0)
+- `focused-tests.txt`: 15 passed, EXIT 0. Covers:
+  - bands and INVALID cases;
+  - the probe-manifest binding and arm configs; batch 2 is refused;
+  - tiny end-to-end A0/A1/A2, with A2's aux loss finite and logged;
+  - the runner gate, including A0 non-escape stopping;
+  - the second-start refusal before any child;
+  - ledger ≤ $4.
+- `mutation-checks.json`: 6/6 private-copy mutants caught, EXIT 0.
 
 ## Decision use
-- If an arm is **kept** while A0 is **escaped**, propose Stage B: that arm runs the full 1500 updates, 2 seeds. Stage B needs its own proposal, cap and user go.
-- If no arm is kept, or A0 does not escape, report that and stop. The write-up option stays open.
-
-## Execution venue: USER CHOICE
-1. **Modal, exact recipe (recommended).**
-   - L40S or A100, batch 16. Profiled phase-1 cost is about 9.4 s per update, so roughly 20 minutes per arm including evals and load.
-   - Estimate about $2–3; proposed cap $4.
-   - Ephemeral `modal run` under an outer timeout, using the dev-runner pattern.
-2. **Local, free.**
-   - RTX 3060 at batch 2. That changes the recipe's batch, so the gradient-noise dynamics differ.
-   - About 16–25 s per update, so roughly 3 hours for 3 arms.
-   - A local training run crashed the WSL host on 10-06, after which the user moved testing to Modal (21476).
+- If an arm is **kept** while A0 is **escaped**, propose Stage B (that arm, 1500 updates, 2 seeds). Stage B needs its own proposal, cap and user go.
+- Otherwise, report and stop. The write-up stays open.
 
 ## Not in scope
 No 4B, no reserved seeds, no change to registered readings, and no claim beyond the descriptive Stage-A readouts.
