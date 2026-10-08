@@ -1,4 +1,6 @@
-# P2.5 taskhead dead-start address diagnosis: run-v1 report (DESCRIPTIVE)
+# P2.5 taskhead dead-start address diagnosis: run-v1 report (DESCRIPTIVE), r2
+
+r2 applies codex terminal review 21964: timing qualified to 'by step 100', absorbing not established, head-bias-only logits, L27 alpha+out_proj None, exact all-absent rates. Run artifacts are unchanged.
 
 User go #gravity 21931; scope 21932; codex review 21934/21939; r2 167f3c3 cleared by codex 21947.
 $0, local RTX 3060 Laptop. Dev population only: heldout split, seed 4242, 4×16 episodes, filler 40. No training, no optimizer step, no Modal, no reserved seeds.
@@ -29,30 +31,32 @@ $0, local RTX 3060 Laptop. Dev population only: heldout split, seed 4242, 4×16 
 M4, dev-gradient reach at init (first 2 dev episodes, no optimizer step):
 - Qwen s0: loss 4.43. address_mlp grad 0.05/0.26/0.59/1.84 (L6/13/20/27). q/k/v grads 0.2–9.3. Head grad 7.7.
 - Toy s0: loss 4.23. address_mlp grad 0.33/0.49. Head grad 0.53.
-- Every Qwen group got a gradient except L27 out_proj, which is None by design.
+- Every Qwen group got a numeric gradient except L27 alpha and L27 out_proj, which are both None, as expected for the taskhead arm.
 
 From the logged training telemetry, which is not a measurement of this run (training batches, phase-1 filler 0):
 - The address-MLP grad norm falls from 2.6e-2…5.6e-1 at step 0 to ≤7e-3 (s0) and ≤4e-5 (s1) by step 10, then to about 0. The L20 group is exactly 0.0 from step 40 (s0) or from step 20 for L6/L13 (s1).
-- Loss falls from 4.23/4.30 to 4.16 ≈ ln 64 within those 10 updates, and stays there.
+- Loss falls from 4.23/4.30 to about 4.16, near ln 64, within those 10 updates and stays near it.
+- Some address gradients remain or recur through step 100 (e.g. s0 L13 3.3e-3 at step 100). These rows suggest early deterioration; they do not establish when each lookup moved.
 
 ## Findings (descriptive)
 1. **Not a dead start at initialization.**
    - At init, Qwen reads land on allocated cells (absent weight ≤.13; essentially no all-absent reads). Spatial overlap with the bound write is similar to the toy at init (within 1 cell .16–.34 vs .17–.30).
    - At init, the dev task loss gives a numeric gradient to every Qwen adapter group, including the address MLP. Those norms are as large as or larger than the toy's.
 2. **The reads left the memory early in training.**
-   - By step 100 (both seeds, all 4 layers): read centroids sit about 10 cells from the value-write centroids; ≥.97 of the read weight is on absent cells; spatial overlap is 0.
+   - **Established BY step 100** (both seeds, all 4 layers): read centroids sit about 10 cells from the value-write centroids. Per layer, ≥.97 of the read weight is on absent cells (s1 L20 is .9655). Head-pooled, s0 goes 4.67% → 99.28% → 100% and s1 4.17% → 99.14% → 99.14% (init/100/final, codex 21964).
+   - Exactly all-absent reads at step 100 are 96.6% (s0) and 93.3% (s1). Within-one-cell alignment is exactly 0. Spatial coupling is ≈0, with a tiny remainder (s0 L13 max 9.1e-5).
    - The final state equals or exceeds the step-100 state.
-   - The logged training rows put the collapse within the first ~10 updates. Loss reached ln 64 (uniform logits) at the same time, and the address gradient vanished.
-   - An all-absent read is exactly 0, so from then on that read passes no gradient to its address or to the writes.
+   - The logged training rows (a different population) SUGGEST deterioration within the first ~10 updates: loss near ln 64 and address gradients falling by orders of magnitude. They do not establish that every lookup had moved by then.
+   - An all-absent read is exactly 0, so that read has zero LOCAL read-path gradient to its address and to the writes. The full training state is not shown to be absorbing: other reads and layers, shared parameters, and AdamW momentum and decay can still move it. s1 keeps some occupied reads.
 3. **q and k collapsed in direction.** The pairwise cosine of query q vectors rose from .53–.72 at init to .92–.96, and value-write k vectors moved the same way. cos(q, bound k) went from ≈0 to −.4…−.8 (anti-aligned).
    - In the toy, q/k stay diverse (cos ≈.01 at the aligned layer), and cos(q, bound k) rises to .90 where the reads align.
 4. **The P2.5 residual-head learned run shows the same direction, less extreme.** Reads are .3–.73 absent, offsets 3–11 cells, q cos .96–.996.
 
 ## Hypotheses (NOT tested; any mechanism claim needs a registered test)
 - **H1, escape from noisy reads.**
-  - At init the read features carry no aligned content (cos(q, bound k) ≈ 0), so the taskhead's logits are noise and the loss is above ln 64.
-  - Moving the reads onto absent cells zeroes the features. The logits become uniform and the loss drops quickly to ln 64.
-  - The fully-absent state then has zero read gradient, so it cannot be left: an absorbing trap.
+  - At init the read features may carry little usable content: cos(q, bound k) ≈ 0, which does not establish absence of informative content. The loss is above ln 64.
+  - Moving the reads onto absent cells zeroes those features. The logits become head-bias-only, not necessarily uniform, and the loss can drop toward ln 64.
+  - The all-absent reads then have zero local read-path gradient, which makes leaving hard. Whether the state is absorbing is not shown.
 - **H2, step size versus anisotropic features.**
   - Qwen q vectors already share most of their direction at init (cos .5–.7; toy .01–.04). An address-MLP update therefore moves nearly all reads together.
   - Under AdamW's normalized steps (lr 3e-3), a few such block moves can carry every read off the written region before content alignment can form.
