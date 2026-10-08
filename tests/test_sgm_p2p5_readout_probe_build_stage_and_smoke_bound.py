@@ -162,6 +162,8 @@ def test_outer_bound_check_accepts_only_the_exact_timeout_parent():
         assert out != "None" and ("launch ONLY" in out or "process group" in out), (bad, out)
     left = [sys.executable, "-I", "-c", "import os; os.setpgid(0, 0); " + CHECK, str(SMOKE)]   # exact parent, own group
     assert "process group" in _run(["timeout", "--signal=KILL", "3600", *left]).stdout
+    wrapped = ["timeout", "--signal=KILL", "3600", "sh", "-c", 'exec "$0" "$@"', *py]    # right prefix, other command
+    assert "launch ONLY" in _run(wrapped).stdout
 
 
 def test_smoke_refuses_without_the_bound_before_creating_its_output(tmp_path):
