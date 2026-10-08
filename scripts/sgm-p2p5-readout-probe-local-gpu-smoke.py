@@ -8,30 +8,48 @@ with the frozen probe registry and schema.
   probe cells and their populations are never used.
 - Batch 2: the local RTX 3060 Laptop has 6 GB, and the batch-16 N32 profile ran out of memory. The smoke checks the
   output contract on the real Qwen graph, not timing.
-- Bounds: <= 20 updates. A SIGKILL Watchdog covering the whole 3,600 s (load, evaluation, cleanup) is armed BEFORE the
-  first model load. Run it under an outer `timeout` too.
+- Bounds (codex 21783/21786): exactly 20 updates.
+  - OUTER, hard: the ONLY launch form is the command below. GNU timeout (not --foreground) puts itself and this
+    process in a NEW process group and SIGKILLs the WHOLE group at 3,600 s from launch: interpreter, imports,
+    workers (the supervisor spawns them without a new session; they also carry PR_SET_PDEATHSIG) and cleanup.
+  - Before any import, output directory or model load, the script checks that its parent is exactly that timeout with
+    this exact argv and that it shares the timeout's process group. It refuses otherwise.
+  - INNER: a SIGKILL Watchdog of 3,540 s, armed before any heavy import or model load. It fires BEFORE the outer
+    bound, so its out-of-group sleeper never outlives the group.
 - Partial evidence is kept. There is NO automatic retry, and an OOM or error is reported as-is.
 
-    timeout --kill-after=30 3660 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>
+    timeout --signal=KILL 3600 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>
 """
 
 import argparse
 import importlib.util
 import json
+import os
 import sys
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-from memsub.sgm.p2d_launch_guard import Watchdog  # noqa: E402
-from memsub.sgm.synthetic_pilot_run import source_tree_sha256  # noqa: E402
-
-WALL_S, CELL = 3600, "smoke-taskhead-learned-n32-s7"
+OUTER_BOUND = ("timeout", "--signal=KILL", "3600")   # the ONE launch form; its group KILL covers the whole tree
+INNER_S, CELL = 3540, "smoke-taskhead-learned-n32-s7"
 SMOKE_EVAL = {"final_batches": 1, "final_batch_size": 4, "final_seed_base": 777_100, "dev_seed": 777_001,
               "train_eval_seed_base": 777_200}
 SMOKE_OVERRIDE = {"seed": 7, "batch": 2, "steps": 20, "eval_every": 10, "eval_batches": 1,
                   "filler_len_schedule": [[0, 0], [10, 40]]}
+
+
+def outer_bound_problem() -> str | None:
+    """None iff the parent is `timeout --signal=KILL 3600 <this exact argv>` and this process is in its group."""
+    try:
+        parent = [x.decode() for x in Path(f"/proc/{os.getppid()}/cmdline").read_bytes().split(b"\0")[:-1]]
+    except OSError as e:
+        return f"parent command line unreadable: {e!r}"
+    if (not parent or Path(parent[0]).name != OUTER_BOUND[0] or tuple(parent[1:3]) != OUTER_BOUND[1:]
+            or parent[3:] != list(sys.orig_argv)):
+        return f"launch ONLY as `{' '.join(OUTER_BOUND)} <python> <this script> --out <new dir>`; parent argv {parent}"
+    if os.getpgid(0) != os.getppid():
+        return "not in the outer timeout's process group"
+    return None
 
 
 def load(rel: str, name: str):
@@ -58,13 +76,19 @@ def observed_nulls(out: Path) -> dict:
 
 
 def main():
+    problem = outer_bound_problem()                             # FIRST: before any import, output dir or model load
+    if problem:
+        raise SystemExit(f"refusing the smoke: {problem}")
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     a.out.mkdir(parents=True, exist_ok=False)                  # own namespace; never reused
     t0 = time.time()
-    wd = Watchdog(WALL_S)                                       # BEFORE any model load
+    sys.path.insert(0, str(ROOT))
+    from memsub.sgm.p2d_launch_guard import Watchdog           # stdlib-only module
+    wd = Watchdog(INNER_S)                                      # BEFORE torch and any model load
     try:
+        from memsub.sgm.synthetic_pilot_run import source_tree_sha256
         L = load("modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py", "slot_logic")
         PV = load(L.VALIDATOR_FILE, "probe_validation")
         pilot = smoke_pilot(L)

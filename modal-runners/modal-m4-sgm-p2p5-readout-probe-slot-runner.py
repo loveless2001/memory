@@ -44,15 +44,18 @@ def _build_environment():
 
 
 app = modal.App(L.APP_NAME)
+# The run_function builder imports THIS file (its SDK-declared source), which loads the sibling slot logic at import:
+# bake the slot logic into a COPY layer BEFORE the builder (codex 21782). The GPU image inherits that layer, so it
+# carries no second slot-logic mount. Tested against the SDK's effective build-stage files.
 image = (modal.Image.debian_slim(python_version="3.12")
          .pip_install("huggingface_hub==0.36.2")
+         .add_local_file(L.SLOT_LOGIC_FILE, f"/root/{Path(L.SLOT_LOGIC_FILE).name}", copy=True)
          .run_function(_build_environment, timeout=1200, cpu=4.0, memory=8 * 1024)
          .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "M4_SGM_QWEN3_0P6B_DIR": L.MODEL_DIR})
          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
          .add_local_dir("configs", "/root/repo/configs")
          .add_local_file(L.LEDGER_FILE, f"/root/repo/{L.LEDGER_FILE}")
          .add_local_file(L.VALIDATOR_FILE, f"/root/repo/{L.VALIDATOR_FILE}")
-         .add_local_file(L.SLOT_LOGIC_FILE, f"/root/{Path(L.SLOT_LOGIC_FILE).name}")
          .add_local_file(L.LIFETIME_LOGIC_FILE, f"/root/{Path(L.LIFETIME_LOGIC_FILE).name}"))
 # the scheduled reaper needs ONLY the shared lifetime logic + the slot logic it is loaded with (no GPU stack)
 reaper_image = (modal.Image.debian_slim(python_version="3.12")

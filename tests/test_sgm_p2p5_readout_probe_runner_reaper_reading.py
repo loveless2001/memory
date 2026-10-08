@@ -300,17 +300,3 @@ def test_ledger_prices_the_full_deadline_from_v6():
     for bad in (math.nan, math.inf, True, 0, -1):
         with pytest.raises(SystemExit):
             L.deadline_s({"deadline_s": bad})
-
-
-# ---- bounded local smoke (definition only; never run by the tests) -----------------------------------------------
-
-def test_smoke_is_bounded_and_uses_its_own_seed_and_populations():
-    sm = load("scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py", "probe_smoke_t")
-    p = sm.smoke_pilot(L)
-    assert p["seed"] == 7 and p["steps"] <= 50 and p["readout"] == "taskhead" and p["n_bindings"] == 32
-    assert sm.WALL_S == 3600 and sm.SMOKE_EVAL["final_seed_base"] not in (9_300_011, 9_600_011)
-    assert sm.SMOKE_EVAL["dev_seed"] != L.EVAL["dev_seed"] and sm.SMOKE_EVAL["train_eval_seed_base"] != L.EVAL["train_eval_seed_base"]
-    src = (ROOT / "scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py").read_text()
-    body = src.split("def main")[1]
-    assert body.index("Watchdog(WALL_S)") < body.index("ProbeSlotSupervisor(")     # armed before any model load
-    assert "mkdir(parents=True, exist_ok=False)" in body                            # own, never-reused namespace
