@@ -1,0 +1,76 @@
+{
+  "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+  "base_image_id": "im-A7BXMB8v1cVYRvC9pMqZ3i",
+  "arms_planned": [
+    "A0",
+    "A1",
+    "A2"
+  ],
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "outer_s": 4740,
+    "stop_allowance_s": 300,
+    "image_construction_usd": 0.0,
+    "reservation_usd": 3.4198416,
+    "cap_usd": 4.0,
+    "unenforced": "app-stop latency after client exit (cleanup-verify checks it)"
+  },
+  "started": 1791486600.2914708,
+  "gpu": "L40S",
+  "cpu": 4.0,
+  "memory_gib": 32,
+  "arms": {
+    "A0": {
+      "outcome": "A0: valid, band escaped",
+      "t_start": 1791486600.9023817,
+      "returncode": 0,
+      "wall_s": 642.0764620304108,
+      "child_timeout_s": 1500,
+      "versions": {
+        "torch": "2.7.1+cu126",
+        "transformers": "4.55.2"
+      },
+      "cmd": [
+        "/usr/local/bin/python",
+        "scripts/sgm-p2p5-taskhead-read-escape-stage-a-train.py",
+        "--arm",
+        "A0",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/stage-a-A0-p977x6rh/A0"
+      ],
+      "t_end": 1791488018.1721036
+    },
+    "A1": {
+      "outcome": "A1: valid, band partial",
+      "t_start": 1791488018.2441092,
+      "returncode": 0,
+      "wall_s": 727.1210882663727,
+      "child_timeout_s": 1500,
+      "versions": {
+        "torch": "2.7.1+cu126",
+        "transformers": "4.55.2"
+      },
+      "cmd": [
+        "/usr/local/bin/python",
+        "scripts/sgm-p2p5-taskhead-read-escape-stage-a-train.py",
+        "--arm",
+        "A1",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/stage-a-A1-n6filv7n/A1"
+      ],
+      "t_end": 1791488751.370985
+    },
+    "A2": {
+      "outcome": "remote call failed",
+      "t_start": 1791488751.3737762
+    }
+  },
+  "outcome": "error: SystemExit: SIGTERM (outer timeout)",
+  "deadline": 1791491100.2921758,
+  "client_wall_s": 4705.229770421982
+}
