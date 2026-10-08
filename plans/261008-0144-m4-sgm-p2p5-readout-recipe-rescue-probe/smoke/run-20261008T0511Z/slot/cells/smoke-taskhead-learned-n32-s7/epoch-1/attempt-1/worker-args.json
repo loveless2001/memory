@@ -1,0 +1,55 @@
+{
+  "cell": "smoke-taskhead-learned-n32-s7",
+  "epoch": 1,
+  "attempt": 1,
+  "pilot_config": {
+    "arm": "learned",
+    "readout": "taskhead",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 20,
+    "batch": 2,
+    "lr": 0.003,
+    "eval_every": 10,
+    "eval_batches": 1,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda",
+    "n_bindings": 32,
+    "seed": 7
+  },
+  "mode": "train",
+  "epoch_dir": "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/smoke/run-20261008T0511Z/slot/cells/smoke-taskhead-learned-n32-s7/epoch-1",
+  "attempt_dir": "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/smoke/run-20261008T0511Z/slot/cells/smoke-taskhead-learned-n32-s7/epoch-1/attempt-1",
+  "resume_file": null,
+  "resume_sha256": null,
+  "next_g": 1,
+  "resume_step": 0,
+  "checkpoint_every": 10,
+  "eval": {
+    "final_batches": 1,
+    "final_batch_size": 4,
+    "final_seed_base": 777100,
+    "dev_seed": 777001,
+    "train_eval_seed_base": 777200
+  },
+  "parent_pid": 2396474,
+  "threads": 2,
+  "ack_timeout_s": 900.0,
+  "proof_capture": false,
+  "fault": null
+}

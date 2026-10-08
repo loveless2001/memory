@@ -1,0 +1,57 @@
+{
+  "cell": "smoke-taskhead-learned-n32-s7",
+  "pilot": {
+    "arm": "learned",
+    "readout": "taskhead",
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 20,
+    "batch": 2,
+    "lr": 0.003,
+    "eval_every": 10,
+    "eval_batches": 1,
+    "sgm": {},
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda",
+    "n_bindings": 32,
+    "seed": 7
+  },
+  "eval": {
+    "final_batches": 1,
+    "final_batch_size": 4,
+    "final_seed_base": 777100,
+    "dev_seed": 777001,
+    "train_eval_seed_base": 777200
+  },
+  "result": {
+    "status": "done",
+    "states": {
+      "smoke-taskhead-learned-n32-s7": "COMPLETE"
+    }
+  },
+  "state": "COMPLETE",
+  "reason": null,
+  "telemetry": {
+    "grad_null_keys": [
+      "L27/alpha",
+      "L27/out_proj"
+    ],
+    "update_null_keys": [],
+    "logged_rows": 2
+  },
+  "wall_s": 620.5235176086426
+}

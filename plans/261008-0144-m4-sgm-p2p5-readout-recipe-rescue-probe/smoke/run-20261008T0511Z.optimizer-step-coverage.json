@@ -1,0 +1,31 @@
+{
+  "construction": "CPU build of the smoke pilot (device cpu), optimizer order = adapters.parameters() + head.parameters()",
+  "n_params": 46,
+  "gen-1-step10.pt": {
+    "shapes_match_build_order": true,
+    "max_step": 10,
+    "never_stepped": [
+      "adapters.27.alpha_logit",
+      "adapters.27.out_proj.weight"
+    ],
+    "partially_stepped": {}
+  },
+  "gen-2-step20.pt": {
+    "shapes_match_build_order": true,
+    "max_step": 20,
+    "never_stepped": [
+      "adapters.27.alpha_logit",
+      "adapters.27.out_proj.weight"
+    ],
+    "partially_stepped": {
+      "adapters.6.k_proj.weight": 12,
+      "adapters.6.v_proj.weight": 12,
+      "adapters.6.beta_proj.weight": 12,
+      "adapters.6.beta_proj.bias": 12,
+      "adapters.20.k_proj.weight": 15,
+      "adapters.20.v_proj.weight": 15,
+      "adapters.20.beta_proj.weight": 15,
+      "adapters.20.beta_proj.bias": 15
+    }
+  }
+}

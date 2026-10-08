@@ -1,0 +1,45 @@
+{
+  "launch_utc": "2026-10-08T05:11:47Z",
+  "launch_epoch": 1791436307.638955,
+  "authority": "codex 21803 (r2 PASS at 30e2b3e; ONE local $0 smoke, no retry)",
+  "argv": [
+    "timeout",
+    "--signal=KILL",
+    "3600",
+    ".venv-gpu/bin/python",
+    "scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py",
+    "--out",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/smoke/run-20261008T0511Z"
+  ],
+  "cwd": "/home/lenovo/projects/memory",
+  "git_head": "30e2b3ecd879f883263b9852b2a89b37c2f61682",
+  "tracked_dirty": "",
+  "memsub_tree_sha256": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+  "files_sha256": {
+    "scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py": "b3b4db186c31cb536e3c83d3a9cc7b91627c54767d36b39a87291ad688dc53df",
+    "scripts/sgm-p2p5-readout-probe-output-validation.py": "b0c01a8e02efc42be947f252c82eb22b62372d0bf6602e3566d2299c9864c380",
+    "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py": "93c7c7789494e22f7d51bc65e3a563b14984fc73df0add2b59a5deb64207142e",
+    "configs/m4_sgm_p2p5_readout_probe_grid.json": "b418f39e493b5949a4197d1b9b2fdf6bc81e4db49670808cbc89f0818b6e34d8",
+    "configs/m4_sgm_p2p5_readout_probe_registry.json": "5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427",
+    "configs/m4_sgm_p2p5_readout_probe_output_schema.json": "44d1136b50b512e7740d56fc9f0b88d4505e6d2c133d339df31978cf115ec932",
+    "memsub/sgm/packed_slot_supervisor.py": "13fc171039c8dcc1d51bd6a76fb1ba81e309d8a67e2b6f14b87f31bc31b9fac8",
+    "memsub/sgm/packed_slot_worker.py": "57375daaa1150241e690b631a5895af7ff65cf2af838d4fd9add91cef8407146",
+    "memsub/sgm/p2d_launch_guard.py": "52c0ec5ec873fa4cfafe82f1fa612c71969e64e184b6bd557665e9b55f7f3054"
+  },
+  "timeout_version": "timeout (GNU coreutils) 9.4",
+  "gpu_env": {
+    "python": "3.12.13",
+    "torch": "2.7.1+cu126",
+    "cuda": "12.6",
+    "transformers": "4.55.2"
+  },
+  "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU, 610.88, 6144 MiB, 0 MiB",
+  "env": {
+    "M4_SGM_QWEN3_0P6B_DIR": null,
+    "HF_HOME": null,
+    "HF_HUB_OFFLINE": null,
+    "CUDA_VISIBLE_DEVICES": null,
+    "TOKENIZERS_PARALLELISM": null
+  },
+  "model_snapshot": "/home/lenovo/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B-Base/snapshots/da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+}
