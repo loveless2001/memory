@@ -1,0 +1,58 @@
+{
+ "format": "p2p5-taskhead-dead-start-address-diagnosis-v1",
+ "label": "DESCRIPTIVE (dev population; no decision role)",
+ "argv": [
+  "scripts/sgm-p2p5-taskhead-dead-start-address-diagnosis.py",
+  "--index",
+  "/tmp/claude-1000/-home-lenovo-projects/7bf6807e-ad47-4e9c-9616-034ed1df0c10/scratchpad/toy-index-r2.json",
+  "--out",
+  "/tmp/claude-1000/-home-lenovo-projects/7bf6807e-ad47-4e9c-9616-034ed1df0c10/scratchpad/diag-toy-test-r2"
+ ],
+ "pid": 2755316,
+ "env": {
+  "CUDA_VISIBLE_DEVICES": null,
+  "HF_HOME": null,
+  "M4_SGM_QWEN3_0P6B_DIR": null,
+  "PYTHONHASHSEED": null,
+  "OMP_NUM_THREADS": null
+ },
+ "index": "/tmp/claude-1000/-home-lenovo-projects/7bf6807e-ad47-4e9c-9616-034ed1df0c10/scratchpad/toy-index-r2.json",
+ "index_sha256": "9a99b9772b14e5a63e470f36b78bc7a23f3b7a0ac70b89e0370ed4c5597635e0",
+ "script_sha256": "e9131a62ac57cca62915ae233914315412e302bf5ab954351f20544578311ea7",
+ "started_utc": "2026-10-08T16:55:25Z",
+ "done": [
+  {
+   "name": "toy-p2c-curriculum-taskhead-s0-init",
+   "wall_seconds": 8.5
+  },
+  {
+   "name": "toy-p2c-curriculum-taskhead-s0-final",
+   "wall_seconds": 6.9
+  },
+  {
+   "name": "toy-p2c-curriculum-taskhead-s1-init",
+   "wall_seconds": 7.3
+  },
+  {
+   "name": "toy-p2c-curriculum-taskhead-s1-final",
+   "wall_seconds": 7.4
+  },
+  {
+   "name": "toy-p2c-curriculum-taskhead-s0-grad-at-init",
+   "wall_seconds": 2.2
+  }
+ ],
+ "identity": {
+  "memsub_source_sha256": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+  "torch": "2.7.1+cu126",
+  "transformers": "4.55.2",
+  "qwen_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+  "qwen_files_sha256": {
+   "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+   "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+   "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+  },
+  "cuda_device": "NVIDIA GeForce RTX 3060 Laptop GPU"
+ },
+ "finished_utc": "2026-10-08T16:56:01Z"
+}

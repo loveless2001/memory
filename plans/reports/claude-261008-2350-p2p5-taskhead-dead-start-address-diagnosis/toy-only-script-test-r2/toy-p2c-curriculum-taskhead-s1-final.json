@@ -1,0 +1,236 @@
+{
+ "name": "toy-p2c-curriculum-taskhead-s1-final",
+ "kind": "geometry",
+ "entry": {
+  "name": "toy-p2c-curriculum-taskhead-s1-final",
+  "kind": "geometry",
+  "manifest": "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s1/run_manifest.json",
+  "manifest_sha256": "dd1c00bd75291f5aa23ccd98b9d19cf6b847aba2e78289e3c2c93c4cdd2eea47",
+  "telemetry": "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s1/routing_telemetry.jsonl",
+  "telemetry_sha256": "d548ed1df61f4f99315bafb6e745c7d421ca722874b622cb453826b3e0e929b6",
+  "params": "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s1/trained_parameters.safetensors",
+  "device": "cpu",
+  "params_sha256": "d38e142fb4ccefff872e2833c7dace5fb932795f6b2d1f35d3ee1b30f977da70"
+ },
+ "params_info": {
+  "kind": "final",
+  "step": 1500
+ },
+ "pilot_config": {
+  "arm": "learned",
+  "readout": "taskhead",
+  "n_bindings": 32,
+  "n_queries": 4,
+  "filler_len": 40,
+  "steps": 1500,
+  "batch": 16,
+  "lr": 0.003,
+  "eval_every": 100,
+  "eval_batches": 4,
+  "seed": 1,
+  "sgm": {},
+  "filler_writes": true,
+  "aux_address_lambda": 0.0,
+  "checkpoint_steps": [],
+  "beta_bias_init": null,
+  "filler_len_schedule": [
+   [
+    0,
+    0
+   ],
+   [
+    1000,
+    40
+   ]
+  ],
+  "device": "cpu"
+ },
+ "dev_episodes": 64,
+ "dev_queries": 256,
+ "bank": {
+  "occupancy_mean": 51.0546875,
+  "effective_cells_mean": 28.05342246673559
+ },
+ "per_layer_head": {
+  "1": {
+   "align_within_1_cell": [
+    0.68359375,
+    0.92578125
+   ],
+   "align_stencil_intersects": [
+    0.99609375,
+    1.0
+   ],
+   "align_spatial_coupling_mean": [
+    0.16660702973604202,
+    0.23483218252658844
+   ],
+   "binding_pair_intersect_rate": [
+    0.5446698516607285,
+    0.5638545900583267
+   ],
+   "binding_pair_spatial_coupling_mean": [
+    0.02892381837591529,
+    0.03001554450020194
+   ],
+   "filler_hits_any_binding": [
+    1.0,
+    1.0
+   ],
+   "filler_max_spatial_coupling_mean": [
+    0.22646017000079155,
+    0.22705373913049698
+   ],
+   "align_distance_median_pooled": [
+    0.8085896968841553,
+    0.44906312227249146
+   ],
+   "query_read_absent_weight_mean": [
+    4.357187935966067e-05,
+    0.0001918578054755926
+   ],
+   "query_read_all_positive_cells_absent_fraction": [
+    0.0,
+    0.0
+   ],
+   "read_centroid": [
+    [
+     2.01717472076416,
+     3.0420355796813965
+    ],
+    [
+     2.1292707920074463,
+     3.115269660949707
+    ]
+   ],
+   "value_write_centroid": [
+    [
+     2.2162322998046875,
+     2.98478364944458
+    ],
+    [
+     2.1324260234832764,
+     3.2178165912628174
+    ]
+   ],
+   "read_spread_cells": [
+    2.0576975345611572,
+    2.1792376041412354
+   ],
+   "value_write_spread_cells": [
+    2.1638221740722656,
+    2.0896997451782227
+   ],
+   "centroid_offset_cells": [
+    0.20712725818157196,
+    0.10259545594453812
+   ],
+   "query_q_mean_pairwise_cos": [
+    0.00522041879594326,
+    0.004835727158933878
+   ],
+   "value_k_mean_pairwise_cos": [
+    0.006959083024412394,
+    0.011956162750720978
+   ],
+   "cos_q_bound_k_mean": [
+    0.8596435785293579,
+    0.9325087070465088
+   ]
+  },
+  "3": {
+   "align_within_1_cell": [
+    0.70703125,
+    0.4453125
+   ],
+   "align_stencil_intersects": [
+    0.99609375,
+    0.921875
+   ],
+   "align_spatial_coupling_mean": [
+    0.1824772022664547,
+    0.11465504392981529
+   ],
+   "binding_pair_intersect_rate": [
+    0.9856980741024017,
+    0.9108178019523621
+   ],
+   "binding_pair_spatial_coupling_mean": [
+    0.1606500744819641,
+    0.1083641555160284
+   ],
+   "filler_hits_any_binding": [
+    1.0,
+    1.0
+   ],
+   "filler_max_spatial_coupling_mean": [
+    0.28531206399202347,
+    0.282804511487484
+   ],
+   "align_distance_median_pooled": [
+    0.672242283821106,
+    1.1878362894058228
+   ],
+   "query_read_absent_weight_mean": [
+    3.4067174965457525e-06,
+    1.3354557459877014e-09
+   ],
+   "query_read_all_positive_cells_absent_fraction": [
+    0.0,
+    0.0
+   ],
+   "read_centroid": [
+    [
+     -2.041144847869873,
+     -5.674229621887207
+    ],
+    [
+     -3.0430614948272705,
+     -5.2781243324279785
+    ]
+   ],
+   "value_write_centroid": [
+    [
+     -2.290851593017578,
+     -5.50896692276001
+    ],
+    [
+     -3.0576791763305664,
+     -5.32705020904541
+    ]
+   ],
+   "read_spread_cells": [
+    0.686394989490509,
+    1.1103665828704834
+   ],
+   "value_write_spread_cells": [
+    0.7953625917434692,
+    1.1210929155349731
+   ],
+   "centroid_offset_cells": [
+    0.29944151639938354,
+    0.05106288194656372
+   ],
+   "query_q_mean_pairwise_cos": [
+    0.6152987480163574,
+    0.42509815096855164
+   ],
+   "value_k_mean_pairwise_cos": [
+    0.49808210134506226,
+    0.3051527440547943
+   ],
+   "cos_q_bound_k_mean": [
+    0.564555823802948,
+    0.3506097197532654
+   ]
+  }
+ },
+ "training_dev_eval_check": {
+  "status": "reproduced",
+  "step": 1500,
+  "abs_diff_absent_read_weight": 3.2254445642143637e-11,
+  "abs_diff_occupancy_mean": 0.0,
+  "logged_training_dev_accuracy_not_recomputed": 0.6953125
+ },
+ "wall_seconds": 7.430274724960327
+}
