@@ -11,9 +11,26 @@ if [ -e "$P/geometry-run-v1" ] || [ -e "$P/geometry-run-v1.gate.txt" ]; then ech
 echo "waiting for pid $WAIT_PID from $(date -u +%FT%TZ) (waiter pid $$)" > "$P/geometry-run-v1.wait.txt"
 while kill -0 "$WAIT_PID" 2>/dev/null; do sleep 30; done
 sleep 20
-APPS=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader | grep -c .)
-MEM=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1 | tr -d ' ')
-{ echo "controller $WAIT_PID gone at $(date -u +%FT%TZ)"; echo "compute_apps $APPS memory_used_mib $MEM"; } > "$P/geometry-run-v1.gate.txt"
+echo "controller $WAIT_PID gone at $(date -u +%FT%TZ)" > "$P/geometry-run-v1.gate.txt"
+if ! APP_ROWS=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>> "$P/geometry-run-v1.gate.txt"); then
+  echo "GPU compute-app query failed: NOT launched" >> "$P/geometry-run-v1.gate.txt"; exit 4
+fi
+if ! MEMORY_ROWS=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>> "$P/geometry-run-v1.gate.txt"); then
+  echo "GPU memory query failed: NOT launched" >> "$P/geometry-run-v1.gate.txt"; exit 4
+fi
+APPS=0
+while IFS= read -r APP_ROW; do
+  if [[ "$APP_ROW" =~ ^[[:space:]]*$ ]]; then continue; fi
+  if ! [[ "$APP_ROW" =~ ^[[:space:]]*[0-9]+[[:space:]]*$ ]]; then
+    echo "GPU compute-app query malformed: NOT launched" >> "$P/geometry-run-v1.gate.txt"; exit 4
+  fi
+  APPS=$((APPS + 1))
+done <<< "$APP_ROWS"
+if ! [[ "$MEMORY_ROWS" =~ ^[[:space:]]*[0-9]+[[:space:]]*$ ]]; then
+  echo "GPU memory query malformed: NOT launched" >> "$P/geometry-run-v1.gate.txt"; exit 4
+fi
+MEM=${MEMORY_ROWS//[[:space:]]/}
+echo "compute_apps $APPS memory_used_mib $MEM" >> "$P/geometry-run-v1.gate.txt"
 if [ "$APPS" -ne 0 ] || [ "$MEM" -ge 300 ]; then echo "GPU busy: NOT launched" >> "$P/geometry-run-v1.gate.txt"; exit 3; fi
 echo "GPU free: launching at $(date -u +%FT%TZ) from HEAD $(git rev-parse HEAD)" >> "$P/geometry-run-v1.gate.txt"
 timeout --signal=KILL 3600 .venv-gpu/bin/python scripts/sgm-p2p5-taskhead-dead-start-address-diagnosis.py \
