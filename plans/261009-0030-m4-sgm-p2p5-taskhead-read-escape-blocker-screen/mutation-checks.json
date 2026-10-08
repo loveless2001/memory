@@ -2,37 +2,79 @@
  "A0 gate ignores escape": {
   "caught": true,
   "tail": [
-   "1 failed, 12 passed in 13.36s"
+   "1 failed, 18 passed in 24.37s"
   ]
  },
  "no restart refusal": {
   "caught": true,
   "tail": [
-   "1 failed, 13 passed in 11.66s"
+   "1 failed, 20 passed in 14.11s"
+  ]
+ },
+ "shared output dir across calls (codex 21987 #1)": {
+  "caught": true,
+  "tail": [
+   "1 failed, 19 passed in 12.32s"
+  ]
+ },
+ "deadline mismatch accepted": {
+  "caught": true,
+  "tail": [
+   "1 failed, 21 passed in 10.92s"
+  ]
+ },
+ "minimum remaining not enforced": {
+  "caught": true,
+  "tail": [
+   "1 failed, 21 passed in 12.07s"
+  ]
+ },
+ "child timeout ignores deadline": {
+  "caught": true,
+  "tail": [
+   "1 failed, 21 passed in 17.09s"
+  ]
+ },
+ "version check skipped": {
+  "caught": true,
+  "tail": [
+   "1 failed, 22 passed in 14.49s"
+  ]
+ },
+ "relaunch on used Dict allowed": {
+  "caught": true,
+  "tail": [
+   "1 failed, 21 passed in 12.91s"
   ]
  },
  "missing endpoints accepted": {
   "caught": true,
   "tail": [
-   "1 failed, 4 passed in 2.43s"
+   "1 failed, 6 passed in 2.68s"
+  ]
+ },
+ "booleans / out-of-range accepted (codex 21987 #3)": {
+  "caught": true,
+  "tail": [
+   "1 failed, 10 passed in 2.97s"
   ]
  },
  "A2 supervision dropped": {
   "caught": true,
   "tail": [
-   "1 failed, 8 passed in 2.35s"
+   "1 failed, 14 passed in 2.85s"
   ]
  },
  "base recipe unchecked": {
   "caught": true,
   "tail": [
-   "1 failed, 8 passed in 2.50s"
+   "1 failed, 14 passed in 2.76s"
   ]
  },
  "kept-through uses endpoint only": {
   "caught": true,
   "tail": [
-   "1 failed, 2 passed in 2.46s"
+   "1 failed, 2 passed in 2.77s"
   ]
  }
 }

@@ -59,8 +59,9 @@ def classify(rows: list) -> dict:
             evs[r["step"]] = r["eval"].get("query_empty_read_weight")
     if tuple(sorted(evs)) != EVAL_STEPS:
         return {"status": "INVALID", "why": f"dev eval steps {sorted(evs)} != {list(EVAL_STEPS)}"}
-    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in evs.values()):
-        return {"status": "INVALID", "why": "non-finite or missing absent-read weight"}
+    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and 0.0 <= v <= 1.0
+               for v in evs.values()):
+        return {"status": "INVALID", "why": "absent-read weight missing, boolean, non-finite or outside [0, 1]"}
     end = evs[STEPS]
     band = "escaped" if end >= ESCAPED else "kept" if end <= KEPT else "partial"
     return {"status": "valid", "absent_read_weight_by_step": {str(k): evs[k] for k in EVAL_STEPS},

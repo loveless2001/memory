@@ -5,7 +5,11 @@ runner gate, restart refusal and the all-in ledger."""
 import importlib.util
 import json
 import math
+import io
 import subprocess
+import tarfile
+import tempfile
+import time
 from dataclasses import asdict
 from pathlib import Path
 
@@ -35,6 +39,8 @@ def _rows(vals):
     ((.05, .1, .1, .15, .2), "kept", True),
     ((.05, .3, .1, .1, .1), "kept", False),          # kept AT 100 but not THROUGH 100
     ((.05, .3, .5, .6, .7), "partial", False),
+    ((0.0, 0.0, 0.0, 0.0, 0.2), "kept", True),         # boundaries: 0 and exactly .2 are kept
+    ((.05, .5, .9, 1.0, 0.9), "escaped", False),       # exactly .9 escaped; 1.0 valid
 ])
 def test_classify_bands(vals, band, through):
     r = T.classify(_rows(vals))
@@ -46,6 +52,10 @@ def test_classify_bands(vals, band, through):
     _rows((.05, .1, .1, .1, .1)) + [{"step": 100, "eval": {"query_empty_read_weight": .1}}],   # duplicate
     _rows((.05, .1, .1, .1, float("nan"))),                               # non-finite
     _rows((.05, .1, .1, .1, None)),                                       # missing value
+    _rows((.05, .1, .1, .1, -0.1)),                                       # below 0 (codex 21987)
+    _rows((.05, .1, .1, .1, 1.1)),                                        # above 1
+    _rows((.05, .1, .1, .1, True)),                                       # boolean
+    _rows((.05, False, .1, .1, .1)),                                      # boolean at a non-endpoint step
 ])
 def test_classify_invalid(rows):
     assert T.classify(rows)["status"] == "INVALID"
@@ -116,20 +126,71 @@ class _FakeDict:
         return self.d.get(k)
 
 
-def test_runner_refuses_second_start_before_any_work(monkeypatch, tmp_path):
+@pytest.fixture
+def worker(monkeypatch, tmp_path):
+    """The raw remote function in ONE reused (warm) worker: fake Dict, versions OK, fake child that
+    writes its own arm dir; temp dirs under tmp_path."""
     fake, calls = _FakeDict(), []
     monkeypatch.setattr(R.modal.Dict, "from_name", lambda *a, **k: fake)
-    monkeypatch.setattr(R.subprocess, "run", lambda cmd, **k: calls.append(cmd) or
-                        subprocess.CompletedProcess(cmd, 0, "", ""))
-    monkeypatch.setattr(R, "Path", lambda p: tmp_path / Path(p).name if str(p).startswith("/tmp") else Path(p))
-    raw = R.run_arm_remote.get_raw_f()
-    first = raw("A0")
-    assert first["returncode"] == 0 and len(calls) == 1
-    second = raw("A0")
-    assert "refused" in second and len(calls) == 1                             # no second child
+    monkeypatch.setattr(R, "_versions_ok", lambda: {"ok": True, "got": R.EXPECT_VERSIONS})
+    real_mkdtemp = tempfile.mkdtemp                     # R.tempfile IS this module: keep the original
+    monkeypatch.setattr(R.tempfile, "mkdtemp", lambda prefix: real_mkdtemp(prefix=prefix, dir=tmp_path))
+
+    def child(cmd, **kw):
+        calls.append({"cmd": cmd, "timeout": kw["timeout"]})
+        arm_out = Path(cmd[cmd.index("--out") + 1])
+        arm_out.mkdir(parents=True)
+        (arm_out / "stage_a_result.json").write_text(json.dumps({"arm": cmd[cmd.index("--arm") + 1]}))
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+    monkeypatch.setattr(R.subprocess, "run", child)
+    return fake, calls, R.run_arm_remote.get_raw_f()
+
+
+def _members(res):
+    with tarfile.open(fileobj=io.BytesIO(res["tar"]), mode="r:gz") as t:
+        return {m.name.split("/")[1] for m in t.getmembers() if m.name.count("/") >= 1 and m.name != "."}
+
+
+def test_warm_worker_runs_a0_a1_a2_with_isolated_outputs(worker):
+    fake, calls, raw = worker
+    deadline = R.set_campaign_deadline(fake, time.time())
+    res = [raw(arm, deadline) for arm in R.ARMS]
+    assert [r["returncode"] for r in res] == [0, 0, 0] and len(calls) == 3
+    assert [_members(r) & set(R.ARMS) for r in res] == [{"A0"}, {"A1"}, {"A2"}]   # each tar holds only its arm
+    assert len({c["cmd"][c["cmd"].index("--out") + 1] for c in calls}) == 3
+
+
+def test_second_start_refused_before_any_child(worker):
+    fake, calls, raw = worker
+    deadline = R.set_campaign_deadline(fake, time.time())
+    assert raw("A0", deadline)["returncode"] == 0
+    assert "refused" in raw("A0", deadline) and len(calls) == 1
+
+
+def test_campaign_deadline_is_immutable_and_enforced(worker):
+    fake, calls, raw = worker
+    now = time.time()
+    deadline = R.set_campaign_deadline(fake, now)
+    with pytest.raises(SystemExit):
+        R.set_campaign_deadline(fake, now + 5)                                 # no relaunch on a used Dict
+    assert "refused" in raw("A0", deadline + 1)                               # wrong deadline
+    fake.d.pop("A1", None)
+    fake.d["deadline"] = time.time() + R.MIN_ARM_S - 5
+    assert "refused" in raw("A1", fake.d["deadline"])                         # too little time left
+    fake.d["deadline"] = time.time() + 1000
+    r = raw("A2", fake.d["deadline"])
+    assert r["returncode"] == 0 and calls[-1]["timeout"] <= 1000 - R.END_MARGIN_S
+    assert len(calls) == 1                                                    # only A2 ran a child
+
+
+def test_version_mismatch_refuses(worker, monkeypatch):
+    fake, calls, raw = worker
+    monkeypatch.setattr(R, "_versions_ok", lambda: {"ok": False, "got": {"torch": "x"}})
+    assert "refused" in raw("A0", R.set_campaign_deadline(fake, time.time())) and not calls
 
 
 def test_ledger_bound_within_user_cap():
     led = R.ledger()
-    assert led["outer_s"] == len(R.ARMS) * R.FUNCTION_S + R.STARTUP_SLACK_S
-    assert R.CHILD_S < R.FUNCTION_S and led["bound_usd"] <= 4.0
+    assert led["outer_s"] == R.CAMPAIGN_S + R.CLIENT_TAIL_S and led["image_build_usd"] == 0.0
+    assert R.CHILD_S < R.FUNCTION_S and led["bound_usd"] <= R.CAP_USD == 4.0
+    assert led["extra_unenforced_seconds_before_cap"] > 0

@@ -1,4 +1,15 @@
-# P2.5 taskhead read-escape blocker screen (Stage A), proposal v0.2 (EXPLORATORY)
+# P2.5 taskhead read-escape blocker screen (Stage A), proposal v0.3 (EXPLORATORY)
+
+## v0.3 delta (codex 21987 HOLD fixes; arms, readouts and scope unchanged)
+1. **Warm container.** Each remote call writes to a fresh `tempfile.mkdtemp` directory. The test runs A0 → A1 → A2 in ONE reused raw worker, with each tar holding only its own arm. The second-start refusal is kept.
+2. **Cost bound.**
+   - **Image:** `Image.from_id("im-A7BXMB8v1cVYRvC9pMqZ3i")`, the dev-GPU runner's pinned torch 2.7.1+cu126 / transformers 4.55.2 / Qwen weights image (built in hotspot-l40s-v1.console.log:142–155, reused from cache afterwards). There is no image build, so the build cost is $0. Modal can't look an image up offline (`base-image-lookup-attempt.txt`). A missing image fails at app startup before any GPU container. Inside the container, the versions and the pinned model-file shas are checked before any training.
+   - **ONE immutable campaign deadline:** first-call time + 4500 s, written once to `m4-sgm-p2p5-stage-a-read-escape-starts-v2` (a used Dict refuses a relaunch). Each call refuses unless its deadline equals the Dict's and at least 600 s remain. Child timeout = min(1500, remaining − 90).
+   - **Teardown:** scaledown_window=2. max_containers=1, so containers never overlap.
+   - **Ledger:** GPU-container seconds ≤ client lifetime (4740 s) + app-stop allowance 300 s, at $0.00066544/s = **$3.354 ≤ $4**. The stop allowance is the only unenforced term. ~970 s more would still fit under the cap.
+3. **classify** rejects booleans and values outside [0, 1] at any sampled step. Boundary and refusal tests are added.
+
+The v0.2 sections below remain valid, except: the image is from_id, the deadline is the campaign deadline, and the launch argv uses timeout 4710 (OUTER 4740 − 30 kill-after).
 
 - v0.1 41ffbd2 was reviewed by codex in 21975 (`plans/reports/codex-261009-p2p5-pk-21973-stage-a-proposal-review/`). v0.2 applies all six points.
 - User 21977: "Check fix then modal run". That is Modal venue (a) at the $4 cap proposed in 21973.
@@ -52,7 +63,7 @@ No arm replacements or expansion. Max 3 × 100 = 300 updates.
   - Client lifetime 5100 s ($3.394), worst-case image build ($0.084), 3 × 120 s teardown ($0.240).
   - **Expected about $2.5:** roughly 19 min per arm, extrapolated from the 9.44 s/update L40S profile (residual head) and the probe's ~10 s/update on A100. This is not taskhead or A2 proof.
 - **Launch.** Run ONCE, detached with setsid. The console and exit status are recorded beside the output, outside the out dir:
-  `timeout --signal=TERM --kill-after=30s 5070 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py --out plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1`
+  `timeout --signal=TERM --kill-after=30s 4710 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py --out plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1`
 - **Afterwards:** app-filtered billing; geometry index and local diagnosis; result post to codex.
 
 ## Evidence (CPU, $0)
