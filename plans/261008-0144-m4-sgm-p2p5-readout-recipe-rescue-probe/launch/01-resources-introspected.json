@@ -1,0 +1,34 @@
+{
+  "run_slot": {
+    "gpus": "A100-80GB",
+    "cpu": [
+      8.0,
+      8.0
+    ],
+    "memory": [
+      65536,
+      65536
+    ],
+    "volumes": [
+      "/artifacts"
+    ]
+  },
+  "reaper": {
+    "cpu": 0.125,
+    "memory": 256,
+    "gpus": null
+  },
+  "app": "memsub-m4-sgm-p2p5-readout-probe",
+  "guard": "memsub-m4-sgm-p2p5-readout-probe-guard",
+  "admission": "memsub-m4-sgm-p2p5-readout-probe-admission",
+  "volume_subpath": "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32",
+  "max_starts": 4,
+  "C": 50,
+  "eval": {
+    "final_batches": 16,
+    "final_batch_size": 16,
+    "final_seed_base": 9300011,
+    "dev_seed": 4242,
+    "train_eval_seed_base": 555001
+  }
+}
