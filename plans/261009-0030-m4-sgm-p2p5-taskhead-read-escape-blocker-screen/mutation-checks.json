@@ -2,79 +2,127 @@
  "A0 gate ignores escape": {
   "caught": true,
   "tail": [
-   "1 failed, 18 passed in 24.37s"
+   "1 failed, 18 passed in 11.74s"
   ]
  },
  "no restart refusal": {
   "caught": true,
   "tail": [
-   "1 failed, 20 passed in 14.11s"
+   "1 failed, 20 passed in 11.88s"
   ]
  },
  "shared output dir across calls (codex 21987 #1)": {
   "caught": true,
   "tail": [
-   "1 failed, 19 passed in 12.32s"
+   "1 failed, 19 passed in 12.08s"
   ]
  },
  "deadline mismatch accepted": {
   "caught": true,
   "tail": [
-   "1 failed, 21 passed in 10.92s"
+   "1 failed, 21 passed in 11.90s"
+  ]
+ },
+ "remaining sampled at entry, not re-read (codex 21999)": {
+  "caught": true,
+  "tail": [
+   "1 failed, 24 passed in 14.23s"
   ]
  },
  "minimum remaining not enforced": {
   "caught": true,
   "tail": [
-   "1 failed, 21 passed in 12.07s"
+   "1 failed, 21 passed in 12.82s"
   ]
  },
  "child timeout ignores deadline": {
   "caught": true,
   "tail": [
-   "1 failed, 21 passed in 17.09s"
+   "1 failed, 21 passed in 11.94s"
+  ]
+ },
+ "entry refusal removed": {
+  "caught": true,
+  "tail": [
+   "1 failed, 24 passed in 11.91s"
+  ]
+ },
+ "no worker guard": {
+  "caught": true,
+  "tail": [
+   "1 failed, 23 passed in 12.34s"
+  ]
+ },
+ "no child group guard": {
+  "caught": true,
+  "tail": [
+   "1 failed, 23 passed in 13.64s"
+  ]
+ },
+ "child not in its own session": {
+  "caught": true,
+  "tail": [
+   "1 failed, 23 passed in 11.95s"
+  ]
+ },
+ "killer cancel is a no-op": {
+  "caught": true,
+  "tail": [
+   "1 failed, 25 passed in 13.49s"
   ]
  },
  "version check skipped": {
   "caught": true,
   "tail": [
-   "1 failed, 22 passed in 14.49s"
+   "1 failed, 22 passed in 12.99s"
   ]
  },
  "relaunch on used Dict allowed": {
   "caught": true,
   "tail": [
-   "1 failed, 21 passed in 12.91s"
+   "1 failed, 21 passed in 11.63s"
+  ]
+ },
+ "cleanup accepts unverified": {
+  "caught": true,
+  "tail": [
+   "1 failed, 26 passed in 12.99s"
+  ]
+ },
+ "cleanup does not re-check lagging tasks": {
+  "caught": true,
+  "tail": [
+   "1 failed, 26 passed in 13.41s"
   ]
  },
  "missing endpoints accepted": {
   "caught": true,
   "tail": [
-   "1 failed, 6 passed in 2.68s"
+   "1 failed, 6 passed in 2.59s"
   ]
  },
  "booleans / out-of-range accepted (codex 21987 #3)": {
   "caught": true,
   "tail": [
-   "1 failed, 10 passed in 2.97s"
+   "1 failed, 10 passed in 2.44s"
   ]
  },
  "A2 supervision dropped": {
   "caught": true,
   "tail": [
-   "1 failed, 14 passed in 2.85s"
+   "1 failed, 14 passed in 2.43s"
   ]
  },
  "base recipe unchecked": {
   "caught": true,
   "tail": [
-   "1 failed, 14 passed in 2.76s"
+   "1 failed, 14 passed in 2.44s"
   ]
  },
  "kept-through uses endpoint only": {
   "caught": true,
   "tail": [
-   "1 failed, 2 passed in 2.77s"
+   "1 failed, 2 passed in 2.39s"
   ]
  }
 }

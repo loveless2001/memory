@@ -6,6 +6,7 @@ import importlib.util
 import json
 import math
 import io
+import os
 import subprocess
 import tarfile
 import tempfile
@@ -126,6 +127,9 @@ class _FakeDict:
         return self.d.get(k)
 
 
+_KILLERS: list = []        # deadline_killer launches seen by the current worker fixture
+
+
 @pytest.fixture
 def worker(monkeypatch, tmp_path):
     """The raw remote function in ONE reused (warm) worker: fake Dict, versions OK, fake child that
@@ -136,13 +140,37 @@ def worker(monkeypatch, tmp_path):
     real_mkdtemp = tempfile.mkdtemp                     # R.tempfile IS this module: keep the original
     monkeypatch.setattr(R.tempfile, "mkdtemp", lambda prefix: real_mkdtemp(prefix=prefix, dir=tmp_path))
 
-    def child(cmd, **kw):
-        calls.append({"cmd": cmd, "timeout": kw["timeout"]})
-        arm_out = Path(cmd[cmd.index("--out") + 1])
-        arm_out.mkdir(parents=True)
-        (arm_out / "stage_a_result.json").write_text(json.dumps({"arm": cmd[cmd.index("--arm") + 1]}))
-        return subprocess.CompletedProcess(cmd, 0, "", "")
-    monkeypatch.setattr(R.subprocess, "run", child)
+    class FakeChild:
+        pid, returncode = 999_999, 0
+
+        def __init__(self, cmd):
+            self.cmd = cmd
+
+        def communicate(self, timeout=None):
+            calls[-1]["timeout"] = timeout
+            arm_out = Path(self.cmd[self.cmd.index("--out") + 1])
+            arm_out.mkdir(parents=True)
+            (arm_out / "stage_a_result.json").write_text(json.dumps({"arm": self.cmd[self.cmd.index("--arm") + 1]}))
+            return "", ""
+
+    class FakeKiller:
+        pid = 999_998
+
+        def poll(self):
+            return 0                       # already finished: cancel_killer must not killpg a fake pid
+
+        def wait(self):
+            return 0
+
+    def popen(cmd, **kw):
+        if cmd[0] == "/bin/sh":           # deadline_killer(target, seconds)
+            killers.append({"cmd": cmd, "new_session": kw.get("start_new_session")})
+            return FakeKiller()
+        calls.append({"cmd": cmd, "new_session": kw.get("start_new_session")})
+        return FakeChild(cmd)
+    monkeypatch.setattr(R.subprocess, "Popen", popen)
+    _KILLERS[:] = []
+    killers = _KILLERS
     return fake, calls, R.run_arm_remote.get_raw_f()
 
 
@@ -189,8 +217,82 @@ def test_version_mismatch_refuses(worker, monkeypatch):
     assert "refused" in raw("A0", R.set_campaign_deadline(fake, time.time())) and not calls
 
 
-def test_ledger_bound_within_user_cap():
+def test_worker_and_child_guards_armed_with_absolute_deadline(worker):
+    fake, calls, raw = worker
+    deadline = R.set_campaign_deadline(fake, time.time())
+    assert raw("A0", deadline)["returncode"] == 0
+    targets = [k["cmd"][2].split("kill -KILL ")[1] for k in _KILLERS]
+    assert targets == [str(os.getpid()), "-999999"]                          # worker pid, then the child's group
+    assert all(k["new_session"] for k in _KILLERS) and calls[0]["new_session"] is True
+    secs = [float(k["cmd"][2].split()[1].rstrip(";")) for k in _KILLERS]
+    assert all(0 < s <= R.CAMPAIGN_S for s in secs)
+
+
+def test_setup_consuming_the_deadline_refuses_before_child(worker, monkeypatch):
+    """codex 21999 reproducer: deadline 1000, entry at t=0, the version check advances the clock to 1001."""
+    fake, calls, raw = worker
+    clock = {"t": 0.0}
+    monkeypatch.setattr(R.time, "time", lambda: clock["t"])
+    fake.d["deadline"] = 1000.0
+
+    def slow_versions():
+        clock["t"] = 1001.0
+        return {"ok": True, "got": R.EXPECT_VERSIONS}
+    monkeypatch.setattr(R, "_versions_ok", slow_versions)
+    assert "refused" in raw("A0", 1000.0) and not calls
+    clock["t"], fake.d = 0.0, {"deadline": 1000.0}
+
+    def setup_leaves_too_little():
+        clock["t"] = 1000.0 - R.MIN_ARM_S + 1
+        return {"ok": True, "got": R.EXPECT_VERSIONS}
+    monkeypatch.setattr(R, "_versions_ok", setup_leaves_too_little)
+    assert "refused" in raw("A0", 1000.0) and not calls
+    clock["t"] = 1000.0 - R.END_MARGIN_S                                       # at entry: refuse, arm nothing
+    n_killers = len(_KILLERS)
+    assert "refused" in raw("A1", 1000.0) and len(_KILLERS) == n_killers
+
+
+def test_deadline_killer_kills_a_real_process_group_and_cancel_prevents_it():
+    victim = subprocess.Popen(["/bin/sh", "-c", "sleep 30 & sleep 30"], start_new_session=True)
+    R.deadline_killer(f"-{victim.pid}", 0.3).wait(timeout=10)
+    assert victim.wait(timeout=10) == -9
+    spared = subprocess.Popen(["sleep", "30"], start_new_session=True)
+    k = R.deadline_killer(str(spared.pid), 0.5)
+    R.cancel_killer(k)
+    time.sleep(1.0)
+    assert spared.poll() is None
+    spared.kill()
+    spared.wait()
+
+
+class _CP:
+    def __init__(self, verdicts):
+        self.verdicts, self.calls = list(verdicts), 0
+
+    def modal_cli_json(self, args):
+        return []
+
+    def verify_stopped(self, app_id, modal_json):
+        self.calls += 1
+        return {"app_id": app_id, "verified": self.verdicts.pop(0)}
+
+
+def test_cleanup_verify_requires_stopped_and_retries_lagging_tasks(tmp_path):
+    (tmp_path / "run.json").write_text(json.dumps({"app_id": "ap-TEST"}))
+    stops = []
+    rec = R.cleanup_verify(tmp_path, cp=_CP([False, False, True]), stopper=lambda a: stops.append(a), sleep=lambda s: None)
+    assert rec["status"] == "stopped_verified" and stops == ["ap-TEST"] and len(rec["checks"]) == 3
+    rec = R.cleanup_verify(tmp_path, attempts=2, cp=_CP([False, False]), stopper=lambda a: None, sleep=lambda s: None)
+    assert rec["status"] == "shutdown_unresolved"
+    (tmp_path / "run.json").write_text(json.dumps({"app_id": None}))
+    assert R.cleanup_verify(tmp_path, cp=_CP([]), stopper=lambda a: None)["status"].startswith("unresolved")
+    assert json.loads((tmp_path / "cleanup.json").read_text())["status"].startswith("unresolved")
+    never = tmp_path / "client-failed-before-entrypoint"                       # no run.json at all
+    assert R.cleanup_verify(never, cp=_CP([]), stopper=lambda a: None)["status"].startswith("unresolved")
+
+
+def test_ledger_reservation_within_user_cap():
     led = R.ledger()
-    assert led["outer_s"] == R.CAMPAIGN_S + R.CLIENT_TAIL_S and led["image_build_usd"] == 0.0
-    assert R.CHILD_S < R.FUNCTION_S and led["bound_usd"] <= R.CAP_USD == 4.0
-    assert led["extra_unenforced_seconds_before_cap"] > 0
+    assert led["outer_s"] == R.CAMPAIGN_S + R.CLIENT_TAIL_S and led["image_construction_usd"] == 0.0
+    assert R.CHILD_S < R.FUNCTION_S and R.STARTUP_S < R.MIN_ARM_S and led["reservation_usd"] <= R.CAP_USD == 4.0
+    assert led["cpu_overuse_margin"] > 1.0 and "app-stop latency" in led["unenforced"]
