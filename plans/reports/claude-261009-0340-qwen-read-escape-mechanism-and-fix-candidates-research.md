@@ -1,4 +1,16 @@
-# Why Qwen taskhead reads escape the memory: mechanism and fix candidates (research note)
+# Why Qwen taskhead reads escape the memory: mechanism and fix candidates (research note, r2)
+
+## r2: reconciled with codex's independent review 22067/22068 (`plans/reports/codex-261009-gravity-22059-address-gradient-review/`). These corrections supersede the r1 text below where they conflict.
+1. **No universal repulsion.** For an occupied bank, r = β(q·k)·v·K(a_read, a_write). The routing gradient's sign depends on (∂L/∂r)·v and q·k. A helpful stored value ATTRACTS the read (codex CPU example: +0.266 toward the write); a harmful one REPELS it (−0.417). So M2 ("leaving is loss-favourable") is conditional. It can equally be served by shrinking head/v/β/content alignment, and it does not uniquely select a spatial escape or the observed negative q·k.
+2. **M1 as stated is incomplete.** The AddressMLP is SHARED by reads (input q = W_q z) and writes (input k = W_k z). A shared shift of the AddressMLP output, such as its final bias, translates reads AND writes equally, so a coherent Adam step plus high q-similarity does not by itself explain why they SEPARATE.
+   - Separation needs read and write addresses to move DIFFERENTLY: different W_q vs W_k updates, or different AddressMLP Jacobians at the (tight) q-cluster vs the (tight) k-cluster.
+   - That differential motion is the missing measurement. M1 is restated as: "anisotropy makes reads one tight block and writes another; early Adam steps move each block coherently but at different velocities". This is still a hypothesis.
+3. **E3 corrected.** The equal 0.198 / 0.0198 first-update address statistic is a SUM of per-tensor norms (concatenated ≈ 0.142 for A0). Parameter count plus Adam explains the equality across layers. It is not a measurement of coordinate motion.
+4. **F3a corrected.** An absent-mass auxiliary loss is ALSO flat once every positive-weight stencil cell is absent (the weights sum to 1). It can only resist exits while the read still overlaps occupied cells; it cannot recover an escaped read. Recovery needs a distance/anchor signal (e.g. pull toward the nearest occupied cell) or an occupied-cell fallback. Renormalizing over occupied cells alone also cannot recover a fully absent read.
+5. **F2 corrected.** Lowering or warming only the AddressMLP lr does not freeze routing, because the q/k projections still change its inputs. The candidate must cover the whole routing path (q_proj, k_proj, AddressMLP), or separate routing projections from content projections.
+6. **F1 rationale corrected.** PKM's top-k always selects existing trainable slots; its low coverage is not our absent-cell lookup. Our q/k are already L2-normalized, so the relevant variant is removing the SHARED DIRECTION (centering/whitening the routing inputs), not normalization as such. PKM stays an analogy, not precedent for this exact failure.
+7. **A2 is not a certified ceiling.** A constant address map also gives zero supervised pair loss. A2 is still NOT RUN.
+8. Keep **retention** (reads stay on occupied cells) distinct from **useful retrieval**. One failed fix would not prove the design dead.
 
 User 22058: "leave the GPU alone, do further research first". This note uses no new compute. It reads saved Stage A / diagnosis telemetry on CPU and a short literature check. Everything here is descriptive or hypothesis, nothing is proven.
 
@@ -36,7 +48,7 @@ User 22058: "leave the GPU alone, do further research first". This note uses no 
 | F5 a design change: content-based top-k over occupied cells (never empty) instead of a spatial stencil | trap | PKM, Memorizing Transformers | a separate design track |
 | A2 (supervised ceiling, still untested) | — | — | the Stage A A2 arm |
 
-**Recommendation.** When the GPU or Modal is allowed and approved: one 100-update screen with F1 + F2 (both unsupervised and deployable), with A2 as the supervised ceiling. A kept band separates "fixable within this design" from "redesign (F5)". Note that E6 means train loss is not evidence of memory learning in phase 1. Keep the absent-read band as the endpoint.
+**Recommendation (r2).** First, a $0 measurement when compute is allowed: the per-update DIFFERENTIAL motion of the read vs write address clusters over updates 0–25 (W_q/W_k/AddressMLP contributions). It tests the restated M1 before choosing a fix. Then one 100-update screen with F1 (centered routing inputs) + F2 (whole-routing-path warm-up), and a distance-anchor F3 variant if the read still escapes. A2 is supervised and not a certified ceiling (r2 #7). Superseded r1 text: "When the GPU or Modal is allowed and approved: one 100-update screen with F1 + F2 (both unsupervised and deployable), with A2 as the supervised ceiling." A kept band separates "fixable within this design" from "redesign (F5)". Note that E6 means train loss is not evidence of memory learning in phase 1. Keep the absent-read band as the endpoint.
 
 ## Unresolved
 - The block-shift size per early step was not measured (it needs a Qwen forward; CPU is possible but RAM is tight while smollm runs).
