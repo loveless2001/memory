@@ -1,0 +1,69 @@
+{
+ "name": "toy-p2c-curriculum-taskhead-s0-grad-at-init",
+ "kind": "grad_at_init",
+ "entry": {
+  "name": "toy-p2c-curriculum-taskhead-s0-grad-at-init",
+  "kind": "grad_at_init",
+  "manifest": "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s0/run_manifest.json",
+  "manifest_sha256": "4914e50df9e21587d1f10bd2a9e3ab0d72384eaf1b55d2393f41af892f891702",
+  "telemetry": "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s0/routing_telemetry.jsonl",
+  "telemetry_sha256": "74b5d12909f02efc51cfcbaa33323021f9ba884776cbc47bea40670d71023a24",
+  "params": "init",
+  "device": "cpu"
+ },
+ "params_info": {
+  "kind": "init",
+  "label": "deterministic reconstruction, not a saved observation"
+ },
+ "pilot_config": {
+  "arm": "learned",
+  "readout": "taskhead",
+  "n_bindings": 32,
+  "n_queries": 4,
+  "filler_len": 40,
+  "steps": 1500,
+  "batch": 16,
+  "lr": 0.003,
+  "eval_every": 100,
+  "eval_batches": 4,
+  "seed": 0,
+  "sgm": {},
+  "filler_writes": true,
+  "aux_address_lambda": 0.0,
+  "checkpoint_steps": [],
+  "beta_bias_init": null,
+  "filler_len_schedule": [
+   [
+    0,
+    0
+   ],
+   [
+    1000,
+    40
+   ]
+  ],
+  "device": "cpu"
+ },
+ "grad_reach_at_init": {
+  "episodes": 2,
+  "loss": 4.229481220245361,
+  "grad_norm": {
+   "L1/q_proj": 0.40928521081621944,
+   "L1/k_proj": 0.6299427092706096,
+   "L1/value": 0.3457442113739313,
+   "L1/beta": 0.10759718986303861,
+   "L1/address_mlp": 0.32879930986712824,
+   "L1/out_proj": 0.040554177064518124,
+   "L1/alpha": 0.0008177312040860123,
+   "L3/q_proj": 0.520889457221873,
+   "L3/k_proj": 0.5488045032345656,
+   "L3/value": 0.3219599806072567,
+   "L3/beta": 0.08240238549165972,
+   "L3/address_mlp": 0.4873556972086397,
+   "L3/out_proj": null,
+   "L3/alpha": null
+  },
+  "head_grad_norm": 0.531658380283408
+ },
+ "wall_seconds": 2.303234815597534
+}

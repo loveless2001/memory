@@ -1,0 +1,110 @@
+
+qwen-probe-taskhead-s0-init: occ 33.9 eff 16.0 check reproduced logged_acc 0.0352
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    0.044    0.000    0.166    0.048    1.565    0.961    0.978    0.547    0.498    0.006
+      13    0.046    0.000    0.239    0.069    1.316    0.755    0.777    0.690    0.699    0.033
+      20    0.073    0.000    0.156    0.048    1.580    0.842    0.861    0.627    0.661   -0.041
+      27    0.024    0.000    0.215    0.061    1.376    0.891    0.856    0.615    0.623    0.014
+
+qwen-probe-taskhead-s0-step100: occ 36.9 eff 13.3 check reproduced logged_acc 0.0156
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    1.000    1.000    0.000    0.000   11.340    0.738    0.795    0.922    0.936   -0.615
+      13    0.971    0.888    0.000    0.000   10.744    0.830    0.605    0.932    0.944   -0.690
+      20    1.000    0.999    0.000    0.000    9.580    0.631    0.856    0.951    0.941   -0.601
+      27    1.000    0.977    0.000    0.000   11.462    0.521    0.624    0.953    0.955   -0.612
+
+qwen-probe-taskhead-s0-final: occ 44.2 eff 13.7 check reproduced logged_acc 0.0195
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    1.000    1.000    0.000    0.000   17.868    1.480    1.329    0.929    0.943   -0.512
+      13    1.000    1.000    0.000    0.000   12.396    0.635    0.634    0.958    0.950   -0.773
+      20    1.000    1.000    0.000    0.000    9.582    0.631    0.856    0.951    0.941   -0.602
+      27    1.000    1.000    0.000    0.000   16.295    0.715    0.736    0.964    0.967   -0.702
+
+qwen-probe-taskhead-s1-init: occ 32.2 eff 15.7 check reproduced logged_acc 0.0312
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    0.009    0.000    0.312    0.085    0.953    0.899    0.950    0.533    0.513    0.018
+      13    0.006    0.000    0.338    0.095    0.967    0.797    0.808    0.724    0.707    0.064
+      20    0.019    0.001    0.282    0.083    1.097    0.837    0.839    0.628    0.625   -0.006
+      27    0.133    0.018    0.180    0.050    1.840    0.924    0.811    0.593    0.598   -0.027
+
+qwen-probe-taskhead-s1-step100: occ 37.3 eff 10.7 check reproduced logged_acc 0.0273
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    1.000    1.000    0.000    0.000   10.847    0.711    0.768    0.928    0.928   -0.486
+      13    1.000    1.000    0.000    0.000    9.770    0.634    0.705    0.942    0.949   -0.492
+      20    0.966    0.771    0.000    0.000    9.561    0.798    0.871    0.945    0.926   -0.369
+      27    1.000    0.962    0.000    0.000    9.614    0.706    0.686    0.947    0.956   -0.517
+
+qwen-probe-taskhead-s1-final: occ 36.8 eff 10.2 check reproduced logged_acc 0.0000
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    1.000    1.000    0.000    0.000   10.924    0.711    0.742    0.928    0.939   -0.514
+      13    1.000    1.000    0.000    0.000    9.768    0.634    0.710    0.942    0.950   -0.494
+      20    0.965    0.771    0.000    0.000    9.561    0.798    0.871    0.945    0.926   -0.369
+      27    1.000    0.977    0.000    0.000    9.963    0.686    0.673    0.948    0.957   -0.544
+
+qwen-p2p5-learned-n32-residual-s0-final: occ 28.9 eff 10.4 check reproduced logged_acc 0.0664
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    0.729    0.702    0.235    0.069   10.632    0.748    0.545    0.963    0.954   -0.082
+      13    0.719    0.464    0.062    0.016    8.086    0.494    1.324    0.988    0.942   -0.149
+      20    0.501    0.500    0.262    0.070    4.287    0.180    0.719    0.980    0.907   -0.121
+      27    0.296    0.250    0.116    0.038    3.321    0.067    0.400    0.996    0.967   -0.345
+
+qwen-p2p5-oracle-n32-residual-s0-final: occ 297.0 eff 116.9 check reproduced logged_acc 1.0000
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       6    0.000    0.000    1.000    0.353    1.942   33.853   35.421    0.962    0.961    0.843
+      13    0.000    0.000    1.000    0.353    1.942   33.853   35.421    0.993    0.960   -0.101
+      20    0.000    0.000    1.000    0.353    1.942   33.853   35.421    0.998    0.453   -0.010
+      27    0.000    0.000    1.000    0.353    1.942   33.853   35.421    0.919    0.334   -0.020
+
+toy-p2c-curriculum-taskhead-s0-init: occ 44.8 eff 24.3 check reproduced logged_acc 0.0195
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       1    0.000    0.000    0.215    0.060    0.200    1.460    1.487    0.023    0.028    0.005
+       3    0.001    0.000    0.170    0.055    0.805    1.544    1.429    0.043    0.149   -0.023
+
+toy-p2c-curriculum-taskhead-s0-final: occ 70.1 eff 36.1 check reproduced logged_acc 0.6133
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       1    0.000    0.000    0.908    0.225    0.080    1.855    1.847    0.009    0.011    0.900
+       3    0.030    0.006    0.125    0.034    2.120    3.808    2.939    0.276    0.334    0.268
+
+toy-p2c-curriculum-taskhead-s1-init: occ 41.2 eff 20.9 check reproduced logged_acc 0.0078
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       1    0.000    0.000    0.297    0.079    0.255    1.425    1.370    0.005    0.033    0.030
+       3    0.003    0.000    0.232    0.066    0.622    1.393    1.268    0.022    0.163    0.019
+
+toy-p2c-curriculum-taskhead-s1-final: occ 51.1 eff 28.1 check reproduced logged_acc 0.6953
+   layer absent_w  all_abs  in1cell   couple   offset   r_sprd   w_sprd    q_cos    k_cos     q.kb
+       1    0.000    0.000    0.805    0.201    0.155    2.118    2.127    0.005    0.009    0.896
+       3    0.000    0.000    0.576    0.149    0.175    0.898    0.958    0.520    0.402    0.458
+
+toy-p2c-curriculum-taskhead-s0-grad-at-init: loss 4.2295 head_grad 0.531658380283408
+   L1/q_proj          4.093e-01
+   L1/k_proj          6.299e-01
+   L1/value           3.457e-01
+   L1/address_mlp     3.288e-01
+   L1/out_proj        4.055e-02
+   L3/q_proj          5.209e-01
+   L3/k_proj          5.488e-01
+   L3/value           3.220e-01
+   L3/address_mlp     4.874e-01
+   L3/out_proj        None
+
+qwen-probe-taskhead-s0-grad-at-init: loss 4.4329 head_grad 7.737859249402827
+   L6/q_proj          2.254e-01
+   L6/k_proj          2.053e-01
+   L6/value           2.053e-01
+   L6/address_mlp     5.466e-02
+   L6/out_proj        2.405e-03
+   L13/q_proj         9.633e-01
+   L13/k_proj         1.096e+00
+   L13/value          8.804e-01
+   L13/address_mlp    2.570e-01
+   L13/out_proj       6.354e-03
+   L20/q_proj         3.007e+00
+   L20/k_proj         2.503e+00
+   L20/value          2.235e+00
+   L20/address_mlp    5.886e-01
+   L20/out_proj       5.201e-03
+   L27/q_proj         6.699e+00
+   L27/k_proj         9.276e+00
+   L27/value          6.532e+00
+   L27/address_mlp    1.840e+00
+   L27/out_proj       None

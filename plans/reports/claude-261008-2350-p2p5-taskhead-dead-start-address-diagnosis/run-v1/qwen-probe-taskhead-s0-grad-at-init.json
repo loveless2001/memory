@@ -1,0 +1,84 @@
+{
+ "name": "qwen-probe-taskhead-s0-grad-at-init",
+ "kind": "grad_at_init",
+ "entry": {
+  "name": "qwen-probe-taskhead-s0-grad-at-init",
+  "kind": "grad_at_init",
+  "manifest": "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/out/run_manifest.json",
+  "manifest_sha256": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0",
+  "telemetry": "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/out/routing_telemetry.jsonl",
+  "telemetry_sha256": "8df0529558e0c0e4614d3f794224f155613ea7bcfcdd7e4224e57e5289872195",
+  "params": "init",
+  "device": "cuda"
+ },
+ "params_info": {
+  "kind": "init",
+  "label": "deterministic reconstruction, not a saved observation"
+ },
+ "pilot_config": {
+  "arm": "learned",
+  "readout": "taskhead",
+  "n_bindings": 32,
+  "n_queries": 4,
+  "filler_len": 40,
+  "steps": 1500,
+  "batch": 16,
+  "lr": 0.003,
+  "eval_every": 100,
+  "eval_batches": 4,
+  "seed": 0,
+  "sgm": {},
+  "filler_writes": true,
+  "aux_address_lambda": 0.0,
+  "checkpoint_steps": [],
+  "beta_bias_init": null,
+  "filler_len_schedule": [
+   [
+    0,
+    0
+   ],
+   [
+    1000,
+    40
+   ]
+  ],
+  "backbone": "qwen3-0.6b-base",
+  "device": "cuda"
+ },
+ "grad_reach_at_init": {
+  "episodes": 2,
+  "loss": 4.432917594909668,
+  "grad_norm": {
+   "L6/q_proj": 0.22539446082065895,
+   "L6/k_proj": 0.2052708673724605,
+   "L6/value": 0.2052780992902315,
+   "L6/beta": 0.021722519424266645,
+   "L6/address_mlp": 0.05466218451829635,
+   "L6/out_proj": 0.002405165302478931,
+   "L6/alpha": 9.089200697466387e-05,
+   "L13/q_proj": 0.9633340491607892,
+   "L13/k_proj": 1.095919936109803,
+   "L13/value": 0.880376577756942,
+   "L13/beta": 0.15192230183802943,
+   "L13/address_mlp": 0.25701340465571043,
+   "L13/out_proj": 0.006353629378410984,
+   "L13/alpha": 5.6720026676210475e-05,
+   "L20/q_proj": 3.0072090633522652,
+   "L20/k_proj": 2.502737072853431,
+   "L20/value": 2.2350537529610977,
+   "L20/beta": 2.5506346015774075,
+   "L20/address_mlp": 0.5885968196536698,
+   "L20/out_proj": 0.005201331328499614,
+   "L20/alpha": 0.00014268353534049915,
+   "L27/q_proj": 6.698980726456638,
+   "L27/k_proj": 9.275968648090158,
+   "L27/value": 6.532196122410948,
+   "L27/beta": 3.3046552851078017,
+   "L27/address_mlp": 1.8397038603000602,
+   "L27/out_proj": null,
+   "L27/alpha": null
+  },
+  "head_grad_norm": 7.737859249402827
+ },
+ "wall_seconds": 35.26730418205261
+}
