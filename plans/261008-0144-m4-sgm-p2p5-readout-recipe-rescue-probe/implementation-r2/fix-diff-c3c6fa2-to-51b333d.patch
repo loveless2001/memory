@@ -1,0 +1,344 @@
+diff --git a/modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py b/modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py
+index 44872f8..6142b8c 100644
+--- a/modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py
++++ b/modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py
+@@ -44,15 +44,18 @@ def _build_environment():
+ 
+ 
+ app = modal.App(L.APP_NAME)
++# The run_function builder imports THIS file (its SDK-declared source), which loads the sibling slot logic at import:
++# bake the slot logic into a COPY layer BEFORE the builder (codex 21782). The GPU image inherits that layer, so it
++# carries no second slot-logic mount. Tested against the SDK's effective build-stage files.
+ image = (modal.Image.debian_slim(python_version="3.12")
+          .pip_install("huggingface_hub==0.36.2")
++         .add_local_file(L.SLOT_LOGIC_FILE, f"/root/{Path(L.SLOT_LOGIC_FILE).name}", copy=True)
+          .run_function(_build_environment, timeout=1200, cpu=4.0, memory=8 * 1024)
+          .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "M4_SGM_QWEN3_0P6B_DIR": L.MODEL_DIR})
+          .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
+          .add_local_dir("configs", "/root/repo/configs")
+          .add_local_file(L.LEDGER_FILE, f"/root/repo/{L.LEDGER_FILE}")
+          .add_local_file(L.VALIDATOR_FILE, f"/root/repo/{L.VALIDATOR_FILE}")
+-         .add_local_file(L.SLOT_LOGIC_FILE, f"/root/{Path(L.SLOT_LOGIC_FILE).name}")
+          .add_local_file(L.LIFETIME_LOGIC_FILE, f"/root/{Path(L.LIFETIME_LOGIC_FILE).name}"))
+ # the scheduled reaper needs ONLY the shared lifetime logic + the slot logic it is loaded with (no GPU stack)
+ reaper_image = (modal.Image.debian_slim(python_version="3.12")
+diff --git a/scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py b/scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py
+index b6a3074..6208987 100644
+--- a/scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py
++++ b/scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py
+@@ -8,32 +8,50 @@ with the frozen probe registry and schema.
+   probe cells and their populations are never used.
+ - Batch 2: the local RTX 3060 Laptop has 6 GB, and the batch-16 N32 profile ran out of memory. The smoke checks the
+   output contract on the real Qwen graph, not timing.
+-- Bounds: <= 20 updates. A SIGKILL Watchdog covering the whole 3,600 s (load, evaluation, cleanup) is armed BEFORE the
+-  first model load. Run it under an outer `timeout` too.
++- Bounds (codex 21783/21786): exactly 20 updates.
++  - OUTER, hard: the ONLY launch form is the command below. GNU timeout (not --foreground) puts itself and this
++    process in a NEW process group and SIGKILLs the WHOLE group at 3,600 s from launch: interpreter, imports,
++    workers (the supervisor spawns them without a new session; they also carry PR_SET_PDEATHSIG) and cleanup.
++  - Before any import, output directory or model load, the script checks that its parent is exactly that timeout with
++    this exact argv and that it shares the timeout's process group. It refuses otherwise.
++  - INNER: a SIGKILL Watchdog of 3,540 s, armed before any heavy import or model load. It fires BEFORE the outer
++    bound, so its out-of-group sleeper never outlives the group.
+ - Partial evidence is kept. There is NO automatic retry, and an OOM or error is reported as-is.
+ 
+-    timeout --kill-after=30 3660 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>
++    timeout --signal=KILL 3600 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>
+ """
+ 
+ import argparse
+ import importlib.util
+ import json
++import os
+ import sys
+ import time
+ from pathlib import Path
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+-sys.path.insert(0, str(ROOT))
+-from memsub.sgm.p2d_launch_guard import Watchdog  # noqa: E402
+-from memsub.sgm.synthetic_pilot_run import source_tree_sha256  # noqa: E402
+-
+-WALL_S, CELL = 3600, "smoke-taskhead-learned-n32-s7"
++OUTER_BOUND = ("timeout", "--signal=KILL", "3600")   # the ONE launch form; its group KILL covers the whole tree
++INNER_S, CELL = 3540, "smoke-taskhead-learned-n32-s7"
+ SMOKE_EVAL = {"final_batches": 1, "final_batch_size": 4, "final_seed_base": 777_100, "dev_seed": 777_001,
+               "train_eval_seed_base": 777_200}
+ SMOKE_OVERRIDE = {"seed": 7, "batch": 2, "steps": 20, "eval_every": 10, "eval_batches": 1,
+                   "filler_len_schedule": [[0, 0], [10, 40]]}
+ 
+ 
++def outer_bound_problem() -> str | None:
++    """None iff the parent is `timeout --signal=KILL 3600 <this exact argv>` and this process is in its group."""
++    try:
++        parent = [x.decode() for x in Path(f"/proc/{os.getppid()}/cmdline").read_bytes().split(b"\0")[:-1]]
++    except OSError as e:
++        return f"parent command line unreadable: {e!r}"
++    if (not parent or Path(parent[0]).name != OUTER_BOUND[0] or tuple(parent[1:3]) != OUTER_BOUND[1:]
++            or parent[3:] != list(sys.orig_argv)):
++        return f"launch ONLY as `{' '.join(OUTER_BOUND)} <python> <this script> --out <new dir>`; parent argv {parent}"
++    if os.getpgid(0) != os.getppid():
++        return "not in the outer timeout's process group"
++    return None
++
++
+ def load(rel: str, name: str):
+     s = importlib.util.spec_from_file_location(name, ROOT / rel)
+     m = importlib.util.module_from_spec(s)
+@@ -58,13 +76,19 @@ def observed_nulls(out: Path) -> dict:
+ 
+ 
+ def main():
++    problem = outer_bound_problem()                             # FIRST: before any import, output dir or model load
++    if problem:
++        raise SystemExit(f"refusing the smoke: {problem}")
+     ap = argparse.ArgumentParser()
+     ap.add_argument("--out", type=Path, required=True)
+     a = ap.parse_args()
+     a.out.mkdir(parents=True, exist_ok=False)                  # own namespace; never reused
+     t0 = time.time()
+-    wd = Watchdog(WALL_S)                                       # BEFORE any model load
++    sys.path.insert(0, str(ROOT))
++    from memsub.sgm.p2d_launch_guard import Watchdog           # stdlib-only module
++    wd = Watchdog(INNER_S)                                      # BEFORE torch and any model load
+     try:
++        from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+         L = load("modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py", "slot_logic")
+         PV = load(L.VALIDATOR_FILE, "probe_validation")
+         pilot = smoke_pilot(L)
+diff --git a/tests/test_sgm_p2p5_readout_probe_build_stage_and_smoke_bound.py b/tests/test_sgm_p2p5_readout_probe_build_stage_and_smoke_bound.py
+new file mode 100644
+index 0000000..03ae3be
+--- /dev/null
++++ b/tests/test_sgm_p2p5_readout_probe_build_stage_and_smoke_bound.py
+@@ -0,0 +1,208 @@
++"""Readout probe: the runner imports from the files each Modal stage REALLY has (codex 21782/21786), and the local
++smoke runs only under its outer process-group KILL bound (codex 21783/21786).
++
++Stage files are read from the pinned SDK's own lazy objects (Modal 1.5.1; no RPC, no build), with the runner imported
++the way `modal deploy <file>` imports it:
++- builder = its FunctionInfo entrypoint mount + the COPY context mounts of the layers BEFORE it. Deferred
++  (final-image) mounts never count for the builder.
++- runtime = the function's entrypoint mount + every COPY layer + every deferred mount of its image.
++Each set is materialised into an empty root and the runner is imported there in a fresh interpreter, as the container
++does (module = file stem, /root on sys.path).
++"""
++
++import ast
++import importlib.util
++import inspect
++import json
++import os
++import shutil
++import subprocess
++import sys
++import time
++from pathlib import Path
++
++import pytest
++from modal._utils.async_utils import synchronizer
++from modal.cli.import_refs import ImportRef, import_file_or_module
++
++ROOT = Path(__file__).resolve().parents[1]
++RUNNER = ROOT / "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py"
++SLOT_LOGIC = "/root/modal-m4-sgm-p2p5-readout-probe-slot-logic.py"
++SMOKE = ROOT / "scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py"
++
++
++@pytest.fixture(scope="module")
++def runner():
++    saved = list(sys.path)
++    try:
++        yield import_file_or_module(ImportRef(str(RUNNER), use_module_mode=False))
++    finally:
++        sys.path[:] = saved
++        sys.modules.pop(RUNNER.stem, None)
++
++
++def layers(img) -> list:
++    """Root-first [(kind, obj)]: 'copy' COPY context mount, 'build' run_function, 'mount' deferred mount, 'other'."""
++    img, out = synchronizer._translate_in(img), []
++    while img is not None:
++        nl = inspect.getclosurevars(img._load).nonlocals
++        if "base_image" in nl and "mount" in nl:                    # deferred (runtime-only) mount layer
++            out.append(("mount", nl["mount"]))
++            img = nl["base_image"]
++            continue
++        fn, ctx = nl.get("build_function"), nl.get("context_mount_function")
++        out.append(("build", fn) if fn is not None else ("copy", ctx()) if ctx and ctx() else ("other", None))
++        bases = list(nl.get("base_images", {}).values())
++        img = bases[0] if bases else None
++    return out[::-1]
++
++
++def entries(mounts) -> dict:
++    """remote path -> local source, for file and directory entries only (anything else fails closed)."""
++    out = {}
++    for m in mounts:
++        for e in m._entries:
++            local = Path(getattr(e, "local_file", None) or e.local_dir)
++            assert type(e).__name__ in ("_MountFile", "_MountDir"), e
++            out[str(e.remote_path)] = local if local.is_absolute() else ROOT / local
++    return out
++
++
++def import_from(files: dict, fs: Path) -> subprocess.CompletedProcess:
++    for remote, local in files.items():
++        dst = fs / remote.lstrip("/")
++        dst.parent.mkdir(parents=True, exist_ok=True)
++        (shutil.copytree(local, dst, ignore=shutil.ignore_patterns("__pycache__")) if local.is_dir()
++         else shutil.copyfile(local, dst))
++    code = "import importlib, sys; sys.path.insert(0, sys.argv[1]); m = importlib.import_module(sys.argv[2]); print(m.L.SLOT)"
++    return subprocess.run([sys.executable, "-I", "-c", code, str(fs / "root"), RUNNER.stem], cwd=fs / "root",
++                          capture_output=True, text=True, timeout=300)
++
++
++def test_builder_stage_imports_from_its_effective_files_only(runner, tmp_path):
++    lay = layers(runner.image)
++    i = [k for k, _ in lay].index("build")
++    fn = lay[i][1]
++    assert fn._info.raw_f is runner._build_environment and [k for k, _ in lay].count("build") == 1
++    assert "mount" not in [k for k, _ in lay[:i]]                     # nothing deferred can precede a build step
++    source = entries(fn._info.get_entrypoint_mount().values())
++    assert source == {f"/root/{RUNNER.name}": RUNNER}                  # the SDK-declared builder source
++    pre = entries(m for k, m in lay[:i] if k == "copy")
++    assert pre == {SLOT_LOGIC: ROOT / "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py"}
++    final = entries(m for k, m in lay[i:] if k == "mount")
++    assert SLOT_LOGIC not in final and not set(final) & set(source)   # final-image mounts never feed the builder
++    ok = import_from({**source, **pre}, tmp_path / "builder")
++    assert ok.returncode == 0 and ok.stdout.strip() == "taskhead-learned-n32", ok.stderr[-2000:]
++    bare = import_from(source, tmp_path / "control")                   # negative control: source only
++    assert bare.returncode != 0 and "FileNotFoundError" in bare.stderr and Path(SLOT_LOGIC).name in bare.stderr
++
++
++@pytest.mark.parametrize("fn_name,img_name", [("run_slot", "image"), ("reaper", "reaper_image")])
++def test_runtime_stages_import_from_their_effective_files(runner, tmp_path, fn_name, img_name):
++    lay = layers(getattr(runner, img_name))
++    info = synchronizer._translate_in(getattr(runner, fn_name))._info
++    files = {**entries(m for k, m in lay if k in ("copy", "mount")), **entries(info.get_entrypoint_mount().values())}
++    assert SLOT_LOGIC in files and f"/root/{RUNNER.name}" in files
++    ok = import_from(files, tmp_path / fn_name)
++    assert ok.returncode == 0 and ok.stdout.strip() == "taskhead-learned-n32", ok.stderr[-2000:]
++
++
++# ---- bounded local smoke: definition and launch boundary (the smoke itself is never run by the tests) -------------
++
++def load(path: Path, name: str):
++    s = importlib.util.spec_from_file_location(name, path)
++    m = importlib.util.module_from_spec(s)
++    s.loader.exec_module(m)
++    return m
++
++
++SM = load(SMOKE, "probe_smoke_t")
++L = load(ROOT / "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py", "probe_slot_logic_bs")
++
++
++def test_smoke_is_exactly_twenty_updates_with_its_own_seed_and_populations():
++    cell = L.probe_cells(json.loads((ROOT / L.GRID_FILE).read_text()))["taskhead-learned-n32-s0"]
++    p = SM.smoke_pilot(L)
++    assert p["steps"] == 20 and p["seed"] == 7 and p["readout"] == "taskhead" and p["n_bindings"] == 32
++    assert {k for k in p if p[k] != cell[k]} <= set(SM.SMOKE_OVERRIDE) and len(p) == len(cell)
++    assert all(start < p["steps"] for start, _ in p["filler_len_schedule"])
++    assert SM.SMOKE_EVAL["final_seed_base"] not in (9_300_011, 9_600_011)
++    assert SM.SMOKE_EVAL["dev_seed"] != L.EVAL["dev_seed"]
++    assert SM.SMOKE_EVAL["train_eval_seed_base"] != L.EVAL["train_eval_seed_base"]
++
++
++def test_smoke_launch_form_and_order():
++    assert SM.OUTER_BOUND == ("timeout", "--signal=KILL", "3600") and SM.INNER_S < 3600
++    cmd = "timeout --signal=KILL 3600 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out"
++    assert cmd in SM.__doc__ and "--kill-after" not in SMOKE.read_text()
++    body = SMOKE.read_text().split("def main")[1]
++    order = ["outer_bound_problem()", "mkdir(parents=True, exist_ok=False)", "Watchdog(INNER_S)",
++             "synthetic_pilot_run", "ProbeSlotSupervisor("]
++    assert [body.index(x) for x in order] == sorted(body.index(x) for x in order)
++    top = [n for n in ast.parse(SMOKE.read_text()).body if isinstance(n, (ast.Import, ast.ImportFrom))]
++    names = {a.name for n in top if isinstance(n, ast.Import) for a in n.names} | {n.module for n in top
++                                                                                  if isinstance(n, ast.ImportFrom)}
++    assert names == {"argparse", "importlib.util", "json", "os", "sys", "time", "pathlib"}   # stdlib only before the check
++
++
++def _run(argv, **kw):
++    return subprocess.run(argv, capture_output=True, text=True, timeout=120, **kw)
++
++
++CHECK = ("import importlib.util, sys; s = importlib.util.spec_from_file_location('sm', sys.argv[1]); "
++         "m = importlib.util.module_from_spec(s); s.loader.exec_module(m); print(repr(m.outer_bound_problem()))")
++
++
++def test_outer_bound_check_accepts_only_the_exact_timeout_parent():
++    py = [sys.executable, "-I", "-c", CHECK, str(SMOKE)]
++    assert _run(["timeout", "--signal=KILL", "3600", *py]).stdout.strip() == "None"
++    for bad in ([], ["timeout", "--signal=KILL", "3599"], ["timeout", "3600"], ["timeout", "--signal=TERM", "3600"],
++                ["timeout", "--foreground", "--signal=KILL", "3600"]):
++        out = _run([*bad, *py]).stdout.strip()
++        assert out != "None" and ("launch ONLY" in out or "process group" in out), (bad, out)
++    left = [sys.executable, "-I", "-c", "import os; os.setpgid(0, 0); " + CHECK, str(SMOKE)]   # exact parent, own group
++    assert "process group" in _run(["timeout", "--signal=KILL", "3600", *left]).stdout
++    wrapped = ["timeout", "--signal=KILL", "3600", "sh", "-c", 'exec "$0" "$@"', *py]    # right prefix, other command
++    assert "launch ONLY" in _run(wrapped).stdout
++
++
++def test_smoke_refuses_without_the_bound_before_creating_its_output(tmp_path):
++    r = _run([sys.executable, str(SMOKE), "--out", str(tmp_path / "x")], cwd=ROOT)
++    assert r.returncode != 0 and "refusing the smoke" in r.stderr and not (tmp_path / "x").exists()
++
++
++TREE = """import os, subprocess, sys, time
++open(sys.argv[1], "a").write(f"{os.getpid()} {os.getpgid(0)}\\n")
++if int(sys.argv[2]) > 0:     # spawn like the supervisor spawns workers: plain Popen, no new session
++    subprocess.Popen([sys.executable, "-I", "-c", sys.argv[3], sys.argv[1], str(int(sys.argv[2]) - 1), sys.argv[3]])
++time.sleep(60)
++"""
++
++
++def _alive(pid: int) -> bool:
++    try:
++        return Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0] != "Z"
++    except OSError:
++        return False
++
++
++def test_outer_kill_bound_terminates_the_whole_process_tree(tmp_path):
++    """The SAME launch form with a 2 s duration on a harmless 3-deep tree: every process is SIGKILLed with the group."""
++    pids = tmp_path / "pids"
++    t0 = time.time()
++    r = _run([*SM.OUTER_BOUND[:2], "2", sys.executable, "-I", "-c", TREE, str(pids), "2", TREE])
++    assert time.time() - t0 < 30 and r.returncode in (-9, 137)
++    rows = [tuple(map(int, x.split())) for x in pids.read_text().splitlines()]
++    assert len(rows) == 3 and len({g for _, g in rows}) == 1             # one group: the timeout's
++    deadline = time.time() + 10
++    while any(_alive(p) for p, _ in rows) and time.time() < deadline:
++        time.sleep(0.1)
++    assert not any(_alive(p) for p, _ in rows)
++
++
++def test_supervisor_spawns_workers_inside_the_group():
++    tree = ast.parse((ROOT / "memsub/sgm/packed_slot_supervisor.py").read_text())
++    pops = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and ast.unparse(n.func) == "subprocess.Popen"]
++    assert len(pops) == 1
++    assert not {k.arg for k in pops[0].keywords} & {"start_new_session", "process_group", "preexec_fn"}
++    assert "PR_SET_PDEATHSIG" in (ROOT / "memsub/sgm/packed_slot_worker.py").read_text()
+diff --git a/tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py b/tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py
+index 9bb3b43..17e334e 100644
+--- a/tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py
++++ b/tests/test_sgm_p2p5_readout_probe_runner_reaper_reading.py
+@@ -300,17 +300,3 @@ def test_ledger_prices_the_full_deadline_from_v6():
+     for bad in (math.nan, math.inf, True, 0, -1):
+         with pytest.raises(SystemExit):
+             L.deadline_s({"deadline_s": bad})
+-
+-
+-# ---- bounded local smoke (definition only; never run by the tests) -----------------------------------------------
+-
+-def test_smoke_is_bounded_and_uses_its_own_seed_and_populations():
+-    sm = load("scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py", "probe_smoke_t")
+-    p = sm.smoke_pilot(L)
+-    assert p["seed"] == 7 and p["steps"] <= 50 and p["readout"] == "taskhead" and p["n_bindings"] == 32
+-    assert sm.WALL_S == 3600 and sm.SMOKE_EVAL["final_seed_base"] not in (9_300_011, 9_600_011)
+-    assert sm.SMOKE_EVAL["dev_seed"] != L.EVAL["dev_seed"] and sm.SMOKE_EVAL["train_eval_seed_base"] != L.EVAL["train_eval_seed_base"]
+-    src = (ROOT / "scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py").read_text()
+-    body = src.split("def main")[1]
+-    assert body.index("Watchdog(WALL_S)") < body.index("ProbeSlotSupervisor(")     # armed before any model load
+-    assert "mkdir(parents=True, exist_ok=False)" in body                            # own, never-reused namespace
