@@ -79,7 +79,8 @@ def test_s2_path_runs_end_to_end_with_planted_signal_and_fake_output_fails_recei
     assert json.loads((tmp_path / "o" / "status.json").read_text())["state"] == "COMPLETE"
     # codex 22412 counterexample: this fake output must NOT validate as an S2 receipt, even with exit 0
     (tmp_path / "o.exit").write_text("0\n")
-    with pytest.raises(RuntimeError):
+    assert json.loads((tmp_path / "o" / "run.json").read_text()) == res["run"]     # producer binding holds
+    with pytest.raises(RuntimeError, match="episode counts"):                      # refused for the fake schema (8+6 eps), not run.json
         _load(RX_PATH, "pkrx_s2_check").validate_receipt(tmp_path / "o", "s2")
 
 
@@ -254,3 +255,45 @@ def test_strict_json_reader_rejects_nan(tmp_path):
         rx.strict_json(f)
     f.write_text('{"a": 1.5}')
     assert rx.strict_json(f) == {"a": 1.5}
+
+
+def _frozen_fake_capture_module(rx, d=1024):
+    """Fake capture with the FROZEN shapes (4 layers, 1024-dim) and schema-correct identities; no model."""
+    rng = np.random.default_rng(1)
+    vocab = rng.normal(size=(12000, d)).astype(np.float32)
+
+    def capture(runtime, backend, pcfg, split, n, seed, batch=4, log=print):
+        g = np.random.default_rng(seed)
+        lo = 10000 if split == "train" else 10800
+        keys = np.stack([lo + g.permutation(200)[:32] for _ in range(n)])
+        vals = 3000 + g.integers(0, 64, size=(n, 32))
+        out = {"layers": list(rx.LAYERS), "key_ids": keys, "value_ids": vals}
+        for l in rx.LAYERS:
+            out[f"zk_L{l}"] = (vocab[keys] + 0.01 * g.normal(size=(n, 32, d))).astype(np.float32)
+            base = vocab[keys] if l == 6 else g.normal(size=(n, 32, d))
+            out[f"zv_L{l}"] = (base + 0.01 * g.normal(size=(n, 32, d))).astype(np.float32)
+        return out
+
+    ids = {"pilot_config_resolved": rx.expected_pilot_config(),
+           "sgm_config_resolved": {"selected_layers": list(rx.LAYERS), "feature_shift": 1},
+           "backbone_pin": json.loads(json.dumps(rx.QWEN3_0P6B_BASE)), "initial_adapter_params_sha256": "c" * 64,
+           "torch_version": "fake", "torch_threads": 8}
+    return types.SimpleNamespace(load_model=lambda: (None, None, None), capture=capture,
+                                 identities=lambda rt, pcfg: ids, embeddings=lambda rt, x: vocab[x])
+
+
+def test_producer_to_validator_success_s1_s2_full_wall(tmp_path, monkeypatch):
+    """codex 22418: an ordinary successful S1/S2 produced by the real run script must validate."""
+    rx = _load(RX_PATH, "pkrx_prod")
+    fake = _frozen_fake_capture_module(rx)
+    for mode, wall in (("s1", "1800"), ("s2", "2400")):
+        R = _runner(f"pkrun_prod_{mode}", fake)
+        monkeypatch.setattr(R, "profile_and_admit", lambda M, t, n_cap, out_bytes: _admission())   # no full-size profile
+        monkeypatch.setattr(sys, "argv", ["x", "--mode", mode, "--wall-s", wall, "--out", str(tmp_path / mode)])
+        R.main()
+        (tmp_path / f"{mode}.exit").write_text("0\n")
+        run_json = json.loads((tmp_path / mode / "run.json").read_text())
+        assert run_json == json.loads((tmp_path / mode / "result.json").read_text())["run"]
+        v = rx.validate_receipt(tmp_path / mode, mode)
+        assert v["initial_adapter_params_sha256"] == "c" * 64
+    assert rx.full_wall(tmp_path / "s1", tmp_path / "s2") == 2584

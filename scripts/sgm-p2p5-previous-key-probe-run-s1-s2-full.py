@@ -159,6 +159,11 @@ def body(args, R, log) -> None:
         out["admission"] = profile_and_admit(M, t, nf + ne, out_bytes=(args.out / "features.npz").stat().st_size)
         (args.out / "admission.json").write_text(json.dumps(out["admission"], indent=1, allow_nan=False) + "\n")
         log(f"admission {out['admission']['admit']} wall {out['admission']['wall_s']:.0f}s")
+    # final run record: run.json must equal result["run"] (features_sha256 etc. added after the first write; codex 22418).
+    # Normalize once so both files carry the identical JSON encoding of the same record.
+    run = json.loads(json.dumps(run, default=str, allow_nan=False))
+    out["run"] = run
+    (args.out / "run.json").write_text(json.dumps(run, indent=1, allow_nan=False) + "\n")
     (args.out / "result.json").write_text(json.dumps(out, indent=1, default=float, allow_nan=False) + "\n")
     limiter.restore_original_limits()
     log(f"label {rd['label']} (read={rd['read']})")

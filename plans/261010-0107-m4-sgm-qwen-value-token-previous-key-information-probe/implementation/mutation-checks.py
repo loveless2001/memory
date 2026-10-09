@@ -55,6 +55,8 @@ MUTANTS = [
      '    require(ids.get("pilot_config_resolved") == expected_pilot_config(), f"{mode}: resolved PilotConfig differs")', "    pass"),
     ("M27 metric key set not checked", RX,
      '    require(set(met) == want, f"{mode}: metric keys differ from the frozen set")', "    pass"),
+    ("M29 producer final run.json rewrite removed", RUN,
+     '    (args.out / "run.json").write_text(json.dumps(run, indent=1, allow_nan=False) + "\\n")', "    pass"),
     ("M28 admission parts sign/finite not checked", RX,
      '    require(_all_finite(adm) and all(x >= 0 for x in parts), "admission parts must be finite and >= 0")', "    pass"),
     ("M13 model-load test guard removed", "scripts/sgm-p2p5-previous-key-probe-capture-qwen-adapter-inputs.py",
