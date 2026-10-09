@@ -33,14 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MATH_PATH = ROOT / "scripts/sgm-p2p5-previous-key-probe-ridge-retrieval-readings.py"
 CAPTURE_PATH = ROOT / "scripts/sgm-p2p5-previous-key-probe-capture-qwen-adapter-inputs.py"
 RECEIPTS_PATH = ROOT / "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py"
-MODES = {   # split, episodes, seed; smokes use their own seeds (codex 22390 §5)
-    "s1": {"fit": ("train", 2, 9_799_011), "ev": ("heldout", 2, 9_799_021), "cv": False, "wall": 1800,
-           "seeds": {"perm_fit": 9_799_031, "perm_ev": 9_799_032, "folds": 9_799_041, "boot": 9_799_051}},
-    "s2": {"fit": ("train", 4, 9_799_012), "ev": ("heldout", 2, 9_799_022), "cv": True, "wall": 2400,
-           "seeds": {"perm_fit": 9_799_031, "perm_ev": 9_799_032, "folds": 9_799_041, "boot": 9_799_051}},
-    "full": {"fit": ("train", 96, 9_700_011), "ev": ("heldout", 64, 9_700_021), "cv": True, "wall": None,
-             "seeds": {"perm_fit": 9_700_031, "perm_ev": 9_700_032, "folds": 9_700_041, "boot": 9_700_051}},
-}
+# The frozen stage schema (MODES) lives in the stage-receipts module: a single source for run + validation.
 N_BOOT, THREADS, FIXED_LAMBDA = 4000, 8, 1.0
 SETS = ("V", "V+K", "K", "E_v", "V-shuf")
 
@@ -54,7 +47,7 @@ def load(path: Path, name: str):
 def check_wall(args, R) -> None:
     """Before any work: frozen smoke walls; full needs valid S1+S2 receipts and the admitted wall."""
     if args.mode != "full":
-        R.require(args.wall_s == MODES[args.mode]["wall"], f"--wall-s must equal the frozen {MODES[args.mode]['wall']} s")
+        R.require(args.wall_s == R.MODES[args.mode]["wall"], f"--wall-s must equal the frozen {R.MODES[args.mode]['wall']} s")
         return
     R.require(args.s1_dir is not None and args.s2_dir is not None, "full needs --s1-dir and --s2-dir")
     w = R.full_wall(args.s1_dir, args.s2_dir)
@@ -69,14 +62,14 @@ def features(cap: dict, layer: int, keys_emb: np.ndarray, vals_emb: np.ndarray) 
 
 
 def main():
+    R = load(RECEIPTS_PATH, "pkreceipts")
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=MODES, required=True)
+    ap.add_argument("--mode", choices=R.MODES, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--wall-s", type=int, required=True)
     ap.add_argument("--s1-dir", type=Path, default=None)
     ap.add_argument("--s2-dir", type=Path, default=None)
     args = ap.parse_args()
-    R = load(RECEIPTS_PATH, "pkreceipts")
     check_wall(args, R)                                         # before any model load
     args.out.mkdir(parents=True, exist_ok=False)
     R.write_status(args.out, "RUNNING", mode=args.mode)
@@ -100,23 +93,23 @@ def body(args, R, log) -> None:
     import torch
     torch.set_num_threads(THREADS)
     limiter = threadpool_limits(limits=THREADS)                 # real BLAS limit for fitting/profiling
-    m, seeds, t = MODES[args.mode], MODES[args.mode]["seeds"], {"start": time.time()}
+    m, seeds, t = R.MODES[args.mode], R.MODES[args.mode]["seeds"], {"start": time.monotonic()}   # monotonic durations
     run = {"mode": args.mode, "wall_s": args.wall_s, "threads": THREADS, "n_boot": N_BOOT, "seeds": seeds,
            "fit": m["fit"], "ev": m["ev"], "sha256": R.source_shas(), "blas_env": {v: os.environ[v] for v in
            ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}, "threadpools": threadpool_info(),
            "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()}
     (args.out / "run.json").write_text(json.dumps(run, indent=1, default=str, allow_nan=False) + "\n")
     log(f"start mode={args.mode}")
-    pcfg, runtime, backend = C.load_model(); t["loaded"] = time.time()
+    pcfg, runtime, backend = C.load_model(); t["loaded"] = time.monotonic()
     run["identities"] = C.identities(runtime, pcfg)
     (args.out / "run.json").write_text(json.dumps(run, indent=1, default=str, allow_nan=False) + "\n")
     log("model loaded; identities recorded")
     cap_fit = C.capture(runtime, backend, pcfg, *m["fit"], log=log)
     cap_ev = C.capture(runtime, backend, pcfg, *m["ev"], log=log)
-    t["captured"] = time.time()
+    t["captured"] = time.monotonic()
     emb = {k: (C.embeddings(runtime, c["key_ids"]), C.embeddings(runtime, c["value_ids"])) for k, c in (("fit", cap_fit), ("ev", cap_ev))}
     del runtime, backend; gc.collect()                          # release the model before solves
-    t["released"] = time.time(); log("model released")
+    t["released"] = time.monotonic(); log("model released")
     np.savez(args.out / "features.npz", **{f"fit_{k}": v for k, v in cap_fit.items() if k != "layers"},
              **{f"ev_{k}": v for k, v in cap_ev.items() if k != "layers"})
     run["features_sha256"] = hashlib.sha256((args.out / "features.npz").read_bytes()).hexdigest()
@@ -155,7 +148,7 @@ def body(args, R, log) -> None:
         metrics[f"L{layer}/dVK"] = {"point_lo_hi": stats[layer]["dVK"], "two_sided_level": 1 - M.LAYER_ALPHA}
         metrics[f"L{layer}/dVK_vs_K (descriptive)"] = {"point_lo_hi": M.interval(per_ep[(layer, "V+K")] - per_ep[(layer, "K")], idx, M.LAYER_ALPHA)}
         log(f"layer {layer} fitted")
-    t["fitted"] = time.time()
+    t["fitted"] = time.monotonic()
     rd = M.reading(stats, 1 / nb)
     rd["read"] = args.mode == "full"
     rd["note"] = "per-statistic Bonferroni over 4 layers (null family over 8); no joint coverage claimed over mixed verdicts"
@@ -176,7 +169,7 @@ def profile_and_admit(M, t: dict, n_cap: int, out_bytes: int) -> dict:
     dimension-dependent SVD cost (rank up to 1024/2048) enters the bound, not an episode multiplier."""
     rng = np.random.default_rng(0)
     def timed(fn):   # noqa: E306
-        a = time.time(); fn(); return time.time() - a
+        a = time.monotonic(); fn(); return time.monotonic() - a
     y_cv, y_fin = rng.normal(size=(2304, 1024)), rng.normal(size=(3072, 1024))
     cand = rng.normal(size=(64, 32, 1024))
     tm = {}
