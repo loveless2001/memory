@@ -75,6 +75,28 @@ def test_fully_present_read_is_the_spec_read():
     assert float(r) == pytest.approx(spec, abs=1e-6) and float(tr["query_anchor"][0]) == pytest.approx(0, abs=1e-7)
 
 
+def test_fully_supported_reads_are_bitwise_the_spec_read():
+    """codex 22121: with 1 - sum(present weights), FP32 gave m = 1.000000119 at this address
+    (negative fill mass, outward anchor). Missing mass computed directly must give fill and
+    anchor EXACTLY 0 for every fully supported read, incl. random fractional coordinates."""
+    cells = {(x, y): 0.37 * x - 0.11 * y + 0.05 for x in range(-6, 7) for y in range(-6, 7)}
+    banks = _banks([cells])
+    gen = torch.Generator().manual_seed(7)
+    addresses = torch.cat([torch.tensor([[0.7645385, 0.8300079]]),
+                           (torch.rand(200, 2, generator=gen) * 8 - 4)])
+    for a in addresses:
+        a = a.view(1, 1, 2)
+        idx, w = stencil_2d(a)
+        cg, present = banks.gather(0, idx, mask=False)
+        assert all(present)
+        q = torch.full((1, 1, 1), 1.3)
+        trace: dict = {}
+        fill = fill_read(banks, 0, a, w, present, q, 1.0, trace)
+        assert torch.equal(fill, torch.zeros_like(fill)) and float(trace["query_anchor"][0]) == 0.0
+        spec = read_memory(cg, w, q)
+        assert torch.equal(spec + fill, spec)
+
+
 def test_codex_example_fill_gives_soft_address_gradient():
     """codex 22104 review: address (10,0), values 1.5 / -1 at (0,0) / (1,0). Hard nearest
     selection gave address gradient None; the soft fill gives a finite nonzero one."""
@@ -166,7 +188,7 @@ def test_ingest_identical_and_only_query_reads_change():
         assert all(torch.equal(s0.banks.cells[key][c], s1.banks.cells[key][c]) for c in s0.banks.cells[key])
     assert "query_fallback" not in r0["trace"]
     rows = r1["trace"]["query_fallback"]
-    partial = [(l, (row["present_mass"] < 1).unsqueeze(-1)) for l, row in zip(rt1.cfg.selected_layers, rows)]
+    partial = [(l, (row["missing_mass"] > 0).unsqueeze(-1)) for l, row in zip(rt1.cfg.selected_layers, rows)]
     assert any(bool(m.any()) for _, m in partial)                          # the fill is exercised
     for l, m in partial:                                                   # ... and changes those reads
         if m.any():
@@ -174,11 +196,11 @@ def test_ingest_identical_and_only_query_reads_change():
                                    r0["reads"][l][:, -1][m.expand_as(r0["reads"][l][:, -1])])
     assert len(rows) == len(rt1.cfg.selected_layers) == len(r1["trace"]["query_anchor"])
     for l, row in zip(rt1.cfg.selected_layers, rows):
-        same = (row["present_mass"] == 1).unsqueeze(-1)              # [B,H,1]
+        same = (row["missing_mass"] == 0).unsqueeze(-1)              # [B,H,1] exactly supported
         assert torch.equal(torch.where(same, r1["reads"][l][:, -1], 0), torch.where(same, r0["reads"][l][:, -1], 0))
     # the original-stencil absent mass is still what EmptyReadWeight reports (before any fill)
     first = float(r1["trace"]["empty_read_weight"][0])
-    assert first == pytest.approx(float(1 - rows[0]["present_mass"].mean()), abs=1e-6)
+    assert first == pytest.approx(float(rows[0]["missing_mass"].mean()), abs=1e-6)
 
 
 def test_tiny_training_with_fill_and_anchor():

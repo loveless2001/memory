@@ -4,13 +4,17 @@ M4-SGM.md §5.3 spec read; spec: plans/261009-0945-m4-sgm-p2p5-occupied-cell-rea
 Per bank (batch, layer, head) at a QUERY read, with read address a (cells), 3x3 stencil
 weights w_c, presence p_c and the bank's occupied cells j (integer centres c_j, states S_j):
     m      = sum_c w_c p_c                         (original-stencil present mass)
+    u      = sum_c w_c (1 - p_c)                   (missing mass, computed DIRECTLY: exactly 0
+                                                    for a fully supported read, never < 0; in
+                                                    FP32 1 - m can be +-1e-7 there, codex 22121)
     pi_j   = softmax_j(-|a - c_j|^2 / tau)    (computed as softmax_j((2 a.c_j - |c_j|^2) / tau))
-    r      = sum_c w_c S_c^T q  +  (1 - m) * sum_j pi_j S_j^T q
-An empty bank adds nothing (r = 0, anchor 0). m = 1 leaves the spec read unchanged; the fill
-is continuous in a because B-spline weights vanish at the stencil edge. (1 - m) keeps its
+    r      = sum_c w_c S_c^T q  +  u * sum_j pi_j S_j^T q
+An empty bank adds nothing (r = 0, anchor 0). A fully supported read (u = 0 exactly) is the
+spec read bitwise; the fill is continuous in a because B-spline weights vanish at the stencil
+edge. u keeps its
 gradient. The softmax over -|a - c|^2 loses the |a|^2 term, so it reweights stored cells
 but does not pull a read back toward the bank; that is the anchor's job:
-    anchor = (1 - m).detach() * (sqrt(1 + d_min^2) - 1),   d_min = min_j |a - c_j|
+    anchor = u.detach() * (sqrt(1 + d_min^2) - 1),   d_min = min_j |a - c_j|
 (pseudo-Huber: slope <= 1 per cell, gradient toward the nearest occupied cell, whichever
 binding it holds). The anchor only enters the training loss (synthetic_pilot.train).
 Source-ingestion reads and all writes are untouched; only evaluate_query reads use this.
@@ -49,7 +53,9 @@ def fill_read(banks: SparseBankSet, layer: int, a: torch.Tensor, w: torch.Tensor
     Appends detached telemetry to trace["query_fallback"] and the (attached) anchor
     term [B,H] to trace["query_anchor"]."""
     centres, states, mask = occupied_cells(banks, layer)
-    m = (w * torch.tensor(present, dtype=w.dtype, device=w.device).view_as(w)).sum(-1)   # [B,H]
+    present_t = torch.tensor(present, dtype=torch.bool, device=w.device).view_as(w)
+    m = (w * present_t).sum(-1)                                   # [B,H] telemetry only
+    u = (w * ~present_t).sum(-1)                                  # [B,H] missing mass, >= 0
     has = mask.any(-1)                                                                     # [B,H]
     d2 = ((a.unsqueeze(2) - centres) ** 2).sum(-1)                                         # [B,H,N]
     # -|a - c|^2 / tau up to the per-read constant -|a|^2 / tau (softmax-invariant); this
@@ -60,13 +66,13 @@ def fill_read(banks: SparseBankSet, layer: int, a: torch.Tensor, w: torch.Tensor
     pi = torch.softmax(logits, dim=-1)
     fill = torch.einsum("bhn,bhnkv,bhk->bhv", pi, states, q)
     d2min = torch.where(has, d2.masked_fill(~mask, float("inf")).min(-1).values, torch.zeros_like(m))
-    anchor = (1 - m).detach() * (torch.sqrt(1 + d2min) - 1)                     # 0 for an empty bank
+    anchor = u.detach() * (torch.sqrt(1 + d2min) - 1)                           # 0 for an empty bank
     entropy = -(pi * pi.clamp_min(1e-12).log()).sum(-1)
     trace.setdefault("query_fallback", []).append({
-        "present_mass": m.detach(), "has_occupied": has,
+        "present_mass": m.detach(), "missing_mass": u.detach(), "has_occupied": has,
         "nearest_cells": d2min.detach().sqrt(), "support_cells": entropy.detach().exp()})
     trace.setdefault("query_anchor", []).append(anchor)
-    return ((1 - m) * has).unsqueeze(-1) * fill
+    return (u * has).unsqueeze(-1) * fill
 
 
 def query_anchor_loss(query_traces: list) -> torch.Tensor:
