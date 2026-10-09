@@ -1,4 +1,4 @@
-"""B3 mutation checks, v4 (codex 22506/22511; v4 adds the codex 22515 fail-closed/containment guards). Each mutant is applied to a DISPOSABLE copy of the committed HEAD
+"""B3 mutation checks, v5 (codex 22506/22511/22515; v5 adds the 22521 watch-poll ledger mutants). Each mutant is applied to a DISPOSABLE copy of the committed HEAD
 (`git archive HEAD` into a scratch dir); the shared working tree is never written, so a killed run cannot leave a
 mutated source behind (v1 mutated in place and the 2026-10-10 host OOM on M4 left the runner mutated).
 
@@ -17,7 +17,7 @@ import hashlib, json, re, shutil, subprocess, sys, tempfile, time, types
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 WORKTREE = HERE.parents[2]
-OUT = HERE / "b3-mutation-checks-v4.json"            # v2/v3 evidence is kept as is
+OUT = HERE / "b3-mutation-checks-v5.json"            # v2-v4 evidence is kept as is
 MEM_MAX, SWAP_MAX, WALL_S, TAIL_BYTES = "2000M", "0", 300, 256 * 1024
 RUN = "modal-runners/modal-m4-sgm-p2p5-b3-shift2-fill-long-run-runner.py"
 TRAIN = "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py"
@@ -66,8 +66,13 @@ MUTANTS = [
     ("M16 precheck lets a listing error escape", RUN,
      "    except Exception as e:                           # fail closed: an unreadable Volume is NOT a fresh one\n",
      "    except ZeroDivisionError as e:\n", {"test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"}),
-    ("M17 ledger window without the watch grace", RUN, "    window = CAMPAIGN_S + END_MARGIN_S + CLEANUP_S\n",
-     "    window = CAMPAIGN_S + CLEANUP_S\n", {"test_ledger_matches_proposal_v03"}),
+    ("M17 ledger window without the watch grace", RUN, "    window = CAMPAIGN_S + END_MARGIN_S + WATCH_POLL_S + CLEANUP_S\n",
+     "    window = CAMPAIGN_S + WATCH_POLL_S + CLEANUP_S\n", {"test_ledger_matches_proposal_v03"}),
+    ("M18 ledger window without the watch poll lag (codex 22521)", RUN,
+     "    window = CAMPAIGN_S + END_MARGIN_S + WATCH_POLL_S + CLEANUP_S\n",
+     "    window = CAMPAIGN_S + END_MARGIN_S + CLEANUP_S\n", {"test_ledger_matches_proposal_v03"}),
+    ("M19 watch poll decoupled from the ledger constant", RUN, "def watch(out: Path, poll_s: float = WATCH_POLL_S,",
+     "def watch(out: Path, poll_s: float = 90.0,", {"test_ledger_matches_proposal_v03"}),
 ]
 
 

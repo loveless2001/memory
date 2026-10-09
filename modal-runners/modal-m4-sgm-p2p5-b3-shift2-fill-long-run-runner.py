@@ -55,6 +55,7 @@ ARMS = ("B3",)
 CAMPAIGN_S = 23400               # immutable campaign deadline = spawn time + 6.5 h
 FUNCTION_S, STARTUP_S = CAMPAIGN_S, 300
 MAX_STARTS, MIN_START_S, END_MARGIN_S, COMMIT_EVERY_S = 3, 900, 120, 60
+WATCH_POLL_S = 60.0              # watch poll interval: the backstop can be noticed up to one poll late (ledger)
 CLEANUP_S, CAP_USD, BUILD_ALLOWANCE_USD = 300, 17.0, 0.10
 INPUT_MANIFEST = "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json"
 SCRIPT = "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py"
@@ -65,9 +66,10 @@ CONTROL_LOGIC_FILE = "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-lo
 def ledger() -> dict:
     """Conditional reservation in USD against the cap (proposal v0.3 §2, window amended in the package audit):
     max_containers=1, so billed container-seconds <= wall time until the app is stopped, i.e. the campaign
-    (spawn -> deadline) + the watch backstop grace (deadline + END_MARGIN_S) + the cleanup budget."""
+    (spawn -> deadline) + the watch backstop grace (deadline + END_MARGIN_S) + one watch poll of lag (WATCH_POLL_S)
+    + the full cleanup budget, which cleanup_verify still receives after a late poll (codex 22521)."""
     rate = GPU_USD_S + CPU_OVERUSE_MARGIN * CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S
-    window = CAMPAIGN_S + END_MARGIN_S + CLEANUP_S
+    window = CAMPAIGN_S + END_MARGIN_S + WATCH_POLL_S + CLEANUP_S
     compute = window * rate
     total = compute + BUILD_ALLOWANCE_USD
     return {"rate_usd_s": rate, "cpu_overuse_margin": CPU_OVERUSE_MARGIN, "campaign_s": CAMPAIGN_S,
@@ -76,7 +78,7 @@ def ledger() -> dict:
             "assumptions": [f"<= {CPU_OVERUSE_MARGIN * CPU_CORES:g} billed CPU cores (Modal CPU limits are soft)",
                             f"<= {window} aggregate billed container-seconds across ALL starts and container "
                             "attempts incl. startup/refusal/retry/crash-reschedule tails (max_containers=1 + the "
-                            "PC-dependent watch stopping the app by deadline + grace + cleanup)",
+                            "PC-dependent watch stopping the app by deadline + grace + one poll + cleanup; status-call, network and stop tails beyond that are NOT covered)",
                             f"memory billed at <= {MEMORY_GIB} GiB",
                             "the deployed app is stopped within the cleanup window", "rates unchanged",
                             "storage/transfer small and unpriced"],
@@ -408,7 +410,7 @@ def call_state(call_id: str, from_id=None) -> tuple:                         # v
     return ("done", res) if isinstance(res, dict) else ("unknown", "non-dict result")
 
 
-def watch(out: Path, poll_s: float = 60.0, grace_s: float = END_MARGIN_S, state=call_state, cleanup=None,
+def watch(out: Path, poll_s: float = WATCH_POLL_S, grace_s: float = END_MARGIN_S, state=call_state, cleanup=None,
           clock=time.time, sleep=time.sleep) -> dict:
     """Stop + verify the deployed app once the call returned, or at the campaign deadline + grace_s (backstop).
     An unknown state never triggers an early stop."""

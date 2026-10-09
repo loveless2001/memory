@@ -127,11 +127,12 @@ def test_tiny_shift2_fill_runs_finite_and_crash_after_checkpoint_resumes_identic
 # ---------- runner ----------
 
 def test_ledger_matches_proposal_v03():
-    """v0.3 rate; window amended to campaign + watch grace + cleanup = 23,820 s (package audit)."""
+    """v0.3 rate; window amended to campaign + watch grace + one watch poll + cleanup = 23,880 s (codex 22516/22521)."""
     L = R.ledger()
-    assert L["rate_usd_s"] == pytest.approx(0.00067854) and L["window_s"] == 23_400 + 120 + 300
-    assert L["reservation_usd"] == pytest.approx(16.2628228, abs=1e-6)
-    assert L["headroom_usd"] == pytest.approx(0.7371772, abs=1e-6) and L["cap_usd"] == 17.0
+    assert L["rate_usd_s"] == pytest.approx(0.00067854) and L["window_s"] == 23_400 + 120 + 60 + 300
+    assert inspect.signature(R.watch).parameters["poll_s"].default == R.WATCH_POLL_S == 60.0
+    assert L["reservation_usd"] == pytest.approx(16.3035352, abs=1e-6)
+    assert L["headroom_usd"] == pytest.approx(0.6964648, abs=1e-6) and L["cap_usd"] == 17.0
 
 
 def test_fresh_identities_and_bound_memsub():
