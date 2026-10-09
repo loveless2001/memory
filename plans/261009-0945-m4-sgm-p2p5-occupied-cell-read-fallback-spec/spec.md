@@ -20,7 +20,9 @@ Answers codex review 22105 (`plans/reports/codex-261009-gravity-22104-fallback-p
 ## What the gradients do (CPU tests, `tests/test_sgm_occupied_cell_read_fallback.py`)
 - Hard nearest-cell (codex example): address grad None. Soft fill: finite nonzero (`test_codex_example_fill_gives_soft_address_gradient`).
 - Fill only REWEIGHTS stored cells: ‖a‖² cancels, so a read moved 45 cells further away, orthogonally to the cells' spread, gets the same fill and zero fill gradient along that axis (`test_fill_softmax_only_reweights_but_anchor_pulls_back`). No return pull from the fill.
-- Anchor: gradient points at the nearest occupied cell, |g| ≤ 1; reaches AddressMLP through the full runtime (`test_anchor_alone_reaches_the_address_mlp`). It pulls toward ANY occupied cell → restores overlap, not the correct binding.
+- Anchor alone (no task loss), far-empty read (present mass exactly 0): descent direction points at the nearest occupied cell, |g| ≤ 1 (`test_fill_softmax_only_reweights_but_anchor_pulls_back`). It pulls toward ANY occupied cell → restores overlap, not the correct binding.
+- Anchor recipients: everything upstream of the read address — AddressMLP, that layer's q_proj (a_read = AddressMLP(q)), and earlier adapters/features through the frozen backbone. NOT AddressMLP-only (unlike A2's pair loss). (1 − m) is detached inside the anchor only; d_min and a are not. Reduction: mean over queries × layers × batch × heads, then × λ. Checked through the full runtime (`test_anchor_alone_reaches_the_address_mlp`).
+- Stored content: the fill keeps the bank's graph (no detach): grad into each stored state = π_j·q exactly (`test_fill_gradient_reaches_stored_content`).
 
 ## Identity / parity
 - `SGMConfig.read_fallback` ("off" | "occupied_softmax_fill_v1"), `read_fallback_tau`, `read_fallback_anchor`; serialized only when on → every existing policy_id unchanged (tested against Stage A A0 + probe s0 manifests). Non-default τ/λ with "off" rejected.
@@ -37,7 +39,7 @@ Eval: `query_fully_absent_fraction` (m == 0 exactly: read carried entirely by th
 - Cost basis: A0 child 642 s × $0.00066544/s (listed L40S + 4 CPU + 32 GiB) ≈ $0.43 + startup/shutdown + unprofiled fill overhead. Local RTX 3060 Laptop (6 GB) = $0 but uses the GPU (user's call); fit unknown.
 
 ## Full SGM suite (CPU, `sgm-suite-cpu.txt`): 37 failed / 575 passed / 2 skipped
-- New fallback tests: 11/11 pass (`test_sgm_occupied_cell_read_fallback.py`).
+- New fallback tests: 12/12 pass (r2: + stored-content gradient, far-empty assert) (`test_sgm_occupied_cell_read_fallback.py`).
 - 12 failures ALSO fail on unchanged HEAD 95856b1 (`sgm-suite-failed-ids-rerun-at-HEAD.txt`, memsub sha 2eee4228 restored for that rerun, files sha-verified after). Cause: cleanup group A (user 22029, receipt c3651b1) deleted `…/learned-n32-s1/epoch-1/gen-30-step1500.pt`, the terminal checkpoint the P2.5 post-hoc amendment (a17cd40) binds. Not on codex's protected list; I missed it at cleanup time. Pre-existing, not caused by this change.
 - 25 failures only after the change (`failed-only-after-change.txt`): closed P2.5 PK campaign readings/reaper/amendment/registry tooling binds memsub source sha 2eee4228 and refuses ("dependency manifest: memsub source differs") once memsub changes. Guards working as designed. Hence this variant lives on branch `m4-sgm-occupied-fill-v1`; mvp keeps memsub = 2eee4228 (also the Stage A geometry index binding).
 

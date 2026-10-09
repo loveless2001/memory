@@ -101,9 +101,24 @@ def test_fill_softmax_only_reweights_but_anchor_pulls_back():
     assert float(g_fill[0, 0]) != 0.0 and float(g_fill[0, 1]) == 0.0       # reweights x, no y pull
     a = torch.tensor([[7.0, -3.0]], requires_grad=True)
     _, tr = _read(banks, a)
-    (g,) = torch.autograd.grad(query_anchor_loss([tr]), a)
+    assert float(tr["query_fallback"][0]["present_mass"]) == 0.0          # far-empty read
+    (g,) = torch.autograd.grad(query_anchor_loss([tr]), a)                 # anchor ALONE, no task loss
     to_nearest = torch.tensor([0.0, 0.0]) - a.detach()[0]
     assert float((-g[0]) @ to_nearest) > 0 and float(g.norm()) <= 1.0 + 1e-6
+
+
+def test_fill_gradient_reaches_stored_content():
+    """No hidden detach: a fully absent read's fill sends pi_j * q into every stored state."""
+    s0 = torch.tensor([[1.0]], requires_grad=True)
+    s1 = torch.tensor([[-1.0]], requires_grad=True)
+    banks = SparseBankSet(1, (0,), 1, 1, 1, 64)
+    banks.cells[(0, 0, 0)] = {(0, 0): s0, (1, 0): s1}
+    r, tr = _read(banks, torch.tensor([[0.4, 9.0]]), q=2.0)
+    assert float(tr["query_fallback"][0]["present_mass"]) == 0.0
+    g0, g1 = torch.autograd.grad(r.sum(), [s0, s1])
+    pi1 = torch.softmax(torch.tensor([0.0, 2 * 0.4 - 1.0]), 0)[1]          # (2 a.c - |c|^2) / tau
+    assert float(g0) == pytest.approx(2.0 * (1 - float(pi1)), abs=1e-6)
+    assert float(g1) == pytest.approx(2.0 * float(pi1), abs=1e-6)
 
 
 def test_empty_bank_adds_nothing_and_stays_finite():
