@@ -959,7 +959,7 @@ run is authorized by it.
 ## P2.5 → B2 — frozen Qwen3-0.6B sidecar line (2026-10-06 – 2026-10-10, CLOSED)
 
 Closed by the user (#gravity 22357). Full write-up:
-[plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup.md](plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup.md).
+[plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup-r2.md](plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup-r2.md) (r1 kept).
 
 - P2.5 screen (18 cells, 2 seeds): NOT PASSED at N32/N16, memory_use FALSE. Learned N32 reserved accuracy 6.9/5.9% vs random-fixed 12.5/8.9% and oracle 100/97.9%. The reading is post-hoc amended for learned-n32-s1; the original reading "unavailable" is kept.
 - Readout probe (taskhead): rescue not shown (12/1024, 16/1024 vs residual head 74/1024, 65/1024).
