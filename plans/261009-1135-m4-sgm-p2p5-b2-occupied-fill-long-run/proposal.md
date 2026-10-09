@@ -1,4 +1,6 @@
-# B2 occupied-fill long run — proposal v0.1 (NOT launched)
+# B2 occupied-fill long run — proposal v0.2 (NOT launched)
+
+v0.2 (codex 22153 HOLD on 77e6a36): child guard armed inside the child-ownership try/finally (`supervise_child`); attempt evidence archived, never deleted (OUT.archive/start-n); run dir + checkpoints bound to campaign/memsub/script/base-manifest/PilotConfig identity, start-1 refuses a populated Volume run dir and later starts must match `campaign.json`; summary INVALID on duplicate/missing evals, wrong totals, non-int/out-of-range counts, non-finite weights or a bad derange eval; significance claim removed (thresholds are exploratory operational).
 
 User 22149 chose option 2 (22147): a proper long run, cap to be quoted before launch. Launch needs codex package clearance + user OK on the cap below + chat_read right before. GPU stop (22058) otherwise stands.
 
@@ -11,7 +13,8 @@ With `occupied_softmax_fill_v1` (fill + anchor), does the taskhead learn to USE 
 - Source: branch `m4-sgm-occupied-fill-v1` (this package commit), memsub d86639b9… (runner refuses any other tree). Dev only; reserved seeds untouched.
 
 ## Pre-registered readout (no tuning after)
-- **memory_used** iff final dev correct(none) ≥ 12/256 (P < 0.001 under Binomial(256, 1/64)) AND paired drop correct(none) − correct(bank_derange) ≥ 6 (same 64 episodes; each episode reads another episode's complete banks).
+- **memory_used** iff final dev correct(none) ≥ 12/256 (chance 4) AND paired drop correct(none) − correct(bank_derange) ≥ 6 (same 64 episodes; each episode reads another episode's complete banks). EXPLORATORY operational thresholds: no significance claim (4 queries share each of 64 episodes, so the 256 are not independent trials).
+- VALID only if every registered dev eval (0..1500 by 100) occurs exactly once with integer counts over total 256, a finite pre-fill weight in [0, 1], and the derange eval is over the same 256.
 - memory_used = true → "the fill+anchor variant used memory on held-out episodes, this seed". Not attributable to fill vs anchor; one seed; not a general Qwen claim.
 - memory_used = false → "no demonstrated memory use for this variant/seed/recipe". Not "Qwen cannot use memory".
 - Reported beside, never criteria: pre-fill absent mass at every eval (band at 1500 with Stage A thresholds; kept-at-every-eval separately), dev correct curve vs probe s0, fill telemetry, read_anchor, task CE (= logged loss − 0.1 × read_anchor).
@@ -34,4 +37,4 @@ One campaign. At most 3 admitted starts (preemption resumes from the last 50-upd
 
 ## Unresolved
 - Long-input-phase step time with the fill (unprofiled).
-- Worker poll/commit loop exercised by mocked checks only (no GPU run yet).
+- Worker poll/commit loop exercised by mocked checks only (`supervise_child` fakes; no GPU run yet).

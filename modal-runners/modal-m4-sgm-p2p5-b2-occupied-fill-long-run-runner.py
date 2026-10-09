@@ -107,6 +107,48 @@ def cancel_killer(proc) -> None:
         proc.wait()
 
 
+def supervise_child(child, deadline: float, child_s: float, t0: float, *, killer=None, commit=None,
+                    killpg=os.killpg, clock=time.time) -> tuple:
+    """Own `child` from the moment it exists: arm its absolute group killer INSIDE the try, poll it
+    (committing the Volume every COMMIT_EVERY_S), kill it at t0 + child_s; on ANY exit path a live
+    child group is SIGKILLed and reaped. -> (returncode or "timeout", commit_errors)."""
+    killer, commit = killer or deadline_killer, commit or safe_commit
+    guard, rc, commit_errors = None, None, 0
+    try:
+        guard = killer(f"-{child.pid}", deadline - clock())
+        while rc is None:
+            left = t0 + child_s - clock()
+            if left <= 0:
+                killpg(child.pid, signal.SIGKILL)
+                child.wait()
+                rc = "timeout"
+                break
+            try:
+                rc = child.wait(timeout=min(COMMIT_EVERY_S, left))
+            except subprocess.TimeoutExpired:
+                commit_errors += commit()        # checkpoints/telemetry survive a preemption
+    finally:
+        if child.poll() is None:                 # any abnormal exit: never leave a trainer behind
+            killpg(child.pid, signal.SIGKILL)
+            child.wait()
+        cancel_killer(guard)
+    return rc, commit_errors
+
+
+def campaign_dir_problem(run: Path, key: str, want: dict) -> str | None:
+    """start-1 needs an EMPTY run dir and records `want`; later starts need exactly `want`."""
+    camp = run / "campaign.json"
+    if key == "start-1":
+        if run.exists() and any(run.iterdir()):
+            return f"{run} already populated before start-1 (foreign or previous campaign)"
+        run.mkdir(parents=True, exist_ok=True)
+        camp.write_text(json.dumps(want, indent=1))
+        return None
+    if not camp.exists() or json.loads(camp.read_text()) != want:
+        return f"{run} does not belong to this campaign"
+    return None
+
+
 def claim_start(starts, info: dict) -> str | None:
     """Atomically claim the first free start-k (k = 1..MAX_STARTS); None when all are used."""
     for k in range(1, MAX_STARTS + 1):
@@ -146,31 +188,18 @@ def run_b2_remote(deadline: float) -> dict:
         remaining = deadline - time.time()               # RE-READ after setup, immediately before the child
         if remaining < MIN_START_S:
             return {"refused": f"only {remaining:.0f}s to the campaign deadline (< {MIN_START_S})", "start": key}
-        child_s = remaining - END_MARGIN_S
         run, arm = Path(RUN_DIR), ARMS[0]
-        run.mkdir(parents=True, exist_ok=True)
+        problem = campaign_dir_problem(run, key, {"app": APP_NAME, "start_dict": START_DICT,
+                                                  "volume": VOLUME_NAME, "deadline": deadline})
+        if problem:
+            return {"refused": problem, "start": key}
+        safe_commit()
+        child_s = deadline - time.time() - END_MARGIN_S      # re-read right before the child starts
         cmd = [sys.executable, SCRIPT, "--manifest", INPUT_MANIFEST, "--out", str(run / arm)]
-        t0, rc, commit_errors = time.time(), None, 0
+        t0 = time.time()
         with open(run / f"{arm}.{key}.stdout.txt", "w") as so, open(run / f"{arm}.{key}.stderr.txt", "w") as se:
             child = subprocess.Popen(cmd, cwd="/root/repo", stdout=so, stderr=se, start_new_session=True)
-            child_guard = deadline_killer(f"-{child.pid}", deadline - time.time())   # the child's own group
-            try:
-                while rc is None:
-                    left = t0 + child_s - time.time()
-                    if left <= 0:
-                        os.killpg(child.pid, signal.SIGKILL)
-                        child.wait()
-                        rc = "timeout"
-                        break
-                    try:
-                        rc = child.wait(timeout=min(COMMIT_EVERY_S, left))
-                    except subprocess.TimeoutExpired:
-                        commit_errors += safe_commit()   # checkpoints/telemetry survive a preemption
-            finally:
-                if child.poll() is None:                 # any abnormal exit: never leave a trainer behind
-                    os.killpg(child.pid, signal.SIGKILL)
-                    child.wait()
-                cancel_killer(child_guard)
+            rc, commit_errors = supervise_child(child, deadline, child_s, t0)
         commit_errors += safe_commit()
         buf = io.BytesIO()
         with tarfile.open(fileobj=buf, mode="w:gz") as tar:
