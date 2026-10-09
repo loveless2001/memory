@@ -1,0 +1,40 @@
+{
+ "campaign": "m4-sgm-p2p5-b2-occupied-fill-long-v1",
+ "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+ "script_sha256": "5be7cd941e43970d6b35dc753fb29641496f74dcee24619aa9795f2cd36a397e",
+ "probe_manifest_sha256": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0",
+ "pilot_config": {
+  "arm": "learned",
+  "readout": "taskhead",
+  "n_bindings": 32,
+  "n_queries": 4,
+  "filler_len": 40,
+  "steps": 1500,
+  "batch": 16,
+  "lr": 0.003,
+  "eval_every": 100,
+  "eval_batches": 4,
+  "seed": 0,
+  "sgm": {
+   "read_fallback": "occupied_softmax_fill_v1",
+   "read_fallback_tau": 1.0,
+   "read_fallback_anchor": 0.1
+  },
+  "filler_writes": true,
+  "aux_address_lambda": 0.0,
+  "checkpoint_steps": [],
+  "beta_bias_init": null,
+  "filler_len_schedule": [
+   [
+    0,
+    0
+   ],
+   [
+    1000,
+    40
+   ]
+  ],
+  "backbone": "qwen3-0.6b-base",
+  "device": "cuda"
+ }
+}

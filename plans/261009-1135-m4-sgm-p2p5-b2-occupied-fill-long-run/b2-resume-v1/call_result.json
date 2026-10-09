@@ -1,0 +1,19 @@
+{
+  "returncode": 0,
+  "start": "start-2",
+  "volume_commit_errors": 0,
+  "wall_s": 8610.676496505737,
+  "child_timeout_s": 13920.185520887375,
+  "versions": {
+    "torch": "2.7.1+cu126",
+    "transformers": "4.55.2"
+  },
+  "cmd": [
+    "/usr/local/bin/python",
+    "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+    "--manifest",
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+    "--out",
+    "/vol/b2-run-v1/B2"
+  ]
+}
