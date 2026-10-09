@@ -20,6 +20,8 @@ Per condition and batch:
 import argparse
 import json
 import math
+import os
+import resource
 import sys
 import time
 from pathlib import Path
@@ -75,6 +77,10 @@ def flat(grads):
     return torch.cat(got) if got else None
 
 
+def rss_gb() -> float:
+    return int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2**30
+
+
 def geometry(rec, reads, batch, layers, n_bind, T, Q):
     """Per layer: means over (episode, query, head) of retrieval-geometry measures (all detached)."""
     s, out = len(SINK_IDS), {}
@@ -121,8 +127,10 @@ def run_condition(cond, args, log):
     gen, layers = torch.Generator().manual_seed(DATA_SEED), runtime.cfg.selected_layers
     names, params = list(groups), [p for ps in groups.values() for p in ps]
     sizes = [len(ps) for ps in groups.values()]
-    G = {"task": {n: [] for n in names}, "anchor": {n: [] for n in names}}
+    # running sum + per-batch norms only (full per-batch gradient vectors are not kept: memory, codex 22319)
+    G = {kind: {n: {"sum": None, "norms": [], "n_none": 0} for n in names} for kind in ("task", "anchor")}
     geo, losses = [], []
+    log(f"{cond} built; {args.batches} batches x batch_size {args.batch_size}; rss {rss_gb():.2f} GB")
     for bi in range(args.batches):
         t0 = time.time()
         for v in rec.values():
@@ -143,26 +151,36 @@ def run_condition(cond, args, log):
         for kind, loss in (("task", task), ("anchor", anchor)):
             if loss is None:
                 continue
-            gs = torch.autograd.grad(loss, params, allow_unused=True, retain_graph=kind == "task")
+            # keep the graph only when the anchor backward still follows (oracle has no anchor; codex 22319)
+            gs = torch.autograd.grad(loss, params, allow_unused=True, retain_graph=kind == "task" and anchor is not None)
             i = 0
             for n, k in zip(names, sizes):
-                G[kind][n].append(flat(gs[i:i + k])); i += k
+                g, acc = flat(gs[i:i + k]), G[kind][n]; i += k
+                if g is None:
+                    acc["n_none"] += 1
+                    continue
+                acc["norms"].append(float(g.norm()))
+                acc["sum"] = g.clone() if acc["sum"] is None else acc["sum"] + g
         losses.append({"task_ce": float(task), "anchor": None if anchor is None else float(anchor),
                        "acc": hits / (args.batch_size * spec.n_queries)})
         geo.append(geometry(rec, reads, batch, layers, spec.n_bindings, spec.source_len(), spec.n_queries))
-        log(f"{cond} batch {bi}: ce {float(task):.4f} acc {losses[-1]['acc']:.3f} {time.time() - t0:.0f}s")
+        ce = float(task)
+        # release this batch's graph (bank state, losses, traces, last query output) before the next ingest
+        del state, task, anchor, traces, out, logits, gs, loss
+        log(f"{cond} batch {bi}: ce {ce:.4f} acc {losses[-1]['acc']:.3f} {time.time() - t0:.0f}s "
+            f"rss {rss_gb():.2f} GB maxrss {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 2**20:.2f} GB")
     grad = {}
     for kind, per in G.items():
-        for n, gl in per.items():
-            if not gl:
-                continue
-            if all(g is None for g in gl):
+        for n, acc in per.items():
+            norms = acc["norms"]
+            if not norms and not acc["n_none"]:
+                continue                                   # this loss was never computed (anchor off)
+            if not norms:
                 grad.setdefault(kind, {})[n] = "None (no graph path)"
                 continue
-            norms = [float(g.norm()) for g in gl]
-            mean = torch.stack(gl).mean(0)
-            grad.setdefault(kind, {})[n] = {"norm_mean": sum(norms) / len(norms),
-                                            "consistency": float(mean.norm()) / max(sum(norms) / len(norms), 1e-30)}
+            nm = sum(norms) / len(norms)
+            grad.setdefault(kind, {})[n] = {"norm_mean": nm, "consistency": float((acc["sum"] / len(norms)).norm()) / max(nm, 1e-30),
+                                            "n_batches": len(norms), "n_none": acc["n_none"]}
     geo_mean = {l: {k: (None if geo[0][l][k] is None else sum(g[l][k] for g in geo) / len(geo))
                     for k in geo[0][l]} for l in geo[0]}
     return {"condition": cond, "pilot_config": {k: getattr(pcfg, k) for k in ("arm", "readout", "n_bindings", "sgm")},
@@ -171,6 +189,7 @@ def run_condition(cond, args, log):
                                   if cond == "final" else "arm oracle (perfect read=write cells), read_fallback off, anchor off "
                                   "(SGMConfig rejects fill with oracle routing)"),
             "batches": args.batches, "batch_size": args.batch_size, "filler_len": FILLER, "data_seed": DATA_SEED,
+            "consistency_unit": f"per-batch gradient = mean over {args.batch_size} episode(s); ratio over {args.batches} batches",
             "noise_consistency_ref": 1 / math.sqrt(args.batches), "chance_ce": math.log(64),
             "chance_top1": 1 / spec.n_bindings, "losses": losses, "grad": grad, "geometry": geo_mean}
 

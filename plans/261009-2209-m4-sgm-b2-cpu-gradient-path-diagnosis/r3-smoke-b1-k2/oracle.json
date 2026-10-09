@@ -1,0 +1,248 @@
+{
+ "condition": "oracle",
+ "pilot_config": {
+  "arm": "oracle",
+  "readout": "taskhead",
+  "n_bindings": 32,
+  "sgm": {}
+ },
+ "differences_vs_b2": "arm oracle (perfect read=write cells), read_fallback off, anchor off (SGMConfig rejects fill with oracle routing)",
+ "batches": 2,
+ "batch_size": 1,
+ "filler_len": 40,
+ "data_seed": 777,
+ "consistency_unit": "per-batch gradient = mean over 1 episode(s); ratio over 2 batches",
+ "noise_consistency_ref": 0.7071067811865475,
+ "chance_ce": 4.1588830833596715,
+ "chance_top1": 0.03125,
+ "losses": [
+  {
+   "task_ce": 4.1894426345825195,
+   "anchor": null,
+   "acc": 0.0
+  },
+  {
+   "task_ce": 4.152883052825928,
+   "anchor": null,
+   "acc": 0.0
+  }
+ ],
+ "grad": {
+  "task": {
+   "L6/q_proj": {
+    "norm_mean": 0.0888214223086834,
+    "consistency": 0.6809659965124091,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L6/k_proj": {
+    "norm_mean": 0.08183299005031586,
+    "consistency": 0.6654200624613168,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L6/value": {
+    "norm_mean": 0.08731823973357677,
+    "consistency": 0.7420037060388911,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L6/beta": {
+    "norm_mean": 0.016952283214777708,
+    "consistency": 0.6360367634433209,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L6/address_mlp": "None (no graph path)",
+   "L6/out_proj": {
+    "norm_mean": 0.0014090246986597776,
+    "consistency": 0.7254186623130798,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L6/alpha": {
+    "norm_mean": 1.0201882560068043e-05,
+    "consistency": 0.17386860235612833,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L13/q_proj": {
+    "norm_mean": 0.29205799102783203,
+    "consistency": 0.6903135153226991,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L13/k_proj": {
+    "norm_mean": 0.25865083187818527,
+    "consistency": 0.6734805437347963,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L13/value": {
+    "norm_mean": 0.24307679384946823,
+    "consistency": 0.7393642616608044,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L13/beta": {
+    "norm_mean": 0.11785902641713619,
+    "consistency": 0.8223543539247511,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L13/address_mlp": "None (no graph path)",
+   "L13/out_proj": {
+    "norm_mean": 0.0018887855694629252,
+    "consistency": 0.7243196873724251,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L13/alpha": {
+    "norm_mean": 3.5321774703334086e-05,
+    "consistency": 1.0000000514976786,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L20/q_proj": {
+    "norm_mean": 0.713419497013092,
+    "consistency": 0.6939301170931073,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L20/k_proj": {
+    "norm_mean": 0.6611644327640533,
+    "consistency": 0.6954758208892253,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L20/value": {
+    "norm_mean": 1.0567901730537415,
+    "consistency": 0.728175137311078,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L20/beta": {
+    "norm_mean": 1.0467837154865265,
+    "consistency": 0.9114606431405918,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L20/address_mlp": "None (no graph path)",
+   "L20/out_proj": {
+    "norm_mean": 0.0017718474264256656,
+    "consistency": 0.7263351603856057,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L20/alpha": {
+    "norm_mean": 4.006982453574892e-05,
+    "consistency": 0.6150179909144554,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L27/q_proj": {
+    "norm_mean": 2.3135451078414917,
+    "consistency": 0.7547736245043971,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L27/k_proj": {
+    "norm_mean": 2.488095760345459,
+    "consistency": 0.7231425291519697,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L27/value": {
+    "norm_mean": 3.00947105884552,
+    "consistency": 0.7013391378259209,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L27/beta": {
+    "norm_mean": 2.298229932785034,
+    "consistency": 0.7363378192277069,
+    "n_batches": 2,
+    "n_none": 0
+   },
+   "L27/address_mlp": "None (no graph path)",
+   "L27/out_proj": "None (no graph path)",
+   "L27/alpha": "None (no graph path)",
+   "head": {
+    "norm_mean": 3.585777521133423,
+    "consistency": 0.7079266994910385,
+    "n_batches": 2,
+    "n_none": 0
+   }
+  }
+ },
+ "geometry": {
+  "L6": {
+   "cos_qk_bound": -0.03588388074422255,
+   "cos_qk_other": -0.024975827218440827,
+   "rank_qk": 16.8125,
+   "top1_qk": 0.03125,
+   "dist_bound": null,
+   "dist_other_median": null,
+   "rank_addr": null,
+   "k_pair_cos": 0.520725816488266,
+   "v_pair_cos": 0.5429688692092896,
+   "cos_read_vbound": -0.3124999962747097,
+   "cos_read_vother": -0.18774235527962446,
+   "rank_read_v": 20.34375,
+   "beta_value": 0.5463573038578033,
+   "beta_filler": 0.5692810118198395,
+   "read_norm": 0.08140626693057129
+  },
+  "L13": {
+   "cos_qk_bound": 0.015711105312220752,
+   "cos_qk_other": 0.011768378044507699,
+   "rank_qk": 14.59375,
+   "top1_qk": 0.0,
+   "dist_bound": null,
+   "dist_other_median": null,
+   "rank_addr": null,
+   "k_pair_cos": 0.7153052091598511,
+   "v_pair_cos": 0.7076487839221954,
+   "cos_read_vbound": 0.12500000186264515,
+   "cos_read_vother": 0.10532024689018726,
+   "rank_read_v": 13.5625,
+   "beta_value": 0.4568827450275421,
+   "beta_filler": 0.4672374725341797,
+   "read_norm": 0.2063706464250572
+  },
+  "L20": {
+   "cos_qk_bound": -0.023403149418300018,
+   "cos_qk_other": -0.012725193009828217,
+   "rank_qk": 15.84375,
+   "top1_qk": 0.0,
+   "dist_bound": null,
+   "dist_other_median": null,
+   "rank_addr": null,
+   "k_pair_cos": 0.6779033243656158,
+   "v_pair_cos": 0.6450554728507996,
+   "cos_read_vbound": -0.2499999925494194,
+   "cos_read_vother": -0.16921690572053194,
+   "rank_read_v": 19.375,
+   "beta_value": 0.3559006601572037,
+   "beta_filler": 0.2550278678536415,
+   "read_norm": 0.6817381781625045
+  },
+  "L27": {
+   "cos_qk_bound": 0.05720064474735409,
+   "cos_qk_other": 0.06598080159164965,
+   "rank_qk": 16.5,
+   "top1_qk": 0.03125,
+   "dist_bound": null,
+   "dist_other_median": null,
+   "rank_addr": null,
+   "k_pair_cos": 0.6872772574424744,
+   "v_pair_cos": 0.6740623116493225,
+   "cos_read_vbound": 0.25,
+   "cos_read_vother": 0.13053243048489094,
+   "rank_read_v": 11.625,
+   "beta_value": 0.7700770497322083,
+   "beta_filler": 0.7181527614593506,
+   "read_norm": 2.628907039105332
+  }
+ }
+}

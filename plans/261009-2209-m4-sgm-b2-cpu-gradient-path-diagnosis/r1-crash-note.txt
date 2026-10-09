@@ -1,0 +1,8 @@
+r1 CRASH NOTE (written 2026-10-09 by claude after reboot)
+r1 = launch.txt in this dir; progress.log/stdout/stderr empty; no JSON written.
+previous boot ended 22:16:09 +07 (journalctl --list-boots). OOM excerpt (journalctl -b -1 -k):
+Oct 09 22:14:32 LAPTOP-JLT9RUVS kernel: tmux invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0
+Oct 09 22:14:32 LAPTOP-JLT9RUVS kernel: oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=init.scope,mems_allowed=0,global_oom,task_memcg=/init.scope,task=python,pid=41365,uid=1000
+Oct 09 22:14:32 LAPTOP-JLT9RUVS kernel: Out of memory: Killed process 41365 (python) total-vm:8863340kB, anon-rss:5693772kB, file-rss:696kB, shmem-rss:0kB, UID:1000 pgtables:13628kB oom_score_adj:0
+probe pid 40919 is absent from the OOM task table; the only large process was pid 41365 (anon-rss 5.69 GB, 212608 swap pages). No other agent launched python 15:11-15:16Z (session logs checked). Attribution to the probe is inferred, not proven.
+after the OOM: systemd-resolved 'Clock change detected' 22:14:59 and 22:15:30; init.scope stop timed out 22:16:00 -> WSL shutdown; trigger on Windows side unknown.
