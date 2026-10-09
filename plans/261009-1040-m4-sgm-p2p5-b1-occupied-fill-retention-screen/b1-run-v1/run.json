@@ -1,0 +1,52 @@
+{
+  "app_id": "ap-ROPSmaSeABkUyr4X1d4RD2",
+  "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+  "base_image_id": "im-A7BXMB8v1cVYRvC9pMqZ3i",
+  "arms_planned": [
+    "B1"
+  ],
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "outer_s": 2640,
+    "stop_allowance_s": 300,
+    "image_construction_usd": 0.0,
+    "reservation_usd": 1.9949076,
+    "cap_usd": 2.5,
+    "cleanup_budget_s": 300,
+    "assumptions": [
+      "the app stops within CLEANUP_S after the client exits (cleanup-verify checks; if unverified: manual stop, and billing past it is NOT covered)",
+      "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+    ],
+    "unenforced": "app-stop latency after client exit; CPU overuse beyond the margin"
+  },
+  "started": 1791518277.7524948,
+  "gpu": "L40S",
+  "cpu": 4.0,
+  "memory_gib": 32,
+  "arms": {
+    "B1": {
+      "outcome": "B1: valid, band partial",
+      "t_start": 1791518278.4248478,
+      "returncode": 0,
+      "wall_s": 1054.2630808353424,
+      "child_timeout_s": 1500,
+      "versions": {
+        "torch": "2.7.1+cu126",
+        "transformers": "4.55.2"
+      },
+      "cmd": [
+        "/usr/local/bin/python",
+        "scripts/sgm-p2p5-b1-occupied-fill-retention-screen-train.py",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/b1-B1-k6jh3kc_/B1"
+      ],
+      "t_end": 1791519365.6283598
+    }
+  },
+  "outcome": "all arms done",
+  "deadline": 1791520677.753763,
+  "client_wall_s": 1087.8761839866638
+}

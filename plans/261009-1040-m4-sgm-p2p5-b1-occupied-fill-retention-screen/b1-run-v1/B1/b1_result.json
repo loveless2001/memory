@@ -1,0 +1,70 @@
+{
+  "arm": "B1",
+  "status": "valid",
+  "absent_read_weight_by_step": {
+    "0": 0.046701195984496735,
+    "25": 0.44204080384224653,
+    "50": 0.4558267258107662,
+    "75": 0.38248789333738387,
+    "100": 0.2600495081860572
+  },
+  "band_at_100": "partial",
+  "kept_through_100": false,
+  "bands": {
+    "escaped": ">= 0.9",
+    "kept": "<= 0.2",
+    "partial": "between"
+  },
+  "fill_by_step": {
+    "0": {
+      "query_fully_absent_fraction": 0.0,
+      "query_without_occupied_fraction": 0.0,
+      "query_nearest_occupied_cells_mean": 0.3890805989799446,
+      "query_fill_support_cells_mean": 7.463224771723617
+    },
+    "25": {
+      "query_fully_absent_fraction": 0.218017578125,
+      "query_without_occupied_fraction": 0.0,
+      "query_nearest_occupied_cells_mean": 1.2948903047345084,
+      "query_fill_support_cells_mean": 4.591105379833607
+    },
+    "50": {
+      "query_fully_absent_fraction": 0.148193359375,
+      "query_without_occupied_fraction": 0.0,
+      "query_nearest_occupied_cells_mean": 1.0688929047341844,
+      "query_fill_support_cells_mean": 4.481983891688287
+    },
+    "75": {
+      "query_fully_absent_fraction": 0.144775390625,
+      "query_without_occupied_fraction": 0.0,
+      "query_nearest_occupied_cells_mean": 0.9774001923749438,
+      "query_fill_support_cells_mean": 4.691063198406482
+    },
+    "100": {
+      "query_fully_absent_fraction": 0.131591796875,
+      "query_without_occupied_fraction": 0.0,
+      "query_nearest_occupied_cells_mean": 0.8044842241619108,
+      "query_fill_support_cells_mean": 5.516262680612272
+    }
+  },
+  "dev_accuracy_by_step": {
+    "0": 0.03515625,
+    "25": 0.01171875,
+    "50": 0.01171875,
+    "75": 0.01171875,
+    "100": 0.03125
+  },
+  "read_anchor_by_logged_step": {
+    "0": 0.012340075336396694,
+    "10": 0.7889794111251831,
+    "20": 0.6819508671760559,
+    "30": 0.716499924659729,
+    "40": 0.6620863080024719,
+    "50": 0.5266367793083191,
+    "60": 0.3371235132217407,
+    "70": 0.53749680519104,
+    "80": 0.5328705906867981,
+    "90": 0.4361981749534607
+  },
+  "note": "band = ORIGINAL-stencil absent mass (pre-fill). A high fully-absent fraction with an escaped band means the fill carries the reads (lookup changed), not restored routing. 100 updates is a routing/mechanics gate, not designed to show retrieval."
+}
