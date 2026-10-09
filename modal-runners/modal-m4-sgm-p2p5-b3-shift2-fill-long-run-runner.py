@@ -63,20 +63,27 @@ CONTROL_LOGIC_FILE = "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-lo
 
 
 def ledger() -> dict:
-    """Conditional reservation in USD against the cap (proposal v0.3 §2)."""
+    """Conditional reservation in USD against the cap (proposal v0.3 §2, window amended in the package audit):
+    max_containers=1, so billed container-seconds <= wall time until the app is stopped, i.e. the campaign
+    (spawn -> deadline) + the watch backstop grace (deadline + END_MARGIN_S) + the cleanup budget."""
     rate = GPU_USD_S + CPU_OVERUSE_MARGIN * CPU_CORES * CPU_USD_CORE_S + MEMORY_GIB * MEM_USD_GIB_S
-    compute = (CAMPAIGN_S + CLEANUP_S) * rate
+    window = CAMPAIGN_S + END_MARGIN_S + CLEANUP_S
+    compute = window * rate
     total = compute + BUILD_ALLOWANCE_USD
     return {"rate_usd_s": rate, "cpu_overuse_margin": CPU_OVERUSE_MARGIN, "campaign_s": CAMPAIGN_S,
-            "cleanup_s": CLEANUP_S, "compute_reservation_usd": compute, "build_allowance_usd": BUILD_ALLOWANCE_USD,
+            "watch_grace_s": END_MARGIN_S, "cleanup_s": CLEANUP_S, "window_s": window, "compute_reservation_usd": compute, "build_allowance_usd": BUILD_ALLOWANCE_USD,
             "reservation_usd": total, "cap_usd": CAP_USD, "headroom_usd": CAP_USD - total,
             "assumptions": [f"<= {CPU_OVERUSE_MARGIN * CPU_CORES:g} billed CPU cores (Modal CPU limits are soft)",
-                            f"<= {CAMPAIGN_S + CLEANUP_S} aggregate billed container-seconds across ALL starts incl. "
-                            "startup/refusal/retry tails", f"memory billed at <= {MEMORY_GIB} GiB",
+                            f"<= {window} aggregate billed container-seconds across ALL starts and container "
+                            "attempts incl. startup/refusal/retry/crash-reschedule tails (max_containers=1 + the "
+                            "PC-dependent watch stopping the app by deadline + grace + cleanup)",
+                            f"memory billed at <= {MEMORY_GIB} GiB",
                             "the deployed app is stopped within the cleanup window", "rates unchanged",
                             "storage/transfer small and unpriced"],
-            "unenforced": "CPU overuse beyond the margin; billing tails; a PC-down period delays cleanup-verify "
-                          "(the deployed app idles with zero containers)"}
+            "unenforced": "CPU overuse beyond the margin; billing tails; a PC-down period delays cleanup-verify: "
+                          "zero-container idle is guaranteed only on a healthy completed path; a crashing deployed "
+                          "container may be rescheduled indefinitely (Modal retries guide), so a crash loop while "
+                          "the PC is down is NOT bounded by this reservation"}
 
 
 app = modal.App(DEPLOY_APP)
@@ -182,9 +189,15 @@ def campaign_identity(deadline) -> dict:
     return {"app": DEPLOY_APP, "start_dict": START_DICT, "volume": VOLUME_NAME, "deadline": deadline}
 
 
-def mark_terminal(starts, key, reason: str) -> None:
-    """Write-once terminal marker: no later start may train (no failure retry)."""
-    starts.put(TERMINAL_KEY, {"start": key, "reason": reason, "t": time.time()}, skip_if_exists=True)
+def mark_terminal(starts, key, reason: str) -> str | None:
+    """Write-once terminal marker: no later start may train (no failure retry). NEVER raises: a failed write is
+    RETURNED for the caller to report, because an exception leaving the worker would trigger Modal's function
+    retries = a forbidden run-side retry (codex 22515)."""
+    try:
+        starts.put(TERMINAL_KEY, {"start": key, "reason": reason, "t": time.time()}, skip_if_exists=True)
+        return None
+    except Exception as e:
+        return f"{type(e).__name__}: {str(e)[:200]}"
 
 
 def start_problem(key, starts_get, deadline: float, run: Path) -> str | None:
@@ -206,50 +219,76 @@ def run_b3_remote(deadline: float) -> dict:
 
 def worker(deadline: float, starts=None, vol=None, versions=_versions_ok, popen=subprocess.Popen,
            supervise=None, clock=time.time) -> dict:
-    """One admitted start. Every non-interruption outcome marks the campaign TERMINAL (incl. exceptions)."""
+    """One admitted start. Every non-interruption outcome marks the campaign TERMINAL (incl. exceptions).
+    NOTHING escapes as an exception (codex 22515): the watchdog, the Dict lookup and every later step run inside
+    the guarded block; body exceptions become a returned refusal; a failed terminal write is reported in
+    `terminal_write_errors` instead of raised. An escaping exception would trigger Modal's function retries."""
     if deadline - clock() <= END_MARGIN_S:
         return {"refused": "campaign deadline passed or within the end margin at worker entry"}
-    worker_guard = deadline_killer(str(os.getpid()), deadline - clock())     # before any blocking setup
-    starts, vol, key = starts or modal.Dict.from_name(START_DICT), vol or volume, None
+    ctx = {"starts": starts, "key": None, "terminal_write_errors": []}
+    worker_guard = None
     try:
-        if starts.get(TERMINAL_KEY) is not None:
-            return {"refused": f"campaign is terminal: {starts.get(TERMINAL_KEY)}"}
-        key = claim_start(starts, {"task": os.environ.get("MODAL_TASK_ID"), "t": clock(), "runner": "b3-v0.1"})
-        if key is None:
-            mark_terminal(starts, None, "start budget exhausted")
-            return {"refused": f"all {MAX_STARTS} starts already used"}
-        ver = versions()
-        if not ver["ok"]:
-            mark_terminal(starts, key, f"pinned versions differ: {ver['got']}")
-            return {"refused": f"pinned versions differ: {ver['got']}", "start": key}
-        vol.reload()                                             # see the latest committed checkpoint
-        run, arm = Path(RUN_DIR), ARMS[0]
-        problem = start_problem(key, starts.get, deadline, run)
-        if problem:
-            mark_terminal(starts, key, problem)
-            return {"refused": problem, "start": key}
-        if safe_commit():
-            mark_terminal(starts, key, "initial Volume commit failed")
-            return {"refused": "initial Volume commit failed (fail closed before any training)", "start": key}
-        remaining = deadline - clock()                           # RE-READ after setup, immediately before the child
-        if remaining < MIN_START_S:
-            mark_terminal(starts, key, "too little time left to start")
-            return {"refused": f"only {remaining:.0f}s left after setup (< {MIN_START_S})", "start": key}
-        child_s = remaining - END_MARGIN_S
-        cmd = [sys.executable, SCRIPT, "--manifest", INPUT_MANIFEST, "--out", str(run / arm)]
-        t0 = clock()
-        with open(run / f"{arm}.{key}.stdout.txt", "w") as so, open(run / f"{arm}.{key}.stderr.txt", "w") as se:
-            child = popen(cmd, cwd="/root/repo", stdout=so, stderr=se, start_new_session=True)
-            rc, commit_errors = (supervise or supervise_child)(child, deadline, child_s, t0)
-        commit_errors += safe_commit()
-        mark_terminal(starts, key, "completed" if rc == 0 else ("deadline" if rc == "timeout" else f"run-side failure rc {rc}"))
-        return {"returncode": rc, "start": key, "volume_commit_errors": commit_errors, "wall_s": clock() - t0,
-                "child_timeout_s": child_s, "versions": ver["got"], "cmd": cmd}
+        worker_guard = deadline_killer(str(os.getpid()), deadline - clock())     # before any blocking setup
+        ctx["starts"] = ctx["starts"] or modal.Dict.from_name(START_DICT)
+        res = _admitted_start(deadline, ctx, vol or volume, versions, popen, supervise, clock)
     except Exception as e:                                       # a worker exception is run-side: never retried
-        mark_terminal(starts, key, f"worker exception {type(e).__name__}: {str(e)[:200]}")
-        return {"refused": f"worker exception {type(e).__name__}", "start": key}
+        res = {"refused": f"worker exception {type(e).__name__}", "start": ctx["key"]}
+        _terminal(ctx, f"worker exception {type(e).__name__}: {str(e)[:200]}")
     finally:
-        cancel_killer(worker_guard)
+        try:
+            cancel_killer(worker_guard)
+        except Exception as e:                                   # reported below, never raised
+            ctx["guard_cancel_error"] = f"{type(e).__name__}: {str(e)[:200]}"
+    if ctx["terminal_write_errors"]:
+        res["terminal_write_errors"] = ctx["terminal_write_errors"]
+    if "guard_cancel_error" in ctx:
+        res["guard_cancel_error"] = ctx["guard_cancel_error"]
+    return res
+
+
+def _terminal(ctx: dict, reason: str) -> None:
+    """mark_terminal for the current start; a failed write (or no Dict at all) is recorded, never raised."""
+    err = mark_terminal(ctx["starts"], ctx["key"], reason) if ctx["starts"] is not None else "no start Dict"
+    if err:
+        ctx["terminal_write_errors"].append(err)
+
+
+def _admitted_start(deadline: float, ctx: dict, vol, versions, popen, supervise, clock) -> dict:
+    """The body of `worker` (may raise; `worker` contains it). ctx["key"] is set as soon as a start is claimed."""
+    starts = ctx["starts"]
+    if starts.get(TERMINAL_KEY) is not None:
+        return {"refused": f"campaign is terminal: {starts.get(TERMINAL_KEY)}"}
+    ctx["key"] = key = claim_start(starts, {"task": os.environ.get("MODAL_TASK_ID"), "t": clock(), "runner": "b3-v0.1"})
+    if key is None:
+        _terminal(ctx, "start budget exhausted")
+        return {"refused": f"all {MAX_STARTS} starts already used"}
+    ver = versions()
+    if not ver["ok"]:
+        _terminal(ctx, f"pinned versions differ: {ver['got']}")
+        return {"refused": f"pinned versions differ: {ver['got']}", "start": key}
+    vol.reload()                                                 # see the latest committed checkpoint
+    run, arm = Path(RUN_DIR), ARMS[0]
+    problem = start_problem(key, starts.get, deadline, run)
+    if problem:
+        _terminal(ctx, problem)
+        return {"refused": problem, "start": key}
+    if safe_commit():
+        _terminal(ctx, "initial Volume commit failed")
+        return {"refused": "initial Volume commit failed (fail closed before any training)", "start": key}
+    remaining = deadline - clock()                               # RE-READ after setup, immediately before the child
+    if remaining < MIN_START_S:
+        _terminal(ctx, "too little time left to start")
+        return {"refused": f"only {remaining:.0f}s left after setup (< {MIN_START_S})", "start": key}
+    child_s = remaining - END_MARGIN_S
+    cmd = [sys.executable, SCRIPT, "--manifest", INPUT_MANIFEST, "--out", str(run / arm)]
+    t0 = clock()
+    with open(run / f"{arm}.{key}.stdout.txt", "w") as so, open(run / f"{arm}.{key}.stderr.txt", "w") as se:
+        child = popen(cmd, cwd="/root/repo", stdout=so, stderr=se, start_new_session=True)
+        rc, commit_errors = (supervise or supervise_child)(child, deadline, child_s, t0)
+    commit_errors += safe_commit()
+    _terminal(ctx, "completed" if rc == 0 else ("deadline" if rc == "timeout" else f"run-side failure rc {rc}"))
+    return {"returncode": rc, "start": key, "volume_commit_errors": commit_errors, "wall_s": clock() - t0,
+            "child_timeout_s": child_s, "versions": ver["got"], "cmd": cmd}
 
 
 def set_campaign_deadline(starts, now: float) -> float:
@@ -297,10 +336,12 @@ def precheck_problem(dict_keys: list, run_files: set) -> str | None:
 
 
 def _volume_files(vol) -> list:
-    """(path inside RUN_REL, entry) for every FILE in the Volume run dir (none if it does not exist)."""
+    """(path inside RUN_REL, entry) for every FILE in the Volume run dir. ONLY an established "absent" signal
+    (Modal NotFoundError / FileNotFoundError) means no files; any other listing error (timeout, permission, ...)
+    PROPAGATES so that precheck and collect fail closed (codex 22515)."""
     try:
         entries = vol.listdir(RUN_REL, recursive=True)
-    except Exception:                                # run dir absent on a fresh Volume
+    except (modal.exception.NotFoundError, FileNotFoundError):     # run dir absent on a fresh Volume
         return []
     return [(e.path.lstrip("/").removeprefix(RUN_REL + "/"), e) for e in entries
             if e.type == modal.volume.FileEntryType.FILE]
@@ -310,7 +351,11 @@ def precheck(starts=None, vol=None) -> str | None:
     starts, vol = starts or modal.Dict.from_name(START_DICT, create_if_missing=True), vol or volume
     if local_memsub_sha256() != EXPECT_MEMSUB_SHA256:
         return "local memsub differs from the bound sha (wrong checkout)"
-    return precheck_problem(list(starts.keys()), {p for p, _ in _volume_files(vol)})
+    try:
+        run_files = {p for p, _ in _volume_files(vol)}
+    except Exception as e:                           # fail closed: an unreadable Volume is NOT a fresh one
+        return f"Volume {VOLUME_NAME}:{RUN_REL} listing failed ({type(e).__name__}: {str(e)[:200]}): refusing"
+    return precheck_problem(list(starts.keys()), run_files)
 
 
 def deployed_app_id(modal_json) -> str:
@@ -383,18 +428,28 @@ def watch(out: Path, poll_s: float = 60.0, grace_s: float = END_MARGIN_S, state=
 
 
 def collect(out: Path, vol=None) -> dict:
-    """Fetch the Volume run dir (everything but resume.pt) to <out>/volume and gate the result."""
-    vol, n = vol or volume, 0
-    for rel, e in _volume_files(vol):
+    """Fetch the Volume run dir (everything but resume.pt) to <out>/volume and gate the result. The gate needs
+    the arm's b3_result.json fetched IN THIS CALL: a listing error or a missing result is ok=False, never a
+    pass on local files left by an earlier collect (codex 22515)."""
+    vol, n, fetched = vol or volume, 0, set()
+    try:
+        files = _volume_files(vol)
+    except Exception as e:
+        rec = {"files": 0, "ok": False, "why": f"Volume listing failed: {type(e).__name__}: {str(e)[:200]}"}
+        (out / "collect.json").write_text(json.dumps(rec, indent=2))
+        return rec
+    for rel, e in files:
         if rel.endswith(("resume.pt", "resume.pt.tmp")):
             continue
         f = out / "volume" / RUN_REL / rel
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_bytes(b"".join(vol.read_file(e.path)))
-        n += 1
+        n, _ = n + 1, fetched.add(rel)
     res_file = out / "call_result.json"
     res = json.loads(res_file.read_text()) if res_file.exists() else {"returncode": "call result not recorded"}
     ok, why = gate_ok(ARMS[0], out / "volume" / RUN_REL, res)
+    if f"{ARMS[0]}/b3_result.json" not in fetched:
+        ok, why = False, f"{ARMS[0]}/b3_result.json not fetched from the Volume in this collect ({why})"
     rec = {"files": n, "ok": ok, "why": why}
     (out / "collect.json").write_text(json.dumps(rec, indent=2))
     return rec

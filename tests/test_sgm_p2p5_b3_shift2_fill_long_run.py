@@ -127,10 +127,11 @@ def test_tiny_shift2_fill_runs_finite_and_crash_after_checkpoint_resumes_identic
 # ---------- runner ----------
 
 def test_ledger_matches_proposal_v03():
+    """v0.3 rate; window amended to campaign + watch grace + cleanup = 23,820 s (package audit)."""
     L = R.ledger()
-    assert L["rate_usd_s"] == pytest.approx(0.00067854)
-    assert L["reservation_usd"] == pytest.approx(16.181398, abs=1e-6)
-    assert L["headroom_usd"] == pytest.approx(0.818602, abs=1e-6) and L["cap_usd"] == 17.0
+    assert L["rate_usd_s"] == pytest.approx(0.00067854) and L["window_s"] == 23_400 + 120 + 300
+    assert L["reservation_usd"] == pytest.approx(16.2628228, abs=1e-6)
+    assert L["headroom_usd"] == pytest.approx(0.7371772, abs=1e-6) and L["cap_usd"] == 17.0
 
 
 def test_fresh_identities_and_bound_memsub():
@@ -306,3 +307,87 @@ def test_cloud_sentinels_block_every_lookup():
               lambda: R.modal.FunctionCall.from_id("fc")):
         with pytest.raises(RuntimeError, match="CLOUD ACCESS ATTEMPTED"):
             f()
+
+
+# ---------- fail-closed listing / collect and contained worker failures (codex 22515) ----------
+
+class _ListVol:
+    """Volume fake: `listdir` raises `exc` or returns FILE entries for `files` {rel: bytes}."""
+    def __init__(self, files=None, exc=None):
+        self.files, self.exc = files or {}, exc
+
+    def listdir(self, path, recursive=False):
+        if self.exc is not None:
+            raise self.exc
+        return [types.SimpleNamespace(path=f"{R.RUN_REL}/{rel}", type=R.modal.volume.FileEntryType.FILE) for rel in self.files]
+
+    def read_file(self, path):
+        return [self.files[path.removeprefix(R.RUN_REL + "/")]]
+
+
+@pytest.mark.parametrize("exc", [R.modal.exception.NotFoundError("no such path"), FileNotFoundError("gone")])
+def test_volume_listing_absent_means_fresh(exc):
+    assert R._volume_files(_ListVol(exc=exc)) == []
+
+
+@pytest.mark.parametrize("exc", [TimeoutError("slow"), PermissionError("denied"), RuntimeError("rpc")])
+def test_volume_listing_errors_fail_closed_in_precheck_and_collect(tmp_path, exc):
+    with pytest.raises(type(exc)):
+        R._volume_files(_ListVol(exc=exc))
+    assert "listing failed" in R.precheck(starts=_Dict(), vol=_ListVol(exc=exc))
+    (tmp_path / "call_result.json").write_text(json.dumps({"returncode": 0}))
+    rec = R.collect(tmp_path, vol=_ListVol(exc=exc))
+    assert rec["ok"] is False and "listing failed" in rec["why"]
+
+
+def test_collect_never_passes_on_stale_local_results(tmp_path):
+    stale = tmp_path / "volume" / R.RUN_REL / "B3"
+    stale.mkdir(parents=True)
+    good = json.dumps({"status": "valid", "memory_used": True, "band_at_end": "partial"}).encode()
+    (stale / "b3_result.json").write_bytes(good)                       # left by an earlier collect
+    (tmp_path / "call_result.json").write_text(json.dumps({"returncode": 0}))
+    rec = R.collect(tmp_path, vol=_ListVol(exc=R.modal.exception.NotFoundError("absent")))
+    assert rec["ok"] is False and rec["files"] == 0 and "not fetched" in rec["why"]
+    rec = R.collect(tmp_path, vol=_ListVol(files={"B3/b3_result.json": good, "B3/resume.pt": b"x"}))
+    assert rec["ok"] is True and rec["files"] == 1                      # fetched now; resume.pt skipped
+
+
+class _FailingTerminalDict(_Dict):
+    def put(self, k, v, skip_if_exists=False):
+        if k == R.TERMINAL_KEY:
+            raise ConnectionError("dict unavailable")
+        return super().put(k, v, skip_if_exists)
+
+
+class _CountingKiller:
+    def __init__(self):
+        self.created, self.cancelled = 0, 0
+
+    def __call__(self, target, seconds):
+        self.created += 1
+        outer = self
+
+        class P(_Proc):
+            def wait(self, timeout=None):
+                outer.cancelled += 1
+                return 0
+        return P()
+
+
+def test_worker_contains_a_failed_dict_lookup_and_cancels_its_watchdog(tmp_path, monkeypatch):
+    killer = _CountingKiller()
+    monkeypatch.setattr(R, "deadline_killer", killer)
+    res = _worker(tmp_path, monkeypatch, None)                          # Dict.from_name -> cloud sentinel raises
+    assert res["refused"] == "worker exception RuntimeError" and res["terminal_write_errors"] == ["no start Dict"]
+    assert (killer.created, killer.cancelled) == (1, 1)
+
+
+@pytest.mark.parametrize("case", ["versions", "exception", "completed"])
+def test_worker_reports_a_failed_terminal_write_instead_of_raising(tmp_path, monkeypatch, case):
+    killer = _CountingKiller()
+    monkeypatch.setattr(R, "deadline_killer", killer)
+    st = _FailingTerminalDict({R.DEADLINE_KEY: 10_000.0})
+    res = _worker(tmp_path, monkeypatch, st, versions_ok=case != "versions", raise_in="versions" if case == "exception" else None)
+    assert res["terminal_write_errors"] and "ConnectionError" in res["terminal_write_errors"][0]
+    assert (res.get("returncode") == 0) if case == "completed" else ("refused" in res)
+    assert (killer.created, killer.cancelled) == (1, 1)

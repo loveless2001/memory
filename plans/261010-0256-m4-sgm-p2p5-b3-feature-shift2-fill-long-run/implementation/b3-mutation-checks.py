@@ -1,4 +1,4 @@
-"""B3 mutation checks, v3 (codex 22506; v3 per codex 22511: exact parametrized-id pins, bounded parent). Each mutant is applied to a DISPOSABLE copy of the committed HEAD
+"""B3 mutation checks, v4 (codex 22506/22511; v4 adds the codex 22515 fail-closed/containment guards). Each mutant is applied to a DISPOSABLE copy of the committed HEAD
 (`git archive HEAD` into a scratch dir); the shared working tree is never written, so a killed run cannot leave a
 mutated source behind (v1 mutated in place and the 2026-10-10 host OOM on M4 left the runner mutated).
 
@@ -17,17 +17,17 @@ import hashlib, json, re, shutil, subprocess, sys, tempfile, time, types
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 WORKTREE = HERE.parents[2]
-OUT = HERE / "b3-mutation-checks-v3.json"            # v2 evidence (codex 22511) is kept as is
+OUT = HERE / "b3-mutation-checks-v4.json"            # v2/v3 evidence is kept as is
 MEM_MAX, SWAP_MAX, WALL_S, TAIL_BYTES = "2000M", "0", 300, 256 * 1024
 RUN = "modal-runners/modal-m4-sgm-p2p5-b3-shift2-fill-long-run-runner.py"
 TRAIN = "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py"
 TESTS = "tests/test_sgm_p2p5_b3_shift2_fill_long_run.py"
 # (name, file, original, mutant, expected failing test ids)
 MUTANTS = [
-    ("M1 terminal check at entry removed", RUN, "        if starts.get(TERMINAL_KEY) is not None:\n", "        if False:\n",
+    ("M1 terminal check at entry removed", RUN, "    if starts.get(TERMINAL_KEY) is not None:\n", "    if False:\n",
      {"test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"}),
     ("M2 no terminal marker on completion", RUN,
-     '        mark_terminal(starts, key, "completed" if rc == 0 else ("deadline" if rc == "timeout" else f"run-side failure rc {rc}"))\n', "",
+     '    _terminal(ctx, "completed" if rc == 0 else ("deadline" if rc == "timeout" else f"run-side failure rc {rc}"))\n', "",
      {"test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"}),
     ("M3 worker exception not caught", RUN, "    except Exception as e:                                       # a worker exception is run-side: never retried\n",
      "    except ZeroDivisionError as e:\n", {"test_worker_refusals_and_exceptions_are_terminal[exception]"}),
@@ -43,10 +43,31 @@ MUTANTS = [
      {"test_worker_refusals_and_exceptions_are_terminal[deadline_mismatch]"}),
     ("M9 ledger without build allowance", RUN, "    total = compute + BUILD_ALLOWANCE_USD\n", "    total = compute\n",
      {"test_ledger_matches_proposal_v03"}),
-    ("M10 versions mismatch not terminal", RUN, '            mark_terminal(starts, key, f"pinned versions differ: {ver[\'got\']}")\n', "",
+    ("M10 versions mismatch not terminal", RUN, '        _terminal(ctx, f"pinned versions differ: {ver[\'got\']}")\n', "",
      {"test_worker_refusals_and_exceptions_are_terminal[versions]"}),
     ("M11 cleanup re-check cap removed", RUN, ' or len(rec["checks"]) >= max_checks:', ":",
      {"test_cleanup_recheck_loop_is_bounded_even_if_sleep_does_not_wait"}),
+    ("M12 watchdog + Dict lookup outside the guarded block (22515 bug)", RUN,
+     '    worker_guard = None\n    try:\n        worker_guard = deadline_killer(str(os.getpid()), deadline - clock())     # before any blocking setup\n'
+     '        ctx["starts"] = ctx["starts"] or modal.Dict.from_name(START_DICT)\n',
+     '    worker_guard = deadline_killer(str(os.getpid()), deadline - clock())\n'
+     '    ctx["starts"] = ctx["starts"] or modal.Dict.from_name(START_DICT)\n    try:\n',
+     {"test_worker_contains_a_failed_dict_lookup_and_cancels_its_watchdog"}),
+    ("M13 terminal write failure re-raised (22515 bug)", RUN,
+     '        return None\n    except Exception as e:\n        return f"{type(e).__name__}: {str(e)[:200]}"\n',
+     '        return None\n    except Exception as e:\n        raise\n',
+     {"test_worker_reports_a_failed_terminal_write_instead_of_raising[versions]"}),
+    ("M14 any listing error means fresh (22515 bug)", RUN,
+     "    except (modal.exception.NotFoundError, FileNotFoundError):     # run dir absent on a fresh Volume\n",
+     "    except Exception:\n", {"test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"}),
+    ("M15 collect gate ignores what this call fetched (22515 bug)", RUN,
+     '    if f"{ARMS[0]}/b3_result.json" not in fetched:\n', "    if False:\n",
+     {"test_collect_never_passes_on_stale_local_results"}),
+    ("M16 precheck lets a listing error escape", RUN,
+     "    except Exception as e:                           # fail closed: an unreadable Volume is NOT a fresh one\n",
+     "    except ZeroDivisionError as e:\n", {"test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"}),
+    ("M17 ledger window without the watch grace", RUN, "    window = CAMPAIGN_S + END_MARGIN_S + CLEANUP_S\n",
+     "    window = CAMPAIGN_S + CLEANUP_S\n", {"test_ledger_matches_proposal_v03"}),
 ]
 
 
