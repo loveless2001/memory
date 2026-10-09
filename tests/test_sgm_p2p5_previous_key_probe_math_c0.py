@@ -7,6 +7,12 @@ import numpy as np
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def _forbid_model_load(monkeypatch):
+    """No test in this file may load Qwen by any path (codex 22400)."""
+    monkeypatch.setenv("PKPROBE_FORBID_MODEL", "1")
 spec = importlib.util.spec_from_file_location(
     "pkprobe", ROOT / "scripts/sgm-p2p5-previous-key-probe-ridge-retrieval-readings.py")
 M = importlib.util.module_from_spec(spec)

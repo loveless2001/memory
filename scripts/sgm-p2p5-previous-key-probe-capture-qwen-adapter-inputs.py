@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -43,6 +44,8 @@ def frozen_pilot_config() -> PilotConfig:
 
 
 def load_model():
+    # Test guard (codex 22400): tests and mutation runs set PKPROBE_FORBID_MODEL=1 so no path can load Qwen.
+    require(os.environ.get("PKPROBE_FORBID_MODEL") != "1", "MODEL LOAD ATTEMPTED under PKPROBE_FORBID_MODEL=1")
     pcfg = frozen_pilot_config()
     runtime, backend, head = build(pcfg)
     require(runtime.cfg.feature_shift == 1, "frozen condition requires feature_shift=1")
