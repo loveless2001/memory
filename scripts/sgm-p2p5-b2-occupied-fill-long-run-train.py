@@ -44,7 +44,7 @@ ARM = "B2"
 CAMPAIGN = "m4-sgm-p2p5-b2-occupied-fill-long-v1"
 FILL = {"read_fallback": "occupied_softmax_fill_v1", "read_fallback_tau": 1.0, "read_fallback_anchor": 0.1}
 STEPS, EVAL_EVERY, CHECKPOINT_EVERY = 1500, 100, 50
-DEV_TOTAL = 256                             # eval_batches 4 x batch 16 x n_queries 4
+DEV_TOTAL, DEV_EPISODES = 256, 64           # eval_batches 4 x batch 16 (x n_queries 4)
 CHANCE_CORRECT = 4                          # 256 x 1/64
 # EXPLORATORY operational thresholds (no significance claim: 4 queries share each of 64 episodes)
 MEMORY_USED_MIN_CORRECT = 12
@@ -61,20 +61,31 @@ def arm_config(base: dict, device: str) -> PilotConfig:
                           "checkpoint_steps": tuple(base.get("checkpoint_steps", ()))})
 
 
-def _count_ok(ev: dict, total: int) -> bool:
+def _num(v, lo: float, hi: float = math.inf) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and lo <= v <= hi
+
+
+def eval_ok(ev, total: int = DEV_TOTAL, episodes: int = DEV_EPISODES) -> bool:
+    """One dev eval as written by synthetic_pilot_evaluation.evaluate (incl. the fill telemetry):
+    integer counts over the registered total, accuracy == correct / total exactly, registered
+    episode count and chance, finite in-range absence/fill measures."""
+    if not isinstance(ev, dict):
+        return False
     c, n = ev.get("correct"), ev.get("total")
-    return (type(c) is int and type(n) is int and n == total and 0 <= c <= n)
-
-
-def _weight_ok(v) -> bool:
-    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and 0.0 <= v <= 1.0
+    return (type(c) is int and type(n) is int and n == total and 0 <= c <= n
+            and ev.get("accuracy") == c / n and ev.get("chance") == 1 / 64 and ev.get("episodes") == episodes
+            and _num(ev.get("query_empty_read_weight"), 0.0, 1.0)
+            and _num(ev.get("query_fully_absent_fraction"), 0.0, 1.0)
+            and _num(ev.get("query_without_occupied_fraction"), 0.0, 1.0)
+            and _num(ev.get("query_nearest_occupied_cells_mean"), 0.0)
+            and _num(ev.get("query_fill_support_cells_mean"), 1.0 - 1e-6))
 
 
 def summarize(rows: list, derange: dict | None, total: int = DEV_TOTAL, steps_n: int = STEPS,
               every: int = EVAL_EVERY) -> dict:
     """Pre-registered readout. Memory use needs BOTH the dev gain and the paired bank_derange drop.
-    INVALID unless every registered dev eval occurs exactly once with integer counts over the registered
-    total, a finite pre-fill weight in [0, 1], and a derange eval over the same total."""
+    INVALID unless every registered dev eval occurs exactly once and it and the derange eval pass
+    eval_ok (the evaluator's schema)."""
     evs: dict = {}
     for r in rows:
         if isinstance(r.get("eval"), dict):
@@ -84,10 +95,10 @@ def summarize(rows: list, derange: dict | None, total: int = DEV_TOTAL, steps_n:
     steps = list(range(0, steps_n + 1, every))
     if sorted(evs) != steps:
         return {"arm": ARM, "status": "INVALID", "why": f"dev eval steps {sorted(evs)} != {steps}"}
-    if not all(_count_ok(evs[s], total) and _weight_ok(evs[s].get("query_empty_read_weight")) for s in steps):
-        return {"arm": ARM, "status": "INVALID", "why": "a dev eval has bad counts/total or absent weight"}
-    if not (isinstance(derange, dict) and _count_ok(derange, total)):
-        return {"arm": ARM, "status": "INVALID", "why": "bank_derange eval missing or bad counts/total"}
+    if not all(eval_ok(evs[s], total) for s in steps):
+        return {"arm": ARM, "status": "INVALID", "why": "a dev eval violates the evaluator schema"}
+    if not eval_ok(derange, total):
+        return {"arm": ARM, "status": "INVALID", "why": "bank_derange eval missing or violates the evaluator schema"}
     none_c, der_c = evs[steps_n]["correct"], derange["correct"]
     absent = {str(s): evs[s]["query_empty_read_weight"] for s in steps}
     end = evs[steps_n]["query_empty_read_weight"]

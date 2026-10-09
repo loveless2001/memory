@@ -40,9 +40,18 @@ def test_config_is_probe_s0_plus_the_variant_only():
             B.arm_config({**base, **bad}, "cuda")
 
 
+B1_EVAL = [json.loads(x) for x in (ROOT / "plans/261009-1040-m4-sgm-p2p5-b1-occupied-fill-retention-screen/"
+                                     "b1-run-v1/B1/routing_telemetry.jsonl").read_text().splitlines()
+           if "eval" in json.loads(x)][-1]["eval"]                # a REAL evaluator row (B1, update 100)
+
+
+def _ev(correct, absent=0.3, **kw):
+    return {**B1_EVAL, "correct": correct, "total": 256, "accuracy": correct / 256,
+            "query_empty_read_weight": absent, **kw}
+
+
 def _rows(correct_by_step, absent=0.3):
-    return [{"step": s, "eval": {"correct": c, "total": 256, "query_empty_read_weight": absent}}
-            for s, c in correct_by_step.items()]
+    return [{"step": s, "eval": _ev(c, absent)} for s, c in correct_by_step.items()]
 
 
 STEPS = {s: 4 for s in range(0, 1501, 100)}
@@ -50,7 +59,7 @@ STEPS = {s: 4 for s in range(0, 1501, 100)}
 
 @pytest.mark.parametrize("final,derange,used", [(12, 6, True), (12, 7, False), (11, 0, False), (30, 4, True)])
 def test_memory_use_needs_gain_and_paired_derange_drop(final, derange, used):
-    s = B.summarize(_rows(STEPS | {1500: final}), {"correct": derange, "total": 256})
+    s = B.summarize(_rows(STEPS | {1500: final}), _ev(derange))
     assert s["status"] == "valid" and s["memory_used"] is used and s["band_at_end"] == "partial"
     assert "exploratory" in s["criteria"]["note"]
 
@@ -58,9 +67,15 @@ def test_memory_use_needs_gain_and_paired_derange_drop(final, derange, used):
 def _bad_rows(kind):
     rows = _rows(STEPS | {1500: 12})
     if kind == "dup_final":
-        rows.append({"step": 1500, "eval": {"correct": 30, "total": 256, "query_empty_read_weight": .1}})
+        rows.append({"step": 1500, "eval": _ev(30, .1)})
     elif kind == "total_1":
         rows[-1]["eval"].update(total=1)
+    elif kind == "accuracy_contradicts":
+        rows[-1]["eval"].update(accuracy=0.5)
+    elif kind == "episodes_1":
+        rows[-1]["eval"].update(episodes=1)
+    elif kind == "nan_fill_support":
+        rows[5]["eval"].update(query_fill_support_cells_mean=float("nan"))
     elif kind == "nan_weight":
         rows[3]["eval"]["query_empty_read_weight"] = float("nan")
     elif kind == "bool_correct":
@@ -71,10 +86,11 @@ def _bad_rows(kind):
 
 
 @pytest.mark.parametrize("kind,derange", [
-    ("dup_final", {"correct": 0, "total": 256}), ("total_1", {"correct": 0, "total": 256}),
-    ("nan_weight", {"correct": 0, "total": 256}), ("bool_correct", {"correct": 0, "total": 256}),
-    ("missing_step", {"correct": 0, "total": 256}), ("ok", {"correct": 0, "total": 255}),
-    ("ok", {"correct": -1, "total": 256}), ("ok", {"correct": 0}), ("ok", None)])
+    ("dup_final", _ev(0)), ("total_1", _ev(0)), ("nan_weight", _ev(0)), ("bool_correct", _ev(0)),
+    ("missing_step", _ev(0)), ("accuracy_contradicts", _ev(0)), ("episodes_1", _ev(0)),
+    ("nan_fill_support", _ev(0)), ("ok", {**_ev(0), "total": 255}), ("ok", {**_ev(0), "correct": -1}),
+    ("ok", {**_ev(0), "query_empty_read_weight": float("nan")}), ("ok", {"correct": 0, "total": 256}),
+    ("ok", None)])
 def test_summary_invalid_on_malformed_inputs(kind, derange):
     assert B.summarize(_bad_rows(kind), derange)["status"] == "INVALID"
 
@@ -265,3 +281,32 @@ def test_campaign_dir_binding(tmp_path):
     assert R.campaign_dir_problem(run, "start-2", {**want, "deadline": 124.0})
     assert R.campaign_dir_problem(run, "start-1", want)                    # populated before start-1
     assert R.campaign_dir_problem(tmp_path / "empty", "start-3", want)     # no campaign record
+
+
+def test_summary_valid_on_real_evaluator_rows():
+    assert B.eval_ok(B1_EVAL) and B.summarize(_rows(STEPS), _ev(3))["status"] == "valid"
+
+
+def test_child_exit_race_and_failing_poll_still_reap_and_cancel_guard():
+    child, cancelled = _Child(), []
+
+    class _Guard:
+        pid = 99
+
+        def poll(self):
+            return 0
+
+        def wait(self):
+            cancelled.append(True)
+
+    def gone(pid, sig):                                  # the group exited between poll and kill
+        child.killed = True
+        raise ProcessLookupError(pid)
+
+    def poll_error_wait(timeout=None):
+        raise OSError("poll failed")
+    child.wait_orig, child.wait = child.wait, poll_error_wait
+    with pytest.raises(OSError):
+        R.supervise_child(child, 1e9, 100.0, 0.0, killer=lambda t, s: _Guard(), commit=lambda: 0,
+                          killpg=gone, clock=lambda: 0.0)
+    assert cancelled == [True]                            # guard cancelled despite the kill race

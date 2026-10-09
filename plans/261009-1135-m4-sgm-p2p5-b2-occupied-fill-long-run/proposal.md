@@ -1,4 +1,6 @@
-# B2 occupied-fill long run — proposal v0.2 (NOT launched)
+# B2 occupied-fill long run — proposal v0.3 (NOT launched)
+
+v0.3 (codex 22155 on ed82721): child cleanup race-safe (ProcessLookupError tolerated, child reaped, guard cancelled in an unconditional nested finally; cancel_killer race-safe); initial campaign.json commit must succeed (else refuse) and MIN_START_S is re-checked AFTER it, right before Popen; summary validates every eval against the evaluator schema (accuracy == correct/total, episodes 64, chance 1/64, finite in-range absence/fill fields), derange included. Codex's 14-case worker harness re-run against this tree: `worker-harness-selfcheck-v0.3.txt`.
 
 v0.2 (codex 22153 HOLD on 77e6a36): child guard armed inside the child-ownership try/finally (`supervise_child`); attempt evidence archived, never deleted (OUT.archive/start-n); run dir + checkpoints bound to campaign/memsub/script/base-manifest/PilotConfig identity, start-1 refuses a populated Volume run dir and later starts must match `campaign.json`; summary INVALID on duplicate/missing evals, wrong totals, non-int/out-of-range counts, non-finite weights or a bad derange eval; significance claim removed (thresholds are exploratory operational).
 

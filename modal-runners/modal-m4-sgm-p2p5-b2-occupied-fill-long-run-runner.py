@@ -100,10 +100,18 @@ def deadline_killer(target: str, seconds: float) -> subprocess.Popen:
                             start_new_session=True)
 
 
+def kill_group(killpg, pid: int) -> None:
+    """SIGKILL a process group; a group that already exited (exit race) is fine."""
+    try:
+        killpg(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+
+
 def cancel_killer(proc) -> None:
     if proc is not None:
         if proc.poll() is None:
-            os.killpg(proc.pid, signal.SIGKILL)       # the sleeper's sh AND its sleep
+            kill_group(os.killpg, proc.pid)          # the sleeper's sh AND its sleep (race-safe)
         proc.wait()
 
 
@@ -119,7 +127,7 @@ def supervise_child(child, deadline: float, child_s: float, t0: float, *, killer
         while rc is None:
             left = t0 + child_s - clock()
             if left <= 0:
-                killpg(child.pid, signal.SIGKILL)
+                kill_group(killpg, child.pid)
                 child.wait()
                 rc = "timeout"
                 break
@@ -128,10 +136,12 @@ def supervise_child(child, deadline: float, child_s: float, t0: float, *, killer
             except subprocess.TimeoutExpired:
                 commit_errors += commit()        # checkpoints/telemetry survive a preemption
     finally:
-        if child.poll() is None:                 # any abnormal exit: never leave a trainer behind
-            killpg(child.pid, signal.SIGKILL)
-            child.wait()
-        cancel_killer(guard)
+        try:
+            if child.poll() is None:             # any abnormal exit: never leave a trainer behind
+                kill_group(killpg, child.pid)    # tolerates the exit race (ProcessLookupError)
+                child.wait()
+        finally:
+            cancel_killer(guard)                 # unconditional, even if reaping raised
     return rc, commit_errors
 
 
@@ -193,8 +203,12 @@ def run_b2_remote(deadline: float) -> dict:
                                                   "volume": VOLUME_NAME, "deadline": deadline})
         if problem:
             return {"refused": problem, "start": key}
-        safe_commit()
-        child_s = deadline - time.time() - END_MARGIN_S      # re-read right before the child starts
+        if safe_commit():                                    # campaign.json must be durable first
+            return {"refused": "initial Volume commit failed (fail closed before any training)", "start": key}
+        remaining = deadline - time.time()                   # RE-READ after the blocking commit
+        if remaining < MIN_START_S:
+            return {"refused": f"only {remaining:.0f}s left after setup (< {MIN_START_S})", "start": key}
+        child_s = remaining - END_MARGIN_S
         cmd = [sys.executable, SCRIPT, "--manifest", INPUT_MANIFEST, "--out", str(run / arm)]
         t0 = time.time()
         with open(run / f"{arm}.{key}.stdout.txt", "w") as so, open(run / f"{arm}.{key}.stderr.txt", "w") as se:

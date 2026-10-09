@@ -1,0 +1,15 @@
+# codex 22154 worker harness (independent-worker-checks.py cases, v0.2-specific asserts stripped) run against the v0.3 tree
+periodic commit then success                         | rc=0        refused=None                                                       commit_err=0 err=None child_running=False arms=2 cancels=2 spawned=True
+commit failure counted, completed child              | rc=None     refused=initial Volume commit failed (fail closed before any train commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+poll exception cleanup                               | rc=None     refused=None                                                       commit_err=None err=RuntimeError: simulated poll failure child_running=False arms=2 cancels=2 spawned=True
+child watchdog arming failure                        | rc=None     refused=None                                                       commit_err=None err=OSError: simulated child watchdog Popen failure child_running=False arms=2 cancels=1 spawned=True
+late commit reaches child budget                     | rc=timeout  refused=None                                                       commit_err=0 err=None child_running=False arms=2 cancels=2 spawned=True
+setup consumes minimum remaining budget              | rc=None     refused=only 800s to the campaign deadline (< 900)                 commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+three starts already used                            | rc=None     refused=all 3 starts already used                                  commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+immutable deadline mismatch                          | rc=None     refused=campaign deadline missing or differs from the immutable on commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+version mismatch                                     | rc=None     refused=pinned versions differ: {}                                 commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+nonzero trainer exit is a normal function return     | rc=7        refused=None                                                       commit_err=0 err=None child_running=False arms=2 cancels=2 spawned=True
+process exit race while cleaning a polling error     | rc=None     refused=None                                                       commit_err=None err=RuntimeError: simulated poll failure child_running=False arms=2 cancels=2 spawned=True
+initial commit consumes minimum startup budget       | rc=None     refused=only 100s left after setup (< 900)                         commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+initial commit failure omitted from error count      | rc=None     refused=initial Volume commit failed (fail closed before any train commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
+start-1 refuses populated volume directory           | rc=None     refused=/tmp/codex-b2-worker-mock-rwyjp2j7 already populated befor commit_err=None err=None child_running=False arms=1 cancels=1 spawned=False
