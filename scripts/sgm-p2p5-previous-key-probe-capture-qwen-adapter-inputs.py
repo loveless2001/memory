@@ -99,6 +99,18 @@ def capture(runtime, backend, pcfg, split: str, n_episodes: int, seed: int, batc
     return out
 
 
+def identities(runtime, pcfg) -> dict:
+    """Resolved runtime/source/model/initial-parameter identities, recorded before capture (codex 22408)."""
+    from dataclasses import asdict
+    from memsub.sgm.pinned_pretrained_qwen3_backbone import QWEN3_0P6B_BASE
+    h = hashlib.sha256()
+    for k, v in sorted(runtime.adapters.state_dict().items()):
+        h.update(k.encode()); h.update(v.detach().cpu().contiguous().numpy().tobytes())
+    return {"pilot_config_resolved": asdict(pcfg), "sgm_config_resolved": asdict(runtime.cfg),
+            "backbone_pin": QWEN3_0P6B_BASE, "initial_adapter_params_sha256": h.hexdigest(),
+            "torch_version": torch.__version__, "torch_threads": torch.get_num_threads()}
+
+
 def embeddings(runtime, ids: np.ndarray) -> np.ndarray:
     """Pinned input embeddings (float32 copy) for the given token ids."""
     w = runtime.backbone.model.embed_tokens.weight

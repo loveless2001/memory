@@ -1,38 +1,38 @@
-"""Run the previous-key information probe (proposal v0.3): --mode s1 | s2 | full.
+"""Run the previous-key information probe (proposal v0.4): --mode s1 | s2 | full.
 
-s1  capture/fixed-lambda smoke (2 fit + 2 eval episodes), profiles the full-run cost and writes
+s1  capture/fixed-lambda smoke (2 fit + 2 eval episodes); profiles the full-run cost and writes
     admission.json (full-run wall = 2 x estimate, refuse above 4 h).
 s2  full-path smoke (4 fit + 2 eval episodes, 4-fold episode CV); its numbers are NOT read.
-full one run (96 train + 64 heldout episodes); requires an admitting S1 admission.json.
-The launcher wraps every invocation in a cgroup scope + `timeout --signal=KILL <wall>`; --wall-s must
-equal the frozen/admitted wall. No retry anywhere; the output dir must not exist.
+full one run (96 train + 64 heldout episodes). It requires VALID S1 and S2 receipts (stage receipts module)
+    and --wall-s == ceil(validated S1 wall) in (0, 4 h].
+The fail-stop controller wraps each stage in a cgroup scope + `timeout --signal=KILL <wall>`. No retry;
+the output dir must not exist. status.json goes RUNNING -> COMPLETE | FAILED (a KILL leaves RUNNING).
 """
 
 from __future__ import annotations
 
-import argparse
-import gc
-import hashlib
-import importlib.util
-import json
-import math
-import resource
-import subprocess
-import sys
-import time
-from pathlib import Path
+import os
 
-import numpy as np
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):   # BLAS limit before numpy loads
+    os.environ[_v] = "8"
+
+import argparse  # noqa: E402
+import gc  # noqa: E402
+import hashlib  # noqa: E402
+import importlib.util  # noqa: E402
+import json  # noqa: E402
+import resource  # noqa: E402
+import subprocess  # noqa: E402
+import time  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+import numpy as np  # noqa: E402
+from threadpoolctl import threadpool_info, threadpool_limits  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-
-def require(ok: bool, msg: str) -> None:
-    """Explicit refusal (survives python -O, unlike assert)."""
-    if not ok:
-        raise RuntimeError(msg)
-
 MATH_PATH = ROOT / "scripts/sgm-p2p5-previous-key-probe-ridge-retrieval-readings.py"
 CAPTURE_PATH = ROOT / "scripts/sgm-p2p5-previous-key-probe-capture-qwen-adapter-inputs.py"
+RECEIPTS_PATH = ROOT / "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py"
 MODES = {   # split, episodes, seed; smokes use their own seeds (codex 22390 §5)
     "s1": {"fit": ("train", 2, 9_799_011), "ev": ("heldout", 2, 9_799_021), "cv": False, "wall": 1800,
            "seeds": {"perm_fit": 9_799_031, "perm_ev": 9_799_032, "folds": 9_799_041, "boot": 9_799_051}},
@@ -51,18 +51,16 @@ def load(path: Path, name: str):
     return mod
 
 
-def sha(p: Path) -> str:
-    return hashlib.sha256(p.read_bytes()).hexdigest()
-
-
-def check_wall(args) -> None:
-    m = MODES[args.mode]
+def check_wall(args, R) -> None:
+    """Before any work: frozen smoke walls; full needs valid S1+S2 receipts and the admitted wall."""
     if args.mode != "full":
-        require(args.wall_s == m["wall"], f"--wall-s must equal the frozen {m['wall']} s")
+        R.require(args.wall_s == MODES[args.mode]["wall"], f"--wall-s must equal the frozen {MODES[args.mode]['wall']} s")
         return
-    adm = json.loads(Path(args.admission).read_text())
-    require(adm["admit"], "S1 admission refused the full run")
-    require(args.wall_s == math.ceil(adm["wall_s"]), f"--wall-s must equal ceil(admitted wall) {math.ceil(adm['wall_s'])}")
+    R.require(args.s1_dir is not None and args.s2_dir is not None, "full needs --s1-dir and --s2-dir")
+    w = R.full_wall(args.s1_dir, args.s2_dir)
+    R.require(args.wall_s == w, f"--wall-s must equal the admitted wall {w}")
+
+
 def features(cap: dict, layer: int, keys_emb: np.ndarray, vals_emb: np.ndarray) -> dict:
     zv, zk = cap[f"zv_L{layer}"], cap[f"zk_L{layer}"]
     flat = lambda a: a.reshape(-1, a.shape[-1])   # noqa: E731
@@ -75,28 +73,56 @@ def main():
     ap.add_argument("--mode", choices=MODES, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--wall-s", type=int, required=True)
-    ap.add_argument("--admission", default=None)
+    ap.add_argument("--s1-dir", type=Path, default=None)
+    ap.add_argument("--s2-dir", type=Path, default=None)
     args = ap.parse_args()
-    check_wall(args)                                            # before any model load
+    R = load(RECEIPTS_PATH, "pkreceipts")
+    check_wall(args, R)                                         # before any model load
     args.out.mkdir(parents=True, exist_ok=False)
+    R.write_status(args.out, "RUNNING", mode=args.mode)
+    logf = open(args.out / "progress.log", "a")
+
+    def log(msg: str) -> None:
+        line = f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} {msg}"
+        print(line, flush=True); logf.write(line + "\n"); logf.flush(); os.fsync(logf.fileno())
+    try:
+        body(args, R, log)
+        R.write_status(args.out, "COMPLETE", mode=args.mode)
+        log("COMPLETE")
+    except BaseException as e:                                  # record, then re-raise (no retry)
+        R.write_status(args.out, "FAILED", mode=args.mode, error=repr(e)[:2000])
+        log(f"FAILED {e!r}")
+        raise
+
+
+def body(args, R, log) -> None:
     M, C = load(MATH_PATH, "pkmath"), load(CAPTURE_PATH, "pkcap")
     import torch
     torch.set_num_threads(THREADS)
+    limiter = threadpool_limits(limits=THREADS)                 # real BLAS limit for fitting/profiling
     m, seeds, t = MODES[args.mode], MODES[args.mode]["seeds"], {"start": time.time()}
     run = {"mode": args.mode, "wall_s": args.wall_s, "threads": THREADS, "n_boot": N_BOOT, "seeds": seeds,
-           "fit": m["fit"], "ev": m["ev"], "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-           "sha256": {p.name: sha(p) for p in (Path(__file__), MATH_PATH, CAPTURE_PATH, C.MANIFEST)}}
-    (args.out / "run.json").write_text(json.dumps(run, indent=1) + "\n")
+           "fit": m["fit"], "ev": m["ev"], "sha256": R.source_shas(), "blas_env": {v: os.environ[v] for v in
+           ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}, "threadpools": threadpool_info(),
+           "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()}
+    (args.out / "run.json").write_text(json.dumps(run, indent=1, default=str, allow_nan=False) + "\n")
+    log(f"start mode={args.mode}")
     pcfg, runtime, backend = C.load_model(); t["loaded"] = time.time()
-    cap_fit = C.capture(runtime, backend, pcfg, *m["fit"]); cap_ev = C.capture(runtime, backend, pcfg, *m["ev"])
+    run["identities"] = C.identities(runtime, pcfg)
+    (args.out / "run.json").write_text(json.dumps(run, indent=1, default=str, allow_nan=False) + "\n")
+    log("model loaded; identities recorded")
+    cap_fit = C.capture(runtime, backend, pcfg, *m["fit"], log=log)
+    cap_ev = C.capture(runtime, backend, pcfg, *m["ev"], log=log)
     t["captured"] = time.time()
     emb = {k: (C.embeddings(runtime, c["key_ids"]), C.embeddings(runtime, c["value_ids"])) for k, c in (("fit", cap_fit), ("ev", cap_ev))}
     del runtime, backend; gc.collect()                          # release the model before solves
-    t["released"] = time.time()
+    t["released"] = time.time(); log("model released")
     np.savez(args.out / "features.npz", **{f"fit_{k}": v for k, v in cap_fit.items() if k != "layers"},
              **{f"ev_{k}": v for k, v in cap_ev.items() if k != "layers"})
-    run["features_sha256"] = sha(args.out / "features.npz")
+    run["features_sha256"] = hashlib.sha256((args.out / "features.npz").read_bytes()).hexdigest()
     nf, ne, nb = m["fit"][1], m["ev"][1], cap_fit["key_ids"].shape[1]
+    for k, v in emb.items():
+        M.require_finite(v[0], f"{k} key embeddings"); M.require_finite(v[1], f"{k} value embeddings")
     tgt = {k: v[0] / np.linalg.norm(v[0], axis=-1, keepdims=True) for k, v in emb.items()}   # [E, 32, d]
     ep_f, ep_e = np.repeat(np.arange(nf), nb), np.repeat(np.arange(ne), nb)
     ti_f, ti_e = np.tile(np.arange(nb), nf), np.tile(np.arange(nb), ne)
@@ -128,6 +154,7 @@ def main():
         stats[layer]["dVK"] = M.interval(per_ep[(layer, "V+K")] - per_ep[(layer, "V")], idx, M.LAYER_ALPHA)
         metrics[f"L{layer}/dVK"] = {"point_lo_hi": stats[layer]["dVK"], "two_sided_level": 1 - M.LAYER_ALPHA}
         metrics[f"L{layer}/dVK_vs_K (descriptive)"] = {"point_lo_hi": M.interval(per_ep[(layer, "V+K")] - per_ep[(layer, "K")], idx, M.LAYER_ALPHA)}
+        log(f"layer {layer} fitted")
     t["fitted"] = time.time()
     rd = M.reading(stats, 1 / nb)
     rd["read"] = args.mode == "full"
@@ -137,9 +164,11 @@ def main():
            "peak_rss_mb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024}
     if args.mode == "s1":
         out["admission"] = profile_and_admit(M, t, nf + ne, out_bytes=(args.out / "features.npz").stat().st_size)
-        (args.out / "admission.json").write_text(json.dumps(out["admission"], indent=1) + "\n")
-    (args.out / "result.json").write_text(json.dumps(out, indent=1, default=float) + "\n")
-    print(json.dumps({"mode": args.mode, "label": rd["label"], "read": rd["read"], "timing_s": out["timing_s"]}, indent=1))
+        (args.out / "admission.json").write_text(json.dumps(out["admission"], indent=1, allow_nan=False) + "\n")
+        log(f"admission {out['admission']['admit']} wall {out['admission']['wall_s']:.0f}s")
+    (args.out / "result.json").write_text(json.dumps(out, indent=1, default=float, allow_nan=False) + "\n")
+    limiter.restore_original_limits()
+    log(f"label {rd['label']} (read={rd['read']})")
 
 
 def profile_and_admit(M, t: dict, n_cap: int, out_bytes: int) -> dict:

@@ -43,6 +43,7 @@ def _fake_capture_module(d=64, dk=48):
 
     mod = types.SimpleNamespace(MANIFEST=ROOT / "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
                                 load_model=lambda: (None, None, None), capture=capture,
+                                identities=lambda rt, pcfg: {"fake": True},
                                 embeddings=lambda rt, ids: vocab[ids])
     return mod
 
@@ -102,14 +103,74 @@ def test_capture_guard_refuses_model_load_under_test_flag(monkeypatch):
         C.load_model()
 
 
-@pytest.mark.parametrize("admit,wall,match", [(False, 100, "refused"), (True, 999, "ceil")])
-def test_full_mode_refuses_without_admitting_admission(tmp_path, monkeypatch, admit, wall, match):
-    R, fake_load = _sentinel_runner(f"pkrun_full_{admit}")
+def _receipts():
+    return _load(ROOT / "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py", "pkrx_t")
+
+
+def _stage(tmp, name, mode, shas, exit_code="0", state="COMPLETE", wall=1000.0, admit=True, metric=0.5):
+    d = tmp / name
+    d.mkdir()
+    (tmp / f"{name}.exit").write_text(exit_code + "\n")
+    (d / "status.json").write_text(json.dumps({"state": state}))
+    (d / "result.json").write_text(json.dumps({"run": {"mode": mode, "sha256": shas}, "metrics": {"m": metric},
+                                               "timing_s": {"t": 1.0}, "reading": {"label": "x"}}))
+    if mode == "s1":
+        (d / "admission.json").write_text(json.dumps({"admit": admit, "wall_s": wall}))
+    return d
+
+
+@pytest.mark.parametrize("case,match", [
+    ("missing", "exit receipt"), ("wall0", "outside"), ("wall20000", "outside"), ("s2_running", "not COMPLETE"),
+    ("s2_exit1", "exit receipt"), ("sha", "source hashes"), ("nan", "nonfinite"), ("argwall", "admitted wall"),
+    ("noadmit", "did not admit"),
+])
+def test_full_mode_receipt_gate_refuses(tmp_path, monkeypatch, case, match):
+    R, fake_load = _sentinel_runner(f"pkrun_full_{case}")
     monkeypatch.setattr(R, "load", fake_load)
-    adm = tmp_path / "admission.json"
-    adm.write_text(json.dumps({"admit": admit, "wall_s": 100.0}))
-    monkeypatch.setattr(sys, "argv", ["x", "--mode", "full", "--wall-s", str(wall), "--admission", str(adm),
-                                      "--out", str(tmp_path / "o")])
+    shas = _receipts().source_shas()
+    bad = {**shas, "x": "0"} if case == "sha" else shas
+    if case != "missing":
+        _stage(tmp_path, "s1", "s1", bad, wall={"wall0": 0, "wall20000": 20000}.get(case, 1000.0),
+               admit=case != "noadmit", metric=float("nan") if case == "nan" else 0.5)
+        _stage(tmp_path, "s2", "s2", shas, state="RUNNING" if case == "s2_running" else "COMPLETE",
+               exit_code="1" if case == "s2_exit1" else "0")
+    wall = "999" if case == "argwall" else "1000"
+    monkeypatch.setattr(sys, "argv", ["x", "--mode", "full", "--wall-s", wall, "--s1-dir", str(tmp_path / "s1"),
+                                      "--s2-dir", str(tmp_path / "s2"), "--out", str(tmp_path / "o")])
     with pytest.raises(RuntimeError, match=match):
         R.main()
     assert not (tmp_path / "o").exists()
+
+
+def test_full_mode_valid_receipts_pass_gate_then_hit_sentinel(tmp_path, monkeypatch):
+    R, fake_load = _sentinel_runner("pkrun_full_ok")
+    monkeypatch.setattr(R, "load", fake_load)
+    shas = _receipts().source_shas()
+    _stage(tmp_path, "s1", "s1", shas, wall=999.2)
+    _stage(tmp_path, "s2", "s2", shas)
+    monkeypatch.setattr(sys, "argv", ["x", "--mode", "full", "--wall-s", "1000", "--s1-dir", str(tmp_path / "s1"),
+                                      "--s2-dir", str(tmp_path / "s2"), "--out", str(tmp_path / "o")])
+    with pytest.raises(RuntimeError, match="MODEL LOAD ATTEMPTED"):
+        R.main()
+    assert json.loads((tmp_path / "o" / "status.json").read_text())["state"] == "FAILED"
+
+
+def test_receipt_cli_full_wall(tmp_path, monkeypatch, capsys):
+    RX = _receipts()
+    shas = RX.source_shas()
+    _stage(tmp_path, "s1", "s1", shas, wall=1234.1)
+    _stage(tmp_path, "s2", "s2", shas)
+    monkeypatch.setattr(sys, "argv", ["x", "--full-wall", "--s1", str(tmp_path / "s1"), "--s2", str(tmp_path / "s2")])
+    assert RX.main() == 0 and capsys.readouterr().out.strip() == "1235"
+    (tmp_path / "s2.exit").write_text("137\n")
+    assert RX.main() == 1
+
+
+def test_strict_json_reader_rejects_nan(tmp_path):
+    RX = _receipts()
+    f = tmp_path / "x.json"
+    f.write_text('{"a": NaN}')
+    with pytest.raises(RuntimeError, match="nonfinite"):
+        RX.strict_json(f)
+    f.write_text('{"a": 1.5}')
+    assert RX.strict_json(f) == {"a": 1.5}

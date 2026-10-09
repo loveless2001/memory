@@ -134,3 +134,28 @@ def test_cv_solves_only_on_train_fold_rows(monkeypatch):
     for f, xx in zip(np.unique(folds), seen):
         tr = folds[ep] != f
         assert np.array_equal(xx, x[tr])                         # exactly the train-fold rows, nothing else
+
+
+def test_nonfinite_inputs_are_refused():
+    x, y, ep, cands, ti = planted()
+    xb = x.copy(); xb[0, 0] = np.nan
+    with pytest.raises(RuntimeError, match="nonfinite"):
+        M.ridge_path(xb, y)
+    model = M.ridge_path(x, y)
+    pred = M.predict(model, 1.0, x); pred[3, 1] = np.nan
+    with pytest.raises(RuntimeError, match="nonfinite"):
+        M.retrieval_ranks(pred, cands, ep, ti)
+    with pytest.raises(RuntimeError, match="nonfinite"):
+        M.interval(np.array([0.1, np.nan]), M.bootstrap_index(2, 10, 0), M.LAYER_ALPHA)
+    with pytest.raises(RuntimeError, match="nonfinite"):
+        M.admission(float("nan"), 160, 60, 600, 60, 30)
+
+
+@pytest.mark.parametrize("w", [0, -1, 0.0, float("inf"), float("nan"), 20000, 14400.5, True, "100", None])
+def test_validate_wall_rejects_bad_values(w):
+    with pytest.raises(RuntimeError):
+        M.validate_wall(w)
+
+
+def test_validate_wall_accepts_in_range():
+    assert M.validate_wall(14400) == 14400.0 and M.validate_wall(1.5) == 1.5

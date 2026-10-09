@@ -18,6 +18,23 @@ STD_FLOOR = 1e-6
 WALL_CAP_S = 4 * 3600
 
 
+def require(ok: bool, msg: str) -> None:
+    """Explicit refusal (survives python -O)."""
+    if not ok:
+        raise RuntimeError(msg)
+
+
+def require_finite(a, what: str) -> None:
+    require(bool(np.all(np.isfinite(np.asarray(a, np.float64)))), f"nonfinite {what}")
+
+
+def validate_wall(w) -> float:
+    """Full-run wall must be a finite positive number <= 4 h, independent of any JSON claim (codex 22408)."""
+    require(isinstance(w, (int, float)) and not isinstance(w, bool), f"wall {w!r} is not a number")
+    require(np.isfinite(w) and 0 < w <= WALL_CAP_S, f"wall {w!r} outside (0, {WALL_CAP_S}]")
+    return float(w)
+
+
 def episode_folds(n_episodes: int, k: int, seed: int) -> np.ndarray:
     """Fold id per EPISODE from a fixed permutation; sizes differ by at most one."""
     perm = np.random.default_rng(seed).permutation(n_episodes)
@@ -36,17 +53,23 @@ def ridge_path(x: np.ndarray, y: np.ndarray, lambdas=LAMBDAS) -> dict:
     """Fit standardization + intercept on (x, y) only; return one solution per lambda.
     Loss: sum ||y - (W x~ + b)||^2 + lam ||W||_F^2 (not divided by n); b unpenalized."""
     x = np.asarray(x, np.float64); y = np.asarray(y, np.float64)
+    require_finite(x, "probe features"); require_finite(y, "probe targets")
     mu, sd = fit_standardizer(x)
     xs = (x - mu) / sd
     ym = y.mean(0)
     u, s, vt = np.linalg.svd(xs, full_matrices=False)
     uty = u.T @ (y - ym)
     sols = {lam: vt.T @ ((s / (s * s + lam))[:, None] * uty) for lam in lambdas}
+    for lam, w in sols.items():
+        require_finite(w, f"ridge solution (lambda {lam})")
     return {"mu": mu, "sd": sd, "ym": ym, "W": sols}
 
 
 def predict(model: dict, lam: float, x: np.ndarray) -> np.ndarray:
-    return ((np.asarray(x, np.float64) - model["mu"]) / model["sd"]) @ model["W"][lam] + model["ym"]
+    require_finite(x, "features to predict")
+    out = ((np.asarray(x, np.float64) - model["mu"]) / model["sd"]) @ model["W"][lam] + model["ym"]
+    require_finite(out, "predictions")
+    return out
 
 
 def retrieval_ranks(pred: np.ndarray, cand_ep: np.ndarray, episode: np.ndarray, true_idx: np.ndarray) -> np.ndarray:
@@ -55,6 +78,7 @@ def retrieval_ranks(pred: np.ndarray, cand_ep: np.ndarray, episode: np.ndarray, 
     rank = #{other candidates with cosine >= true cosine} (ties count against);
     a zero-norm prediction gets the worst rank C-1."""
     c = cand_ep.shape[1]
+    require_finite(pred, "retrieval predictions"); require_finite(cand_ep, "retrieval candidates")
     ranks = np.empty(len(pred), dtype=np.int64)
     for e in np.unique(episode):
         rows = np.flatnonzero(episode == e)
@@ -66,6 +90,7 @@ def retrieval_ranks(pred: np.ndarray, cand_ep: np.ndarray, episode: np.ndarray, 
         true = scores[np.arange(len(rows)), true_idx[rows]]
         ge = (scores >= true[:, None]).sum(1) - 1       # exclude the true candidate itself
         ranks[rows] = np.where(pn == 0, c - 1, ge)
+    require(bool(np.all((ranks >= 0) & (ranks <= c - 1))), "rank outside [0, C-1]")
     return ranks
 
 
@@ -105,9 +130,12 @@ def bootstrap_index(n_episodes: int, n_boot: int, seed: int) -> np.ndarray:
 
 def interval(per_episode: np.ndarray, idx: np.ndarray, alpha: float) -> tuple[float, float, float]:
     """Point estimate + two-sided percentile interval at level 1 - alpha over episode resamples."""
+    require_finite(per_episode, "per-episode statistic")
     boots = per_episode[idx].mean(1)
     lo, hi = np.quantile(boots, [alpha / 2, 1 - alpha / 2])
-    return float(per_episode.mean()), float(lo), float(hi)
+    out = (float(per_episode.mean()), float(lo), float(hi))
+    require_finite(out, "interval")
+    return out
 
 
 def reading(stats: dict, chance: float) -> dict:
@@ -139,6 +167,9 @@ def reading(stats: dict, chance: float) -> dict:
 def admission(capture_s_per_episode: float, n_episodes: int, model_load_s: float, fit_s: float,
               boot_s: float, output_s: float, margin_s: float = 300.0) -> dict:
     """Full-run wall = 2 x (load + capture + fit + bootstrap + output + margin); refuse above 4 h."""
+    parts = (capture_s_per_episode, model_load_s, fit_s, boot_s, output_s, margin_s)
+    require_finite(parts, "admission inputs")
+    require(all(x >= 0 for x in parts) and n_episodes > 0, "negative admission input")
     est = model_load_s + capture_s_per_episode * n_episodes + fit_s + boot_s + output_s + margin_s
     wall = 2.0 * est
-    return {"estimate_s": est, "wall_s": wall, "admit": wall <= WALL_CAP_S}
+    return {"estimate_s": est, "wall_s": wall, "admit": bool(0 < wall <= WALL_CAP_S)}

@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4] if False else Path.cwd()
 MATH = "scripts/sgm-p2p5-previous-key-probe-ridge-retrieval-readings.py"
 RUN = "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py"
+RX = "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py"
 MUTANTS = [
     ("M1 ties to smaller lambda", MATH, "key=lambda lam: (means[lam], lam)", "key=lambda lam: (means[lam], -lam)"),
     ("M2 ties count for the true key", MATH, "(scores >= true[:, None]).sum(1) - 1", "(scores > true[:, None]).sum(1)"),
@@ -17,11 +18,24 @@ MUTANTS = [
     ("M7 admission factor 1", MATH, "wall = 2.0 * est", "wall = 1.0 * est"),
     ("M8 zero-norm prediction ranks best", MATH, "np.where(pn == 0, c - 1, ge)", "np.where(pn == 0, 0, ge)"),
     ("M9 V-shuf fit on true targets", RUN, 'y = y_shuf_f if s == "V-shuf" else y_true_f', "y = y_true_f"),
-    ("M10 wall check bypassed", RUN, '    check_wall(args)                                            # before any model load', "    pass"),
-    ("M11 full admission 'admit' ignored", RUN, '    require(adm["admit"], "S1 admission refused the full run")', "    pass"),
-    ("M12 full wall != ceil(admitted) accepted", RUN,
-     '    require(args.wall_s == math.ceil(adm["wall_s"]), f"--wall-s must equal ceil(admitted wall) {math.ceil(adm[\'wall_s\'])}")',
-     "    pass"),
+    ("M10 wall check bypassed", RUN, '    check_wall(args, R)                                         # before any model load', "    pass"),
+    ("M20 strict-JSON reader accepts NaN", RX,
+     '    return json.loads(Path(path).read_text(), parse_constant=_reject_constant)', '    return json.loads(Path(path).read_text())'),
+    ("M11 S2 receipt not required for full", RX, '    validate_receipt(s2_dir, "s2", shas)\n', "    pass\n"),
+    ("M12 full --wall-s != admitted accepted", RUN,
+     '    R.require(args.wall_s == w, f"--wall-s must equal the admitted wall {w}")', "    pass"),
+    ("M14 wall range check removed", MATH,
+     '    require(np.isfinite(w) and 0 < w <= WALL_CAP_S, f"wall {w!r} outside (0, {WALL_CAP_S}]")', "    pass"),
+    ("M15 receipt source-hash check removed", RX,
+     '    require(res["run"]["sha256"] == (shas or source_shas()), f"{mode}: source hashes differ from the current sources")', "    pass"),
+    ("M16 receipt status check removed", RX,
+     '''    require(status.get("state") == "COMPLETE", f"{mode}: status {status.get('state')!r}, not COMPLETE")''', "    pass"),
+    ("M17 retrieval nonfinite check removed", MATH,
+     '    require_finite(pred, "retrieval predictions"); require_finite(cand_ep, "retrieval candidates")', "    pass"),
+    ("M18 receipt exit-code check removed", RX,
+     '    require(exit_file.is_file() and exit_file.read_text().strip() == "0", f"{mode}: exit receipt missing or nonzero")', "    pass"),
+    ("M19 S1 admit flag ignored", RX,
+     '    require(adm.get("admit") is True, "s1: admission did not admit the full run")', "    pass"),
     ("M13 model-load test guard removed", "scripts/sgm-p2p5-previous-key-probe-capture-qwen-adapter-inputs.py",
      '    require(os.environ.get("PKPROBE_FORBID_MODEL") != "1", "MODEL LOAD ATTEMPTED under PKPROBE_FORBID_MODEL=1")',
      "    pass"),
