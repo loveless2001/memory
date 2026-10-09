@@ -959,12 +959,12 @@ run is authorized by it.
 ## P2.5 → B2 — frozen Qwen3-0.6B sidecar line (2026-10-06 – 2026-10-10, CLOSED)
 
 Closed by the user (#gravity 22357). Full write-up:
-[plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup-r2.md](plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup-r2.md) (r1 kept).
+[plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup-r3.md](plans/reports/claude-261010-0022-m4-sgm-qwen3-0p6b-sidecar-line-closing-writeup-r3.md) (r1/r2 kept).
 
 - P2.5 screen (18 cells, 2 seeds): NOT PASSED at N32/N16, memory_use FALSE. Learned N32 reserved accuracy 6.9/5.9% vs random-fixed 12.5/8.9% and oracle 100/97.9%. The reading is post-hoc amended for learned-n32-s1; the original reading "unavailable" is kept.
 - Readout probe (taskhead): rescue not shown (12/1024, 16/1024 vs residual head 74/1024, 65/1024).
 - Dead-start diagnosis + Stage A: reads escape to empty cells early (A0 99.6% absent at update 25). A lower address lr delays the escape but does not prevent it.
-- Fill+anchor (branch `m4-sgm-occupied-fill-v1`): B1 PARTIAL. B2 (1,500 updates, seed 0) VALID_NEGATIVE, 5/256 normal = 5/256 deranged.
+- Fill+anchor (branch `m4-sgm-occupied-fill-v1`): B1 ran all 100 updates; its routing band was PARTIAL. B2 (1,500 updates, seed 0) VALID_NEGATIVE, 5/256 normal = 5/256 deranged.
 - CPU gradient-path diagnosis: no structural dead path at init. At the B2 endpoint the memory is suppressed (writes off at L6/L13, reads ~0, near-collinear projected k/v). Cause and timing are not established.
 - Scope: this design and these recipes on frozen Qwen3-0.6B, mostly single-seed. This does not show that a pretrained model cannot use a memory.
 - Spend ≈ $162 provisional (sum of per-stage snapshots).
