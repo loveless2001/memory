@@ -18,5 +18,5 @@ if [ "$DIRTY" -ne 0 ]; then echo "refusing: dirty tracked tree ($DIRTY)" > "$P/b
   echo "argv timeout --signal=TERM --kill-after=30s 2610 $PY -m modal run $RN --out $OUT"; } > "$P/b1-run-v1.launch.txt"
 timeout --signal=TERM --kill-after=30s 2610 "$PY" -m modal run "$RN" --out "$OUT" > "$P/b1-run-v1.console.log" 2>&1
 echo "$? $(date -u +%FT%T.%NZ)" > "$P/b1-run-v1.exit.txt"
-"$PY" "$RN" cleanup-verify "$OUT" > "$P/b1-run-v1.cleanup.log" 2>&1
+timeout --signal=KILL 330 "$PY" "$RN" cleanup-verify "$OUT" > "$P/b1-run-v1.cleanup.log" 2>&1   # CLEANUP_S 300 + 30
 echo "$? $(date -u +%FT%T.%NZ)" > "$P/b1-run-v1.cleanup-exit.txt"

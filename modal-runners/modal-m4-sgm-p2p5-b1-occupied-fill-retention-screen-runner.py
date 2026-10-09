@@ -25,9 +25,11 @@ Server-side controls (codex 21987, 21999):
 Charge reservation (ledger()): GPU-container seconds <= client lifetime OUTER_S (from the first
 call) + STOP_ALLOWANCE_S, because max_containers=1 serializes containers and the ephemeral app
 stops when the client exits. No arm work can run past the deadline (server-side). After it only
-entry refusals and bounded startups can occur, until the client exits. App-stop latency after
-client exit is the one unenforced term; cleanup-verify checks it. CPU is priced with a 25%
-overuse margin (CPU limits are soft).
+entry refusals and bounded startups can occur, until the client exits. cleanup-verify then has
+ONE overall budget CLEANUP_S (= STOP_ALLOWANCE_S) for the stop call, every list call and the
+waits. The reservation is CONDITIONAL: it assumes the app stops within that window (unverified
+-> manual stop; billing beyond is not covered) and CPU use within the 25% margin (CPU limits are
+soft; overuse is billed).
 
     timeout --signal=TERM --kill-after=30s <OUTER_S - 30> .venv/bin/python -m modal run \
         modal-runners/modal-m4-sgm-p2p5-b1-occupied-fill-retention-screen-runner.py --out <new local dir>
@@ -60,7 +62,8 @@ ARMS = ("B1",)
 CAMPAIGN_S = 2400                # immutable deadline = first-call time + CAMPAIGN_S (A0 child: 642 s)
 FUNCTION_S, CHILD_S, STARTUP_S = 1560, 1500, 300
 MIN_ARM_S, END_MARGIN_S = 600, 90
-CLIENT_TAIL_S, STOP_ALLOWANCE_S, CAP_USD = 240, 300, 2.5
+CLIENT_TAIL_S, CLEANUP_S, CAP_USD = 240, 300, 2.5
+STOP_ALLOWANCE_S = CLEANUP_S     # ledger stop allowance == the whole bounded cleanup window (codex 22132)
 OUTER_S = CAMPAIGN_S + CLIENT_TAIL_S
 INPUT_MANIFEST = "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json"
 SCRIPT = "scripts/sgm-p2p5-b1-occupied-fill-retention-screen-train.py"
@@ -75,7 +78,12 @@ def ledger() -> dict:
     bound = gpu_s * rate
     return {"rate_usd_s": rate, "cpu_overuse_margin": CPU_OVERUSE_MARGIN, "outer_s": OUTER_S,
             "stop_allowance_s": STOP_ALLOWANCE_S, "image_construction_usd": 0.0, "reservation_usd": bound,
-            "cap_usd": CAP_USD, "unenforced": "app-stop latency after client exit (cleanup-verify checks it)"}
+            "cap_usd": CAP_USD, "cleanup_budget_s": CLEANUP_S,
+            "assumptions": ["the app stops within CLEANUP_S after the client exits (cleanup-verify checks; "
+                            "if unverified: manual stop, and billing past it is NOT covered)",
+                            f"CPU use <= {CPU_OVERUSE_MARGIN} x {CPU_CORES} cores (Modal CPU limits are soft; "
+                            "overuse is billed)"],
+            "unenforced": "app-stop latency after client exit; CPU overuse beyond the margin"}
 
 
 app = modal.App(APP_NAME)
@@ -233,10 +241,28 @@ def main(out: str):
         raise SystemExit(1)
 
 
-def cleanup_verify(out: Path, attempts: int = 4, wait_s: float = 20.0, cp=None, stopper=None, sleep=time.sleep) -> dict:
-    """After the client exits: stop the recorded app id (bounded CLI call; an already-stopped ephemeral app is
-    fine), then require verify_stopped (app stopped, zero tasks, zero containers), re-checking a few times
-    because task counts lag. Writes cleanup.json; returns it."""
+def cleanup_verify(out: Path, budget_s: float = CLEANUP_S, wait_s: float = 20.0, cp=None,
+                   run=subprocess.run, sleep=time.sleep, clock=time.monotonic) -> dict:
+    """After the client exits: stop the recorded app id, then require verify_stopped (app stopped, zero
+    tasks, zero containers), re-checking because task counts lag. EVERYTHING (the stop call, each
+    app/container list call, the waits) shares ONE overall budget of `budget_s` seconds (= the
+    ledger's STOP_ALLOWANCE_S): each Modal CLI call gets timeout min(60, time left) and no call
+    starts with <= 1 s left. Not verified by then -> "shutdown_unresolved" (escalate: manual stop;
+    billing past this point is the unenforced residual). Writes cleanup.json; returns it."""
+    end = clock() + budget_s
+
+    def left() -> float:
+        return end - clock()
+
+    def cli(args: list, check: bool):
+        t = min(60.0, left())
+        if t <= 1.0:
+            raise TimeoutError("cleanup budget exhausted")
+        return run([sys.executable, "-m", "modal", *args], capture_output=True, text=True, timeout=t, check=check)
+
+    def modal_json(args: list) -> list:
+        return json.loads(cli([*args, "--json"], True).stdout)
+
     if cp is None:
         spec = importlib.util.spec_from_file_location("cp", Path(__file__).resolve().parents[1] / CONTROL_LOGIC_FILE)
         cp = importlib.util.module_from_spec(spec)
@@ -246,25 +272,23 @@ def cleanup_verify(out: Path, attempts: int = 4, wait_s: float = 20.0, cp=None, 
     except (OSError, ValueError):
         app_id = None                                  # the client failed before the entrypoint wrote run.json
     out.mkdir(parents=True, exist_ok=True)
-    rec = {"app_id": app_id, "checks": []}
+    rec = {"app_id": app_id, "budget_s": budget_s, "checks": []}
     if not (isinstance(app_id, str) and app_id.startswith("ap-")):
         rec["status"] = "unresolved: no app id recorded"
     else:
-        stop = stopper or (lambda a: subprocess.run([sys.executable, "-m", "modal", "app", "stop", a],
-                                                    capture_output=True, text=True, timeout=60))
         try:
-            r = stop(app_id)
-            rec["stop"] = {"returncode": getattr(r, "returncode", None), "stderr_tail": (getattr(r, "stderr", "") or "")[-300:]}
+            r = cli(["app", "stop", app_id], False)
+            rec["stop"] = {"returncode": r.returncode, "stderr_tail": (r.stderr or "")[-300:]}
         except Exception as e:
             rec["stop"] = {"error": repr(e)[:300]}
-        for i in range(attempts):
-            v = cp.verify_stopped(app_id, cp.modal_cli_json)
+        while True:
+            v = cp.verify_stopped(app_id, modal_json)       # its CLI errors/timeouts leave it unverified
             rec["checks"].append(v)
-            if v.get("verified") is True:
+            if v.get("verified") is True or left() <= wait_s + 1.0:
                 break
-            if i < attempts - 1:
-                sleep(wait_s)
+            sleep(wait_s)
         rec["status"] = "stopped_verified" if rec["checks"][-1].get("verified") is True else "shutdown_unresolved"
+    rec["elapsed_s"] = budget_s - left()
     (out / "cleanup.json").write_text(json.dumps(rec, indent=2, default=str))
     return rec
 

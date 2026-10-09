@@ -85,7 +85,8 @@ def test_ledger_within_cap_and_launch_timeout_matches():
     assert led["reservation_usd"] <= led["cap_usd"] == 2.5
     assert led["reservation_usd"] == pytest.approx((R.CAMPAIGN_S + R.CLIENT_TAIL_S + R.STOP_ALLOWANCE_S) * led["rate_usd_s"])
     sh = (ROOT / "plans/261009-1040-m4-sgm-p2p5-b1-occupied-fill-retention-screen/launch-b1-once.sh").read_text()
-    assert f"--kill-after=30s {R.OUTER_S - 30} " in sh and R.SCRIPT.split("/")[-1] not in sh
+    assert f"--kill-after=30s {R.OUTER_S - 30} " in sh and f"timeout --signal=KILL {R.CLEANUP_S + 30} " in sh
+    assert R.STOP_ALLOWANCE_S == R.CLEANUP_S and led["cleanup_budget_s"] == R.CLEANUP_S and led["assumptions"]
 
 
 def _write(dest, **kw):
@@ -121,3 +122,56 @@ def test_one_campaign_deadline_per_dict():
     assert t == 1000.0 + R.CAMPAIGN_S
     with pytest.raises(SystemExit):
         R.set_campaign_deadline(d, 2000.0)
+
+
+class _Clock:
+    def __init__(self):
+        self.t = 0.0
+
+    def __call__(self):
+        return self.t
+
+
+def _cp():
+    return _load(R.CONTROL_LOGIC_FILE, "cp_logic")
+
+
+def _run_app(tmp_path):
+    (tmp_path / "run.json").write_text(json.dumps({"app_id": "ap-test"}))
+    return tmp_path
+
+
+def test_cleanup_hanging_cli_stays_within_one_overall_budget(tmp_path):
+    import subprocess
+    clock, timeouts = _Clock(), []
+
+    def hang(cmd, timeout, **kw):                       # every Modal CLI call hangs until its timeout
+        timeouts.append(timeout)
+        clock.t += timeout
+        raise subprocess.TimeoutExpired(cmd, timeout)
+
+    def sleep(s):
+        clock.t += s
+    rec = R.cleanup_verify(_run_app(tmp_path), cp=_cp(), run=hang, sleep=sleep, clock=clock)
+    assert rec["status"] == "shutdown_unresolved" and "error" in rec["stop"]
+    assert all(0 < t <= 60 for t in timeouts) and clock.t <= R.CLEANUP_S and rec["elapsed_s"] <= R.CLEANUP_S
+
+
+def test_cleanup_verifies_a_stopped_app_and_retries_lagging_tasks(tmp_path):
+    import subprocess
+    clock, lists = _Clock(), {"n": 0}
+
+    def run(cmd, timeout, **kw):
+        clock.t += 2
+        if "stop" in cmd:
+            return subprocess.CompletedProcess(cmd, 0, "", "")
+        if "app" in cmd:
+            lists["n"] += 1
+            tasks = "1" if lists["n"] < 3 else "0"          # task count lags two checks
+            return subprocess.CompletedProcess(cmd, 0, json.dumps([{"app_id": "ap-test", "state": "stopped",
+                                                                      "tasks": tasks}]), "")
+        return subprocess.CompletedProcess(cmd, 0, "[]", "")
+    rec = R.cleanup_verify(_run_app(tmp_path), cp=_cp(), run=run, sleep=lambda s: setattr(clock, "t", clock.t + s),
+                           clock=clock)
+    assert rec["status"] == "stopped_verified" and len(rec["checks"]) == 3 and clock.t <= R.CLEANUP_S
+    assert R.cleanup_verify(tmp_path / "none", cp=_cp(), run=run, clock=clock)["status"].startswith("unresolved")
