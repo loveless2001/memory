@@ -22,6 +22,7 @@ import math
 import torch
 
 from .backend import SourceRef, SparseGrowingMemoryBackend
+from .occupied_cell_read_fallback import fallback_summary
 from .synthetic_binding_task import VALUE_BASE, N_VALUES, BindingTaskSpec, sample_batch
 
 INTERVENTIONS = ("none", "bank_derange", "coord_shuffle", "read_offset", "query_off")
@@ -128,7 +129,7 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
     episodes = [sample_batch(spec, split, batch_size, data_gen) for _ in range(batches)]
     rt = backend.runtime
     correct = total = 0
-    empty, coords, tele, episode_acc, betas, eff_betas = [], [], [], [], [], []
+    empty, coords, tele, episode_acc, betas, eff_betas, fill = [], [], [], [], [], [], []
     for bi, batch in enumerate(episodes):
         traces: list = []
         state = ingest(backend, batch, arm, traces, filler_writes, spec.n_bindings).detached()
@@ -149,6 +150,7 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
                 correct += int(hit.sum()); total += hit.numel()
                 ep_hits += hit.float()
                 empty += [float(x) for x in trace["empty_read_weight"]]
+                fill += trace.get("query_fallback", [])      # read_fallback variant only
                 coords += [cs[-1].reshape(-1, 2) for cs in trace["read_coords"].values()]
                 if per_example is not None:
                     for b in range(hit.numel()):
@@ -165,6 +167,8 @@ def evaluate(backend, head, spec: BindingTaskSpec, arm: str, readout: str, *,
            "query_empty_read_weight": sum(empty) / len(empty) if empty else None,
            "query_read_address_std_cells": float(torch.cat(coords).std(0).mean()) if coords else None}
     out.update({k: sum(t[k] for t in tele) / len(tele) for k in tele[0]})
+    if fill:
+        out.update(fallback_summary(fill))
     if betas and betas[0]:
         out["beta_by_token_class"] = {k: sum(b[k] for b in betas) / len(betas) for k in betas[0]}
         out["effective_beta_by_token_class"] = {k: sum(b[k] for b in eff_betas) / len(eff_betas)

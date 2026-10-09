@@ -1,0 +1,1926 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 46%]
+..............................................................F......... [ 58%]
+........................................................................ [ 70%]
+...............FFFFFFFFF....FFFFFFss...................................F [ 82%]
+FFFFF.F.............................................................FFFF [ 93%]
+FFFFFFFF.FF...........................                                   [100%]
+=================================== FAILURES ===================================
+____________ test_frozen_registry_and_schema_equal_their_derivation ____________
+
+    def test_frozen_registry_and_schema_equal_their_derivation():
+        reg, sch = FREEZE.derive()
+        frozen_reg = json.loads((ROOT / L.REGISTRY_FILE).read_text())
+        frozen_sch = json.loads((ROOT / L.SCHEMA_FILE).read_text())
+        assert frozen_reg["learned"] == reg["learned"] and frozen_sch["learned"] == sch["learned"]
+        assert frozen_reg["learned"]["state_names_shapes"]["head.weight"] == [64, 512]
+        campaign = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_registry.json").read_text())["by_arm"]["learned"]
+        diff = {k for k in campaign["state_names_shapes"] if campaign["state_names_shapes"][k] != frozen_reg["learned"]["state_names_shapes"][k]}
+        assert diff == {"head.weight"} and set(campaign["state_names_shapes"]) == set(frozen_reg["learned"]["state_names_shapes"])
+        sha = lambda rel: hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()  # noqa: E731
+        for doc in (frozen_reg, frozen_sch):                         # recorded provenance = the current bound files
+>           assert doc["grid_sha256"] == sha(L.GRID_FILE) and doc["memsub_source_sha256"] == source_tree_sha256(ROOT / "memsub")
+E           AssertionError: assert ('b418f39e493b...9f0818b6e34d8' == 'b418f39e493b...9f0818b6e34d8'
+E             
+E             Skipping 53 identical leading characters in diff, use -v to show
+E               0818b6e34d8 and '2eee4228124e...d51333687a19b' == '9efaef28153f...8892b0423bd5f'
+E             
+E             - 9efaef28153faf687af4ed8e70b615fd22dc77c9e04209d1a608892b0423bd5f
+E             + 2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b)
+
+tests/test_sgm_p2p5_readout_probe_validation_contract.py:185: AssertionError
+________ test_both_oracle_interfaces_precede_any_other_reserved_access _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727427c20>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_both_oracle_interfaces_pr0')
+
+    def test_both_oracle_interfaces_precede_any_other_reserved_access(monkeypatch, tmp_path):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p=0.9)
+>       assert [(a, n, s) for a, n, s, _iv in calls[:4]] == [("oracle", 32, 0), ("oracle", 32, 1),
+                                                              ("oracle", 16, 0), ("oracle", 16, 1)]
+E       AssertionError: assert [] == [('oracle', 3...acle', 16, 1)]
+E         
+E         Right contains 4 more items, first extra item: ('oracle', 32, 0)
+E         Use -v to get more diff
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:69: AssertionError
+________ test_per_n_gating_is_independent_in_both_mixed_outcomes[32-16] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727427dd0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_per_n_gating_is_independe0')
+fail_n = 32, pass_n = 16
+
+    @pytest.mark.parametrize("fail_n, pass_n", [(32, 16), (16, 32)])
+    def test_per_n_gating_is_independent_in_both_mixed_outcomes(monkeypatch, tmp_path, fail_n, pass_n):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p={fail_n: 0.1, pass_n: 0.9})
+>       assert "interface not established" in rep["n"][str(fail_n)]["reading"]
+E       AssertionError: assert 'interface not established' in 'unavailable: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:83: AssertionError
+________ test_per_n_gating_is_independent_in_both_mixed_outcomes[16-32] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727440e90>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_per_n_gating_is_independe1')
+fail_n = 16, pass_n = 32
+
+    @pytest.mark.parametrize("fail_n, pass_n", [(32, 16), (16, 32)])
+    def test_per_n_gating_is_independent_in_both_mixed_outcomes(monkeypatch, tmp_path, fail_n, pass_n):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p={fail_n: 0.1, pass_n: 0.9})
+>       assert "interface not established" in rep["n"][str(fail_n)]["reading"]
+E       AssertionError: assert 'interface not established' in 'unavailable: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:83: AssertionError
+____________ test_failed_interfaces_leave_other_corners_unevaluated ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37274424e0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_failed_interfaces_leave_o0')
+
+    def test_failed_interfaces_leave_other_corners_unevaluated(monkeypatch, tmp_path):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p=0.1)
+>       assert all(v["interface"] is False and "interface not established" in v["reading"] for v in rep["n"].values())
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = <dict_valueiterator object at 0x7b3727a4ecf0>
+
+>   assert all(v["interface"] is False and "interface not established" in v["reading"] for v in rep["n"].values())
+E   KeyError: 'interface'
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:90: KeyError
+______________ test_no_gain_over_one_control_is_not_a_screen_pass ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727442600>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_no_gain_over_one_control_0')
+
+    def test_no_gain_over_one_control_is_not_a_screen_pass(monkeypatch, tmp_path):
+        rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, learned=0.5, control=0.5)
+>       assert all(v["reading"].startswith("screen not passed") for v in rep["n"].values())
+E       assert False
+E        +  where False = all(<generator object test_no_gain_over_one_control_is_not_a_screen_pass.<locals>.<genexpr> at 0x7b3727490e10>)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:96: AssertionError
+___________ test_decision_rule_mutation_is_refused_before_any_access ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37274422d0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_decision_rule_mutation_is0')
+
+    def test_decision_rule_mutation_is_refused_before_any_access(monkeypatch, tmp_path):
+        tree = _copied_tree(tmp_path)
+        clean = _load_readings(tree, "rd_clean")
+>       assert clean.binding_problem(clean.current_identity()) is None                # the copy itself binds
+E       AssertionError: assert 'dependency manifest: memsub source differs' is None
+E        +  where 'dependency manifest: memsub source differs' = <function binding_problem at 0x7b372746f060>({'manifest': '882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492', 'memsub': '9efaef28153faf687af4ed8e70b615fd22dc77c9e04209d1a608892b0423bd5f'})
+E        +    where <function binding_problem at 0x7b372746f060> = <module 'rd_clean' from '/tmp/pytest-of-lenovo/pytest-453/test_decision_rule_mutation_is0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.binding_problem
+E        +    and   {'manifest': '882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492', 'memsub': '9efaef28153faf687af4ed8e70b615fd22dc77c9e04209d1a608892b0423bd5f'} = <function current_identity at 0x7b372746efc0>()
+E        +      where <function current_identity at 0x7b372746efc0> = <module 'rd_clean' from '/tmp/pytest-of-lenovo/pytest-453/test_decision_rule_mutation_is0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.current_identity
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:113: AssertionError
+__________________ test_unlisted_script_dependency_is_refused __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_unlisted_script_dependenc0')
+
+    def test_unlisted_script_dependency_is_refused(tmp_path):
+        tree = _copied_tree(tmp_path)
+        mpath = tree / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
+        manifest = json.loads(mpath.read_text())
+        del manifest["analysis"]["scripts/sgm-p2d-step2-decision-rules.py"]           # reached but not frozen
+        mpath.write_text(json.dumps(manifest))
+        r = _load_readings(tree, "rd_unlisted")
+>       assert "script closure differs" in r.binding_problem(r.current_identity())
+E       AssertionError: assert 'script closure differs' in 'dependency manifest: memsub source differs'
+E        +  where 'dependency manifest: memsub source differs' = <function binding_problem at 0x7b37274b3c40>({'manifest': 'd473031b49e10b609c9a3398ed3b90584423b667dda925f0416a03788a26db04', 'memsub': '9efaef28153faf687af4ed8e70b615fd22dc77c9e04209d1a608892b0423bd5f'})
+E        +    where <function binding_problem at 0x7b37274b3c40> = <module 'rd_unlisted' from '/tmp/pytest-of-lenovo/pytest-453/test_unlisted_script_dependenc0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.binding_problem
+E        +    and   {'manifest': 'd473031b49e10b609c9a3398ed3b90584423b667dda925f0416a03788a26db04', 'memsub': '9efaef28153faf687af4ed8e70b615fd22dc77c9e04209d1a608892b0423bd5f'} = <function current_identity at 0x7b37274b3ba0>()
+E        +      where <function current_identity at 0x7b37274b3ba0> = <module 'rd_unlisted' from '/tmp/pytest-of-lenovo/pytest-453/test_unlisted_script_dependenc0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.current_identity
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:135: AssertionError
+_____ test_change_during_the_run_makes_every_reading_unavailable[manifest] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b372745b860>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_change_during_the_run_mak0')
+what = 'manifest'
+
+    @pytest.mark.parametrize("what", ["manifest", "checkpoint"])
+    def test_change_during_the_run_makes_every_reading_unavailable(monkeypatch, tmp_path, what):
+        mcopy = tmp_path / "manifest.json"
+        shutil.copy2(rd.MANIFEST, mcopy)
+        monkeypatch.setattr(rd, "MANIFEST", mcopy)
+    
+        def during(calls):
+            if len(calls) == 6:                                                         # inside phase 2
+                target = mcopy if what == "manifest" else tmp_path / "trained_parameters.safetensors"
+                target.write_bytes(target.read_bytes() + b" ")
+        rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, during=during)
+        assert what in rep["end_binding"] or ("identity" in rep["end_binding"] and what == "manifest")
+>       assert all(v["reading"].startswith("unavailable") and v["reading_before_end_binding_failure"] == f"SCREEN PASS at N{n}"
+                   for n, v in rep["n"].items())
+E       assert False
+E        +  where False = all(<generator object test_change_during_the_run_makes_every_reading_unavailable.<locals>.<genexpr> at 0x7b372743fbc0>)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:150: AssertionError
+____ test_change_during_the_run_makes_every_reading_unavailable[checkpoint] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727459460>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_change_during_the_run_mak1')
+what = 'checkpoint'
+
+    @pytest.mark.parametrize("what", ["manifest", "checkpoint"])
+    def test_change_during_the_run_makes_every_reading_unavailable(monkeypatch, tmp_path, what):
+        mcopy = tmp_path / "manifest.json"
+        shutil.copy2(rd.MANIFEST, mcopy)
+        monkeypatch.setattr(rd, "MANIFEST", mcopy)
+    
+        def during(calls):
+            if len(calls) == 6:                                                         # inside phase 2
+                target = mcopy if what == "manifest" else tmp_path / "trained_parameters.safetensors"
+                target.write_bytes(target.read_bytes() + b" ")
+        rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, during=during)
+>       assert what in rep["end_binding"] or ("identity" in rep["end_binding"] and what == "manifest")
+E       AssertionError: assert ('checkpoint' in 'dependency manifest: memsub source differs' or ('identity' in 'dependency manifest: memsub source differs'))
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:149: AssertionError
+__________ test_spawn_guard_check_handles_modal_generator_keys[empty] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37275d1d60>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles0')
+kind = 'empty'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+                r.spawn()
+            assert calls == [] and not (tmp_path / r.GROUP / "readings").exists()
+            assert r.APP_NAME not in dicts.get(r.CONTROL_REGISTRY_DICT, {})
+        else:
+>           r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:132: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+__________ test_spawn_guard_check_handles_modal_generator_keys[used] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37274dcfe0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles1')
+kind = 'used'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37274dcfe0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles1')
+kind = 'used'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+________ test_spawn_guard_check_handles_modal_generator_keys[none-key] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37275e6210>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles2')
+kind = 'none-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37275e6210>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles2')
+kind = 'none-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+________ test_spawn_guard_check_handles_modal_generator_keys[false-key] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727453170>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles3')
+kind = 'false-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727453170>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles3')
+kind = 'false-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+______ test_spawn_guard_check_handles_modal_generator_keys[empty-str-key] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727453230>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles4')
+kind = 'empty-str-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727453230>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles4')
+kind = 'empty-str-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+_______ test_spawn_guard_check_handles_modal_generator_keys[keys-error] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37275ead80>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_guard_check_handles5')
+kind = 'keys-error'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+_________ test_spawn_uses_one_immutable_deadline_despite_clock_advance _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b372789f980>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_spawn_uses_one_immutable_0')
+
+    def test_spawn_uses_one_immutable_deadline_despite_clock_advance(monkeypatch, tmp_path):
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        clock = iter(float(1_000_000 + i) for i in range(100))               # +1 s per time.time() call
+        monkeypatch.setattr(m.time, "time", lambda: next(clock))
+        life = m.slot_deadline_s()
+        readings = __import__("json").loads((ROOT / m.PRICE_FILE).read_text())["readings"]["reserve_life_s"]
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        first = 1_000_000.0                                                   # the single candidate's clock reading
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price,
+                                                deadline_epoch=first + life + m.VALIDATION_SETUP_S + readings + m.CONTROL_SLACK_S)}
+        fake = types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: types.SimpleNamespace(object_id="fc-x"))))
+        monkeypatch.setattr(m, "modal", fake)
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+>       m.spawn()                                                             # exactly at the horizon boundary: accepted
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:259: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[used] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37278dab70>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po0')
+guard = {'app_id': 'ap-old'}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37278dab70>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po0')
+guard = {'app_id': 'ap-old'}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727859250>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po1')
+guard = {None: 1}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3727859250>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po1')
+guard = {None: 1}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[false] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37278ab980>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po2')
+guard = {False: 0}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37278ab980>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po2')
+guard = {False: 0}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+__ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[empty-str] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37277127e0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po3')
+guard = {'': ''}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37277127e0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po3')
+guard = {'': ''}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[error] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b37277eb650>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_slot_spawn_refuses_any_po4')
+guard = {}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+_________________ test_omitted_gradient_name_everywhere_fails __________________
+
+proof = PosixPath('/tmp/pytest-of-lenovo/pytest-453/proof0')
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_omitted_gradient_name_eve0')
+
+    def test_omitted_gradient_name_everywhere_fails(proof, tmp_path):
+        ev = _copy(proof, tmp_path)
+        victim = sorted(REG["by_arm"]["learned"]["grad_names_shapes"])[0]
+        for f in ev.rglob("proof-capture/u*.pt"):                # joint omission across ALL runs
+>           d = torch.load(f, weights_only=False)
+
+tests/test_sgm_pk_packed_proof_acceptance_compare.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/torch/serialization.py:1549: in load
+    return _legacy_load(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+f = <_io.BufferedReader name='/tmp/pytest-of-lenovo/pytest-453/test_omitted_gradient_name_eve0/ev/B/cells/learned-n4-s100/epoch-1/attempt-1/proof-capture/u00003.pt'>
+map_location = None
+pickle_module = <module 'pickle' from '/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/pickle.py'>
+pickle_load_args = {'encoding': 'utf-8'}
+legacy_load = <function _legacy_load.<locals>.legacy_load at 0x7b37278e8040>
+persistent_load = <function _legacy_load.<locals>.persistent_load at 0x7b37278eb740>
+f_should_read_directly = True
+
+    def _legacy_load(f, map_location, pickle_module, **pickle_load_args):
+        deserialized_objects: dict[int, Any] = {}
+    
+        restore_location = _get_restore_location(map_location)
+    
+        class UnpicklerWrapper(pickle_module.Unpickler):  # type: ignore[name-defined]
+            def find_class(self, mod_name, name):
+                if type(name) is str and "Storage" in name:
+                    try:
+                        return StorageType(name)
+                    except KeyError:
+                        pass
+                return super().find_class(mod_name, name)
+    
+        def _check_container_source(container_type, source_file, original_source):
+            try:
+                current_source = "".join(get_source_lines_and_file(container_type)[0])
+            except Exception:  # saving the source is optional, so we can ignore any errors
+                warnings.warn(
+                    "Couldn't retrieve source code for container of "
+                    "type " + container_type.__name__ + ". It won't be checked "
+                    "for correctness upon loading."
+                )
+                return
+            if original_source != current_source:
+                if container_type.dump_patches:
+                    file_name = container_type.__name__ + ".patch"
+                    diff = difflib.unified_diff(
+                        current_source.split("\n"),
+                        original_source.split("\n"),
+                        source_file,
+                        source_file,
+                        lineterm="",
+                    )
+                    lines = "\n".join(diff)
+                    try:
+                        with open(file_name, "a+") as f:
+                            file_size = f.seek(0, 2)
+                            f.seek(0)
+                            if file_size == 0:
+                                f.write(lines)
+                            elif file_size != len(lines) or f.read() != lines:
+                                raise OSError
+                        msg = (
+                            "Saved a reverse patch to " + file_name + ". "
+                            "Run `patch -p0 < " + file_name + "` to revert your "
+                            "changes."
+                        )
+                    except OSError:
+                        msg = (
+                            "Tried to save a patch, but couldn't create a "
+                            "writable file " + file_name + ". Make sure it "
+                            "doesn't exist and your working directory is "
+                            "writable."
+                        )
+                else:
+                    msg = (
+                        "you can retrieve the original source code by "
+                        "accessing the object's source attribute or set "
+                        "`torch.nn.Module.dump_patches = True` and use the "
+                        "patch tool to revert the changes."
+                    )
+                msg = f"source code of class '{torch.typename(container_type)}' has changed. {msg}"
+                warnings.warn(msg, SourceChangeWarning)
+    
+        def legacy_load(f):
+            deserialized_objects: dict[int, Any] = {}
+    
+            def persistent_load(saved_id):
+                if isinstance(saved_id, tuple):
+                    # Ignore containers that don't have any sources saved
+                    if all(saved_id[1:]):
+                        _check_container_source(*saved_id)
+                    return saved_id[0]
+                return deserialized_objects[int(saved_id)]
+    
+            with (
+                closing(
+                    tarfile.open(fileobj=f, mode="r:", format=tarfile.PAX_FORMAT)
+                ) as tar,
+                mkdtemp() as tmpdir,
+            ):
+                if pickle_module is _weights_only_unpickler:
+                    raise RuntimeError(
+                        "Cannot use ``weights_only=True`` with files saved in the "
+                        "legacy .tar format. " + UNSAFE_MESSAGE
+                    )
+                tar.extract("storages", path=tmpdir)
+                with open(os.path.join(tmpdir, "storages"), "rb", 0) as f:
+                    num_storages = pickle_module.load(f, **pickle_load_args)
+                    for _ in range(num_storages):
+                        args = pickle_module.load(f, **pickle_load_args)
+                        key, location, storage_type = args
+                        dtype = storage_type._dtype
+                        obj = cast(Storage, torch.UntypedStorage)._new_with_file(
+                            f, torch._utils._element_size(dtype)
+                        )
+                        obj = restore_location(obj, location)
+                        # TODO: Once we decide to break serialization FC, we can
+                        # stop wrapping with TypedStorage
+                        deserialized_objects[key] = torch.storage.TypedStorage(
+                            wrap_storage=obj, dtype=dtype, _internal=True
+                        )
+    
+                    storage_views = pickle_module.load(f, **pickle_load_args)
+                    for target_cdata, root_cdata, offset, numel in storage_views:
+                        root = deserialized_objects[root_cdata]
+                        element_size = torch._utils._element_size(root.dtype)
+                        offset_bytes = offset * element_size
+                        # TODO: Once we decide to break serialization FC, we can
+                        # stop wrapping with TypedStorage
+                        deserialized_objects[target_cdata] = torch.storage.TypedStorage(
+                            wrap_storage=root._untyped_storage[
+                                offset_bytes : offset_bytes + numel * element_size
+                            ],
+                            dtype=root.dtype,
+                            _internal=True,
+                        )
+    
+                tar.extract("tensors", path=tmpdir)
+                with open(os.path.join(tmpdir, "tensors"), "rb", 0) as f:
+                    num_tensors = pickle_module.load(f, **pickle_load_args)
+                    for _ in range(num_tensors):
+                        args = pickle_module.load(f, **pickle_load_args)
+                        key, storage_id, _original_tensor_type = args
+                        storage = deserialized_objects[storage_id]
+                        (ndim,) = struct.unpack("<i", f.read(4))
+                        # skip next 4 bytes; legacy encoding treated ndim as 8 bytes
+                        f.read(4)
+                        numel = struct.unpack(f"<{ndim}q", f.read(8 * ndim))
+                        stride = struct.unpack(f"<{ndim}q", f.read(8 * ndim))
+                        (storage_offset,) = struct.unpack("<q", f.read(8))
+                        tensor = torch.empty((0,), dtype=storage.dtype).set_(
+                            storage._untyped_storage, storage_offset, numel, stride
+                        )
+                        deserialized_objects[key] = tensor
+    
+                pickle_file = tar.extractfile("pickle")
+                unpickler = UnpicklerWrapper(pickle_file, **pickle_load_args)
+                unpickler.persistent_load = persistent_load
+                result = unpickler.load()
+                return result
+    
+        deserialized_objects = {}
+    
+        def persistent_load(saved_id):
+            assert isinstance(saved_id, tuple)
+            typename = _maybe_decode_ascii(saved_id[0])
+            data = saved_id[1:]
+    
+            if typename == "module":
+                # Ignore containers that don't have any sources saved
+                if all(data[1:]):
+                    _check_container_source(*data)
+                return data[0]
+            elif typename == "storage":
+                storage_type, root_key, location, numel, view_metadata = data
+                location = _maybe_decode_ascii(location)
+                dtype = storage_type.dtype
+    
+                nbytes = numel * torch._utils._element_size(dtype)
+    
+                if root_key not in deserialized_objects:
+                    if torch._guards.active_fake_mode() is not None:
+                        obj = cast(Storage, torch.UntypedStorage(nbytes, device="meta"))
+                    elif _serialization_tls.skip_data:
+                        obj = cast(Storage, torch.UntypedStorage(nbytes))
+                        obj = restore_location(obj, location)
+                    else:
+                        obj = cast(Storage, torch.UntypedStorage(nbytes))
+                        obj._torch_load_uninitialized = True
+                        obj = restore_location(obj, location)
+                    # TODO: Once we decide to break serialization FC, we can
+                    # stop wrapping with TypedStorage
+                    typed_storage = torch.storage.TypedStorage(
+                        wrap_storage=obj, dtype=dtype, _internal=True
+                    )
+                    deserialized_objects[root_key] = typed_storage
+                else:
+                    typed_storage = deserialized_objects[root_key]
+                    if typed_storage._data_ptr() == 0:
+                        typed_storage = torch.storage.TypedStorage(
+                            device=typed_storage._untyped_storage.device,
+                            dtype=dtype,
+                            _internal=True,
+                        )
+    
+                if view_metadata is not None:
+                    view_key, offset, view_size = view_metadata
+                    offset_bytes = offset * torch._utils._element_size(dtype)
+                    view_size_bytes = view_size * torch._utils._element_size(dtype)
+                    if view_key not in deserialized_objects:
+                        # TODO: Once we decide to break serialization FC, we can
+                        # stop wrapping with TypedStorage
+                        deserialized_objects[view_key] = torch.storage.TypedStorage(
+                            wrap_storage=typed_storage._untyped_storage[
+                                offset_bytes : offset_bytes + view_size_bytes
+                            ],
+                            dtype=dtype,
+                            _internal=True,
+                        )
+                    res = deserialized_objects[view_key]
+    
+                else:
+                    res = typed_storage
+                return res
+            else:
+                raise RuntimeError(f"Unknown saved id type: {saved_id[0]}")
+    
+        _check_seekable(f)
+        f_should_read_directly = _should_read_directly(f)
+    
+        if f_should_read_directly and f.tell() == 0:
+            # legacy_load requires that f has fileno()
+            # only if offset is zero we can attempt the legacy tar file loader
+            try:
+                return legacy_load(f)
+            except tarfile.TarError:
+                if _is_zipfile(f):
+                    # .zip is used for torch.jit.save and will throw an un-pickling error here
+                    raise RuntimeError(
+                        f"{f.name} is a zip archive (did you mean to use torch.jit.load()?)"
+                    ) from None
+                # if not a tarfile, reset file offset and proceed
+                f.seek(0)
+    
+>       magic_number = pickle_module.load(f, **pickle_load_args)
+E       EOFError: Ran out of input
+
+.venv/lib/python3.12/site-packages/torch/serialization.py:1797: EOFError
+_ test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18 _
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_real_evidence_original_ga0')
+
+    @needs_evidence
+    def test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18(tmp_path):
+        root, adm = evidence_root(tmp_path)
+        grid, registry, schema = frozen()
+        from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+        memsub = source_tree_sha256(ROOT / "memsub")
+        state = root / "learned-n32/cells/learned-n32-s1/epoch-1/state.json"
+        before = AMD.sha(state)
+        orig_cells, original = rd.bind_cells(root, adm, memsub, grid, registry, schema)
+>       assert original == ORIGINAL_GATE and len(orig_cells) == 17 and "learned-n32-s1" not in orig_cells
+E       AssertionError: assert ('learned-n16-... bound source' == 'learned-n32-s1: state FAILED'
+E         
+E         - learned-n32-s1: state FAILED
+E         + learned-n16-s0: run manifest memsub source differs from the bound source)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:83: AssertionError
+____________ test_private_copy_passes_and_every_binding_is_enforced ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_passes_and_e0')
+
+    @needs_evidence
+    def test_private_copy_passes_and_every_binding_is_enforced(tmp_path):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_passes_and_e0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+________________ test_checks_after_the_schema_stage_still_apply ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_checks_after_the_schema_s0')
+
+    @needs_evidence
+    def test_checks_after_the_schema_stage_still_apply(tmp_path):
+        """The original validator runs its tensor-registry / finiteness / clock checks AFTER the schema stage, so the
+        amendment re-runs it without the schema stage: a registry mismatch must still refuse the cell."""
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_checks_after_the_schema_s0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+______________ test_private_copy_byte_changes_are_refused[state] _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes0')
+target = 'state'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+____________ test_private_copy_byte_changes_are_refused[checkpoint] ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes1')
+target = 'checkpoint'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+_______________ test_private_copy_byte_changes_are_refused[done] _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes2')
+target = 'done'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes2/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+______________ test_private_copy_byte_changes_are_refused[output] ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes3')
+target = 'output'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_private_copy_byte_changes3/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+__ test_exception_is_limited_to_the_listed_grad_norm_leaves[update_norm_null] __
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t0')
+kind = 'update_norm_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+__ test_exception_is_limited_to_the_listed_grad_norm_leaves[extra_grad_null] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t1')
+kind = 'extra_grad_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+_ test_exception_is_limited_to_the_listed_grad_norm_leaves[missing_listed_null] _
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t2')
+kind = 'missing_listed_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t2/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+___ test_exception_is_limited_to_the_listed_grad_norm_leaves[eval_row_null] ____
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t3')
+kind = 'eval_row_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t3/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+_ test_exception_is_limited_to_the_listed_grad_norm_leaves[unlisted_layer_key] _
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t4')
+kind = 'unlisted_layer_key'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_exception_is_limited_to_t4/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+__ test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3726f92900>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_readings_label_the_campai0')
+
+    def test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading(monkeypatch, tmp_path):
+        rep, binds = run_readings(monkeypatch, tmp_path)
+>       assert binds[0] is None and binds[1] == SPEC                                  # original gate first, then amended
+E       IndexError: list index out of range
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:226: IndexError
+___ test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b3726f90350>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-453/test_failed_amended_binding_ke0')
+
+    def test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled(monkeypatch, tmp_path):
+        rep, _binds = run_readings(monkeypatch, tmp_path, amended_problem="learned-n32-s1: post-hoc amendment: x")
+        for n in ("32", "16"):
+>           assert rep["n"][n]["reading"] == "unavailable: learned-n32-s1: post-hoc amendment: x"
+E           AssertionError: assert 'unavailable:...ource differs' == 'unavailable:... amendment: x'
+E             
+E             - unavailable: learned-n32-s1: post-hoc amendment: x
+E             + unavailable: dependency manifest: memsub source differs
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:241: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_frozen_registry_and_schema_equal_their_derivation
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_both_oracle_interfaces_precede_any_other_reserved_access
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_per_n_gating_is_independent_in_both_mixed_outcomes[32-16]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_per_n_gating_is_independent_in_both_mixed_outcomes[16-32]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_failed_interfaces_leave_other_corners_unevaluated
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_no_gain_over_one_control_is_not_a_screen_pass
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_decision_rule_mutation_is_refused_before_any_access
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_unlisted_script_dependency_is_refused
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_change_during_the_run_makes_every_reading_unavailable[manifest]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_change_during_the_run_makes_every_reading_unavailable[checkpoint]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[used]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[none-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[false-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty-str-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[keys-error]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[used]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[false]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[empty-str]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[error]
+FAILED tests/test_sgm_pk_packed_proof_acceptance_compare.py::test_omitted_gradient_name_everywhere_fails
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_passes_and_every_binding_is_enforced
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_checks_after_the_schema_stage_still_apply
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[state]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[checkpoint]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[done]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[output]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[update_norm_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[extra_grad_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[missing_listed_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[eval_row_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[unlisted_layer_key]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled
+37 failed, 575 passed, 2 skipped in 680.40s (0:11:20)
+EXIT_STATUS=1

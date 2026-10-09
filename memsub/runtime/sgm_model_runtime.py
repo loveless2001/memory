@@ -25,6 +25,7 @@ from ..sgm.config import SGMConfig
 from ..sgm.delta_memory import delta_update, read_memory
 from ..sgm.interpolation import single_cell, stencil_2d
 from ..sgm.layer_adapter import SGMLayerAdapter
+from ..sgm.occupied_cell_read_fallback import fill_read
 from ..sgm.session_state import SGMSessionState
 from ..sgm.sparse_cell_bank import SparseBankSet
 from .compacted_prefix_cache import CompactedPrefixCache
@@ -81,9 +82,11 @@ class SGMModelRuntime(nn.Module):
     # -- one forward block ------------------------------------------------------------
     def step(self, state: SGMSessionState, input_ids: torch.Tensor, *, write: bool,
              enabled: bool = True, oracle: dict | None = None,
-             logits: bool = False, final_hidden: bool = False) -> dict:
+             logits: bool = False, final_hidden: bool = False, query: bool = False) -> dict:
         """Append input_ids [B, n] to state (mutates it; callers fork for
-        transactions). Persistent writes require write=True and n == 1."""
+        transactions). Persistent writes require write=True and n == 1.
+        query=True (evaluate_query) marks query reads: only they use a
+        configured read_fallback variant; ingestion reads never do."""
         input_ids = input_ids.to(self.device)          # CPU-sampled episodes; no-op on CPU
         if oracle is not None:
             oracle = {k: v.to(self.device) for k, v in oracle.items()}
@@ -108,7 +111,7 @@ class SGMModelRuntime(nn.Module):
         reads, trace = {}, {"empty_read_weight": [], "allocated": 0, "read_coords": {}}
         for i, layer in enumerate(inner.layers):
             if enabled and str(i) in self.adapters:
-                h = self._sgm_layer(layer, i, h, state, kw, write, oracle, reads, trace)
+                h = self._sgm_layer(layer, i, h, state, kw, write, oracle, reads, trace, query)
             else:
                 h = layer(h, **kw)
         cache.note_appended(n)
@@ -120,7 +123,7 @@ class SGMModelRuntime(nn.Module):
             out["final_hidden"] = inner.norm(h[:, -1]).float()
         return out
 
-    def _sgm_layer(self, layer, i, h, state, kw, write, oracle, reads, trace):
+    def _sgm_layer(self, layer, i, h, state, kw, write, oracle, reads, trace, query=False):
         residual = h
         z = layer.input_layernorm(h)
         attn, _ = layer.self_attn(hidden_states=z, **kw)
@@ -128,7 +131,7 @@ class SGMModelRuntime(nn.Module):
         adapter: SGMLayerAdapter = self.adapters[str(i)]
         x = self._shifted(state, i, z.float())
         p = adapter.project(x)
-        r = torch.stack([self._read(state.banks, i, p, t, oracle, trace)
+        r = torch.stack([self._read(state.banks, i, p, t, oracle, trace, query)
                          for t in range(x.shape[1])], dim=1)       # [B, n, H, dv]
         reads[i] = r
         h = h + adapter.output(r).to(h.dtype)
@@ -162,13 +165,17 @@ class SGMModelRuntime(nn.Module):
             coords = coords + self.diag_read_offset
         return stencil_2d(coords) + (coords,)
 
-    def _read(self, banks: SparseBankSet, i, p, t, oracle, trace):
+    def _read(self, banks: SparseBankSet, i, p, t, oracle, trace, query=False):
         idx, w, coords = self._stencil(p, "read", t, oracle)
         trace["read_coords"].setdefault(i, []).append(coords.detach())
         trace.setdefault("read_q", {}).setdefault(i, []).append(p["q"][:, t].detach())  # telemetry
         cells, present = banks.gather(i, idx, mask=False)
-        trace["empty_read_weight"].append(EmptyReadWeight(w.detach(), present))
-        return read_memory(cells, w, p["q"][:, t])
+        trace["empty_read_weight"].append(EmptyReadWeight(w.detach(), present))   # original stencil
+        r = read_memory(cells, w, p["q"][:, t])
+        if query and self.cfg.read_fallback != "off":
+            r = r + fill_read(banks, i, coords, w, present, p["q"][:, t],
+                              self.cfg.read_fallback_tau, trace)
+        return r
 
     def _write(self, banks: SparseBankSet, i, p, oracle, trace) -> int:
         idx, w, coords = self._stencil(p, "write", 0, oracle)
