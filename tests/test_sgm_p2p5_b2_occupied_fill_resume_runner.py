@@ -62,8 +62,10 @@ def test_ledger_within_cap():
     led = R.ledger()
     rows = [0.08945059, 0.92192733, 0.12103251, 0.18920088, 1.95000912, 0.25600120, 0.17101618, 1.76258743, 0.23139609]
     assert R.START1_PROVISIONAL_USD == pytest.approx(sum(rows), abs=1e-8)
+    assert R.START1_PROVISIONAL_USD < R.START1_BUDGET_USD
+    assert R.RESUME_CKPT_SHA256 in (PLAN / "b2-resume-v04-checkpoint-acceptance.txt").read_text()
     assert led["reservation_usd"] == pytest.approx((R.RESUME_S + R.STARTUP_S) * led["rate_usd_s"])
-    assert led["campaign_bound_usd"] == pytest.approx(R.START1_PROVISIONAL_USD + led["reservation_usd"])
+    assert led["campaign_bound_usd"] == pytest.approx(R.START1_BUDGET_USD + led["reservation_usd"])
     assert led["campaign_bound_usd"] <= led["cap_usd"] == 17.0
 
 
@@ -94,7 +96,8 @@ def _run_dir(tmp_path, campaign=CAMPAIGN, ckpt=True):
     return run
 
 
-def test_resume_start_rules(tmp_path):
+def test_resume_start_rules(tmp_path, monkeypatch):
+    monkeypatch.setattr(R, "RESUME_CKPT_SHA256", hashlib.sha256(b"x").hexdigest())
     d = _campaign_dict(**{R.RESUME_KEY: 500.0})
     assert R.claim_start(d, {}) == "start-2"
     run = _run_dir(tmp_path)
@@ -106,6 +109,10 @@ def test_resume_start_rules(tmp_path):
     assert R.resume_start_problem("start-2", d.get, 500.0, _run_dir(tmp_path / "a", {**CAMPAIGN, "deadline": 1.0}), "B2")
     assert R.resume_start_problem("start-3", d.get, 500.0, _run_dir(tmp_path / "b", ckpt=False), "B2")
     assert not (tmp_path / "b" / "run" / "B2" / "identity.json").exists()                   # refusal writes nothing
+    other = _run_dir(tmp_path / "c")
+    (other / "B2" / "resume.pt").write_bytes(b"advanced")
+    assert R.resume_start_problem("start-2", d.get, 500.0, other, "B2")                     # start-2: bound sha only
+    assert R.resume_start_problem("start-3", d.get, 500.0, other, "B2") is None              # start-3: later checkpoint
     assert [R.claim_start(d, {}) for _ in range(3)] == ["start-3", None, None]
 
 
@@ -132,12 +139,18 @@ def _vol(**over):
     return _Vol({k: v for k, v in files.items() if v is not None})
 
 
-def test_precheck_problem():
-    files, camp = R.volume_state(_vol())
-    assert R.precheck_problem(_campaign_dict().get, files, camp) is None
-    assert R.precheck_problem(_Dict(deadline=D0).get, files, camp)                            # no start-1 claim
+@pytest.fixture
+def bound_ckpt(monkeypatch):
+    monkeypatch.setattr(R, "RESUME_CKPT_SHA256", hashlib.sha256(b"ckpt").hexdigest())
+
+
+def test_precheck_problem(bound_ckpt):
+    files, camp, sha = R.volume_state(_vol())
+    assert R.precheck_problem(_campaign_dict().get, files, camp, sha) is None
+    assert R.precheck_problem(_Dict(deadline=D0).get, files, camp, sha)                       # no start-1 claim
     for k in ("start-2", "start-3", R.RESUME_KEY):
-        assert R.precheck_problem(_campaign_dict(**{k: 1}).get, files, camp)
+        assert R.precheck_problem(_campaign_dict(**{k: 1}).get, files, camp, sha)
+    assert R.precheck_problem(_campaign_dict().get, *R.volume_state(_vol(**{"B2/resume.pt": b"other"})))
     assert R.precheck_problem(_campaign_dict().get, *R.volume_state(_vol(**{"B2/resume.pt": None})))
     assert R.precheck_problem(_campaign_dict().get, *R.volume_state(_vol(**{"campaign.json": None})))
     bad = json.dumps({**CAMPAIGN, "app": "other"}).encode()
@@ -166,7 +179,7 @@ def _apps(n):
         [{"app_id": R.START1_APP_ID, "description": R.CAMPAIGN_APP, "state": "stopped"}]
 
 
-def test_spawn_records_app_then_deadline_then_call(tmp_path):
+def test_spawn_records_app_then_deadline_then_call(tmp_path, bound_ckpt):
     d, fn = _campaign_dict(), _Fn()
     m = R.spawn_resume(tmp_path / "o", starts=d, vol=_vol(), fn=fn, modal_json=_apps(1), clock=lambda: 100.0)
     assert (m["app_id"], m["call_id"], m["outcome"]) == ("ap-0", "fc-test", "spawned")
@@ -180,7 +193,7 @@ def test_spawn_records_app_then_deadline_then_call(tmp_path):
 
 
 @pytest.mark.parametrize("n", [0, 2])
-def test_spawn_needs_exactly_one_deployed_app_before_any_deadline(tmp_path, n):
+def test_spawn_needs_exactly_one_deployed_app_before_any_deadline(tmp_path, n, bound_ckpt):
     d, fn = _campaign_dict(), _Fn()
     with pytest.raises(SystemExit):
         R.spawn_resume(tmp_path / "o", starts=d, vol=_vol(), fn=fn, modal_json=_apps(n))

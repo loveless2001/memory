@@ -52,6 +52,9 @@ RUN_REL = "b2-run-v1"                                            # RUN_DIR insid
 RESUME_KEY = "resume-1-deadline"
 START1_APP_ID = "ap-VsAmnu1E7eS5rXLrKD7vXd"
 START1_PROVISIONAL_USD = 5.69262133    # billing report 05:00-07:00Z rows for START1_APP_ID (CPU+L40S+Memory)
+START1_BUDGET_USD = 6.07089738        # codex 22201: app lifetime x reserve rate (conservative; covers 07h backfill)
+RESUME_CKPT_STEP = 750                 # start-1 checkpoint (codex 22201 verified offline; >= 771 updates had run)
+RESUME_CKPT_SHA256 = "cd1a7e72cbbf4fc2cf92e029395c7e4f78a727d2b6d165b5030bacc1bd753394"   # start-2 must load exactly this
 EXPECT_MEMSUB_SHA256 = "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532"   # branch @ 1b01245
 BASE_IMAGE_ID = "im-A7BXMB8v1cVYRvC9pMqZ3i"      # dev-GPU runner image (hotspot-l40s-v1.console.log:155)
 EXPECT_VERSIONS = {"torch": "2.7.1+cu126", "transformers": "4.55.2"}
@@ -75,7 +78,8 @@ def ledger() -> dict:
     bound = (RESUME_S + STARTUP_S) * rate
     return {"rate_usd_s": rate, "cpu_overuse_margin": CPU_OVERUSE_MARGIN, "resume_s": RESUME_S,
             "startup_allowance_s": STARTUP_S, "reservation_usd": bound,
-            "start1_provisional_usd": START1_PROVISIONAL_USD, "campaign_bound_usd": START1_PROVISIONAL_USD + bound,
+            "start1_provisional_usd": START1_PROVISIONAL_USD, "start1_budget_usd": START1_BUDGET_USD,
+            "campaign_bound_usd": START1_BUDGET_USD + bound,
             "cap_usd": CAP_USD, "cleanup_budget_s": CLEANUP_S,
             "assumptions": ["every in-deadline start ends by the resume deadline (child timeout + worker SIGKILL, "
                             "CPU-tested); a start after it refuses at entry within STARTUP_S",
@@ -190,6 +194,15 @@ def campaign_identity(campaign_deadline) -> dict:
     return {"app": CAMPAIGN_APP, "start_dict": START_DICT, "volume": VOLUME_NAME, "deadline": campaign_deadline}
 
 
+def file_sha256(path: Path) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def resume_start_problem(key, starts_get, deadline: float, run: Path, arm: str) -> str | None:
     """Why this RESUME start must refuse (None = train). Needs the reloaded Volume."""
     if key is None:
@@ -205,6 +218,8 @@ def resume_start_problem(key, starts_get, deadline: float, run: Path, arm: str) 
         return problem
     if not (run / arm / "resume.pt").exists():
         return f"no {run / arm / 'resume.pt'}: the resume runner never trains from scratch"
+    if key == "start-2" and file_sha256(run / arm / "resume.pt") != RESUME_CKPT_SHA256:
+        return "start-2 checkpoint is not the bound start-1 checkpoint (sha differs)"
     return None
 
 
@@ -282,7 +297,7 @@ def gate_ok(arm: str, dest: Path, res: dict) -> tuple[bool, str]:
     return True, f"{arm}: valid, memory_used {r['memory_used']}, band {r['band_at_end']}"
 
 
-def precheck_problem(starts_get, run_files: set, campaign) -> str | None:
+def precheck_problem(starts_get, run_files: set, campaign, ckpt_sha) -> str | None:
     """Local (before deploy, again before spawn): the Dict/Volume must be exactly start-1's stopped campaign."""
     if starts_get("deadline") is None or starts_get("start-1") is None:
         return "start Dict lacks start-1's campaign deadline or claim"
@@ -293,6 +308,8 @@ def precheck_problem(starts_get, run_files: set, campaign) -> str | None:
         return "Volume campaign.json does not match the start Dict's campaign"
     if f"{ARMS[0]}/resume.pt" not in run_files:
         return "no resume.pt in the Volume run dir"
+    if ckpt_sha != RESUME_CKPT_SHA256:
+        return f"Volume resume.pt sha {ckpt_sha} is not the bound start-1 checkpoint"
     return None
 
 
@@ -303,17 +320,25 @@ def _volume_files(vol) -> list:
 
 
 def volume_state(vol) -> tuple:
+    """(files in the run dir, campaign.json or None, sha256 of the Volume resume.pt or None); read-only."""
+    import hashlib
     files = {p for p, _ in _volume_files(vol)}
     camp = json.loads(b"".join(vol.read_file(f"{RUN_REL}/campaign.json"))) if "campaign.json" in files else None
-    return files, camp
+    ckpt = f"{ARMS[0]}/resume.pt"
+    sha = None
+    if ckpt in files:
+        h = hashlib.sha256()
+        for chunk in vol.read_file(f"{RUN_REL}/{ckpt}"):
+            h.update(chunk)
+        sha = h.hexdigest()
+    return files, camp, sha
 
 
 def precheck(starts=None, vol=None) -> str | None:
     starts, vol = starts or modal.Dict.from_name(START_DICT), vol or volume
     if local_memsub_sha256() != EXPECT_MEMSUB_SHA256:
         return "local memsub differs from the bound sha (wrong checkout)"
-    files, camp = volume_state(vol)
-    return precheck_problem(starts.get, files, camp)
+    return precheck_problem(starts.get, *volume_state(vol))
 
 
 def deployed_app_id(modal_json) -> str:
