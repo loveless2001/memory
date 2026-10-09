@@ -1,0 +1,8 @@
+head 74fd599e3abd8919a01c322f43e383a44dc79621
+script_sha256 0a3d6e96f3ffe578f182a95daeffd3e553f199d57a203b91f4ad9de8bc770eea
+run-r3.sh sha256 d5facdf3e2e029ee1369db511bb7187cf4eee7121650964378f94f31b5290f76
+B=1 K=16, seed 777, filler 40, N 32; cap MemoryMax=4400M MemorySwapMax=1200M per condition; conditions init,final,oracle sequential, one process each
+evidence: ../r3-smoke-b1-k2 (init/oracle K=2 peak flat)
+start_utc 2026-10-09T16:32:18Z
+fail-stop watcher armed 2026-10-09T16:33:30Z (codex 22330): on any nonzero condition exit, kill chain bash 19449 + stop m4-b2-cpu-probe-r3-*.scope
+watcher limitation (codex 22338): polls exits.txt every 5 s, so the stop is eventual; run-r3.sh can start the next condition before the watcher reacts. Any partly started next condition is kept as partial evidence. Future wrappers must check exit codes synchronously.
