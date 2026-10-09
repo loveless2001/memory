@@ -1,4 +1,4 @@
-"""B3 mutation checks, v2 (codex 22506). Each mutant is applied to a DISPOSABLE copy of the committed HEAD
+"""B3 mutation checks, v3 (codex 22506; v3 per codex 22511: exact parametrized-id pins, bounded parent). Each mutant is applied to a DISPOSABLE copy of the committed HEAD
 (`git archive HEAD` into a scratch dir); the shared working tree is never written, so a killed run cannot leave a
 mutated source behind (v1 mutated in place and the 2026-10-10 host OOM on M4 left the runner mutated).
 
@@ -6,30 +6,31 @@ Containment: every pytest runs in a `systemd-run --user --scope` with MemoryMax/
 `timeout --signal=KILL`, with cwd = the copy (so `memsub` and every ROOT-relative file resolve inside it).
 
 Classification (pytest -x, so at most one failing test):
-  CAUGHT      rc 1 and the failing test is one of the mutant's EXPECTED tests
+  CAUGHT      rc 1 and the failing test id (incl. [param]) is one of the mutant's EXPECTED ids
   WRONG_TEST  rc 1 but a different test failed (the guard was not what caught it)
   SURVIVED    rc 0
   KILLED      rc 137/-9 (cgroup OOM or wall timeout)
   INFRA_ERROR anything else (collection error, usage error, systemd failure, ...)
-The worktree's B3 files must equal HEAD before the run and be unchanged after it."""
-import hashlib, json, re, shutil, subprocess, sys, tempfile, time
+The worktree's B3 files must equal HEAD before the run and be unchanged after it. Child output goes to a file and
+only its last TAIL_BYTES are read, so the parent stays small; run the parent itself in a capped scope too."""
+import hashlib, json, re, shutil, subprocess, sys, tempfile, time, types
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 WORKTREE = HERE.parents[2]
-OUT = HERE / "b3-mutation-checks-v2.json"
-MEM_MAX, SWAP_MAX, WALL_S = "2000M", "0", 300
+OUT = HERE / "b3-mutation-checks-v3.json"            # v2 evidence (codex 22511) is kept as is
+MEM_MAX, SWAP_MAX, WALL_S, TAIL_BYTES = "2000M", "0", 300, 256 * 1024
 RUN = "modal-runners/modal-m4-sgm-p2p5-b3-shift2-fill-long-run-runner.py"
 TRAIN = "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py"
 TESTS = "tests/test_sgm_p2p5_b3_shift2_fill_long_run.py"
-# (name, file, original, mutant, expected failing tests)
+# (name, file, original, mutant, expected failing test ids)
 MUTANTS = [
     ("M1 terminal check at entry removed", RUN, "        if starts.get(TERMINAL_KEY) is not None:\n", "        if False:\n",
-     {"test_worker_marks_terminal_on_every_non_interruption_outcome"}),
+     {"test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"}),
     ("M2 no terminal marker on completion", RUN,
      '        mark_terminal(starts, key, "completed" if rc == 0 else ("deadline" if rc == "timeout" else f"run-side failure rc {rc}"))\n', "",
-     {"test_worker_marks_terminal_on_every_non_interruption_outcome"}),
+     {"test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"}),
     ("M3 worker exception not caught", RUN, "    except Exception as e:                                       # a worker exception is run-side: never retried\n",
-     "    except ZeroDivisionError as e:\n", {"test_worker_refusals_and_exceptions_are_terminal"}),
+     "    except ZeroDivisionError as e:\n", {"test_worker_refusals_and_exceptions_are_terminal[exception]"}),
     ("M4 cleanup stop without --yes", RUN, 'r = cli(["app", "stop", "--yes", app_id], False)', 'r = cli(["app", "stop", app_id], False)',
      {"test_cleanup_uses_yes_and_verifies_a_deployed_app"}),
     ("M5 deadline not write-once", RUN, "    if not starts.put(DEADLINE_KEY, deadline, skip_if_exists=True):", "    if not starts.put(DEADLINE_KEY, deadline):",
@@ -39,11 +40,11 @@ MUTANTS = [
     ("M7 precheck ignores a used Dict", RUN, "    if dict_keys:\n", "    if False:\n",
      {"test_precheck_and_deadline_are_fresh_and_write_once"}),
     ("M8 deadline mismatch accepted", RUN, "    if starts_get(DEADLINE_KEY) != deadline:\n", "    if False:\n",
-     {"test_worker_refusals_and_exceptions_are_terminal"}),                # its [deadline_mismatch] case
+     {"test_worker_refusals_and_exceptions_are_terminal[deadline_mismatch]"}),
     ("M9 ledger without build allowance", RUN, "    total = compute + BUILD_ALLOWANCE_USD\n", "    total = compute\n",
      {"test_ledger_matches_proposal_v03"}),
     ("M10 versions mismatch not terminal", RUN, '            mark_terminal(starts, key, f"pinned versions differ: {ver[\'got\']}")\n', "",
-     {"test_worker_refusals_and_exceptions_are_terminal"}),
+     {"test_worker_refusals_and_exceptions_are_terminal[versions]"}),
     ("M11 cleanup re-check cap removed", RUN, ' or len(rec["checks"]) >= max_checks:', ":",
      {"test_cleanup_recheck_loop_is_bounded_even_if_sleep_does_not_wait"}),
 ]
@@ -58,7 +59,13 @@ def pytest_capped(copy: Path, tag: str):
            "-p", f"MemoryMax={MEM_MAX}", "-p", f"MemorySwapMax={SWAP_MAX}", "timeout", "--signal=KILL", str(WALL_S),
            sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider",
            "--basetemp", tempfile.mkdtemp(prefix="b3-mut-bt-"), TESTS]
-    return subprocess.run(cmd, capture_output=True, text=True, cwd=copy)
+    log = Path(tempfile.mkdtemp(prefix="b3-mut-log-")) / f"{tag}.log"
+    with open(log, "wb") as f:
+        rc = subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT, cwd=copy).returncode
+    with open(log, "rb") as f:
+        f.seek(max(0, log.stat().st_size - TAIL_BYTES))
+        tail = f.read().decode(errors="replace")
+    return types.SimpleNamespace(returncode=rc, stdout=tail)
 
 
 def classify(r, expected: set) -> tuple:
@@ -68,7 +75,7 @@ def classify(r, expected: set) -> tuple:
     if r.returncode in (137, -9):
         return "KILLED", failed
     if r.returncode == 1 and failed:
-        return ("CAUGHT" if {f.split("[")[0] for f in failed} <= expected else "WRONG_TEST"), failed
+        return ("CAUGHT" if set(failed) <= expected else "WRONG_TEST"), failed
     return "INFRA_ERROR", failed
 
 
