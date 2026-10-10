@@ -1,0 +1,32 @@
+[
+  {
+    "case": "unmodified frozen-schema fixtures",
+    "accepted": true,
+    "value": 2584
+  },
+  {
+    "case": "external/embedded admission mismatch",
+    "accepted": false,
+    "error": "RuntimeError('s1: admission.json differs from result.json')"
+  },
+  {
+    "case": "overflowing profile component in matching admissions",
+    "accepted": false,
+    "error": "RuntimeError('admission parts must be finite and >= 0')"
+  },
+  {
+    "case": "negative profile part despite recomputed estimate",
+    "accepted": false,
+    "error": "RuntimeError('admission parts must be finite and >= 0')"
+  },
+  {
+    "case": "consumed source mismatch",
+    "accepted": false,
+    "error": "RuntimeError('s2: source hashes differ from the current sources')"
+  },
+  {
+    "case": "fake S2 refused after eliminating producer mismatch",
+    "accepted": false,
+    "error": "RuntimeError('s2: episode counts/splits/seeds differ')"
+  }
+]

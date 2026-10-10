@@ -1,0 +1,61 @@
+{
+  "checked_at_utc": "2026-10-06T15:47:41.368654+00:00",
+  "read_only_remote": true,
+  "app_id": "ap-uPN6X6TfZ7Yv9lCaLHAkx7",
+  "modal_version": "1.5.1",
+  "run_manifest": {
+    "app_id": "ap-uPN6X6TfZ7Yv9lCaLHAkx7",
+    "script": "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py",
+    "args": "",
+    "started": 1791301578.9786665,
+    "function_only_charge_usd": 1.3549,
+    "gpu": "A100-80GB",
+    "outcome": "started"
+  },
+  "launch_provenance": [
+    "2026-10-06T22:46:12+07:00",
+    "57aad8581579c9fd17ba70490e0d817567cedb59"
+  ],
+  "source_sha256": {
+    "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py": "5c1e287e11465db32cecfe5e9e6682a61994fc897fe750b240dd5ed5348838c1"
+  },
+  "app_rows": [
+    {
+      "app_id": "ap-uPN6X6TfZ7Yv9lCaLHAkx7",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "state": "ephemeral",
+      "tasks": "1",
+      "created_at": "2026-10-06 22:46:14+07:00",
+      "stopped_at": null
+    }
+  ],
+  "container_rows": [
+    {
+      "container_id": "ta-01M48Y9YMG55PH15TH7MSBA9JR",
+      "app_id": "ap-uPN6X6TfZ7Yv9lCaLHAkx7",
+      "app_name": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "start_time": "2026-10-06 22:46:24+07:00"
+    }
+  ],
+  "lifecycle": {
+    "created_at": "2026-10-06 15:46:14.123354+00:00",
+    "created_by": "doug-87818",
+    "deployed_at": null,
+    "deployed_by": null,
+    "stopped_at": null,
+    "stopped_by": null
+  },
+  "active_app_with_task_and_container": true,
+  "wrapper_exit_rows": [],
+  "terminal_packing_artifact_exists": false,
+  "console_contains_building_image": false,
+  "reservation_usd": "1.98",
+  "envelope_usd": "2.00",
+  "limits": [
+    "Active app/task/container is lifecycle evidence, not a throughput result or proof that the child has completed model loading.",
+    "Reservation is retained; no settled billing or additional paid work is inferred.",
+    "No CLI command-line attestation: source, launch provenance, selected GPU manifest and live app state are independently checked."
+  ],
+  "finished_at_utc": "2026-10-06T15:47:45.782657+00:00"
+}

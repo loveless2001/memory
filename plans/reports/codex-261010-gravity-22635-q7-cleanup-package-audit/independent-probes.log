@@ -1,0 +1,15 @@
+usage: q7-mutation-temp-dirs-cleanup-fail-closed.py [-h] [--execute {Q7}]
+q7-mutation-temp-dirs-cleanup-fail-closed.py: error: argument --execute: invalid choice: 'Q5' (choose from Q7)
+{"outcome": "DRY_RUN_OK (no removal API reached)", "targets": 136, "du_before": "52383240\ttotal"}
+{"outcome": "REFUSED", "problems": ["live set differs: new ['/tmp/b3-mut-control-only-virtual-extra'] missing []"]}
+{
+  "host rmtree uses fd symlink protection": true,
+  "real dry run returns zero": true,
+  "no deletion reached": true,
+  "extra path refuses": true,
+  "inode mismatch refuses": true,
+  "real cwd user refuses": true,
+  "retained log corruption refuses": true,
+  "unselected Q5 refused": true,
+  "all probes reached no deletion": true
+}

@@ -1,0 +1,84 @@
+{
+  "timestamp_utc": "2026-10-06T09:56:04.565472+00:00",
+  "reviewed_head": "9e76787d9c8d0f891655caebb9e3690a9122ab7f",
+  "identity": {
+    "runner": "770d4d807c99e5ff5bdb63a05066f1ea355fa6f8e6ac3fe6323f54685fd48c40",
+    "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "memsub": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6"
+  },
+  "ledger_arithmetic": {
+    "profile_function_usd": 1.3974239999999998,
+    "startup_usd": 0.19963199999999998,
+    "refused_replay_usd": 0.2794848,
+    "image_build_usd": 0.3,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.4265407999999997,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true
+  },
+  "fixtures": {
+    "identity_mismatch": {
+      "returned_status": "identity_mismatch",
+      "child_exit": null,
+      "child_invocations": 0,
+      "attempt_claimed": false,
+      "returned_profile": null
+    },
+    "success": {
+      "returned_status": "done",
+      "child_exit": 0,
+      "child_invocations": 1,
+      "attempt_claimed": true,
+      "returned_profile": {
+        "status": "complete",
+        "configs": [
+          "fixture"
+        ]
+      }
+    },
+    "child_error": {
+      "returned_status": "done",
+      "child_exit": 1,
+      "child_invocations": 1,
+      "attempt_claimed": true,
+      "returned_profile": null
+    },
+    "outer_timeout": {
+      "returned_status": "done",
+      "child_exit": "outer_timeout",
+      "child_invocations": 1,
+      "attempt_claimed": true,
+      "returned_profile": null
+    },
+    "malformed_success": {
+      "returned_status": "done",
+      "child_exit": 0,
+      "child_invocations": 1,
+      "attempt_claimed": true,
+      "returned_profile": {
+        "status": "complete",
+        "configs": []
+      }
+    },
+    "missing_call_id": {
+      "collector_failed_before_shutdown": true,
+      "shutdown_calls_after_failure": 3
+    },
+    "collector_terminal_shutdown": {
+      "saved_app_id_used": true,
+      "terminal_states_checked": 3,
+      "pending_has_no_elapsed_stop": true
+    }
+  },
+  "real_modal_calls": false,
+  "gpu_work": false,
+  "holds": [
+    "No total app/deploy deadline bounding crash/replay cost",
+    "Image-build reservation has no enforced resource/time basis",
+    "Collector fails on lost call-ID persistence instead of recovering bounded shutdown",
+    "Successful child profile schema/matrix is not validated before done"
+  ]
+}

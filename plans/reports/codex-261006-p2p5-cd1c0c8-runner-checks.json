@@ -1,0 +1,52 @@
+{
+  "timestamp_utc": "2026-10-06T10:07:08.775133+00:00",
+  "reviewed_head": "cd1c0c8b15d77db8dc9e1d0574ea9e384f04c027",
+  "runner_sha256": "4c0b4fd7ad9960f42314a133deb628ed736050d4226d0b81901577b656accfc4",
+  "identity": {
+    "runner": "4c0b4fd7ad9960f42314a133deb628ed736050d4226d0b81901577b656accfc4",
+    "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "memsub": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6"
+  },
+  "ledger": {
+    "profiling_start_usd": 1.5970559999999998,
+    "refused_starts_usd": 0.2794848,
+    "guard_refusal_start_usd": 0.20628639999999995,
+    "image_build_usd": 0.189432,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.5222591999999997,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 3600,
+    "build_basis": "3 layers x 900s at 4.0 cores/8 GiB (assumed for pip layers)"
+  },
+  "r2_local_recovery": {
+    "missing": {
+      "shutdown_and_fetch_when_collect_invoked": true
+    },
+    "corrupt": {
+      "shutdown_and_fetch_when_collect_invoked": true
+    }
+  },
+  "r1_late_start_fixture": {
+    "remaining_s": 1,
+    "outer_timeout_s": 1860,
+    "result_after_logical_deadline": "profiled",
+    "watchdogs_before_child": [
+      120
+    ]
+  },
+  "r3_invalid_profiles_still_accepted": {
+    "wrong_source": true,
+    "missing_environment": true,
+    "missing_warmups": true,
+    "nonfinite_mean": true,
+    "nonfinite_overall_peak": true
+  },
+  "real_modal_calls": false,
+  "gpu_work": false,
+  "clearance": "HOLD: R1 and remaining R3 checks"
+}

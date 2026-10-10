@@ -1,0 +1,690 @@
+{
+  "device": "cpu",
+  "gpu_or_cloud_operations": false,
+  "memsub_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+  "remote_worker_ast_unchanged": true,
+  "local_entrypoint_ast_unchanged": true,
+  "cleanup_cases": [
+    {
+      "case": "all_cli_hang",
+      "status": "shutdown_unresolved",
+      "elapsed_s": 280.0,
+      "checks": 3,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 60.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 140.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 220.0,
+          "timeout_s": 60.0
+        }
+      ]
+    },
+    {
+      "case": "slow_running",
+      "status": "shutdown_unresolved",
+      "elapsed_s": 300.0,
+      "checks": 2,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 60.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 120.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 200.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 260.0,
+          "timeout_s": 40.0
+        }
+      ]
+    },
+    {
+      "case": "app_consumes_remaining_time",
+      "status": "shutdown_unresolved",
+      "elapsed_s": 300.0,
+      "checks": 3,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 60.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 120.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 175.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 235.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 260.0,
+          "timeout_s": 40.0
+        }
+      ]
+    },
+    {
+      "case": "malformed_app_json",
+      "status": "shutdown_unresolved",
+      "elapsed_s": 290.0,
+      "checks": 14,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 2.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 24.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 46.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 68.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 90.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 112.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 134.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 156.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 178.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 200.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 222.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 244.0,
+          "timeout_s": 56.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 266.0,
+          "timeout_s": 34.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 288.0,
+          "timeout_s": 12.0
+        }
+      ]
+    },
+    {
+      "case": "container_still_listed",
+      "status": "shutdown_unresolved",
+      "elapsed_s": 294.0,
+      "checks": 13,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 2.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 4.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 26.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 28.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 50.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 52.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 74.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 76.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 98.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 100.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 122.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 124.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 146.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 148.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 170.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 172.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 194.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 196.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 218.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 220.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 242.0,
+          "timeout_s": 58.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 244.0,
+          "timeout_s": 56.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 266.0,
+          "timeout_s": 34.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 268.0,
+          "timeout_s": 32.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 290.0,
+          "timeout_s": 10.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 292.0,
+          "timeout_s": 8.0
+        }
+      ]
+    },
+    {
+      "case": "lagging_tasks",
+      "status": "stopped_verified",
+      "elapsed_s": 54.0,
+      "checks": 3,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 2.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 4.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 26.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 28.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 50.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 52.0,
+          "timeout_s": 60.0
+        }
+      ]
+    },
+    {
+      "case": "already_stopped",
+      "status": "stopped_verified",
+      "elapsed_s": 6.0,
+      "checks": 1,
+      "calls": [
+        {
+          "args": [
+            "app",
+            "stop",
+            "ap-AUDIT"
+          ],
+          "start_s": 0.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "app",
+            "list",
+            "--json"
+          ],
+          "start_s": 2.0,
+          "timeout_s": 60.0
+        },
+        {
+          "args": [
+            "container",
+            "list",
+            "--json"
+          ],
+          "start_s": 4.0,
+          "timeout_s": 60.0
+        }
+      ]
+    },
+    {
+      "case": "missing_app_id",
+      "status": "unresolved: no app id recorded",
+      "elapsed_s": 0.0,
+      "checks": 0,
+      "calls": []
+    }
+  ],
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "outer_s": 2640,
+    "stop_allowance_s": 300,
+    "image_construction_usd": 0.0,
+    "reservation_usd": 1.9949076,
+    "cap_usd": 2.5,
+    "cleanup_budget_s": 300,
+    "assumptions": [
+      "the app stops within CLEANUP_S after the client exits (cleanup-verify checks; if unverified: manual stop, and billing past it is NOT covered)",
+      "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+    ],
+    "unenforced": "app-stop latency after client exit; CPU overuse beyond the margin"
+  }
+}

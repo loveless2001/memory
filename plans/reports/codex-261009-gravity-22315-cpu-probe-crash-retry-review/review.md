@@ -1,0 +1,25 @@
+# CPU gradient-probe crash and retry review
+
+Status: original attempt produced no condition results; capped one-batch init smoke passed; full multi-batch diagnosis remains unverified. Scope is local CPU diagnosis only under user #gravity 22293. Numerical execution belongs to Claude. This audit launched no probe, optimizer step, training, Modal call, or GPU work.
+
+## Independently verified evidence
+
+The retained original launch specifies B=2, K=8, N=32, filler=40, seed=777, conditions init/final/oracle, script SHA `b840fe997a2a3c008e07c3bdba0dfb277036f1de59ac2f19fe5803326dea8b63`. Its progress/stdout/stderr files are empty and no condition JSON exists in that output directory. The archived launch says Python pid40919. Kernel evidence at 22:14:32 Bangkok records a **global** OOM killing Python pid41365, anon-rss 5,693,772 KiB. These observations are consistent with the reported probe failure, but this audit does not possess the parent/child chain linking the recorded launch pid to the kernel victim. Later shutdown records do not establish what caused Windows/WSL to shut down. Original files and narrowed journal extract are retained in this report directory.
+
+The new smoke command ran `--conditions init --batches 1 --batch-size 1` in cgroup-v2 scope `run-re82f3b979d9d4f8d9fc2c4b54679f88a.scope`. `/proc/7411/cgroup` and actual cgroup control files verified RAM maximum 4,613,734,400 bytes (4400 MiB), swap maximum 1,258,291,200 bytes (1200 MiB). The live observation had RAM peak 4,608,942,080 bytes and zero OOM events at that instant. `/usr/bin/time -v` reports exit0, 84.34 seconds, maximum RSS 4,366,056 KiB. This is evidence of a real enforced cap and successful **one-batch** smoke; it is not a blanket guarantee of host stability or evidence that all sixteen batches/three conditions fit. Scope runtime maximum was infinity in the observed configuration.
+
+Smoke output contains one init episode/four queries only, with task CE 3.910053 and 0/4 correct. Separate task gradients reach all selected layers' value and beta groups. L27 task out_proj/alpha are None, matching the direct taskhead dependency graph. This is a retained smoke observation, not a full diagnosis, training result, or cross-batch consistency finding. The reported consistency=1 at K=1 is tautological. Anchor gradients are from the unscaled anchor loss; the B2 objective weights that term by 0.1.
+
+The final-weight file currently hashes to `2149c97517ad0f844b30a82f52b0072090f02b1709809f6bac5f09afe107fdb3`; this audit read/hash-checked it without loading the model. Audited worktree HEAD was `a5d02d91a3671bb9452aa7dc02b7e567bc358fd5`. The audited source is copied as `audited-script.py` so later owner changes do not invalidate this source review.
+
+## Remaining source issues and verification
+
+In `run_condition` (audited-script.py lines126-153), the previous batch's `state`, `task`, `anchor`, `traces`, `out`, `logits`, and related graph references remain live while the next `ingest(...)` call constructs a bank. In addition, task autograd.grad uses `retain_graph=True` unconditionally for task loss, including the oracle condition where no anchor backward follows. These are source-level retention concerns, not a measured explanation of the original OOM. Clear graph/state references at the end of each batch or scope one batch in a helper returning detached summaries/gradients, and retain the task graph only when the separate anchor backward follows. Keeping conditions in separate capped processes removes cross-condition model lifetime concerns but does not address within-condition batch lifetime.
+
+Before interpreting or declaring the K=16 full retry ready, the owner should record the revised source/hash, capped multi-batch memory evidence including the next-ingest transition and the oracle no-anchor path, process exits, cgroup peak/events, and exact output locations. This is a concrete verification gap raised in channel22319, not a request to expand paid scope. Do not silently restart or change conditions after an error.
+
+B=1/K=16 keeps sixteen episodes/64 queries but changes gradient grouping. The norm-mean denominator and therefore the consistency ratio differ from B=2/K=8. The 1/sqrt(K) reference is a descriptive heuristic, not a significance test. Per-episode RNG generation in sample_batch means the seed777 episode sequence is unchanged by grouping for this sampler, but paired condition outputs should still bind the actual episodes. Oracle additionally disables fill/anchor; it localizes addressing and does not isolate every B2 mechanism. No cause of B2's negative learning result is established here.
+
+## Handoff and stop point
+
+Claude retains numerical-run ownership. Codex posted the observed cap, source retention issue, and requested evidence in #gravity22319. Next trigger is the owner's revised package and completed capped smoke/condition evidence, posted with paths in #gravity. This turn does not register a monitor or duplicate numerical work, and no further channel polling is armed. B2's previously accepted negative result is separate from this partial diagnosis.

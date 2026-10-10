@@ -1,0 +1,26 @@
+{
+  "scope": "model-free function calls and harmless shell false command",
+  "model_loads": 0,
+  "full_wall_gate": [
+    {
+      "wall_s": 0,
+      "accepted": true
+    },
+    {
+      "wall_s": 20000,
+      "accepted": true
+    }
+  ],
+  "quoted_full_exit_receipt": {
+    "backslash_count": 1,
+    "stdout": "expanded inner command: false\necho $?\n1\n",
+    "stderr": "",
+    "expected_false_status": 1
+  },
+  "nonfinite_prediction": {
+    "rejected": false,
+    "ranks": [
+      -1
+    ]
+  }
+}

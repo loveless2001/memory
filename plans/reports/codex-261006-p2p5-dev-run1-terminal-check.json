@@ -1,0 +1,142 @@
+{
+  "checked_at_utc": "2026-10-06T12:50:37.829520+00:00",
+  "read_only_remote": true,
+  "app_id": "ap-UUv74AxrTl2LhmY6g128Jk",
+  "historical_artifacts_modified": false,
+  "configs": [
+    {
+      "arm": "learned",
+      "batch": 16,
+      "mean_s_per_update": 9.236854392,
+      "mean_bwd_s": 5.960293076500003,
+      "profiled_update_s_with_profiler": 18.372958791000002,
+      "autograd_nodes_total": 339627,
+      "cuda_kernels_in_profiled_update": 910504,
+      "host_sync_ops": {
+        "aten::_local_scalar_dense": 656,
+        "cudaStreamSynchronize": 3460,
+        "cudaDeviceSynchronize": 5,
+        "aten::item": 656
+      }
+    },
+    {
+      "arm": "memory_off",
+      "batch": 16,
+      "mean_s_per_update": 1.5197727614999792,
+      "mean_bwd_s": 0.000945822500000304,
+      "profiled_update_s_with_profiler": 2.1513027650000254,
+      "autograd_nodes_total": 23,
+      "cuda_kernels_in_profiled_update": 134007,
+      "host_sync_ops": {
+        "aten::_local_scalar_dense": 8,
+        "cudaStreamSynchronize": 116,
+        "cudaDeviceSynchronize": 5,
+        "aten::item": 8
+      }
+    },
+    {
+      "arm": "learned",
+      "batch": 2,
+      "mean_s_per_update": 6.432193816500046,
+      "mean_bwd_s": 3.5772609224999883,
+      "profiled_update_s_with_profiler": 8.760036232000061,
+      "autograd_nodes_total": 208243,
+      "cuda_kernels_in_profiled_update": 437340,
+      "host_sync_ops": {
+        "aten::_local_scalar_dense": 656,
+        "cudaStreamSynchronize": 3460,
+        "cudaDeviceSynchronize": 5,
+        "aten::item": 656
+      }
+    }
+  ],
+  "artifact_binding": [
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/result/hotspot.json",
+      "sha256": "17daa2f80ffdc4b65787a216d314e939930161f38a4d7c954a1e307a096147e4",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/run.json",
+      "sha256": "5e31b26a901dc0cc946379499651af2babfce0db924741cd6544a16d1219a4e9",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/run1-billing-today-hourly.json",
+      "sha256": "fd938ae7180ba8c6f28833a478f24703f324b15062a81cf6fb6b96552b6b4b04",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/run1-containers-after.json",
+      "sha256": "4829bb904c971788d998455c211851a4c56c0dbd0a13bde699e7a38ec9178afa",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/run1-shutdown-state.txt",
+      "sha256": "f2c47232c57403f602a5f1d63cde7af066784bf6d3a14bff18b459f2fe69bb43",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/run1-validation.json",
+      "sha256": "0782bde7bd5ab54ae1b17b1863e3eb2a70b791390606ebc114735fcae0f6d22e",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_commit": "add8142"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/hotspot-l40s-v1/stdout.txt",
+      "sha256": "e23b84b376c84be73e661de87d3b3500a6510f5230b6dfc4dfb31f9c3308f720",
+      "matches_commit": "add8142"
+    }
+  ],
+  "launched_source_binding": {
+    "modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py": "52b3da22236527c20319cbbb28958ec936635e7fab1fc2239513944f10a0fe38",
+    "scripts/sgm-p2p5-sgm-path-hotspot-profile.py": "c4f6e77e70797a328797c382fa96d69164f04690e45d6d427b05ff44bdc96d82"
+  },
+  "source_binding_limit": "Original app was already in flight at review; runner/script hashes bind the reviewed 19f51b9 source, not a remote self-hash. Artifact itself records the reference memsub hash.",
+  "completeness_limit": "Original hotspot source implies 1 warmup + 2 measured + 1 profiled update per config, but artifact lacks complete update-index rows. No rows reconstructed.",
+  "accepted_as_complete_dev_diagnostic": true,
+  "interpretation_limit": "Counts are profiler observations. Zero labelled CPU totals cannot identify critical-path time. Batch-2 learned versus batch-16 memory-off is confounded; no GPU speed-up, registered retiming, learning, or laptop crash-cause claim.",
+  "app_rows": [
+    {
+      "app_id": "ap-UUv74AxrTl2LhmY6g128Jk",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-06 19:25:10+07:00",
+      "stopped_at": "2026-10-06 19:41:27+07:00"
+    }
+  ],
+  "matching_containers": [],
+  "lifecycle": {
+    "created_at": "2026-10-06 12:25:10.949218+00:00",
+    "created_by": "doug-87818",
+    "deployed_at": null,
+    "deployed_by": null,
+    "stopped_at": "2026-10-06 12:41:27.891055+00:00",
+    "stopped_by": null
+  },
+  "billing_rows": [
+    {
+      "object_id": "ap-UUv74AxrTl2LhmY6g128Jk",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 12:00:00+00:00",
+      "cost": "0.53878894",
+      "cost_by_resource": {
+        "L40S": "0.42832320",
+        "Network Egress": "0.00098169",
+        "Memory": "0.05917731",
+        "CPU": "0.05030675"
+      },
+      "tags": {}
+    }
+  ],
+  "reported_app_usage_usd": "0.53878894",
+  "billing_limit": "App-only reported usage snapshot, not final invoice or proof of settled build cost. Full $1.55 run-1 reserve remains booked.",
+  "terminal_verified": true,
+  "finished_at_utc": "2026-10-06T12:50:43.192678+00:00"
+}

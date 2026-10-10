@@ -1,0 +1,58 @@
+{
+  "audit_time_epoch": 1791307200.9968805,
+  "audited_commit": "84f0a69",
+  "source_sha256": {
+    "modal-runners/modal-m4-sgm-p2p5-pk-packed-slot-proof-runner.py": "8f9e374c4b2c5f62e908095fc288320cab3c7f2a6be2b993b74fdb320823b94b",
+    "configs/m4_sgm_p2p5_packed_proof_grid.json": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "scripts/sgm-p2p5-pk-packed-slot-timing-profile.py": "df48522d02279cf521923531d6818536c0626878caa844cb20f750bc461433ee",
+    "scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py": "8748cce995ee3a40d058078815185bebd3ad5cf12597d341bd20c663e5e559c4",
+    "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "modal-runners/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c"
+  },
+  "memsub_source_sha256": "e330e309148f8ac856072c27d81d7da3b45db3a73374bedfafa8498024ee5ab9",
+  "original_plan_grid_and_historical_inputs_preserved": true,
+  "tracked_tree_clean_at_check": true,
+  "independent_focused_tests": {
+    "command": [
+      "/home/lenovo/projects/memory/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--basetemp",
+      "plans/reports/codex-261007-p2p5-pk-84f0a69/pytest-tmp",
+      "tests/test_sgm_pk_packed_slot_epoch_state.py",
+      "tests/test_sgm_pk_packed_slot_supervisor_end_to_end.py",
+      "tests/test_sgm_pk_packed_proof_acceptance_compare.py",
+      "tests/test_sgm_pk_packed_slot_proof_runner.py",
+      "tests/test_sgm_training_resume_checkpoint.py",
+      "tests/test_sgm_p2p5_gpu_packing_throughput_measurement.py"
+    ],
+    "returncode": 0,
+    "wall_s": 201.28251671791077
+  },
+  "independent_tiny_parity": {
+    "cases": 11,
+    "all_bitwise": true,
+    "reference_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+    "candidate_sha256": "e330e309148f8ac856072c27d81d7da3b45db3a73374bedfafa8498024ee5ab9",
+    "negative_control_detected": true,
+    "isolation_ok": true
+  },
+  "proof_false_acceptances": [
+    "joint_gradient_omission",
+    "joint_empty_scientific_payload",
+    "missing_checkpoint_generations",
+    "wrong_predecessor_hash",
+    "wrong_identity_and_same_container"
+  ],
+  "cost_arithmetic_only": {
+    "rate_2x": 0.00118776,
+    "current_reported_model_usd": 9.192976275,
+    "admitted_starts_only_with_300s_startup_usd": 11.330944275,
+    "current_7_gpu_lifetime_allowance_usd": 36.9155808,
+    "same_allowance_plus_existing_other_parts_usd": 37.34288827500001,
+    "proposed_1_gpu_6600s_lifetime_allowance_usd": 8.1242784
+  },
+  "clearance": "NOT_CLEARED_FOR_GPU_PROOF_APPROVAL_REQUEST",
+  "reviewer_gpu_calls": 0
+}

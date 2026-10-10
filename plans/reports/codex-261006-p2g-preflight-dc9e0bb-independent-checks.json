@@ -1,0 +1,83 @@
+{
+  "audited_bundle": "plans/261006-0010-m4-sgm-p2g-selective-write-gate/preflight",
+  "producer_commit": "dc9e0bbdd29c353c45c48dbdd5428f5253660bf4",
+  "preflight_json_sha256": "9f531c3c8fdb18960d87321d849961ffa720b4d229b01e28e1f468a914dfa927",
+  "observer_code_hashes_match_producer_commit": true,
+  "fixtures": {
+    "P-on:v2-n16-s0": {
+      "rows": 5120,
+      "interventions": {
+        "none": 1024,
+        "bank_derange": 1024,
+        "coord_shuffle": 1024,
+        "read_offset": 1024,
+        "query_off": 1024
+      },
+      "sha256": "ded44fe3c99e7ea608843010d0fa4d880ac5243ea58f8c59a9130c420c8fcd20",
+      "parsed_and_byte_equal": true
+    },
+    "P-on:v2-n16-s1": {
+      "rows": 5120,
+      "interventions": {
+        "none": 1024,
+        "bank_derange": 1024,
+        "coord_shuffle": 1024,
+        "read_offset": 1024,
+        "query_off": 1024
+      },
+      "sha256": "b139bd8e9314809b258d50f6bd96f033bd40fd4db669fd59e8395e7fbd87182a",
+      "parsed_and_byte_equal": true
+    },
+    "P-on:v2-n32-s0": {
+      "rows": 5120,
+      "interventions": {
+        "none": 1024,
+        "bank_derange": 1024,
+        "coord_shuffle": 1024,
+        "read_offset": 1024,
+        "query_off": 1024
+      },
+      "sha256": "745c381abd2397ab5bbfebf2377d5d53703e59f03618597793e74bda09646ea0",
+      "parsed_and_byte_equal": true
+    },
+    "P-on:v2-n32-s1": {
+      "rows": 5120,
+      "interventions": {
+        "none": 1024,
+        "bank_derange": 1024,
+        "coord_shuffle": 1024,
+        "read_offset": 1024,
+        "query_off": 1024
+      },
+      "sha256": "b841f9eee2a6325c1115e71b00dd80b31b22a2dc75ced205dcce8b1d057de82b",
+      "parsed_and_byte_equal": true
+    },
+    "P-off:filleroff-n16-s0": {
+      "rows": 5120,
+      "interventions": {
+        "none": 1024,
+        "bank_derange": 1024,
+        "coord_shuffle": 1024,
+        "read_offset": 1024,
+        "query_off": 1024
+      },
+      "sha256": "ac31919f875619aa7ca7c28781d1916dfb527e8693c18467cb81e55edfdc3f88",
+      "parsed_and_byte_equal": true
+    },
+    "P-off:filleroff-n16-s1": {
+      "rows": 5120,
+      "interventions": {
+        "none": 1024,
+        "bank_derange": 1024,
+        "coord_shuffle": 1024,
+        "read_offset": 1024,
+        "query_off": 1024
+      },
+      "sha256": "795c1f48d2a5b072331384a3f13847595f2eb3ee568c642fc5b4db89f4474c5a",
+      "parsed_and_byte_equal": true
+    }
+  },
+  "step0_summary_arithmetic_verified": true,
+  "step0_does_not_establish_registered_selectivity": true,
+  "pass": true
+}

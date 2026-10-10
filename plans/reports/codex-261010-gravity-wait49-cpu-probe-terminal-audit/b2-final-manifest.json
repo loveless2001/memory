@@ -1,0 +1,105 @@
+{
+  "experiment": "m4-sgm-p2p5-b2-occupied-fill-long-run",
+  "label": "EXPLORATORY (dev only)",
+  "result_label": "frozen-qwen3-0.6b-base+taskhead+VARIANT-occupied_softmax_fill_v1-anchor0.1",
+  "b2": {
+    "arm": "B2",
+    "base": "readout probe s0",
+    "sgm_overrides": {
+      "read_fallback": "occupied_softmax_fill_v1",
+      "read_fallback_tau": 1.0,
+      "read_fallback_anchor": 0.1
+    }
+  },
+  "pilot_config": {
+    "arm": "learned",
+    "readout": "taskhead",
+    "n_bindings": 32,
+    "n_queries": 4,
+    "filler_len": 40,
+    "steps": 1500,
+    "batch": 16,
+    "lr": 0.003,
+    "eval_every": 100,
+    "eval_batches": 4,
+    "seed": 0,
+    "sgm": {
+      "read_fallback": "occupied_softmax_fill_v1",
+      "read_fallback_tau": 1.0,
+      "read_fallback_anchor": 0.1
+    },
+    "filler_writes": true,
+    "aux_address_lambda": 0.0,
+    "checkpoint_steps": [],
+    "beta_bias_init": null,
+    "filler_len_schedule": [
+      [
+        0,
+        0
+      ],
+      [
+        1000,
+        40
+      ]
+    ],
+    "backbone": "qwen3-0.6b-base",
+    "device": "cuda"
+  },
+  "sgm_config": {
+    "selected_layers": [
+      6,
+      13,
+      20,
+      27
+    ],
+    "memory_heads": 4,
+    "key_dim": 32,
+    "value_dim": 32,
+    "address_hidden": 64,
+    "address_scale": 8.0,
+    "address_init_spread": 1.0,
+    "local_recent_tokens": 32,
+    "pinned_sink_tokens": 4,
+    "max_cells_per_bank": 2048,
+    "alpha_init_logit": -4.0,
+    "out_init_std": 0.02,
+    "feature_shift": 1,
+    "address_mode": "learned",
+    "stencil": "quadratic_bspline_3x3_v1",
+    "update": "weighted_delta_v1",
+    "read_order": "read_before_write_v1",
+    "ingest": "token_serial_v1",
+    "read_fallback": "occupied_softmax_fill_v1",
+    "read_fallback_tau": 1.0,
+    "read_fallback_anchor": 0.1,
+    "resolved": {
+      "hidden_size": 1024,
+      "num_hidden_layers": 28,
+      "model_type": "qwen3"
+    }
+  },
+  "policy_id": "m4-sgm:learned:sha256:23a1f6778b5596ea",
+  "dev_seed": 4242,
+  "versions": {
+    "torch": "2.7.1+cu126",
+    "transformers": "4.55.2",
+    "python": "3.12.10",
+    "host": "modal",
+    "threads": 4
+  },
+  "tf32": {
+    "matmul": false,
+    "cudnn": false
+  },
+  "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+  "trained_parameters_sha256": "2149c97517ad0f844b30a82f52b0072090f02b1709809f6bac5f09afe107fdb3",
+  "probe_manifest_sha256": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0",
+  "argv": [
+    "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+    "--manifest",
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+    "--out",
+    "/vol/b2-run-v1/B2"
+  ],
+  "wall_seconds_this_start": 8605.820791721344
+}

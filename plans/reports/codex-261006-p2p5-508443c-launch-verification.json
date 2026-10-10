@@ -1,0 +1,160 @@
+{
+  "checked_at_utc": "2026-10-06T11:15:57.054113+00:00",
+  "read_only": true,
+  "provenance": {
+    "expected_identity": {
+      "runner": "6406e6415def0e28ccccbd67c0a424a5c052329c914c49828661bd89cf594e28",
+      "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+      "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+      "memsub": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6"
+    },
+    "ledger": {
+      "gpu_container_lifetime_usd": 1.9563935999999997,
+      "reaper_ticks_usd": 0.009647,
+      "image_build_usd": 0.16838399999999998,
+      "fixed_margin_usd": 0.25,
+      "usd_per_container_hour": 2.3955839999999995,
+      "reserved_total_usd": 2.3844245999999996,
+      "cap_usd": 3.0,
+      "admitted": true,
+      "gpu": "L40S",
+      "preemptible": true,
+      "max_starts": 2,
+      "overall_deadline_s": 2700,
+      "reaper_period_s": 120,
+      "abandon_s": 1800,
+      "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance",
+      "assumptions": [
+        "reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+        "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+        "list prices from modal.com/pricing checked 2026-10-06"
+      ]
+    },
+    "spawn_epoch": 1791285212.1514747,
+    "deadline_epoch": 1791287912.1514747,
+    "git_head": "508443c84391d2e4947a68fd07fafc295f481010",
+    "deployed_app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV"
+  },
+  "bound_call_id": "fc-01M48EPG6ZYYEQYR1ER9DRDFHX",
+  "deadline_utc": "2026-10-06T11:58:32.151475+00:00",
+  "deadline_bangkok": "2026-10-06T18:58:32.151475+07:00",
+  "local_identity_and_ledger_match": true,
+  "first_failure_log_unchanged": true,
+  "consumed_file_sha256": {
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v1/launch_provenance.json": "dd3a0feefdf8508bda34e12484d6704ad6754f3a51bc6aaa35da387db3e639fd",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v1/call.json": "7f2aba0b833ec31bd17f5078237aa1239658224c0c0292e7f6d1d185e5d9a6ea",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v1.deploy-attempt2.log": "28f2f8cc1f4b0d32a35bb174b0fedd18b41829ebfd0ff6cce6272b3797fd6091",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v1.spawn.log": "e9eb4049e9e5c732d18ecf7382d40e7eeda5f996e969db7ec8a3b8ed9e6a206e",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg.md": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002"
+  },
+  "app_rows": [
+    {
+      "app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+      "description": "memsub-m4-sgm-p2p5-profile",
+      "state": "deployed",
+      "tasks": "2",
+      "created_at": "2026-10-06 18:11:27+07:00",
+      "stopped_at": null
+    }
+  ],
+  "matching_containers": [
+    {
+      "container_id": "ta-01M48ESSNEAPBD1ZH3XJNF3EXR",
+      "app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+      "app_name": "memsub-m4-sgm-p2p5-profile",
+      "start_time": "2026-10-06 18:15:25+07:00"
+    },
+    {
+      "container_id": "ta-01M48EPGK2B4PZC292DXTRP22R",
+      "app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+      "app_name": "memsub-m4-sgm-p2p5-profile",
+      "start_time": "2026-10-06 18:13:38+07:00"
+    }
+  ],
+  "lifecycle": {
+    "created_at": "2026-10-06 11:11:27.448954+00:00",
+    "created_by": "doug-87818",
+    "deployed_at": "2026-10-06 11:13:22.850915+00:00",
+    "deployed_by": "doug-87818",
+    "stopped_at": null,
+    "stopped_by": null
+  },
+  "lookup_app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+  "guard_states": {
+    "m4-sgm-p2p5-l40s-profile-v1-guard": {
+      "exists": true,
+      "values": {
+        "first_tick": 1791285325.5507882,
+        "app_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+        "call_id": "fc-01M48EPG6ZYYEQYR1ER9DRDFHX",
+        "deadline_epoch": 1791287912.1514747,
+        "start1": 1791285218.094252
+      }
+    },
+    "m4-sgm-p2p5-l40s-profile-v1-attempts": {
+      "exists": true,
+      "values": {
+        "profile-l40s#attempt1": true
+      }
+    }
+  },
+  "poll": "pending",
+  "call_result": null,
+  "billing_rows": [
+    {
+      "object_id": "ap-i4m6Qy73vjSs8LVFZza8Z6",
+      "description": "memsub-m4-sgm-p2p5-reaper-proof",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 10:00:00+00:00",
+      "cost": "0.00012308",
+      "cost_by_resource": {
+        "CPU": "0.00009197",
+        "Memory": "0.00003111"
+      },
+      "tags": {}
+    },
+    {
+      "object_id": "ap-w0KWMJST1Dfg5ipxZQV7QV",
+      "description": "memsub-m4-sgm-p2p5-profile",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 11:00:00+00:00",
+      "cost": "0.06195527",
+      "cost_by_resource": {
+        "L40S": "0.04441701",
+        "CPU": "0.00962002",
+        "Network Egress": "0.00029808",
+        "Memory": "0.00762016"
+      },
+      "tags": {}
+    },
+    {
+      "object_id": "ap-550Raz3HVjefV149OWcrXu",
+      "description": "memsub-m4-sgm-p2p5-profile",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 11:00:00+00:00",
+      "cost": "0.00008124",
+      "cost_by_resource": {
+        "CPU": "0.00007422",
+        "Network Egress": "0.00000202",
+        "Memory": "0.00000500"
+      },
+      "tags": {}
+    }
+  ],
+  "observed_object_filtered_usage_usd": "0.06215959",
+  "billing_note": "Reported usage snapshot, not final invoice. Keep full proof and failed-deployment reserves.",
+  "combined_reservation": {
+    "reviewed_head": "508443c84391d2e4947a68fd07fafc295f481010",
+    "proof_reserved_usd": "0.052740625",
+    "profile_reserved_usd": "2.3844246",
+    "failed_deployment_reserved_usd": "0.168384",
+    "combined_reserved_usd": "2.605549225",
+    "remaining_under_total_cap_usd": "0.394450775",
+    "failed_deploy_log_committed_bytes_match": true,
+    "failed_deploy_log_sha256": "5f3f47988892d98528b4d0f5245a8bb2d803f0e74f8f1c55ad45096ff5b68759",
+    "tests": "41 passed in 0.49s, exit 0",
+    "admitted": true,
+    "scope": "one reviewed redeploy followed by the single unstarted profile under user 21446 approval"
+  },
+  "finished_at_utc": "2026-10-06T11:16:06.046915+00:00"
+}

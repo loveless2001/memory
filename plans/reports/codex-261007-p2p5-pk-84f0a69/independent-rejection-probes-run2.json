@@ -1,0 +1,389 @@
+{
+  "baseline": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "joint_gradient_omission": {
+    "removed_expected_name": "adapters.1.address_mlp.0.bias",
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "joint_empty_scientific_payload": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "missing_checkpoint_generations": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "wrong_predecessor_hash": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "wrong_identity_and_same_container": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "empty_done_published_state": "COMPLETE",
+  "metadata_step4_payload_step2": {
+    "consumer_result": {
+      "raised": "ValueError",
+      "message": "generation steps must strictly increase"
+    },
+    "advertised_resume_step": 4,
+    "actual_checkpoint_payload_step": 2,
+    "observed_optimizer_updates": 2,
+    "scenarios": {},
+    "pass": false,
+    "failure": "B/learned-n4-s99: state STARTED"
+  },
+  "audit_status": "BLOCKING_FALSE_ACCEPTANCES_REPRODUCED_CPU_ONLY"
+}

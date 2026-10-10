@@ -1,0 +1,750 @@
+{
+  "status": "PASS",
+  "started_utc": "2026-10-07T13:38:08.815737+00:00",
+  "completed_utc": "2026-10-07T13:38:18.471484+00:00",
+  "issues": [],
+  "slots": {
+    "learned-n32": {
+      "admitted": [
+        1
+      ],
+      "guard": {
+        "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+        "deadline_epoch": 1791387999.7697344
+      },
+      "app_rows": [
+        {
+          "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-learned-n32",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:39:55+07:00",
+          "stopped_at": "2026-10-07 19:55:03+07:00"
+        }
+      ],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "learned-n32-s0": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "d214c3fe8f65b5d9f084e662b5f7b06858f9fe037aa435df93916960681c340d",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "1b1fb675f3107815b6396f9e9a2432cf508a06916666adbdcb9aeae7e63d8690",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "c43787698418291f112568ed057b7cd9431b0c784fd00bee97ee0f81d736cd7f",
+            "per_example_results.jsonl": "ec67c4ac4361d5ed621acb072f04062aca091c08e3c1fbe548518396d1d89f5c",
+            "report.md": "01f8cb3eb011722b14c4510cd3c705d35a6075507c73f9d685afa31a02cb021e",
+            "routing_telemetry.jsonl": "eb8e8b08109c997acdc7b5bb7c1786adb1f8407d02b4162f4e6695cbf019376c",
+            "run_manifest.json": "54deff1b692449eb8f3be20e020958a6d5914ea5e739dbed885fe75da29338b3",
+            "split_manifest.json": "8c1cb773fda176e9ae882341eda81935c48173fe7afeb8020d21941562529a4d",
+            "trained_parameters.safetensors": "dcb73065301cc67af7214d334dfac5c5792d1bb73048fab26d7c9724764c6552"
+          },
+          "done_sha256": "769685bb3d56d62e731218b071509bdd4eafa43ea7e52ecd4d4ce2a09028cb15"
+        },
+        "learned-n32-s1": {
+          "state": "FAILED",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "d4996651f052ff82eb1d8e333316bddcbfd3247bd21a5ccd354d8fa8d20bcc54",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "38982aab52b02bf3c666431e10e87d3ae64ebb41da0c6de5331e9655f2f94801",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "reason": "output validation: output schema: layer-normalised key L{L}/k_proj has inconsistent schemas",
+          "failure_evidence_unchanged": true,
+          "original_gate": "blocked",
+          "validation": "FAILED retained"
+        }
+      },
+      "issues": []
+    },
+    "oracle-n32": {
+      "admitted": [
+        1,
+        2
+      ],
+      "guard": {
+        "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+        "deadline_epoch": 1791387476.6819432
+      },
+      "app_rows": [
+        {
+          "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-oracle-n32",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:42:23+07:00",
+          "stopped_at": "2026-10-07 20:25:51+07:00"
+        }
+      ],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "oracle-n32-s0": {
+          "state": "COMPLETE",
+          "epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "state_sha256": "7896e303682d6b9b92921bc7277f73a6edc30bf5343a3c9e1f067e9983fc6d58",
+          "terminal_checkpoint": {
+            "epoch": 2,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "8f1971e57866e3ecfaeb7d569bbccc83423cab08a335da6dcf73d2838b8346bf",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "b4957468ad977d87ea113d69d186032c00c23c4dd5e5e790783e00510b7ad0c0",
+            "per_example_results.jsonl": "892f8c41a14b562ea9a92751b18c8e3af443309581735c6887998d9a214ed22d",
+            "report.md": "b18fb45de748ebd78fe7553546e2cf9f7dc1e9eb46d4d94b82b4a09a2dc62bc2",
+            "routing_telemetry.jsonl": "3bf0c3ba480b73986befde223c6cd6048a9494d6ad0c0e95fb342645730f2c5e",
+            "run_manifest.json": "0a49db1085fd36baf28ba1ab9bd53499f48f122c36373c28a9f4532eaffc34bf",
+            "split_manifest.json": "8c1cb773fda176e9ae882341eda81935c48173fe7afeb8020d21941562529a4d",
+            "trained_parameters.safetensors": "066ab83a1a1e4d818b24323f3b89b7cd92c276dc2981bb4a5302e71f092d7b3c"
+          },
+          "done_sha256": "250e925c0414b6b84f98e741d00e90426dd88c376a120152bfff6276acd5104f"
+        },
+        "oracle-n32-s1": {
+          "state": "COMPLETE",
+          "epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "state_sha256": "fd6152016cc183ca9fef49f751c87fb0e6516be7a2d5035aa1082e44d89b1d7d",
+          "terminal_checkpoint": {
+            "epoch": 2,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "c9e551244f5c9650e8f0f2389f223b11de18624a9edc16f7f01ce71dbc7da19c",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "58e41bbf4dd73e44fc7ec5a0db7efe788fe431b1101beaebebacbe0e0c905dba",
+            "per_example_results.jsonl": "9e1979abc6b02b23d0a5fa67b9e55064ac895e2662444d7cc19784225dcc976d",
+            "report.md": "10e3554252b953198df1661b27352b605e1172f0400fa12a4a4a8683cab2a071",
+            "routing_telemetry.jsonl": "a0972a96925db2406edf5379f20ecc84468d33a759566b7a5464b7fe9b459c38",
+            "run_manifest.json": "eb038022f1c3195beb3adcf04ce05448303c818dc7962e995bb4c2bd3e78edc7",
+            "split_manifest.json": "2d069df813c15ebe6718e7c080ae18d36b331da9c58351eca60ae5d9dd6f6041",
+            "trained_parameters.safetensors": "3aac5d28732a934a5a387abd7b321e558bcfeb291c3ce68ddd5cfd7e18a330af"
+          },
+          "done_sha256": "75bb0cf058ba7ec8454e032a165aff6ba0c071f55c0b246049734d1c516f1685"
+        }
+      },
+      "issues": []
+    },
+    "random_fixed-n32": {
+      "admitted": [
+        1,
+        2
+      ],
+      "guard": {
+        "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+        "deadline_epoch": 1791387313.338976
+      },
+      "app_rows": [],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "randomfixed-n32-s0": {
+          "state": "COMPLETE",
+          "epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "state_sha256": "b22731239f60d88fe724981ad3e42496b27b3d58d144c712a07eb3607953777f",
+          "terminal_checkpoint": {
+            "epoch": 2,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "8a9bd412ff4f1cb27804be8620c89b17496be1f281d3c03b6a09db3b9a749416",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "03dd00c1780a11511f74af3dd6819ec07b35545e9da5a147703e2b9feb1b5766",
+            "per_example_results.jsonl": "f9e03f426245391449fc99710692acbea62bdd02345495cee55dbd94822ff059",
+            "report.md": "5f463b540058bcc3ae204f9400a1163d02ea399a0337b70b44433ee5dbdb44ce",
+            "routing_telemetry.jsonl": "5eb3afe81cb44b190f4e8aee1592f8dbb750c9d4b40a5726e012f416d5211260",
+            "run_manifest.json": "54385bacd46a0bfb19607f701402159f7fbe03412b0b2ade989781376e0186ee",
+            "split_manifest.json": "8c1cb773fda176e9ae882341eda81935c48173fe7afeb8020d21941562529a4d",
+            "trained_parameters.safetensors": "b2fcd49cabd4c06ece652645fb6011fd9fe3d4d7f69e504ba4a03bb83b51108b"
+          },
+          "done_sha256": "6e4076e9d14862f993dce52cdd0b47e34d7a95bfce9d5e47a9e568df28a5f9ec"
+        },
+        "randomfixed-n32-s1": {
+          "state": "COMPLETE",
+          "epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "state_sha256": "ee79ab35f99743b0e8d1fe9b1aa51a699c0424df7d7424123c4d230bc541d89c",
+          "terminal_checkpoint": {
+            "epoch": 2,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "a4fd8959d630a8c985374f6758431ca22e2be3c59af86fbd5f8b3977fbc838ed",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "c9e63e97056703c61153cc1897d1dd687a41b7e57a75a163482da1df212ed4c4",
+            "per_example_results.jsonl": "7a818fcf56253e7d1d6fb0df0f684613b4e1101746df46680186344578fd9fd5",
+            "report.md": "90feb05d77cb33a29f50c76b2a71a04c758acc3ff83d0f26ae78cd19b38370a2",
+            "routing_telemetry.jsonl": "06e653198aeee331dbfac054e946b391e86967ec55ed904311069ad22fce8e66",
+            "run_manifest.json": "87429e9693a5e22ff7f906ef2708e2dbee83396b979229aaf78c939392baf8d4",
+            "split_manifest.json": "2d069df813c15ebe6718e7c080ae18d36b331da9c58351eca60ae5d9dd6f6041",
+            "trained_parameters.safetensors": "a63df529020c6d55c8566da83cec9407dedaf663790288647495f1edac0bb830"
+          },
+          "done_sha256": "ef85f02c4fc5ab462cf5e7060379ec108c3684efb97f06dbf1263fd9ad7ea921"
+        }
+      },
+      "issues": []
+    },
+    "single_cell-n32": {
+      "admitted": [
+        1,
+        2,
+        3
+      ],
+      "guard": {
+        "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+        "deadline_epoch": 1791384851.238087
+      },
+      "app_rows": [],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "singlecell-n32-s0": {
+          "state": "COMPLETE",
+          "epoch": 3,
+          "canonical_epochs": [
+            1,
+            2,
+            3
+          ],
+          "state_sha256": "ab2336f43b89adbbf5e908d01afd6267fef44cdf6d367cb329d7e7e17e35e7f3",
+          "terminal_checkpoint": {
+            "epoch": 3,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "7f0d5b5df0ca4f7a096794e23a54369461b539b4ebf67342f9c9fc37aad53718",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "f32e94c479c300e525a387e958d9c6ae4e490a068105286dad768235b5cc028c",
+            "per_example_results.jsonl": "0130c6a435c191800ed5c2f76e1eb06ee17f3e0c0e11d79f103acb88df89fa6e",
+            "report.md": "71a5436beb1910b080afe6798bb1dc64d67725633a2495e93d49cc0667a81bbb",
+            "routing_telemetry.jsonl": "81d8a1e2bdd0bb36b1f4833fe3c445f8744586aefcf6cc2114b448361964e9de",
+            "run_manifest.json": "b41ea5612913a87538ed5dfe19745c247a72ac085ba6571e842cd586723483ea",
+            "split_manifest.json": "8c1cb773fda176e9ae882341eda81935c48173fe7afeb8020d21941562529a4d",
+            "trained_parameters.safetensors": "3c36d6582e7e36b5740808f610bbe1f04c9e61bd1e78b041d7388537fbe65c05"
+          },
+          "done_sha256": "1c2560cd50023e980cfd77b5262469369623a20fab254bb097670654281dfea4"
+        },
+        "singlecell-n32-s1": {
+          "state": "COMPLETE",
+          "epoch": 3,
+          "canonical_epochs": [
+            1,
+            2,
+            3
+          ],
+          "state_sha256": "ced05ca1a583942b3bf9ad5cfec2d283a610cb73b9fd43f27ffdc4c293ff4196",
+          "terminal_checkpoint": {
+            "epoch": 3,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "d598162d83a0b029b96c361fa26566ce03416b5f763ccedc7712f2e9ee1fec87",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "b8eb29405cdd629475a827c202c3524077e4c7cda9b9a012ab5c80640be36796",
+            "per_example_results.jsonl": "85ad125e9605cd5218c478a87b9096e4a0b1c093a50287ea26d411fc3f5c882d",
+            "report.md": "bc71e38c93eaa5e14b47764e59e85ec6a75bf57783aaf15543ad0709c7921714",
+            "routing_telemetry.jsonl": "18352c1d034ee5add3a491b00f549c23688dc55297f1134f7e33f8ad3f7b97e4",
+            "run_manifest.json": "2c8a1a90e1470ada35392262487e1303e7debde9bf5ef7784a95a27d9ecf1806",
+            "split_manifest.json": "2d069df813c15ebe6718e7c080ae18d36b331da9c58351eca60ae5d9dd6f6041",
+            "trained_parameters.safetensors": "485bfdf94aa07ee5b927b925364ba27217cf78b805cce5f8f73c6e9835e0ba30"
+          },
+          "done_sha256": "a5879adaa46fdb6b3e97d3c448706014592fbe0da5236bffa03569595cc8c55d"
+        }
+      },
+      "issues": []
+    },
+    "learned-n16": {
+      "admitted": [
+        1
+      ],
+      "guard": {
+        "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+        "deadline_epoch": 1791377613.7132132
+      },
+      "app_rows": [
+        {
+          "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-learned-n16",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:42:48+07:00",
+          "stopped_at": "2026-10-07 18:40:45+07:00"
+        }
+      ],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "learned-n16-s0": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "719949279180bdb02892caebe5e03e500032404ef52c4cbbed2f4e014cb796a7",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "4dd26e54d941db63acd199849b8ae53b180fa1760e1dc815c5a06933af4b6dfb",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "be5adb41a8db88fa901be57041510dc996cb3477a3a6286d1ee928a7337f6934",
+            "per_example_results.jsonl": "bc27c1bc4abb77ccb22749b7d9a49f74ca4c1c83afc3bbb7acb81aebc4257b65",
+            "report.md": "94cfb0f817ac32ac55f87c701bb39ee028e074feadd67cc1bbbf40307f9fd6d9",
+            "routing_telemetry.jsonl": "36925c0934085fdffecbf4eb04122b4c9fdbeb171daff4472540ca0306cdd3e3",
+            "run_manifest.json": "51d809fa0b0d3b9ea7cf941dd62755880902a7a93dc44e0d56cd4842e08ba66c",
+            "split_manifest.json": "10b3094379052132a83a0c5a6ac0af3f6a18d8c6aad591f5358fe1646e2dbbee",
+            "trained_parameters.safetensors": "fcb30da3d3a5073382f90ec0e06bf358cf3c93b20254d002bf38f54633af923b"
+          },
+          "done_sha256": "6de3bbce26f9d54454a34e2c5163caa92bc0b4694d0670b89bbfccd30fa08283"
+        },
+        "learned-n16-s1": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "87839ee5031516a946f805ec6f529495d8f11f91923de40cf6e669e958280177",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "e4c850811969a0b75bf048ecc9ebd29a6152ba2f4a9e0874c11dd81decddb982",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "0d3fc7842914769c59671fb0535637ec76b41bbf4d1b5d76948f9764edc821a9",
+            "per_example_results.jsonl": "6f53b48ab95a382ef48f09e730e793ad9c75363136d705af6bc9eebae81783ef",
+            "report.md": "f7670cb27291547d0882730749b94f5335638884535e5b8b272f830b3ba63db7",
+            "routing_telemetry.jsonl": "c8590462fff5fc659ca51d975aa981f5ea3ba53d921149e63244c1a0407b8440",
+            "run_manifest.json": "ba72094a3756f0d869a207b2cdb13c425236c0337384ef185e062b94508694a9",
+            "split_manifest.json": "63564176661a1a7635854e0a6553d9b34d8aa8a28156dd5d312f5a81883e8d38",
+            "trained_parameters.safetensors": "25d86f000110b273c1a226ac6ff3616da2a1fa3df6f6eb0621f53ab71bd074c5"
+          },
+          "done_sha256": "52572aadf6ed2907329ce86f0dccc940e58db625d7a0f04346e9ec5b760d9958"
+        }
+      },
+      "issues": []
+    },
+    "random_fixed-n16": {
+      "admitted": [
+        1,
+        2
+      ],
+      "guard": {
+        "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+        "deadline_epoch": 1791376070.634326
+      },
+      "app_rows": [],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "randomfixed-n16-s0": {
+          "state": "COMPLETE",
+          "epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "state_sha256": "a5f1dfc62d2c28b43e688dd69d618bf339ed5d6043b13beea98681cb7fad94f3",
+          "terminal_checkpoint": {
+            "epoch": 2,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "ad85fa5973199fb7bad5e35a87ef7d39dfbed6bb1cc4ff62d08858466cf288cc",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "1f361bd9d70d36116c95cdc791422fb86ece892fe2e24c3f88a21b8e8693f182",
+            "per_example_results.jsonl": "07073897350ba70c1f2c9aff51cb9601de732949f4ec35e60346e9bc0808ec5b",
+            "report.md": "74572220990e064b272cb3244ce7cf28f6354c76ea12127c0a2e3d42b07afdbc",
+            "routing_telemetry.jsonl": "3e7a3199b88d5b461edb2030b073f748097b5bc4bfe215bb4fb25ced2642754f",
+            "run_manifest.json": "6158efb8b6b2ee75f0c0beffb86a6c622eed9e78cef95fc9971847ce17734897",
+            "split_manifest.json": "10b3094379052132a83a0c5a6ac0af3f6a18d8c6aad591f5358fe1646e2dbbee",
+            "trained_parameters.safetensors": "2d11beb1be291fc95e55d8be1b2dac78a6b06be4db60fe58e135c105cef8f65e"
+          },
+          "done_sha256": "1ef9b18e9882f94240353e2075921809922573bde8063f98ad549d89929834e1"
+        },
+        "randomfixed-n16-s1": {
+          "state": "COMPLETE",
+          "epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "state_sha256": "4c3ff7a8c62d01b092126e019be1d72766ba5d854b07e5dc8190cdd871e4c9fa",
+          "terminal_checkpoint": {
+            "epoch": 2,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "0fbee235b6766daa13e2a27b136d09df1ed227fad1f93fb904990ebe617f1b3b",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "0a0bc6efa608a922f3fade16d5b0d21f0572dc4e748c74348883137add2cf001",
+            "per_example_results.jsonl": "89dd11b8c24b9cc0712684bb0278f27a01621a5b0d25d265974356a047ceb780",
+            "report.md": "9200d34a2b3b08838102acde1060e36d86e338027ad58dca7ee139044e476df4",
+            "routing_telemetry.jsonl": "2bff7779941a07ab77cbd07db4857f61f77ef46d4a6e50a29a735d4f838528e7",
+            "run_manifest.json": "b1d94af7899348a3e7bcd052763837f75b454421ff0fda1855bd4326576cd00e",
+            "split_manifest.json": "63564176661a1a7635854e0a6553d9b34d8aa8a28156dd5d312f5a81883e8d38",
+            "trained_parameters.safetensors": "d4fe48673757323b8ce518f39c12327cc588b93be3ed0f0474f7165972af8e3c"
+          },
+          "done_sha256": "5b8cc7241a60b47d9d336ad4b79af64bee50fe83a9640c14c0ebb6d55d92fd16"
+        }
+      },
+      "issues": []
+    },
+    "single_cell-n16": {
+      "admitted": [
+        1
+      ],
+      "guard": {
+        "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+        "deadline_epoch": 1791374219.611603
+      },
+      "app_rows": [],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "singlecell-n16-s0": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "cef1a863782cac1cd52351cfa57067413d560aff36fcf83c92aeefc1be4d897e",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "3cf0283e2998944b8164a821b79fab6e8d39a6b6bdd0b920e10c9f832488c4c2",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "e83f9572aa0d0dcfd464f0db63a74f1e3cae5f979d12726e708da2fbf29a065b",
+            "per_example_results.jsonl": "489eb6aff203d2ca03e487fb5ac7d0949346dfb6496c147c51f5a2c816c5c49f",
+            "report.md": "e072875e53078512f07c601c8dcbb0e6957c6b69d938849bd6c6fdd49686351e",
+            "routing_telemetry.jsonl": "367e56f5f110dad28baea82e3115ebbcfea0f1251bc5b09e6cc432ac858c2c8b",
+            "run_manifest.json": "1e553756a6da609c9a99927ec4467a3ec9d80a6fbf05db0b05e5553a1683fae3",
+            "split_manifest.json": "10b3094379052132a83a0c5a6ac0af3f6a18d8c6aad591f5358fe1646e2dbbee",
+            "trained_parameters.safetensors": "77c17638661fbd424fbeccb01937dd014ce0b2515bc049d515ee9acd13141bc9"
+          },
+          "done_sha256": "47342385ff825e43defdd1265e969fae2b328b95a8a431b08f8771f40848e01d"
+        },
+        "singlecell-n16-s1": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "955144e574fb8474d096fdb691979236c67f00464700ee68365f46300d8b9c25",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "1e54c65ebbbcc7eb27579ddaca2062ba1382df8fc05a194b66fbad81b494ab79",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "b73424784fb829a1fb3ca3af467622e6fa9005bb26e911ed04a60b6d7cc2c661",
+            "per_example_results.jsonl": "c0c658ba0a4a16c4d4af44772a23373681cd6d12bdf7f805fc39a46511988a9f",
+            "report.md": "b2194b0d7f4d6c302b763529fcb5543343881d409463913d521e1fc061392c6f",
+            "routing_telemetry.jsonl": "9a519ab230ac761440fb633e42f0c6a3449c31c325ac27c7f02f1d3fd8d47b04",
+            "run_manifest.json": "e1a3b73926a908dff9ff4f6ad872b535153191e0c67ab845b114a00871360649",
+            "split_manifest.json": "63564176661a1a7635854e0a6553d9b34d8aa8a28156dd5d312f5a81883e8d38",
+            "trained_parameters.safetensors": "a0c55bdda238dd28c9b4307a0941fca839324a05e1a5f397a2f08cfa94e33424"
+          },
+          "done_sha256": "6e6cef983b74aeeb9f50e73377a1054c332b3fbd4f0667a08b3d5bca36ae0b5f"
+        }
+      },
+      "issues": []
+    },
+    "memory_off-n32": {
+      "admitted": [
+        1
+      ],
+      "guard": {
+        "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+        "deadline_epoch": 1791364167.2702665
+      },
+      "app_rows": [],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "memoryoff-n32-s0": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "0a6b467891975a4838b082166440f2473c9ec257d647301dab907714a7e503bd",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "bfe2481e1cd8545c6cb544bad85b9b8b8c696af0f9918f6b5579590dd26dc5f1",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "91ca2163b804d74319fd53060903a9753643de61846973024999ae8d58ddda18",
+            "per_example_results.jsonl": "a4ef122406d3e1ee5c85d245b97943118a865d5c4d490c4a7d5ab39ab2ec6f45",
+            "report.md": "335359cf47ca1c108cf8c993d171c84eb18908914ac16e599ac51be1f437bdf4",
+            "routing_telemetry.jsonl": "8542098d12c01763e6139a4178afef452753af1897a56b10c1c54786f266698a",
+            "run_manifest.json": "6e9ab190d6fa951468517a1bba0c9a87fd0b295f8342af4624b459d6b39008aa",
+            "split_manifest.json": "8c1cb773fda176e9ae882341eda81935c48173fe7afeb8020d21941562529a4d",
+            "trained_parameters.safetensors": "4c2fbdae7081b769756e64a77bbe11702e08982c57e0944fe73f158716cd628e"
+          },
+          "done_sha256": "2d30bb5ded13414c36a686715ab74c24e2c6a97df07c089f6c9745d9c3e9a2cb"
+        },
+        "memoryoff-n32-s1": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "a5618e3065c25612074f6847af6107832426d778f15a9ac66b64eef8f8d0b6e5",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "efdc9bb6e18afb0ba521e46630217f70a92e1d8b5f19b8939602b5c0edc50bd6",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "5c40b19ea55090d02179d6694e71707f8b865579bd3a32c1df57fc1487557919",
+            "per_example_results.jsonl": "bb83a788a62ab5489274187f549f80efa165fce5f611b85a049444d076790d2e",
+            "report.md": "50a135845c3bc9b14a631721385ea7d21982367a243b4b05e2301b5b65de6fce",
+            "routing_telemetry.jsonl": "319c2286283198d1fca116941e7d0acb07022e9570c8f43fa573d8888e657387",
+            "run_manifest.json": "3427124435ae6ba5c6d0e4b485b2d2a85387412a4eae246565979d67feb8e208",
+            "split_manifest.json": "2d069df813c15ebe6718e7c080ae18d36b331da9c58351eca60ae5d9dd6f6041",
+            "trained_parameters.safetensors": "198ed16108cfb3d5dcc495a1eb1e1b60b2e102ad3206a642f1daf7e10bd82d3f"
+          },
+          "done_sha256": "6b7cdcfee7ba8bcc7e6cc4952afd9bacae02233b01e8685e5392df6e4a0204f9"
+        }
+      },
+      "issues": []
+    },
+    "memory_off-n16": {
+      "admitted": [
+        1
+      ],
+      "guard": {
+        "app_id": "ap-FHeNdce7VkCSVBQWzTRmjk",
+        "deadline_epoch": 1791361761.6344142
+      },
+      "app_rows": [],
+      "containers": [],
+      "stopped_verified": true,
+      "cells": {
+        "memoryoff-n16-s0": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "0c1b09d61ffc112e2c985737fece5d614b773eac971ab7f32ad138782bb64988",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "7b5d351693bb65731da4f13548a67d44e4a8cfe43c1db03972cc62257baa1398",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "8cde53f4f7bd79039af55a46897706e23d3ccd3cfd46035e41d0807858784f10",
+            "per_example_results.jsonl": "bd227652ed0c93e1a65f590cc34627000aa7cdbae8b19e1adb12105e55b9b900",
+            "report.md": "a405ba523fae4b0f69ef4788da49ed81334d14e1b54e2b37734988db10be9e45",
+            "routing_telemetry.jsonl": "22abf20a6bc8bbb27f91019bfcd1a05fb8332cef928f26b70d6a23b776595e5d",
+            "run_manifest.json": "d09bf4f310bb0d966cbba6720e7c1eba204cadde5e2cb1086692e8a3fa27cf20",
+            "split_manifest.json": "10b3094379052132a83a0c5a6ac0af3f6a18d8c6aad591f5358fe1646e2dbbee",
+            "trained_parameters.safetensors": "029fa670fd7f0dba7376403ab10305037cae49c33dae06bcffa3da3f835f349a"
+          },
+          "done_sha256": "fa71b4dde9fa8b2daa2ff67b8a898b63c3cbeb29724ce4a17852dea2ac249529"
+        },
+        "memoryoff-n16-s1": {
+          "state": "COMPLETE",
+          "epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "state_sha256": "1c800616c6f4e9821bc34b687d259b937c209712d2006495d9adbb619a26c07a",
+          "terminal_checkpoint": {
+            "epoch": 1,
+            "file": "gen-30-step1500.pt",
+            "g": 30,
+            "sha256": "7542e84567ab57353d4f4a17ca57412e39218ad14c12f3ef4a9303bc7196a938",
+            "step": 1500
+          },
+          "terminal_checkpoint_verified": true,
+          "validation": "valid",
+          "outputs": {
+            "metrics.json": "5e13e451ebce290897969a969bffe6beb782db53216de6fe4ad65a1e8138fcff",
+            "per_example_results.jsonl": "e4b40e5705a96b80d408eb6ef604dfdcfe0705db0ac5291d177c0f8f7bfdf317",
+            "report.md": "9e64661799ff92ed707b74799b6ed5b9ad3e14534807d323fcf05258d7074967",
+            "routing_telemetry.jsonl": "b8f559916f72c068bebcc9036c5b348af258efe38e78d28f0799d8928d3b24b4",
+            "run_manifest.json": "cd0aa0189c29a2264f002c8366e0b49070ac7dfd4ee8c2f9dacaf676cb9641bd",
+            "split_manifest.json": "63564176661a1a7635854e0a6553d9b34d8aa8a28156dd5d312f5a81883e8d38",
+            "trained_parameters.safetensors": "c56be04cebb08aacf1c7a68d5b1980ce01f900ec334b7f5b0f9a4ccfab3047d0"
+          },
+          "done_sha256": "bf9dd4eec140727d31c30d417d294c4e7c98f1db5dd721a03a2a30e4515e3949"
+        }
+      },
+      "issues": []
+    }
+  },
+  "complete_cells": [
+    "learned-n16-s0",
+    "learned-n16-s1",
+    "learned-n32-s0",
+    "memoryoff-n16-s0",
+    "memoryoff-n16-s1",
+    "memoryoff-n32-s0",
+    "memoryoff-n32-s1",
+    "oracle-n32-s0",
+    "oracle-n32-s1",
+    "randomfixed-n16-s0",
+    "randomfixed-n16-s1",
+    "randomfixed-n32-s0",
+    "randomfixed-n32-s1",
+    "singlecell-n16-s0",
+    "singlecell-n16-s1",
+    "singlecell-n32-s0",
+    "singlecell-n32-s1"
+  ],
+  "failed_cells": [
+    "learned-n32-s1"
+  ],
+  "control": {
+    "app_id": "ap-suOdTgdc8PNSfZ3jbnsesa",
+    "price_sha256": "6745896e3f4b6ae4abc33020c6c195bbf9d3bedd800980e0ae8e0cd3b461c7c5",
+    "deadline_epoch": 1791408417.2529736,
+    "self_app_id": "ap-suOdTgdc8PNSfZ3jbnsesa"
+  },
+  "registry": {
+    "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n16": {
+      "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+      "deadline_epoch": 1791374219.611603
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n32": {
+      "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+      "deadline_epoch": 1791387313.338976
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-oracle-n32": {
+      "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+      "deadline_epoch": 1791387476.6819432
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n16": {
+      "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+      "deadline_epoch": 1791376070.634326
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-learned-n16": {
+      "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+      "deadline_epoch": 1791377613.7132132
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-learned-n32": {
+      "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+      "deadline_epoch": 1791387999.7697344
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n32": {
+      "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+      "deadline_epoch": 1791364167.2702665
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n16": {
+      "app_id": "ap-FHeNdce7VkCSVBQWzTRmjk",
+      "deadline_epoch": 1791361761.6344142
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n32": {
+      "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+      "deadline_epoch": 1791384851.238087
+    }
+  },
+  "readings": {
+    "apps": [
+      {
+        "app_id": "ap-MvPw7JVom3vnRTxVVyzldN",
+        "description": "memsub-m4-sgm-p2p5-pk-campaign-readings",
+        "state": "deployed",
+        "tasks": "0",
+        "created_at": "2026-10-07 13:43:34+07:00",
+        "stopped_at": null
+      }
+    ],
+    "containers": [],
+    "guard_admission_names": []
+  },
+  "latest_readings_candidate_utc": "2026-10-07T17:06:30.652974+00:00",
+  "original_readings_gate": "blocked",
+  "billing_reconciliation": "not performed in this audit",
+  "head": "537ace8bc30a5ec486e521b6adf7ee3c340abf9f",
+  "tracked_diff": "",
+  "remote_mutations": 0
+}

@@ -1,0 +1,35 @@
+{
+  "decision": "CLEARED_FOR_SEPARATE_PAID_PROOF_APPROVAL_REQUEST_ONLY",
+  "head": "d62602cafb81872e362fa334fd2e3d62755e5339",
+  "source": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+  "independent_focused_tests": {
+    "cmd": [
+      "/home/lenovo/projects/memory/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--basetemp",
+      "plans/reports/codex-261007-p2p5-pk-d62602c/pytest-tmp",
+      "tests/test_sgm_pk_packed_slot_epoch_state.py",
+      "tests/test_sgm_pk_packed_slot_supervisor_end_to_end.py",
+      "tests/test_sgm_pk_packed_proof_acceptance_compare.py",
+      "tests/test_sgm_pk_packed_slot_proof_runner.py",
+      "tests/test_sgm_training_resume_checkpoint.py",
+      "tests/test_sgm_p2p5_gpu_packing_throughput_measurement.py"
+    ],
+    "returncode": 0,
+    "wall_seconds": 239.98009137400368
+  },
+  "independent_rejections_all_pass": true,
+  "private_consumed_packing_helper_sha256": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+  "private_helper_counts": {
+    "warmup": 2,
+    "measured": 4,
+    "seed0": 99
+  },
+  "reservation_usd": 8.560027,
+  "registered_campaign_cells_or_reserved_readings_run": false,
+  "paid_proof_approved_or_launched": false,
+  "campaign_approved_or_launched": false,
+  "no_gpu_deploy_launch_stop_commit_push": true
+}

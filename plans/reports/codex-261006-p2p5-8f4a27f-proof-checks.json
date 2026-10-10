@@ -1,0 +1,112 @@
+{
+  "timestamp_utc": "2026-10-06T10:33:57.775304+00:00",
+  "reviewed_head": "8f4a27f33ceb540debc40d6e51bb1106888bda83",
+  "hashes": {
+    "profile": "5af72fd1e9a0f4b9a0f38e0b0a376b27d08d3b547a7cf0026b0bd7fb2ed67c42",
+    "logic": "fe4825a80d1b3f77b76338c9fe1d2e2af81ed6f2acaba7f3f8e9d66d571198ed",
+    "proof": "31e83604c564847e6b335d350d216938a61329196338d94b92899200001416a2"
+  },
+  "production_reaper_image_local_files": [],
+  "proof_reaper_image_local_files": [
+    "/root/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"
+  ],
+  "profile_reaper_entrypoint_mounts": [
+    "Mount()",
+    "Mount([_MountFile(local_file=PosixPath('/home/lenovo/projects/memory/modal-runners/modal-m4-sgm-p2p5-l40s-timing-profile.py'), remote_path=PurePosixPath('/root/modal-m4-sgm-p2p5-l40s-timing-profile.py'))])"
+  ],
+  "stop_before_optional_cancel": true,
+  "recomputed_child_timeout_s": 691,
+  "r3_corrected": {
+    "wrong_torch": "environment differs from the registered pinned environment",
+    "wrong_cuda": "environment differs from the registered pinned environment",
+    "wrong_gpu": "environment differs from the registered pinned environment",
+    "missing_contract": "contract differs from the registered contract",
+    "wrong_contract": "contract differs from the registered contract",
+    "wrong_filler": "learned phase 2: training filler length differs from the registered phase"
+  },
+  "proof_control_flow_cases": {
+    "deploy_timeout": {
+      "error": "TimeoutExpired: Command '['/home/lenovo/projects/memory/.venv/bin/python', '-m', 'modal', 'deploy', '/home/lenovo/projects/memory/modal-runners/modal-m4-sgm-p2p5-reaper-self-stop-proof.py']' timed out after 600 seconds",
+      "local_stops": [],
+      "report_retained": false,
+      "deploy_log_retained": false,
+      "provenance_has_app_id": false,
+      "guard_has_app_id": false,
+      "guard_has_deadline": false
+    },
+    "binding_failure": {
+      "error": "RuntimeError: fixture: failed binding RPC",
+      "local_stops": [],
+      "report_retained": false,
+      "deploy_log_retained": true,
+      "provenance_has_app_id": false,
+      "guard_has_app_id": true,
+      "guard_has_deadline": false
+    },
+    "observer_failure": {
+      "error": "RuntimeError: fixture: observer RPC failed",
+      "local_stops": [],
+      "report_retained": false,
+      "deploy_log_retained": true,
+      "provenance_has_app_id": true,
+      "guard_has_app_id": true,
+      "guard_has_deadline": true
+    },
+    "premature_unrelated_stop": {
+      "error": null,
+      "local_stops": [],
+      "report_retained": true,
+      "deploy_log_retained": true,
+      "provenance_has_app_id": true,
+      "guard_has_app_id": true,
+      "guard_has_deadline": true,
+      "result": "PASS: the app stopped itself (no local stop issued)",
+      "reaper_fired": null,
+      "deadline_epoch": 1120.0,
+      "observed": [
+        {
+          "t": 1020.0,
+          "stopped_at": "1970-01-01 00:16:50+00:00",
+          "stopped_by": "fixture unrelated actor",
+          "verify": {
+            "app_state": "stopped",
+            "app_containers": 0,
+            "verified": true
+          }
+        }
+      ]
+    }
+  },
+  "profile_reservation": {
+    "gpu_container_lifetime_usd": 1.9563935999999997,
+    "reaper_ticks_usd": 0.009647,
+    "image_build_usd": 0.16838399999999998,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.3844245999999996,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 2700,
+    "reaper_period_s": 120,
+    "abandon_s": 1800,
+    "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance",
+    "assumptions": [
+      "reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+      "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+      "list prices from modal.com/pricing checked 2026-10-06"
+    ]
+  },
+  "proof_reservation": {
+    "max_app_life_s": 1320,
+    "max_ticks": 24,
+    "reserved_usd": 0.052631000000000004,
+    "note": "counted inside the $3 P2.5 profile scope (user 21446); bare image build is negligible"
+  },
+  "combined_reservation_usd": 2.4370555999999994,
+  "real_modal_calls": false,
+  "paid_work": false,
+  "clearance": "R3 closed; fix proof cleanup/false PASS and production reaper mount before paid proof"
+}

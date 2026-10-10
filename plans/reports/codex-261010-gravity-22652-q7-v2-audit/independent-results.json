@@ -1,0 +1,24 @@
+{
+  "script_sha256": "e5fd3a3994a720d3abf8301b965607246c7227f006bae43abdd6c13e7ea126a5",
+  "checks": {
+    "fd-safe rmtree on this host": true,
+    "real dry run succeeds without removal": true,
+    "post-preflight inode mismatch refuses before removal": true,
+    "post-preflight actual cwd user refuses before removal": true,
+    "current path persisted before each simulated removal": true,
+    "partial failure stops with prior completion and current path": true,
+    "each receipt uses file fsync replace directory fsync": true,
+    "later content mismatch stops before second simulated removal": true,
+    "execution guards retain all original candidate roots": true,
+    "receipt failure stops before removal with previous valid receipt": true
+  },
+  "all_pass": true,
+  "simulated_rmtree_calls": [
+    "/tmp/b3-mut-0ixg3uqt",
+    "/tmp/b3-mut-6labq5m3",
+    "/tmp/b3-mut-0ixg3uqt"
+  ],
+  "actual_rmtree_calls": 0,
+  "candidate_mutations": 0,
+  "note": "execute-mode receipts in this audit are simulations; no Q7 removal occurred"
+}

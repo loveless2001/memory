@@ -1,0 +1,88 @@
+{
+  "audited_at_utc": "2026-10-08T05:28:46.370829+00:00",
+  "package_commit": "eb41ab7e6ff5f3023222855592b5c1a65f9ed8c3",
+  "metadata_hashes_verified": 24,
+  "binary_hashes_verified": 3,
+  "source_bindings_match_cleared_r2": true,
+  "probe_output_validator_problem": null,
+  "cell_state": "COMPLETE",
+  "recovery": "fresh",
+  "physical_updates": 20,
+  "script_wall_s": 620.5235176086426,
+  "outer_elapsed_utc_s": 627.0,
+  "exit_status": 0,
+  "model_hashes": {
+    "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+    "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+    "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+  },
+  "logged_null_paths": [
+    {
+      "step": 0,
+      "grad_null_keys": [
+        "L27/alpha",
+        "L27/out_proj"
+      ],
+      "update_null_keys": []
+    },
+    {
+      "step": 10,
+      "grad_null_keys": [
+        "L27/alpha",
+        "L27/out_proj"
+      ],
+      "update_null_keys": []
+    },
+    {
+      "step": 10,
+      "grad_null_keys": [
+        "L27/alpha",
+        "L27/out_proj"
+      ],
+      "update_null_keys": []
+    }
+  ],
+  "optimizer_coverage": {
+    "gen-1-step10.pt": {
+      "shapes_match_build_order": true,
+      "max_step": 10,
+      "never_stepped": [
+        "adapters.27.alpha_logit",
+        "adapters.27.out_proj.weight"
+      ],
+      "partially_stepped": {}
+    },
+    "gen-2-step20.pt": {
+      "shapes_match_build_order": true,
+      "max_step": 20,
+      "never_stepped": [
+        "adapters.27.alpha_logit",
+        "adapters.27.out_proj.weight"
+      ],
+      "partially_stepped": {
+        "adapters.6.k_proj.weight": 12,
+        "adapters.6.v_proj.weight": 12,
+        "adapters.6.beta_proj.weight": 12,
+        "adapters.6.beta_proj.bias": 12,
+        "adapters.20.k_proj.weight": 15,
+        "adapters.20.v_proj.weight": 15,
+        "adapters.20.beta_proj.weight": 15,
+        "adapters.20.beta_proj.bias": 15
+      }
+    }
+  },
+  "checkpoint_cuda_rng_devices": [
+    1,
+    1
+  ],
+  "terminal_checkpoint_equals_trained_tensors": true,
+  "current_cleanup": {
+    "matching_processes": [],
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB, 0 MiB",
+    "compute_apps": ""
+  },
+  "historical_process_snapshot_limit": "The t+4 group and immediate cleanup descriptions have no separate raw snapshot in the package; the audited guard and successful argv provide indirect group evidence.",
+  "pretrained_forward_passes_by_audit": 0,
+  "gpu_runs_or_remote_actions_by_audit": 0,
+  "scientific_learning_claim": false
+}

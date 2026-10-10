@@ -1,0 +1,124 @@
+Proposal review: 41ffbd2 / #gravity 21973
+
+Verdict: useful exploratory design after the revisions below. Free preparation
+may proceed within the user's existing plan request; execution is not cleared.
+The venue question is already pending. No paid authorization is inferred from
+the earlier 'Ok', and Stage B requires a separate reviewed proposal and go.
+
+1. What this screen measures
+The existing toy records support removing 'loss below guessing by step100' as
+a gate: toy dev accuracy is near chance for much of phase1 and rises later.
+They do not establish that no learning occurs before the phase transition.
+The proposed endpoint can measure retention of occupied-cell read support on
+this fixed dev population, not useful retrieval or a necessary condition for
+eventual learning. A1 lowers ALL trainable learning rates, including head and
+q/k/content projections; retain it as a global-rate intervention, not an isolated
+address-learning-rate or H2 mechanism test. No replacement arm is needed now.
+
+2. A2 is a supervised routing diagnostic
+The existing auxiliary code uses each query's bound value position on the train
+split. q/k telemetry is detached, so the auxiliary gradient acts on AddressMLP
+parameters, not directly on q/k/value/head. Task gradients still act normally.
+A2 therefore uses privileged training correspondence supervision. Keep that
+status explicit in arm names, manifests, summaries and all continuation claims.
+The current pretrained PilotConfig.result_label() omits the auxiliary diagnostic
+flag; the Stage-A wrapper must provide an explicit supervised experiment label.
+
+The auxiliary objective can be zero for a constant address map. checks.py
+demonstrates this with the actual address_pair_loss and distinct CPU q/k inputs,
+without constructing a backbone or training anything. All reads and writes can
+coincide without spatial separation between bindings. Low absent mass and low
+auxiliary loss alone do not establish useful content discrimination. Content
+associativity could still matter; this counterexample does not prove one-cell
+memory incapable. Report binding-pair collisions, effective cells, alignment and
+q/k geometry. Treat an A2 'kept' outcome as supervised routing retention only.
+It cannot be promoted to an unsupervised fix or capability result.
+
+For A2, the existing logged loss is task CE plus 0.1 times auxiliary MSE, and
+logged gradients combine both objectives. Label them accordingly. Log task CE
+separately (or a clearly labelled derived total-minus-auxiliary quantity).
+
+3. A0 and thresholds
+A fresh seed0, batch16 baseline is a valid within-setting replication gate, with
+the same frozen backbone/revision, FP32/TF32-off settings, source, initialization,
+optimizer, Q4/N32, training RNG stream and curriculum. Preserve full schedule
+((0,0),(1000,40)); only the first100 updates execute. The extended dev-eval schedule
+is acceptable if it leaves training parameters/optimizer/RNG unaffected.
+Run A0 first. If it fails, errors or is not escaped at100, retain evidence and
+stop before A1/A2. For batch2 local work, label all arms a different setting;
+an A0 replication there does not establish exact-recipe batch16 behavior.
+
+Freeze the metric as the arithmetic mean over all selected layers/heads and
+all 64 fixed dev episodes x4 queries (heldout seed4242, filler40, 4x16), not a
+selected head or changing sample. Escaped >=.9, kept <=.2 and partial otherwise
+are reasonable operational bands for this exploratory question: saved baseline
+is .9928 at100, toy is .0306/.0594. They are not statistical significance or
+capability thresholds. Specify finite [0,1] inputs, inclusive boundaries and
+missing/duplicate/NaN endpoint => INVALID, never partial/kept. Report per-head
+and per-layer values and exact all-positive-cells-absent fractions as well.
+For example, one occupied head among16 gives absent mean .9375 while retaining
+one possible information path; the aggregate 'escaped' label does not mean no
+memory contribution. Low absent mass likewise does not prove retrieval.
+
+Decide the temporal claim now: the primary endpoint can remain update100, but
+'kept through100' additionally requires <=.2 at every sampled update0/25/50/75/100.
+These five observations cannot prove continuous retention between observations.
+Report earlier excursions even if update100 is kept. No tuning thresholds or
+lambda after seeing outputs. Keep two-seed/full-length continuation a separate
+proposal, not an automatic consequence of this one-seed routing screen.
+
+4. Dev-only execution and geometry
+Freeze 3 arms maximum, 100 updates maximum each, one fresh start per arm, no
+automatic/manual retries or fallback, first error/OOM/timeout stops, partials
+retained. All arms must start from the same reconstructed seed0 initial tensors
+and independent copies of the same train generator stream. Do not resume from
+the trained probe or carry optimizer/RNG state between arms.
+
+Calling run_pilot with its defaults would add final heldout/intervention and
+train-split evaluations outside this plan. Use train plus the fixed dev callback,
+parameter/manifest serialization and the three bound geometry entries only.
+No reserved or other final-eval populations. The current diagnosis loader already
+supports final safetensors with steps100 and telemetry at100 through kind
+'geometry'; a new entry kind is not inherently required. Use a new hash-bound
+3-entry index, preserving the original package. Re-review the concrete wrapper,
+configs, population/index bindings, argv and focused CPU evidence before launch.
+
+5. Venue, cost and shutdown
+Recommend batch16 on one pinned GPU SKU for fidelity; L40S has a retained batch16
+phase1 profile, but it is seed99/residual_head under older source, not a timing
+proof for taskhead or A2. Its 9.443s/update is an engineering estimate only.
+Specify one SKU, CPU/RAM reservations, maximum concurrency and a total charged
+ledger covering training, all 5x4 dev batches per arm, geometry, model loads,
+build/setup and shutdown. Pin rates and derive the maximum admitted wall time
+from the user's selected cap; 'L40S or A100' is not a frozen charged plan.
+
+Public Modal pricing checked this turn: L40S $0.000542/sec, A10040 $0.000583/sec,
+A10080 $0.000694/sec, CPU $0.0000131/core/sec and RAM $0.00000222/GiB/sec.
+Source: https://modal.com/pricing . One GPU-hour alone is about $1.95/$2.10/$2.50;
+the proposed $4 cap is plausible but is not a proven all-in bound without the
+resource/deadline ledger. These rates and arithmetic do not authorize spend.
+
+For ephemeral modal run, disconnect cleanup is useful but client timeout alone
+is not a precise charged deadline. Add a remote whole-worker deadline before
+model work, fixed across any infrastructure restart, with bounded startup,
+no new admission after expiry and durable start/arm accounting. Platform retries
+and startup must fit the same cap; retries=0 alone is not a complete restart
+bound. Explicitly stop/verify the app, zero tasks/containers, and save collection
+exit/cleanup evidence. Preserve completed arm parameters before any later failure.
+Sources: https://modal.com/docs/guide/apps ; https://modal.com/docs/guide/timeouts ;
+https://modal.com/docs/guide/functions . No Modal tool was invoked for this review.
+
+6. Correct the channel-level interpretation
+21970 repeats claims that exceed the accepted diagnosis: not every lookup is
+absent (especially seed1), no memory contribution was not established globally,
+and more seeds/training or a larger model were not tested as remedies. The oracle
+is a task-specific by-construction address control, not proof of a broad memory
+design. Neither this pair of recipes nor this one pretrained backbone supports
+'fails on real models because ...'. State the narrow verified routing observations
+and leave the driver, wider transfer, and remedies unproven.
+
+Done criteria for this review
+Refreeze the proposal with these definitions and boundaries, then present the
+concrete implementation and charged/local execution packet for review. No new
+training or paid call ran during this proposal audit. No new user approval
+question is needed from Codex while the already-posted venue choice is pending.

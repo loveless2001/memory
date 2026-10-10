@@ -1,0 +1,225 @@
+{
+  "checked_at_utc": "2026-10-06T15:44:42.073565+00:00",
+  "source_commit": "57aad85",
+  "source_sha256": {
+    "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py": "5c1e287e11465db32cecfe5e9e6682a61994fc897fe750b240dd5ed5348838c1",
+    "tests/test_sgm_p2p5_gpu_packing_throughput_measurement.py": "bd699bde2d1279cfee3d3cd936a8aa34ef9e02a487df875f8d65c3ad40726cfb"
+  },
+  "memsub_sha256": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085",
+  "frozen_smoke_artifact_sha256": {
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k1/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k1/worker-0.json": "d42758506e6485b36705220e6022b38e43732c78c28a5b789863bfafd840b068",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k1/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/barrier/ready-1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/barrier/ready-2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/worker-0.json": "d2a507850d57dff2ab726b5d12fc49dd6c36a53c40622801447bec14696b4ac0",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/worker-1.json": "70e9c235e2179d6ff7b4514f82735784901e204de626bc9e8d3d90ce19c47e7b",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/worker-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/worker-2.json": "9ab39ab382225a39c7ff9cb5538418ac8eae61c4cf746f5c745b25a300e73d70",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p1-k3/worker-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k1/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k1/worker-0.json": "b8f3a43f014c0152907112bdda4688fdf50d54dcf04f48fbfb210f9b11d3e9da",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k1/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k2/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k2/barrier/ready-1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k2/worker-0.json": "f5899ab44d2bded9793c15efbdc69f36776a0a46075c568b7c3b55cf989f0131",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k2/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k2/worker-1.json": "d0e7ebb4c21dcd220eac1f604aff937ae97f26bb4d24ed9f8f768c5af5073bf5",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/p2-k2/worker-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2/packing.json": "28e835df67b49cde1ba197152fa4b8190c12dca7f74c578f7e7aa227fba9dc52",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2.log": "2365004a295dad03e6931e10b8d44aa0dad871f51a2d2553b1350de2dbe5042b",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k1/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k1/worker-0.json": "4af1ba89d7879d05dd3719105e0055b9b18180f1a1f9bc5653867fbf85d73917",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k1/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/barrier/ready-1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/barrier/ready-2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/worker-0.json": "e6de3e83acaf92b64b1432bdcba797c69f7810fc1e34f9d7d09e6141d999dea2",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/worker-1.json": "31bccc8dd48099832844c353446b9df2a647dfaf68b4e1c55089087ff90bbb7c",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/worker-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/worker-2.json": "1f1843e0e795e4ad33fc313d784dd257f4d3082d22455a90d11aa93047651f94",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p1-k3/worker-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k1/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k1/worker-0.json": "88a6b333f6075f5e291489b8939e03d21c7bc1c349df36809072cc6252373c02",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k1/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k2/barrier/ready-0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k2/barrier/ready-1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k2/worker-0.json": "ca0895b2e3e4bf2477df0735e6f0598054b3bdf941e8c037c421dc9a70a425b7",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k2/worker-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k2/worker-1.json": "6905c33d9da40edb9185ec753ed106da1a6a04b63e78ee5d174be4e35a68e6bb",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/p2-k2/worker-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3/packing.json": "87a68a5a6cd8453bce54379afd97142126efdd86c900e00a52f2ed0128b07442",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3.log": "4e5f1b0ba69c0698b7e671eb9eca1fbeed3320a353a2d05e25e1a68bee4aaa17"
+  },
+  "smoke_checks": [
+    {
+      "folder": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v2",
+      "status": "complete",
+      "checks": [
+        {
+          "phase": 2,
+          "k": 1,
+          "valid_worker_count": 1,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 2,
+          "k": 2,
+          "valid_worker_count": 2,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 1,
+          "k": 1,
+          "valid_worker_count": 1,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 1,
+          "k": 3,
+          "valid_worker_count": 3,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        }
+      ],
+      "timings_not_evidence_of_gpu_packing": true
+    },
+    {
+      "folder": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-smoke-cpu-local-v3",
+      "status": "complete",
+      "checks": [
+        {
+          "phase": 2,
+          "k": 1,
+          "valid_worker_count": 1,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 2,
+          "k": 2,
+          "valid_worker_count": 2,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 1,
+          "k": 1,
+          "valid_worker_count": 1,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 1,
+          "k": 3,
+          "valid_worker_count": 3,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        }
+      ],
+      "timings_not_evidence_of_gpu_packing": true
+    },
+    {
+      "folder": "plans/reports/codex-261006-p2p5-packing-bf5c8b3-cpu-smoke",
+      "status": "complete",
+      "checks": [
+        {
+          "phase": 2,
+          "k": 1,
+          "valid_worker_count": 1,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 2,
+          "k": 2,
+          "valid_worker_count": 2,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 1,
+          "k": 1,
+          "valid_worker_count": 1,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        },
+        {
+          "phase": 1,
+          "k": 3,
+          "valid_worker_count": 3,
+          "primary_arithmetic_reconciles": true,
+          "positive_overlap": true
+        }
+      ],
+      "timings_not_evidence_of_gpu_packing": true
+    }
+  ],
+  "additional_nonfinite_negative_checks": [
+    {
+      "field": "mean_measured_s",
+      "value": "nan",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "mean_measured_s",
+      "value": "inf",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "mean_measured_s",
+      "value": "-inf",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "measured_start",
+      "value": "nan",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "measured_start",
+      "value": "inf",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "measured_start",
+      "value": "-inf",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "measured_end",
+      "value": "nan",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "measured_end",
+      "value": "inf",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    },
+    {
+      "field": "measured_end",
+      "value": "-inf",
+      "rejection": "rank 0: non-finite or non-positive mean / measured start / end"
+    }
+  ],
+  "historical_v1_and_protocol_bytes_preserved": true,
+  "fresh_destination": "/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/packing-a100-v1",
+  "reservation_usd": "1.97875840",
+  "booked_usd": "1.98",
+  "cap_usd": "2.00",
+  "paid_or_remote_work_performed": false,
+  "source_and_local_checks_pass": true,
+  "limits": [
+    "Local CPU smoke verifies orchestration only.",
+    "Six measured updates at seeds99+rank do not validate long-run campaign throughput, GPU resume or correctness.",
+    "Start/end timestamps use wall clock; gross discontinuities are rejected by span consistency, but small clock drift can perturb rates.",
+    "Reservation uses stated teardown/resource/build assumptions, not a platform cash ceiling. No operator retry or matrix expansion approved."
+  ]
+}

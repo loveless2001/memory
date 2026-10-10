@@ -1,0 +1,72 @@
+{
+  "timestamp_utc": "2026-10-06T09:36:41.809481+00:00",
+  "reviewed_head": "4f30c154fcb6f90e0822a687e880c27d10581bec",
+  "input_sha256": {
+    "scripts/sgm-p2p5-local-gpu-timing-profile.py": "b165ea1049fc9f964588f77547a4bbdecdd1dbed8f2691bac7a570a84943d986",
+    "memsub/sgm/p2d_launch_guard.py": "52c0ec5ec873fa4cfafe82f1fa612c71969e64e184b6bd557665e9b55f7f3054",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/profile-local/profile.json": "9b92f2c4d90011830d552c7b347c10021486651838e0471559743604584d6550",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/profile-local.log": "cb8dc09b7a37386ebe01fce70388b2bc06cb63c50b4448946d7a9eceac50e824"
+  },
+  "cases": {
+    "load_hang": {
+      "exit_code": -9,
+      "process_wall_s_including_imports": 2.634014962000947,
+      "progress_records": 2,
+      "last_stage": "config_start",
+      "watchdog_alive_after_worker_exit": false,
+      "orphan_watchdog_killed_by_audit_parent": false,
+      "completed_configs": null
+    },
+    "eval_hang": {
+      "exit_code": -9,
+      "process_wall_s_including_imports": 2.6324909380055033,
+      "progress_records": 12,
+      "last_stage": "update_done",
+      "watchdog_alive_after_worker_exit": false,
+      "orphan_watchdog_killed_by_audit_parent": false,
+      "completed_configs": null
+    },
+    "success": {
+      "exit_code": 0,
+      "process_wall_s_including_imports": 2.5897311109947623,
+      "progress_records": 50,
+      "last_stage": "end",
+      "watchdog_alive_after_worker_exit": false,
+      "orphan_watchdog_killed_by_audit_parent": false,
+      "completed_configs": 4
+    },
+    "oom": {
+      "exit_code": 1,
+      "process_wall_s_including_imports": 2.4886458109976957,
+      "progress_records": 3,
+      "last_stage": "end",
+      "watchdog_alive_after_worker_exit": false,
+      "orphan_watchdog_killed_by_audit_parent": false,
+      "completed_configs": 0
+    },
+    "train_error": {
+      "exit_code": 1,
+      "process_wall_s_including_imports": 2.4797716069952003,
+      "progress_records": 3,
+      "last_stage": "end",
+      "watchdog_alive_after_worker_exit": false,
+      "orphan_watchdog_killed_by_audit_parent": false,
+      "completed_configs": 0
+    },
+    "environment_error": {
+      "exit_code": 1,
+      "process_wall_s_including_imports": 2.630068183003459,
+      "progress_records": 1,
+      "last_stage": "start",
+      "watchdog_alive_after_worker_exit": true,
+      "orphan_watchdog_killed_by_audit_parent": true,
+      "completed_configs": null
+    }
+  },
+  "hard_deadline_on_in_config_load_and_eval": "PASS: actual SIGKILL, GIL-holding CPU fixture",
+  "first_error_stops_and_normal_cancel": "PASS",
+  "unhandled_exception_cancels_watchdog": "HOLD: live independent sleeper reproduced",
+  "original_oom_attempt_unchanged": true,
+  "gpu_work": false,
+  "paid_profile_clearance": "not cleared"
+}

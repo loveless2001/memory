@@ -1,0 +1,285 @@
+{
+  "checked_at_utc": "2026-10-06T15:37:22.819107+00:00",
+  "source_commit": "03fbe79",
+  "runner_sha256": "5c1e287e11465db32cecfe5e9e6682a61994fc897fe750b240dd5ed5348838c1",
+  "remote_operations": false,
+  "paid_work": false,
+  "resource_fields": {
+    "l40s": {
+      "cpu": [
+        4.0,
+        4.0
+      ],
+      "memory_mib": [
+        32768,
+        32768
+      ]
+    },
+    "a100-80gb": {
+      "cpu": [
+        8.0,
+        8.0
+      ],
+      "memory_mib": [
+        65536,
+        65536
+      ]
+    }
+  },
+  "shared_body_identical_to_1306f26": true,
+  "fixtures": [
+    {
+      "gpu": "l40s",
+      "case": "ok",
+      "error": null,
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.788947,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "ok",
+        "returncode": 0,
+        "wall_s": 1.0,
+        "client_wall_s": 0.00033974647521972656
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "l40s",
+      "case": "rc7",
+      "error": {
+        "type": "SystemExit",
+        "text": "1"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8056104,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "child failed",
+        "returncode": 7,
+        "wall_s": 1.0,
+        "client_wall_s": 0.0002884864807128906
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "l40s",
+      "case": "timeout",
+      "error": {
+        "type": "SystemExit",
+        "text": "1"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8069146,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "child failed",
+        "returncode": "timeout",
+        "wall_s": 1.0,
+        "client_wall_s": 0.00019741058349609375
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "l40s",
+      "case": "remote_error",
+      "error": {
+        "type": "RuntimeError",
+        "text": "fixture remote error"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8080745,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "remote call failed",
+        "error": "RuntimeError: fixture remote error",
+        "client_wall_s": 0.00012230873107910156
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "l40s",
+      "case": "bad_archive",
+      "error": {
+        "type": "ReadError",
+        "text": "not a gzip file"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8092585,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "remote call failed",
+        "error": "ReadError: not a gzip file",
+        "client_wall_s": 0.00015878677368164062
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "l40s",
+      "case": "sigterm",
+      "error": {
+        "type": "SystemExit",
+        "text": "SIGTERM (outer timeout)"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8103971,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "remote call failed",
+        "error": "SystemExit: SIGTERM (outer timeout)",
+        "client_wall_s": 0.00019502639770507812
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "a100-80gb",
+      "case": "ok",
+      "error": null,
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.81151,
+        "function_only_charge_usd": 1.3549,
+        "gpu": "A100-80GB",
+        "outcome": "ok",
+        "returncode": 0,
+        "wall_s": 1.0,
+        "client_wall_s": 0.0002741813659667969
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "a100-80gb",
+      "case": "rc7",
+      "error": {
+        "type": "SystemExit",
+        "text": "1"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8127077,
+        "function_only_charge_usd": 1.3549,
+        "gpu": "A100-80GB",
+        "outcome": "child failed",
+        "returncode": 7,
+        "wall_s": 1.0,
+        "client_wall_s": 0.00019478797912597656
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "a100-80gb",
+      "case": "timeout",
+      "error": {
+        "type": "SystemExit",
+        "text": "1"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8137767,
+        "function_only_charge_usd": 1.3549,
+        "gpu": "A100-80GB",
+        "outcome": "child failed",
+        "returncode": "timeout",
+        "wall_s": 1.0,
+        "client_wall_s": 0.0001957416534423828
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "a100-80gb",
+      "case": "remote_error",
+      "error": {
+        "type": "RuntimeError",
+        "text": "fixture remote error"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8151076,
+        "function_only_charge_usd": 1.3549,
+        "gpu": "A100-80GB",
+        "outcome": "remote call failed",
+        "error": "RuntimeError: fixture remote error",
+        "client_wall_s": 0.00014853477478027344
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "a100-80gb",
+      "case": "bad_archive",
+      "error": {
+        "type": "ReadError",
+        "text": "not a gzip file"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8162007,
+        "function_only_charge_usd": 1.3549,
+        "gpu": "A100-80GB",
+        "outcome": "remote call failed",
+        "error": "ReadError: not a gzip file",
+        "client_wall_s": 0.0001628398895263672
+      },
+      "mock_remote_calls": 1
+    },
+    {
+      "gpu": "a100-80gb",
+      "case": "sigterm",
+      "error": {
+        "type": "SystemExit",
+        "text": "SIGTERM (outer timeout)"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791301042.8173301,
+        "function_only_charge_usd": 1.3549,
+        "gpu": "A100-80GB",
+        "outcome": "remote call failed",
+        "error": "SystemExit: SIGTERM (outer timeout)",
+        "client_wall_s": 0.00012421607971191406
+      },
+      "mock_remote_calls": 1
+    }
+  ],
+  "reservation": {
+    "nominal_runtime_usd": "1.35486720",
+    "twice_cpu_ram_runtime_usd": "1.71037440",
+    "build_usd": "0.168384",
+    "margin_usd": "0.10",
+    "total_usd": "1.97875840",
+    "booked_usd": "1.98",
+    "cap_usd": "2.00",
+    "basis": "1320s attached outer client + 120s detection/teardown; latter includes kill escalation",
+    "limits": "Overuse/teardown/build allowances are assumptions, not a platform spending guarantee. Crash restarts are possible even with retries=0; no operator retry approved.",
+    "rates_source": "https://modal.com/pricing"
+  },
+  "packing_measurement_clearance": false
+}

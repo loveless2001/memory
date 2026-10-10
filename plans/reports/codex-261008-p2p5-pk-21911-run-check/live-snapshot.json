@@ -1,0 +1,112 @@
+{
+  "started_utc": "2026-10-08T16:22:50.916020+00:00",
+  "modal_version": "1.5.1",
+  "expected_app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+  "call_id": "fc-01M4D02JY58FVB3QQ8AV4V9MK5",
+  "remote_mutations": false,
+  "inventory": {
+    "app": {
+      "argv": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "app",
+        "list",
+        "--json"
+      ],
+      "rc": 0,
+      "probe_rows": [
+        {
+          "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+          "description": "memsub-m4-sgm-p2p5-readout-probe",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-08 12:31:59+07:00",
+          "stopped_at": "2026-10-08 21:28:09+07:00"
+        }
+      ]
+    },
+    "container": {
+      "argv": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "container",
+        "list",
+        "--json"
+      ],
+      "rc": 0,
+      "probe_rows": []
+    }
+  },
+  "bound_app_lookup_error": "NotFoundError(\"App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'\")",
+  "dicts": {
+    "guard": {
+      "first_tick": 1791437771.3842256,
+      "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+      "reaper_fired": {
+        "t": 1791469687.654665,
+        "reason": "deadline passed",
+        "bound": "ap-O1KAZIvKbm2XnyURE5vBzc"
+      },
+      "deadline_epoch": 1791469595.643849,
+      "self_app_id": "ap-O1KAZIvKbm2XnyURE5vBzc"
+    },
+    "admission": {
+      "start-1": 1791437658.5554333
+    }
+  },
+  "call_poll": {
+    "state": "result",
+    "result": {
+      "slot": "taskhead-learned-n32",
+      "status": "done",
+      "epoch": 1,
+      "states": {
+        "taskhead-learned-n32-s0": "COMPLETE",
+        "taskhead-learned-n32-s1": "COMPLETE"
+      }
+    }
+  },
+  "stats": {
+    "run_slot": {
+      "error": "NotFoundError(\"Lookup failed for Function 'run_slot' from the 'memsub-m4-sgm-p2p5-readout-probe' app: App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'.\")"
+    },
+    "reaper": {
+      "error": "NotFoundError(\"Lookup failed for Function 'reaper' from the 'memsub-m4-sgm-p2p5-readout-probe' app: App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'.\")"
+    }
+  },
+  "fetched": {
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/state.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s0/state.json",
+      "bytes": 9562,
+      "sha256": "78c0969e9670e61f9de088599978f4f1bee2765ba2819ec180f38888ab71da3b"
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/worker-args.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s0/attempt-1/worker-args.json",
+      "bytes": 1256,
+      "sha256": "895dfaabc851818e5bd7400b4f72d7c560acff33dd00d73c53f995ac93cb69c9"
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/physical-updates.jsonl": {
+      "local": "remote-metadata/taskhead-learned-n32-s0/attempt-1/physical-updates.jsonl",
+      "bytes": 112747,
+      "sha256": "306a1255a28b5b9fa508338e6275ce3a1e5bd758ea3160906a12253d3fa5bd22"
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s1/epoch-1/state.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s1/state.json",
+      "bytes": 9562,
+      "sha256": "ce3074cde4fbc74756c45a16374bd5c41c44665109ef2c12c19a67be7bf8af9c"
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s1/epoch-1/attempt-1/worker-args.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s1/attempt-1/worker-args.json",
+      "bytes": 1256,
+      "sha256": "caad7d9569f40a05426f572626787fc61312beeb911d3caa8515bcca976f6ef5"
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s1/epoch-1/attempt-1/physical-updates.jsonl": {
+      "local": "remote-metadata/taskhead-learned-n32-s1/attempt-1/physical-updates.jsonl",
+      "bytes": 113139,
+      "sha256": "cad70d22c7db57a0c827398136f53d6f6ef60a8371dbd17b25488556e9140eea"
+    }
+  },
+  "ended_utc": "2026-10-08T16:23:07.314725+00:00"
+}

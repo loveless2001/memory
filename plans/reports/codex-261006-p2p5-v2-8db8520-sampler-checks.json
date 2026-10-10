@@ -1,0 +1,75 @@
+{
+  "reviewed_commit": "8db8520",
+  "identity": {
+    "runner": "31e16ed24118c40f60da0341a99016e5db55ece3eb02b2083414a74f25df4f87",
+    "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "memsub": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085"
+  },
+  "ledger": {
+    "gpu_container_lifetime_usd": 1.9563935999999997,
+    "reaper_ticks_usd": 0.009647,
+    "image_build_usd": 0.16838399999999998,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.3844245999999996,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 2700,
+    "reaper_period_s": 120,
+    "abandon_s": 1800,
+    "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance",
+    "assumptions": [
+      "reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+      "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+      "list prices from modal.com/pricing checked 2026-10-06"
+    ]
+  },
+  "changed_function_asts_from307a159": [
+    "start_gpu_sampler",
+    "stop_gpu_sampler"
+  ],
+  "kill_race": {
+    "start_epoch": 1,
+    "query": "timestamp,utilization.gpu,utilization.memory,memory.used",
+    "loop_ms": 500,
+    "file": "fixture",
+    "returncode": 0,
+    "status": "exited",
+    "steps": [
+      "terminate",
+      "wait error TimeoutExpired('fixture', 10)",
+      "kill error ProcessLookupError('fixture kill race')"
+    ],
+    "end_epoch": 1791298888.5450718
+  },
+  "all_cleanup_errors": {
+    "returncode": null,
+    "status": "not reaped (returncode None)",
+    "steps": [
+      "terminate error OSError('terminate fixture')",
+      "wait error TimeoutExpired('fixture', 10)",
+      "kill error OSError('kill fixture')",
+      "final wait error TimeoutExpired('fixture', 5)"
+    ],
+    "end_epoch": 1791298888.5451393
+  },
+  "start_failure": {
+    "query": "timestamp,utilization.gpu,utilization.memory,memory.used",
+    "loop_ms": 500,
+    "file": "/tmp/fixture.csv",
+    "start_epoch": 1791298888.5454478,
+    "tz_name": "+07",
+    "utc_offset_s": 25200,
+    "tz_env": null,
+    "start_error": "FileNotFoundError('fixture unavailable')",
+    "status": "not started",
+    "steps": [],
+    "end_epoch": 1791298888.5455294
+  },
+  "remote_calls": false,
+  "paid_work": false
+}

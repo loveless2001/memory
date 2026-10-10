@@ -1,0 +1,740 @@
+{
+  "current_head": "a4ce83b48e4d5a4ea9e4163784523d696290e9a0",
+  "read_only_inputs_free_cpu_only": true,
+  "cli_returncode": 0,
+  "rerun_exactly_matches_v1": true,
+  "sha256": {
+    "script": "54fab2fd8912e241bbe685486f69421ec5a6a4de0fd133ec1e99c8cdd9d98087",
+    "original_output": "7690739b29161a5fb5d376624b5fa96d54f0fd177fb9f3853c21478817c6a2c3",
+    "grid": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "timing/timing.json": "6381c986972af93ddb712171b0bbe2e1fc1465dc524a549d0e9650a3e514f537",
+    "timing.exit.json": "d92cf667c73d63a92e6f7afb10fb70a42c14e7da405f852e3e00e22d8020df17"
+  },
+  "checks": {
+    "audited_T_hashes_match": true,
+    "registered_grid_hash_matches": true,
+    "reproduces_published_v1_wrong_schedule": true,
+    "v1_uses_registered_schedule": false
+  },
+  "actual_T_spec": {
+    "slot_types": [
+      [
+        "learned",
+        16
+      ],
+      [
+        "learned",
+        32
+      ],
+      [
+        "single_cell",
+        16
+      ],
+      [
+        "single_cell",
+        32
+      ],
+      [
+        "random_fixed",
+        16
+      ],
+      [
+        "random_fixed",
+        32
+      ],
+      [
+        "oracle",
+        32
+      ],
+      [
+        "memory_off",
+        16
+      ],
+      [
+        "memory_off",
+        32
+      ]
+    ],
+    "phases": {
+      "1": 0,
+      "2": 40
+    },
+    "k": 2,
+    "warmup": 2,
+    "measured": 4,
+    "seeds": [
+      99,
+      100
+    ],
+    "threads": 2,
+    "eval_batches": {
+      "dev_shaped": 1,
+      "artifact_shaped": 1
+    }
+  },
+  "v1_wrong_schedule_recomputed": {
+    "switch_step": 40,
+    "phase_update_counts": [
+      40,
+      1460
+    ],
+    "dev_evaluation_count_per_cell": 16,
+    "checkpoint_generations_per_cell": 30,
+    "charged_commit_calls_per_slot": 30,
+    "uses_primary_fixed_work_rate": false,
+    "slots": {
+      "learned-n16": {
+        "training_s": 16860.343162325,
+        "dev_evals_s": 432.2642020479998,
+        "artifact_eval_s": 571.9044769199995,
+        "checkpoints_s": 84.505527270002,
+        "startup_s": 300,
+        "life_s": 18249.0,
+        "restart_allowance_s": 1481.0,
+        "reserve_life_s": 29991.7,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.9032289022499995,
+          11.41384520975
+        ]
+      },
+      "learned-n32": {
+        "training_s": 22062.565379635013,
+        "dev_evals_s": 599.4328577920023,
+        "artifact_eval_s": 766.246759992003,
+        "checkpoints_s": 84.3908726100031,
+        "startup_s": 300,
+        "life_s": 23812.6,
+        "restart_allowance_s": 1861.2,
+        "reserve_life_s": 38921.2,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          9.45325735475,
+          14.85235279825001
+        ]
+      },
+      "single_cell-n16": {
+        "training_s": 14704.483300164986,
+        "dev_evals_s": 242.65535180799998,
+        "artifact_eval_s": 249.8565074720018,
+        "checkpoints_s": 84.34180398000251,
+        "startup_s": 300,
+        "life_s": 15581.3,
+        "restart_allowance_s": 1072.3,
+        "reserve_life_s": 25030.7,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          4.588546070499987,
+          9.945850313249991
+        ]
+      },
+      "single_cell-n32": {
+        "training_s": 20860.241033599978,
+        "dev_evals_s": 352.88491411200084,
+        "artifact_eval_s": 383.6365568960009,
+        "checkpoints_s": 84.27670515000273,
+        "startup_s": 300,
+        "life_s": 21981.0,
+        "restart_allowance_s": 1421.6,
+        "reserve_life_s": 35038.1,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          9.165575293749981,
+          14.036724672499986
+        ]
+      },
+      "random_fixed-n16": {
+        "training_s": 14601.103834990003,
+        "dev_evals_s": 420.38395769600174,
+        "artifact_eval_s": 554.5977428039942,
+        "checkpoints_s": 84.31162989000086,
+        "startup_s": 300,
+        "life_s": 15960.4,
+        "restart_allowance_s": 1384.2,
+        "reserve_life_s": 26497.2,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.803075309250005,
+          9.869164947000002
+        ]
+      },
+      "random_fixed-n32": {
+        "training_s": 21389.560963285014,
+        "dev_evals_s": 602.6687563520027,
+        "artifact_eval_s": 864.1498907160021,
+        "checkpoints_s": 84.65415699000232,
+        "startup_s": 300,
+        "life_s": 23241.0,
+        "restart_allowance_s": 1936.5,
+        "reserve_life_s": 38347.1,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.910976507749979,
+          14.406247878750008
+        ]
+      },
+      "memory_off-n16": {
+        "training_s": 3416.4861107198885,
+        "dev_evals_s": 153.10590086400043,
+        "artifact_eval_s": 46.768096279997735,
+        "checkpoints_s": 83.0659043699984,
+        "startup_s": 300,
+        "life_s": 3999.4,
+        "restart_allowance_s": 474.2,
+        "reserve_life_s": 7021.7,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          1.0894220315000211,
+          2.310211800999923
+        ]
+      },
+      "memory_off-n32": {
+        "training_s": 4889.96450176995,
+        "dev_evals_s": 220.4235058560007,
+        "artifact_eval_s": 64.88458346000243,
+        "checkpoints_s": 83.23755950999839,
+        "startup_s": 300,
+        "life_s": 5558.5,
+        "restart_allowance_s": 546.6,
+        "reserve_life_s": 9421.6,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          2.083641815499959,
+          3.292204677499967
+        ]
+      },
+      "oracle-n32": {
+        "training_s": 21389.324839615074,
+        "dev_evals_s": 726.2101946879993,
+        "artifact_eval_s": 941.5806506400022,
+        "checkpoints_s": 84.38312082000493,
+        "startup_s": 300,
+        "life_s": 23441.5,
+        "restart_allowance_s": 2022.0,
+        "reserve_life_s": 38884.2,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.647213088749993,
+          14.41331254525005
+        ]
+      }
+    },
+    "estimate": {
+      "slot_gpu_hours": 42.17352777777778,
+      "readings_gpu_hours": 2.031529078496891,
+      "usd": 149.72995402175414,
+      "wall_h_parallel": 6.6146111111111106,
+      "end_to_end_wall_h_with_sequential_readings": 8.646140189608001
+    },
+    "planning_reserve": {
+      "slots_usd": 295.93456116,
+      "readings_usd": 12.161363650508354,
+      "image_usd": 0.168384,
+      "reaper_usd": 0.07870585341666665,
+      "margin_usd": 5,
+      "total_usd": 313.34301466392503
+    },
+    "conditional_global_lifecycle_usd": 435.9567098585083,
+    "per_slot_deadlines_plus_stop_and_reading_reaper_usd": 315.90857626392506
+  },
+  "schedule_only_correction_not_approved_quote": {
+    "switch_step": 1000,
+    "phase_update_counts": [
+      1000,
+      500
+    ],
+    "dev_evaluation_count_per_cell": 16,
+    "checkpoint_generations_per_cell": 30,
+    "charged_commit_calls_per_slot": 30,
+    "uses_primary_fixed_work_rate": false,
+    "slots": {
+      "learned-n16": {
+        "training_s": 10610.151507125,
+        "dev_evals_s": 432.2642020479998,
+        "artifact_eval_s": 571.9044769199995,
+        "checkpoints_s": 84.505527270002,
+        "startup_s": 300,
+        "life_s": 11998.8,
+        "restart_allowance_s": 1481.0,
+        "reserve_life_s": 21241.4,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.9032289022499995,
+          11.41384520975
+        ]
+      },
+      "learned-n32": {
+        "training_s": 16879.433753875004,
+        "dev_evals_s": 599.4328577920023,
+        "artifact_eval_s": 766.246759992003,
+        "checkpoints_s": 84.3908726100031,
+        "startup_s": 300,
+        "life_s": 18629.5,
+        "restart_allowance_s": 1861.2,
+        "reserve_life_s": 31664.8,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          9.45325735475,
+          14.85235279825001
+        ]
+      },
+      "single_cell-n16": {
+        "training_s": 9561.471227124983,
+        "dev_evals_s": 242.65535180799998,
+        "artifact_eval_s": 249.8565074720018,
+        "checkpoints_s": 84.34180398000251,
+        "startup_s": 300,
+        "life_s": 10438.3,
+        "restart_allowance_s": 1072.3,
+        "reserve_life_s": 17830.4,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          4.588546070499987,
+          9.945850313249991
+        ]
+      },
+      "single_cell-n32": {
+        "training_s": 16183.937629999975,
+        "dev_evals_s": 352.88491411200084,
+        "artifact_eval_s": 383.6365568960009,
+        "checkpoints_s": 84.27670515000273,
+        "startup_s": 300,
+        "life_s": 17304.7,
+        "restart_allowance_s": 1421.6,
+        "reserve_life_s": 28491.3,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          9.165575293749981,
+          14.036724672499986
+        ]
+      },
+      "random_fixed-n16": {
+        "training_s": 9737.657782750006,
+        "dev_evals_s": 420.38395769600174,
+        "artifact_eval_s": 554.5977428039942,
+        "checkpoints_s": 84.31162989000086,
+        "startup_s": 300,
+        "life_s": 11097.0,
+        "restart_allowance_s": 1384.2,
+        "reserve_life_s": 19688.3,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.803075309250005,
+          9.869164947000002
+        ]
+      },
+      "random_fixed-n32": {
+        "training_s": 16114.100447124983,
+        "dev_evals_s": 602.6687563520027,
+        "artifact_eval_s": 864.1498907160021,
+        "checkpoints_s": 84.65415699000232,
+        "startup_s": 300,
+        "life_s": 17965.6,
+        "restart_allowance_s": 1936.5,
+        "reserve_life_s": 30961.4,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.910976507749979,
+          14.406247878750008
+        ]
+      },
+      "memory_off-n16": {
+        "training_s": 2244.5279319999827,
+        "dev_evals_s": 153.10590086400043,
+        "artifact_eval_s": 46.768096279997735,
+        "checkpoints_s": 83.0659043699984,
+        "startup_s": 300,
+        "life_s": 2827.5,
+        "restart_allowance_s": 474.2,
+        "reserve_life_s": 5380.9,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          1.0894220315000211,
+          2.310211800999923
+        ]
+      },
+      "memory_off-n32": {
+        "training_s": 3729.7441542499428,
+        "dev_evals_s": 220.4235058560007,
+        "artifact_eval_s": 64.88458346000243,
+        "checkpoints_s": 83.23755950999839,
+        "startup_s": 300,
+        "life_s": 4398.3,
+        "restart_allowance_s": 546.6,
+        "reserve_life_s": 7797.3,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          2.083641815499959,
+          3.292204677499967
+        ]
+      },
+      "oracle-n32": {
+        "training_s": 15853.869361375018,
+        "dev_evals_s": 726.2101946879993,
+        "artifact_eval_s": 941.5806506400022,
+        "checkpoints_s": 84.38312082000493,
+        "startup_s": 300,
+        "life_s": 17906.0,
+        "restart_allowance_s": 2022.0,
+        "reserve_life_s": 31134.6,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.647213088749993,
+          14.41331254525005
+        ]
+      }
+    },
+    "estimate": {
+      "slot_gpu_hours": 31.26825,
+      "readings_gpu_hours": 2.031529078496891,
+      "usd": 112.79194610175414,
+      "wall_h_parallel": 5.174861111111111,
+      "end_to_end_wall_h_with_sequential_readings": 7.206390189608003
+    },
+    "planning_reserve": {
+      "slots_usd": 230.651589504,
+      "readings_usd": 12.161363650508354,
+      "image_usd": 0.168384,
+      "reaper_usd": 0.06412200116666665,
+      "margin_usd": 5,
+      "total_usd": 248.04545915567502
+    },
+    "conditional_global_lifecycle_usd": 358.38695488250835,
+    "per_slot_deadlines_plus_stop_and_reading_reaper_usd": 250.611020755675
+  },
+  "schedule_and_primary_rate_correction_not_approved_quote": {
+    "switch_step": 1000,
+    "phase_update_counts": [
+      1000,
+      500
+    ],
+    "dev_evaluation_count_per_cell": 16,
+    "checkpoint_generations_per_cell": 30,
+    "charged_commit_calls_per_slot": 30,
+    "uses_primary_fixed_work_rate": true,
+    "slots": {
+      "learned-n16": {
+        "training_s": 10611.85771226883,
+        "dev_evals_s": 432.2642020479998,
+        "artifact_eval_s": 571.9044769199995,
+        "checkpoints_s": 84.505527270002,
+        "startup_s": 300,
+        "life_s": 12000.5,
+        "restart_allowance_s": 1481.2,
+        "reserve_life_s": 21244.3,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.903238296508789,
+          11.41723883152008
+        ]
+      },
+      "learned-n32": {
+        "training_s": 16880.61460852623,
+        "dev_evals_s": 599.4328577920023,
+        "artifact_eval_s": 766.246759992003,
+        "checkpoints_s": 84.3908726100031,
+        "startup_s": 300,
+        "life_s": 18630.7,
+        "restart_allowance_s": 1861.3,
+        "reserve_life_s": 31666.9,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          9.453267276287079,
+          14.854694664478304
+        ]
+      },
+      "single_cell-n16": {
+        "training_s": 9561.485379934311,
+        "dev_evals_s": 242.65535180799998,
+        "artifact_eval_s": 249.8565074720018,
+        "checkpoints_s": 84.34180398000251,
+        "startup_s": 300,
+        "life_s": 10438.3,
+        "restart_allowance_s": 1072.3,
+        "reserve_life_s": 17830.5,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          4.58855527639389,
+          9.945860207080841
+        ]
+      },
+      "single_cell-n32": {
+        "training_s": 16183.953255414963,
+        "dev_evals_s": 352.88491411200084,
+        "artifact_eval_s": 383.6365568960009,
+        "checkpoints_s": 84.27670515000273,
+        "startup_s": 300,
+        "life_s": 17304.8,
+        "restart_allowance_s": 1421.6,
+        "reserve_life_s": 28491.3,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          9.165586173534393,
+          14.036734163761139
+        ]
+      },
+      "random_fixed-n16": {
+        "training_s": 9739.398509263992,
+        "dev_evals_s": 420.38395769600174,
+        "artifact_eval_s": 554.5977428039942,
+        "checkpoints_s": 84.31162989000086,
+        "startup_s": 300,
+        "life_s": 11098.7,
+        "restart_allowance_s": 1384.2,
+        "reserve_life_s": 19690.8,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.804811596870422,
+          9.86917382478714
+        ]
+      },
+      "random_fixed-n32": {
+        "training_s": 16114.470571279526,
+        "dev_evals_s": 602.6687563520027,
+        "artifact_eval_s": 864.1498907160021,
+        "checkpoints_s": 84.65415699000232,
+        "startup_s": 300,
+        "life_s": 17965.9,
+        "restart_allowance_s": 1936.5,
+        "reserve_life_s": 30962.0,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.91120445728302,
+          14.406532227993011
+        ]
+      },
+      "memory_off-n16": {
+        "training_s": 2246.2199330329895,
+        "dev_evals_s": 153.10590086400043,
+        "artifact_eval_s": 46.768096279997735,
+        "checkpoints_s": 83.0659043699984,
+        "startup_s": 300,
+        "life_s": 2829.2,
+        "restart_allowance_s": 474.3,
+        "reserve_life_s": 5383.8,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          1.0894335508346558,
+          2.3135727643966675
+        ]
+      },
+      "memory_off-n32": {
+        "training_s": 3730.516016483307,
+        "dev_evals_s": 220.4235058560007,
+        "artifact_eval_s": 64.88458346000243,
+        "checkpoints_s": 83.23755950999839,
+        "startup_s": 300,
+        "life_s": 4399.1,
+        "restart_allowance_s": 546.6,
+        "reserve_life_s": 7798.6,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          2.0836508870124817,
+          3.29373025894165
+        ]
+      },
+      "oracle-n32": {
+        "training_s": 15853.88359427452,
+        "dev_evals_s": 726.2101946879993,
+        "artifact_eval_s": 941.5806506400022,
+        "checkpoints_s": 84.38312082000493,
+        "startup_s": 300,
+        "life_s": 17906.1,
+        "restart_allowance_s": 2022.0,
+        "reserve_life_s": 31134.6,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.64722228050232,
+          14.413322627544403
+        ]
+      }
+    },
+    "estimate": {
+      "slot_gpu_hours": 31.27036111111111,
+      "readings_gpu_hours": 2.031529078496891,
+      "usd": 112.79909678975415,
+      "wall_h_parallel": 5.175194444444444,
+      "end_to_end_wall_h_with_sequential_readings": 7.206723522941335
+    },
+    "planning_reserve": {
+      "slots_usd": 230.66631772799997,
+      "readings_usd": 12.161363650508354,
+      "image_usd": 0.168384,
+      "reaper_usd": 0.06412622172916665,
+      "margin_usd": 5,
+      "total_usd": 248.0601916002375
+    },
+    "conditional_global_lifecycle_usd": 358.4094035465084,
+    "per_slot_deadlines_plus_stop_and_reading_reaper_usd": 250.62575320023748
+  },
+  "schedule_primary_and_60_commit_sensitivity_not_approved_quote": {
+    "switch_step": 1000,
+    "phase_update_counts": [
+      1000,
+      500
+    ],
+    "dev_evaluation_count_per_cell": 16,
+    "checkpoint_generations_per_cell": 30,
+    "charged_commit_calls_per_slot": 60,
+    "uses_primary_fixed_work_rate": true,
+    "slots": {
+      "learned-n16": {
+        "training_s": 10611.85771226883,
+        "dev_evals_s": 432.2642020479998,
+        "artifact_eval_s": 571.9044769199995,
+        "checkpoints_s": 166.93469235000435,
+        "startup_s": 300,
+        "life_s": 12083.0,
+        "restart_allowance_s": 1481.2,
+        "reserve_life_s": 21359.7,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.903238296508789,
+          11.41723883152008
+        ]
+      },
+      "learned-n32": {
+        "training_s": 16880.61460852623,
+        "dev_evals_s": 599.4328577920023,
+        "artifact_eval_s": 766.246759992003,
+        "checkpoints_s": 166.82003769000545,
+        "startup_s": 300,
+        "life_s": 18713.1,
+        "restart_allowance_s": 1861.3,
+        "reserve_life_s": 31782.3,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          9.453267276287079,
+          14.854694664478304
+        ]
+      },
+      "single_cell-n16": {
+        "training_s": 9561.485379934311,
+        "dev_evals_s": 242.65535180799998,
+        "artifact_eval_s": 249.8565074720018,
+        "checkpoints_s": 166.77096906000486,
+        "startup_s": 300,
+        "life_s": 10520.8,
+        "restart_allowance_s": 1072.3,
+        "reserve_life_s": 17945.9,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          4.58855527639389,
+          9.945860207080841
+        ]
+      },
+      "single_cell-n32": {
+        "training_s": 16183.953255414963,
+        "dev_evals_s": 352.88491411200084,
+        "artifact_eval_s": 383.6365568960009,
+        "checkpoints_s": 166.70587023000508,
+        "startup_s": 300,
+        "life_s": 17387.2,
+        "restart_allowance_s": 1421.6,
+        "reserve_life_s": 28606.7,
+        "artifact_batches": 68,
+        "s_per_update_p1_p2": [
+          9.165586173534393,
+          14.036734163761139
+        ]
+      },
+      "random_fixed-n16": {
+        "training_s": 9739.398509263992,
+        "dev_evals_s": 420.38395769600174,
+        "artifact_eval_s": 554.5977428039942,
+        "checkpoints_s": 166.7407949700032,
+        "startup_s": 300,
+        "life_s": 11181.1,
+        "restart_allowance_s": 1384.2,
+        "reserve_life_s": 19806.2,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          4.804811596870422,
+          9.86917382478714
+        ]
+      },
+      "random_fixed-n32": {
+        "training_s": 16114.470571279526,
+        "dev_evals_s": 602.6687563520027,
+        "artifact_eval_s": 864.1498907160021,
+        "checkpoints_s": 167.08332207000467,
+        "startup_s": 300,
+        "life_s": 18048.4,
+        "restart_allowance_s": 1936.5,
+        "reserve_life_s": 31077.4,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.91120445728302,
+          14.406532227993011
+        ]
+      },
+      "memory_off-n16": {
+        "training_s": 2246.2199330329895,
+        "dev_evals_s": 153.10590086400043,
+        "artifact_eval_s": 46.768096279997735,
+        "checkpoints_s": 165.49506945000076,
+        "startup_s": 300,
+        "life_s": 2911.6,
+        "restart_allowance_s": 474.3,
+        "reserve_life_s": 5499.2,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          1.0894335508346558,
+          2.3135727643966675
+        ]
+      },
+      "memory_off-n32": {
+        "training_s": 3730.516016483307,
+        "dev_evals_s": 220.4235058560007,
+        "artifact_eval_s": 64.88458346000243,
+        "checkpoints_s": 165.66672459000074,
+        "startup_s": 300,
+        "life_s": 4481.5,
+        "restart_allowance_s": 546.6,
+        "reserve_life_s": 7914.0,
+        "artifact_batches": 20,
+        "s_per_update_p1_p2": [
+          2.0836508870124817,
+          3.29373025894165
+        ]
+      },
+      "oracle-n32": {
+        "training_s": 15853.88359427452,
+        "dev_evals_s": 726.2101946879993,
+        "artifact_eval_s": 941.5806506400022,
+        "checkpoints_s": 166.81228590000728,
+        "startup_s": 300,
+        "life_s": 17988.5,
+        "restart_allowance_s": 2022.0,
+        "reserve_life_s": 31250.0,
+        "artifact_batches": 84,
+        "s_per_update_p1_p2": [
+          8.64722228050232,
+          14.413322627544403
+        ]
+      }
+    },
+    "estimate": {
+      "slot_gpu_hours": 31.476444444444443,
+      "readings_gpu_hours": 2.031529078496891,
+      "usd": 113.49713566175414,
+      "wall_h_parallel": 5.198083333333333,
+      "end_to_end_wall_h_with_sequential_readings": 7.2296124118302245
+    },
+    "planning_reserve": {
+      "slots_usd": 231.899925264,
+      "readings_usd": 12.161363650508354,
+      "image_usd": 0.168384,
+      "reaper_usd": 0.06435815168749999,
+      "margin_usd": 5,
+      "total_usd": 249.29403106619586
+    },
+    "conditional_global_lifecycle_usd": 359.64301108250834,
+    "per_slot_deadlines_plus_stop_and_reading_reaper_usd": 251.85959266619582
+  },
+  "limitations": [
+    "Correction scenarios retain v1 unvalidated startup/readings/replay/lifecycle assumptions; they are arithmetic diagnostics, not approval-ready quotes.",
+    "60 checkpoint commits is the count of per-cell supervisor publish calls for two successful workers; summing every wait is conservative because one worker can compute during a co-tenant commit.",
+    "A user cap must cover the chosen implemented lifetime envelope and startup/unadmitted/teardown/readings charges. No campaign runner is implemented here."
+  ]
+}

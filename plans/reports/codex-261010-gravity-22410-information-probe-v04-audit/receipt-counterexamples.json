@@ -1,0 +1,33 @@
+[
+  {
+    "case": "actual fake S2 (8+6 episodes, 2 layers, fake identities)",
+    "accepted": true,
+    "value": {
+      "mode": "s2",
+      "label": "CARRIED"
+    }
+  },
+  {
+    "case": "external admits 1s; result rejects 20000s, no run/features records",
+    "accepted": true,
+    "value": {
+      "mode": "s1",
+      "label": "x",
+      "wall_s": 1.0
+    }
+  },
+  {
+    "case": "profile estimate overflows to infinity, negative fit component",
+    "accepted": true,
+    "value": {
+      "mode": "s1",
+      "label": "x",
+      "wall_s": 1000.0
+    }
+  },
+  {
+    "case": "source mismatch control",
+    "accepted": false,
+    "error": "RuntimeError('s1: source hashes differ from the current sources')"
+  }
+]

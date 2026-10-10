@@ -1,0 +1,13 @@
+{
+  "source_sha256": "6d9ca986ecac1695a1b7a977d28dc943b85c7090fa74c7f02eb06a08b4d82ba0",
+  "documented_command": "timeout --kill-after=30 3660 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>",
+  "required_outer_hard_limit_s": 3600,
+  "documented_outer_timeout_s": 3660.0,
+  "documented_kill_grace_s": 30.0,
+  "worst_case_outer_forced_kill_s": 3690.0,
+  "watchdog_armed_in_main_line": 66,
+  "watchdog_cancelled_line": 86,
+  "summary_write_line": 88,
+  "whole_process_3600_s_bound_established": false,
+  "note": "Imports precede main; the inner timer is cancelled before summary writing."
+}

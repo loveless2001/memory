@@ -1,0 +1,62 @@
+{
+  "memsub_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+  "normalized_worker_controls_match_stage_a": true,
+  "mocked_b1_success_and_second_start_refusal": true,
+  "mocked_late_setup_refuses_child": true,
+  "mocked_exception_cancels_guard": true,
+  "mocked_expired_entry_arms_no_guard": true,
+  "simulated_cleanup_seconds": 600.0,
+  "ledger_stop_allowance_seconds": 300,
+  "simulated_cleanup_status": "shutdown_unresolved",
+  "cleanup_cli_queries": [
+    [
+      "app",
+      "list"
+    ],
+    [
+      "container",
+      "list"
+    ],
+    [
+      "app",
+      "list"
+    ],
+    [
+      "container",
+      "list"
+    ],
+    [
+      "app",
+      "list"
+    ],
+    [
+      "container",
+      "list"
+    ],
+    [
+      "app",
+      "list"
+    ],
+    [
+      "container",
+      "list"
+    ]
+  ],
+  "endpoint_kept_after_earlier_escape": {
+    "band_at_100": "kept",
+    "kept_through_100": false
+  },
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "outer_s": 2640,
+    "stop_allowance_s": 300,
+    "image_construction_usd": 0.0,
+    "reservation_usd": 1.9949076,
+    "cap_usd": 2.5,
+    "unenforced": "app-stop latency after client exit (cleanup-verify checks it)"
+  },
+  "reservation_with_600s_cleanup": 2.1984695999999997,
+  "device": "cpu",
+  "gpu_or_network_operations": false
+}

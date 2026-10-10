@@ -1,0 +1,33 @@
+................................                                         [100%]
+32 passed in 4.37s
+{
+  "registered_suite_exit_code": 0,
+  "faults": {
+    "TimeoutError_precheck": {
+      "returned": null,
+      "treated_as_empty": true
+    },
+    "PermissionError_precheck": {
+      "returned": null,
+      "treated_as_empty": true
+    },
+    "collect_listing_error_with_prior_local_result": {
+      "files": 0,
+      "ok": true,
+      "why": "B3: valid, memory_used False, band partial"
+    },
+    "worker_entry_lookup_failure": {
+      "escaped": "simulated Dict lookup failure",
+      "guards_created": 1,
+      "guards_canceled": 0
+    },
+    "worker_terminal_write_failure": {
+      "escaped": "simulated terminal Dict write failure",
+      "guard_canceled": true
+    }
+  },
+  "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/codex-b3-package-22513.scope",
+  "memory_max": "2097152000",
+  "memory_swap_max": "0",
+  "guards": "CPU-only, pretrained model loaders, Modal lookup methods and socket connections blocked"
+}

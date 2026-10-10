@@ -1,0 +1,78 @@
+{
+  "wrapper_sha256": "4128e83e5d7ebf9c3670baa7ee92b8a55bfe1e35354c2f9ede7ae107e9dceddd",
+  "cases_passed": 10,
+  "cases": [
+    {
+      "case": "apps_error",
+      "returncode": 4,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\nCLI failed\nGPU compute-app query failed: NOT launched\n"
+    },
+    {
+      "case": "memory_error",
+      "returncode": 4,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\nCLI failed\nGPU memory query failed: NOT launched\n"
+    },
+    {
+      "case": "empty_memory",
+      "returncode": 4,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\nGPU memory query malformed: NOT launched\n"
+    },
+    {
+      "case": "bad_memory",
+      "returncode": 4,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\nGPU memory query malformed: NOT launched\n"
+    },
+    {
+      "case": "multi_memory",
+      "returncode": 4,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\nGPU memory query malformed: NOT launched\n"
+    },
+    {
+      "case": "bad_apps",
+      "returncode": 4,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\nGPU compute-app query malformed: NOT launched\n"
+    },
+    {
+      "case": "busy_apps",
+      "returncode": 3,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\ncompute_apps 1 memory_used_mib 0\nGPU busy: NOT launched\n"
+    },
+    {
+      "case": "busy_memory",
+      "returncode": 3,
+      "launch_invocations": 0,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\ncompute_apps 0 memory_used_mib 300\nGPU busy: NOT launched\n"
+    },
+    {
+      "case": "idle",
+      "returncode": 0,
+      "launch_invocations": 1,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\ncompute_apps 0 memory_used_mib 0\nGPU free: launching at 2026-10-08T20:39:07Z from HEAD fixture-head\n"
+    },
+    {
+      "case": "idle_299",
+      "returncode": 0,
+      "launch_invocations": 1,
+      "repeat_refused": true,
+      "gate": "controller 99999999 gone at 2026-10-08T20:39:07Z\ncompute_apps 0 memory_used_mib 299\nGPU free: launching at 2026-10-08T20:39:07Z from HEAD fixture-head\n"
+    }
+  ],
+  "actual_model_runs": 0,
+  "paid_calls": 0
+}

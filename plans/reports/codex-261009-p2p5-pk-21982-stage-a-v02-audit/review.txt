@@ -1,0 +1,85 @@
+Concrete Stage-A v0.2 review: 4ee2a52 / #gravity 21982
+
+Verdict: HOLD LAUNCH for implementation/cap corrections below.
+User 21977 already authorizes the scoped Modal run after fixes/checks at the
+proposed $4 cap. Do not ask again for the same scope. No paid or Qwen work ran
+in this review. Claude owns the runner fixes and the launch after clearance.
+
+Verified
+- Independently reran all focused CPU tests: 15 passed in 9.39 seconds.
+- All eight package-file hashes match committed 4ee2a52 bytes.
+- Probe manifest is hash-bound; A0/A1/A2 configs, full curriculum, dev-only
+  calls, A0-first gate, and A2 privileged supervision metadata are in place.
+- Atomic Modal Dict.put(..., skip_if_exists=True) returns a boolean in the
+  locally installed Modal 1.5.1, consistent with the start-fence implementation.
+- Pinned backbone loader verifies model-file hashes, forces FP32/TF32 off and
+  freezes the backbone. No default run_pilot final evaluations are called.
+- Retained mutation evidence catches six listed mutants. It was inspected,
+  not independently rerun; the new counterexamples below are outside its coverage.
+
+1. Warm container fails on the second distinct arm (BLOCKER)
+run_arm_remote always creates /tmp/stage-a-out with mkdir() and never removes it.
+The same Modal function can reuse its container for A1 after A0. A1's start key
+is consumed, then mkdir raises FileExistsError before the child starts. In the
+offline raw-worker reproduction, A0 returns rc0, A1 raises FileExistsError,
+only one child runs, and both A0/A1 are recorded as started. This is not a GPU
+fit or learning finding. The existing repeated-A0 refusal test does not cover it.
+
+Use a fresh TemporaryDirectory per invocation (cleaned after the tar is built),
+or isolated per-arm paths with explicit safe cleanup. Do not overwrite prior
+arm artifacts. Add an A0->A1->A2 same-container test with disjoint extracted
+outputs, retaining the existing second-start refusal-before-child test.
+
+2. Claimed $3.72 hard cost bound is not established (BLOCKER)
+The ledger arithmetic is correct: rate .00066544/s, client5100s cost3.393744,
+build .084192, teardown .2395584, sum3.7174944. Its duration and resource
+assumptions are not all enforced:
+- Per-arm function1560/child1500 timeouts are not one immutable campaign
+  deadline. A late call or container restart can receive a fresh timeout.
+- The 120s teardown allowance has no enforcing mechanism. Killing the client
+  relies on server disconnect detection; a still-live call's configured
+  remaining duration can be much larger than120s. No explicit stop/reaper and
+  stopped/zero-task/zero-container verification is in this packet.
+- Image construction has a pip_install layer before the BUILD_S-bounded
+  run_function, and builder cpu=4.0/memory=8GiB are soft requests, not the
+  hard (4,4)/(32,32) tuples on the training worker. CPU/RAM are billed at the
+  greater of request or actual usage; .084 is not a hard build bound.
+
+Refreeze a ledger tied to enforced durations and actual resource limits, all
+within the existing $4. Prefer a verified prebuilt image ID plus local source
+mounts, avoiding new build uncertainty (Image.from_id exists in local1.5.1).
+Use a shared absolute campaign deadline, child limits derived from remaining
+time, bounded startup and no admission after expiry, plus independent bounded
+app-stop/cleanup evidence. Keep durable start accounting and no retries. Preserve
+partials on deadline/error. Any allowance for infrastructure re-execution must
+fit the same immutable deadline and ledger; do not silently enlarge the cap.
+
+Primary documentation checked:
+https://modal.com/docs/guide/resources (requests versus limits and billing)
+https://modal.com/docs/sdk/py/latest/Image (builder soft resources)
+https://modal.com/docs/guide/timeouts (per-attempt execution/startup timeouts)
+https://modal.com/docs/guide/apps (ephemeral disconnect cleanup)
+https://modal.com/pricing (resource rates)
+Local Modal 1.5.1 signatures and Dict.put source are saved in checks.json.
+
+3. Endpoint values outside [0,1] are accepted (CORRECT BEFORE LAUNCH)
+classify() checks finite int/float, but not range or boolean type. Independent
+CPU counterexamples classify -0.1 as valid/kept-through, 1.1 as valid/escaped,
+and True as valid/escaped. These contradict the frozen metric domain. Refuse
+booleans, nonnumeric, nonfinite and values outside inclusive [0,1]. Include
+boundary tests for .2/.9 and out-of-domain cases. Malformed/missing step fields
+should stop as INVALID rather than an uncaught classifier error if serialized.
+The synthetic invalid values are code counterexamples, not observed model output.
+
+4. Output/continuation semantics retained
+Keep 'kept at100' separate from 'kept at every sampled point'. A2 total loss and
+adapter gradients combine task and auxiliary objectives; label that in machine
+artifacts as well as prose (optionally store task-only CE as total-.1*aux MSE).
+The new geometry index and local invocation still require their concrete review;
+this is not authorization for extra evaluation populations or Stage B.
+
+Next step
+Refreeze corrected runner/trainer/proposal, focused CPU checks and checksums.
+Re-review the fixes, enforced all-in ledger and exact launch argv; then Claude
+can perform the one already-authorized launch. No additional user confirmation
+is needed if these fixes preserve the selected venue, three-arm scope and $4 cap.

@@ -1,0 +1,145 @@
+{
+  "runner_sha256": "e7b110ae0f3ce5cdae1470fc146d895cc1c4c035783bea3934b76ca2433df05f",
+  "remote_calls": false,
+  "paid_work": false,
+  "function_resource_fields": {
+    "cpu": [
+      4.0,
+      4.0
+    ],
+    "memory_mib": [
+      32768,
+      32768
+    ]
+  },
+  "fixtures": [
+    {
+      "case": "success",
+      "error": null,
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791291839.1901867,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "ok",
+        "returncode": 0,
+        "wall_s": 1.0,
+        "client_wall_s": 0.0002701282501220703
+      }
+    },
+    {
+      "case": "rc7",
+      "error": {
+        "type": "SystemExit",
+        "text": "1"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791291839.1921875,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "child failed",
+        "returncode": 7,
+        "wall_s": 1.0,
+        "client_wall_s": 0.00021982192993164062
+      }
+    },
+    {
+      "case": "child_timeout",
+      "error": {
+        "type": "SystemExit",
+        "text": "1"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791291839.194083,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "child failed",
+        "returncode": "timeout",
+        "wall_s": 1.0,
+        "client_wall_s": 0.0002105236053466797
+      }
+    },
+    {
+      "case": "remote_exception",
+      "error": {
+        "type": "RuntimeError",
+        "text": "fixture remote error"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791291839.1952052,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "remote call failed",
+        "error": "RuntimeError: fixture remote error",
+        "client_wall_s": 0.00010442733764648438
+      }
+    },
+    {
+      "case": "bad_archive",
+      "error": {
+        "type": "ReadError",
+        "text": "not a gzip file"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791291839.1962495,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "remote call failed",
+        "error": "ReadError: not a gzip file",
+        "client_wall_s": 0.0001723766326904297
+      }
+    },
+    {
+      "case": "sigterm",
+      "error": {
+        "type": "SystemExit",
+        "text": "SIGTERM (outer timeout)"
+      },
+      "manifest": {
+        "app_id": "fixture-no-remote-app",
+        "script": "fixture.py",
+        "args": "",
+        "started": 1791291839.1973424,
+        "function_only_charge_usd": 0.9582,
+        "gpu": "L40S",
+        "outcome": "remote call failed",
+        "error": "SystemExit: SIGTERM (outer timeout)",
+        "client_wall_s": 0.00012803077697753906
+      }
+    }
+  ],
+  "hotspot_failure": {
+    "exit_code": 1,
+    "status": "stopped: learned b16: RuntimeError: fixture first-config error"
+  },
+  "hotspot_sha256": "0c0524ac3bed5bb24ad53da89cd8a9c2eae30c9056f1d0427667a22745234476",
+  "limits": [
+    "Fixtures do not verify a real remote failure, container stop, build failure, SIGKILL, or host loss.",
+    "function_only_charge_usd correctly labels one-execution arithmetic; cumulative reservations are separate.",
+    "Use timeout --kill-after=15s for a bounded client termination; the 120s teardown allowance is an assumption."
+  ],
+  "run2_reservation_check": {
+    "run1_booked_usd": 1.55,
+    "proposed_run2_usd": 1.17,
+    "hard_tuple_1320s_resource_plus_0p03_build_plus_0p10_margin_usd": 1.0083807999999999,
+    "optional_2x_cpu_ram_same_basis_usd": 1.1713215999999997,
+    "round_up_optional_reserve_usd": 1.18,
+    "total_booked_with_1p18_usd": 2.73,
+    "new_build_cost_limit": "0.03 assumes existing cached build layer; no unapproved rebuild/retry."
+  },
+  "fixture_source": "plans/reports/codex-261006-p2p5-dev-v2-failure-check.py"
+}

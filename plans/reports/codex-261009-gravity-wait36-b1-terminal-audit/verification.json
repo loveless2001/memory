@@ -1,0 +1,226 @@
+{
+  "scientific_status": "PARTIAL; retention target not met; no demonstrated dev-accuracy gain",
+  "app_id": "ap-ROPSmaSeABkUyr4X1d4RD2",
+  "terminal_exits": [
+    0,
+    0
+  ],
+  "fresh_shutdown_verified": true,
+  "fresh_app_rows": [
+    {
+      "app_id": "ap-ROPSmaSeABkUyr4X1d4RD2",
+      "description": "memsub-m4-sgm-p2p5-b1-occupied-fill",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-09 10:57:54+07:00",
+      "stopped_at": "2026-10-09 11:16:07+07:00"
+    }
+  ],
+  "fresh_container_rows": [],
+  "artifact_reconciliation": {
+    "device": "cpu",
+    "model_forward_or_training": false,
+    "status": "valid",
+    "retention_target_met": false,
+    "result_exactly_recomputed_from_telemetry": true,
+    "pilot_config_equal_except_sgm": true,
+    "policy_id": "m4-sgm:learned:sha256:23a1f6778b5596ea",
+    "memsub_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+    "parameters_sha256": "96d40040fe28f99b6e9f1bba4cf37a3753f3bf71694d3a1c63ab02a7439ab3bc",
+    "parameters_bytes": 8625720,
+    "finite_parameter_tensors": 46,
+    "configured_updates": 100,
+    "final_eval_after_updates": 100,
+    "terminal_exits": [
+      0,
+      0
+    ],
+    "saved_cleanup_status": "stopped_verified",
+    "pre_fill_absence_reduction_from_a0_at_100_pp": 73.27048813458532,
+    "dev_accuracy_gain_from_initialization": -0.00390625,
+    "dev_readout": [
+      {
+        "step": 0,
+        "pre_fill_absent_mass": 0.046701195984496735,
+        "a0_pre_fill_absent_mass": 0.046701282903086394,
+        "fully_absent_fraction": 0.0,
+        "without_occupied_fraction": 0.0,
+        "nearest_occupied_cells_mean": 0.3890805989799446,
+        "fill_support_cells_mean": 7.463224771723617,
+        "correct": 9,
+        "total": 256,
+        "accuracy": 0.03515625
+      },
+      {
+        "step": 25,
+        "pre_fill_absent_mass": 0.44204080384224653,
+        "a0_pre_fill_absent_mass": 0.9960536565631628,
+        "fully_absent_fraction": 0.218017578125,
+        "without_occupied_fraction": 0.0,
+        "nearest_occupied_cells_mean": 1.2948903047345084,
+        "fill_support_cells_mean": 4.591105379833607,
+        "correct": 3,
+        "total": 256,
+        "accuracy": 0.01171875
+      },
+      {
+        "step": 50,
+        "pre_fill_absent_mass": 0.4558267258107662,
+        "a0_pre_fill_absent_mass": 0.9993223361670971,
+        "fully_absent_fraction": 0.148193359375,
+        "without_occupied_fraction": 0.0,
+        "nearest_occupied_cells_mean": 1.0688929047341844,
+        "fill_support_cells_mean": 4.481983891688287,
+        "correct": 3,
+        "total": 256,
+        "accuracy": 0.01171875
+      },
+      {
+        "step": 75,
+        "pre_fill_absent_mass": 0.38248789333738387,
+        "a0_pre_fill_absent_mass": 0.999745893292129,
+        "fully_absent_fraction": 0.144775390625,
+        "without_occupied_fraction": 0.0,
+        "nearest_occupied_cells_mean": 0.9774001923749438,
+        "fill_support_cells_mean": 4.691063198406482,
+        "correct": 3,
+        "total": 256,
+        "accuracy": 0.01171875
+      },
+      {
+        "step": 100,
+        "pre_fill_absent_mass": 0.2600495081860572,
+        "a0_pre_fill_absent_mass": 0.9927543895319104,
+        "fully_absent_fraction": 0.131591796875,
+        "without_occupied_fraction": 0.0,
+        "nearest_occupied_cells_mean": 0.8044842241619108,
+        "fill_support_cells_mean": 5.516262680612272,
+        "correct": 8,
+        "total": 256,
+        "accuracy": 0.03125
+      }
+    ],
+    "timing": {
+      "b1_child_wall_s": 1054.2630808353424,
+      "b1_train_wall_s": 1049.9513444900513,
+      "a0_train_wall_s": 638.2362537384033,
+      "b1_median_logged_step_s": 8.710596910999953,
+      "a0_median_logged_step_s": 5.031301143999983,
+      "observed_logged_step_ratio": 1.7312811659838072,
+      "client_wall_s": 1087.8761839866638
+    },
+    "continuation_authorized": false
+  },
+  "billing": {
+    "captured_utc": "2026-10-09T04:21:29.298427+00:00",
+    "app_id": "ap-ROPSmaSeABkUyr4X1d4RD2",
+    "query_start_utc": "2026-10-09T03:00:00+00:00",
+    "query_end_utc": "2026-10-09T05:00:00+00:00",
+    "query_end_is_future_at_capture": true,
+    "cost_usd": "0.71087544",
+    "by_hour_usd": {
+      "2026-10-09T03:00:00": "0.06919454",
+      "2026-10-09T04:00:00": "0.64168090"
+    },
+    "by_resource_usd": {
+      "CPU": "0.05612931",
+      "L40S": "0.57849977",
+      "Memory": "0.07594663",
+      "Network Egress": "0.00029973"
+    },
+    "status": "provisional; 04:00 UTC hour remains open; backfill possible"
+  },
+  "run_committed_revision": "c002fd2",
+  "current_owner_head": "c002fd2b8203c2d2e49dee6ede94fbff02582ecc",
+  "protected_parameters": {
+    "path": "/home/lenovo/projects/memory-occupied-fill-v1-worktree/plans/261009-1040-m4-sgm-p2p5-b1-occupied-fill-retention-screen/b1-run-v1/B1/trained_parameters.safetensors",
+    "sha256": "96d40040fe28f99b6e9f1bba4cf37a3753f3bf71694d3a1c63ab02a7439ab3bc",
+    "bytes": 8625720,
+    "kind": "terminal adapters and head parameters; not an optimizer/RNG resume checkpoint",
+    "keep": true
+  },
+  "loss_decomposition": {
+    "uniform_task_ce": 4.1588830833596715,
+    "anchor_coefficient": 0.1,
+    "decomposition": [
+      {
+        "step": 0,
+        "total_loss": 4.23301887512207,
+        "anchor_raw": 0.012340075336396694,
+        "anchor_contribution": 0.0012340075336396694,
+        "task_ce_inferred_fp32_tolerance": 4.231784867588431
+      },
+      {
+        "step": 10,
+        "total_loss": 4.2426934242248535,
+        "anchor_raw": 0.7889794111251831,
+        "anchor_contribution": 0.07889794111251831,
+        "task_ce_inferred_fp32_tolerance": 4.163795483112335
+      },
+      {
+        "step": 20,
+        "total_loss": 4.24661922454834,
+        "anchor_raw": 0.6819508671760559,
+        "anchor_contribution": 0.06819508671760559,
+        "task_ce_inferred_fp32_tolerance": 4.178424137830734
+      },
+      {
+        "step": 30,
+        "total_loss": 4.26159143447876,
+        "anchor_raw": 0.716499924659729,
+        "anchor_contribution": 0.07164999246597291,
+        "task_ce_inferred_fp32_tolerance": 4.1899414420127865
+      },
+      {
+        "step": 40,
+        "total_loss": 4.2315473556518555,
+        "anchor_raw": 0.6620863080024719,
+        "anchor_contribution": 0.06620863080024719,
+        "task_ce_inferred_fp32_tolerance": 4.165338724851608
+      },
+      {
+        "step": 50,
+        "total_loss": 4.215890407562256,
+        "anchor_raw": 0.5266367793083191,
+        "anchor_contribution": 0.05266367793083191,
+        "task_ce_inferred_fp32_tolerance": 4.163226729631424
+      },
+      {
+        "step": 60,
+        "total_loss": 4.1807475090026855,
+        "anchor_raw": 0.3371235132217407,
+        "anchor_contribution": 0.033712351322174074,
+        "task_ce_inferred_fp32_tolerance": 4.147035157680511
+      },
+      {
+        "step": 70,
+        "total_loss": 4.201847076416016,
+        "anchor_raw": 0.53749680519104,
+        "anchor_contribution": 0.053749680519104004,
+        "task_ce_inferred_fp32_tolerance": 4.148097395896912
+      },
+      {
+        "step": 80,
+        "total_loss": 4.221653938293457,
+        "anchor_raw": 0.5328705906867981,
+        "anchor_contribution": 0.05328705906867981,
+        "task_ce_inferred_fp32_tolerance": 4.168366879224777
+      },
+      {
+        "step": 90,
+        "total_loss": 4.207730770111084,
+        "anchor_raw": 0.4361981749534607,
+        "anchor_contribution": 0.043619817495346075,
+        "task_ce_inferred_fp32_tolerance": 4.164110952615738
+      }
+    ],
+    "note": "Task CE inferred from logged FP32 scalars; no new evaluation. Batch fluctuations do not establish learning or memory harm."
+  },
+  "call_latency": {
+    "local_started_to_remote_call_s": 0.6723530292510986,
+    "remote_call_to_worker_claim_s": 17.866326570510864,
+    "interpretation": "The 0.67 s gap is local pre-call setup, not remote queue latency; ~17.87 s call-to-entry includes queue/startup and cannot isolate queue time."
+  },
+  "paid_followup_authorized": false,
+  "reviewer_actions": "CPU artifact validation and read-only Modal status/billing only; no model eval/forward, training, stop or retry"
+}

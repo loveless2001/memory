@@ -1,0 +1,531 @@
+{
+  "revision": "f8d85929e0c3fee166671a7f96be74c3134ff00d",
+  "local_cpu_fakes_only": true,
+  "package_index": {
+    "sha256": "f7edc8ad48e9bf7582896bef9f17c2a7ff9ea7fa1070795a12922d79e82dfdef",
+    "checks": {
+      "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py": true,
+      "modal-runners/modal-m4-sgm-p2p5-pk-campaign-control-plane-reaper.py": true,
+      "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py": true,
+      "modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py": true,
+      "scripts/sgm-p2p5-pk-campaign-readings.py": true,
+      "configs/m4_sgm_p2p5_grid.json": true,
+      "configs/m4_sgm_p2p5_campaign_registry.json": true,
+      "configs/m4_sgm_p2p5_campaign_output_schema.json": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg.md": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg-amendment-pk-packed-a100-resume.md": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-campaign-source-bridge-manifest-label.md": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-campaign-execution-supplement.md": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/sgm-suite-pk-campaign-package.txt": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/readings-tiny-e2e.txt": true,
+      "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/parity-tiny-cpu-pk-campaign-package.log": true,
+      "memsub_source_tree_sha256": true
+    }
+  },
+  "proof_manifests": {
+    "count": 10,
+    "all_hashes_unchanged": true
+  },
+  "readings_order": {
+    "calls": [
+      [
+        "oracle",
+        32,
+        0,
+        [
+          "none"
+        ]
+      ],
+      [
+        "oracle",
+        32,
+        1,
+        [
+          "none"
+        ]
+      ],
+      [
+        "learned",
+        32,
+        0,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "learned",
+        32,
+        1,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "single_cell",
+        32,
+        0,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "single_cell",
+        32,
+        1,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "random_fixed",
+        32,
+        0,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "random_fixed",
+        32,
+        1,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "memory_off",
+        32,
+        0,
+        [
+          "none"
+        ]
+      ],
+      [
+        "memory_off",
+        32,
+        1,
+        [
+          "none"
+        ]
+      ],
+      [
+        "oracle",
+        16,
+        0,
+        [
+          "none"
+        ]
+      ],
+      [
+        "oracle",
+        16,
+        1,
+        [
+          "none"
+        ]
+      ],
+      [
+        "learned",
+        16,
+        0,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "learned",
+        16,
+        1,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "single_cell",
+        16,
+        0,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "single_cell",
+        16,
+        1,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "random_fixed",
+        16,
+        0,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "random_fixed",
+        16,
+        1,
+        [
+          "none",
+          "bank_derange",
+          "read_offset"
+        ]
+      ],
+      [
+        "memory_off",
+        16,
+        0,
+        [
+          "none"
+        ]
+      ],
+      [
+        "memory_off",
+        16,
+        1,
+        [
+          "none"
+        ]
+      ]
+    ],
+    "readings": {
+      "32": "SCREEN PASS at N32",
+      "16": "SCREEN PASS at N16"
+    },
+    "interfaces": {
+      "32": true,
+      "16": true
+    },
+    "both_oracles_before_other_arms": false
+  },
+  "per_n_interface_gate": {
+    "n32_fail_n16_pass": {
+      "calls": [
+        [
+          "oracle",
+          32,
+          0,
+          [
+            "none"
+          ]
+        ],
+        [
+          "oracle",
+          32,
+          1,
+          [
+            "none"
+          ]
+        ],
+        [
+          "oracle",
+          16,
+          0,
+          [
+            "none"
+          ]
+        ],
+        [
+          "oracle",
+          16,
+          1,
+          [
+            "none"
+          ]
+        ],
+        [
+          "learned",
+          16,
+          0,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "learned",
+          16,
+          1,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "single_cell",
+          16,
+          0,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "single_cell",
+          16,
+          1,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "random_fixed",
+          16,
+          0,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "random_fixed",
+          16,
+          1,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "memory_off",
+          16,
+          0,
+          [
+            "none"
+          ]
+        ],
+        [
+          "memory_off",
+          16,
+          1,
+          [
+            "none"
+          ]
+        ]
+      ],
+      "readings": {
+        "32": "interface not established at N32; screen not read",
+        "16": "SCREEN PASS at N16"
+      },
+      "interfaces": {
+        "32": false,
+        "16": true
+      }
+    },
+    "n32_pass_n16_fail": {
+      "calls": [
+        [
+          "oracle",
+          32,
+          0,
+          [
+            "none"
+          ]
+        ],
+        [
+          "oracle",
+          32,
+          1,
+          [
+            "none"
+          ]
+        ],
+        [
+          "learned",
+          32,
+          0,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "learned",
+          32,
+          1,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "single_cell",
+          32,
+          0,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "single_cell",
+          32,
+          1,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "random_fixed",
+          32,
+          0,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "random_fixed",
+          32,
+          1,
+          [
+            "none",
+            "bank_derange",
+            "read_offset"
+          ]
+        ],
+        [
+          "memory_off",
+          32,
+          0,
+          [
+            "none"
+          ]
+        ],
+        [
+          "memory_off",
+          32,
+          1,
+          [
+            "none"
+          ]
+        ],
+        [
+          "oracle",
+          16,
+          0,
+          [
+            "none"
+          ]
+        ],
+        [
+          "oracle",
+          16,
+          1,
+          [
+            "none"
+          ]
+        ]
+      ],
+      "readings": {
+        "32": "SCREEN PASS at N32",
+        "16": "interface not established at N16; screen not read"
+      },
+      "interfaces": {
+        "32": true,
+        "16": false
+      }
+    }
+  },
+  "unbound_analysis_dependency": {
+    "identity_unchanged": true,
+    "original_interface_min": 0.5,
+    "mutated_interface_min": 0.99,
+    "dependency_sha_changed": true
+  },
+  "null_id_collectors": {
+    "slot": {
+      "name_only_stop_calls": [
+        "memsub-m4-sgm-p2p5-pk-campaign-learned-n32"
+      ],
+      "identity_lookups": [],
+      "shutdown": {
+        "app_id": null,
+        "verified": true,
+        "status": "stopped_verified"
+      }
+    },
+    "readings": {
+      "name_only_stop_calls": [
+        "memsub-m4-sgm-p2p5-pk-campaign-readings"
+      ],
+      "identity_lookups": [],
+      "shutdown": {
+        "app_id": null,
+        "verified": true,
+        "status": "stopped_verified"
+      }
+    }
+  },
+  "shutdown_verification": {
+    "slot": {
+      "stopped_with_seven_tasks_accepted": true,
+      "queries": [
+        [
+          "/home/lenovo/projects/memory/.venv/bin/python",
+          "-m",
+          "modal",
+          "app",
+          "list",
+          "--json"
+        ]
+      ]
+    },
+    "readings": {
+      "stopped_with_seven_tasks_accepted": true,
+      "queries": [
+        [
+          "/home/lenovo/projects/memory/.venv/bin/python",
+          "-m",
+          "modal",
+          "app",
+          "list",
+          "--json"
+        ]
+      ]
+    }
+  },
+  "malformed_collect_record": {
+    "raised": "JSONDecodeError",
+    "message": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+  }
+}

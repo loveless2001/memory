@@ -1,0 +1,61 @@
+Concrete v0.3 review: 111901c / #gravity 21996
+
+Verdict: warm-container and classifier corrections ACCEPTED. One remaining
+deadline/cap block must close before launch. The user's existing $4 authorization
+still applies; no additional permission is needed for fixes within this scope.
+
+Verified
+- Independently reran the focused suite: 24 passed in 11.55 seconds.
+- All nine package files match committed 111901c bytes.
+- Warm A0/A1/A2 calls use isolated paths/tars; duplicate starts still refuse.
+- Boolean, negative and over-one classifier values are now INVALID; boundaries
+  and kept-at versus kept-through semantics are tested.
+- Existing image ID is supported by the retained hotspot build log: the final
+  image has HF_HUB_OFFLINE and the expected model path. Image.from_id and runtime
+  mounts remove the new-build path. Live image availability is not verified; a
+  missing image is a fail-closed setup outcome, not authority for a new build.
+- Same three arms, dev-only population, A0 gate, supervised A2 and no fallback
+  or optimizer/seed expansion. No Qwen forward or paid call ran in this audit.
+
+Remaining block: campaign deadline is stored, not enforced across the worker
+The remote function samples remaining before _versions_ok(), then uses that
+stale value to choose the child timeout. Offline reproduction with a fake clock:
+deadline1000; initial time0; version check finishes at1001; the code still starts
+a child with timeout910 and returns rc0. This is a code-path counterexample, not
+an assertion that actual version import took1001 seconds. A real import delay
+can consume the intended margin; the guarantee is currently false.
+
+More broadly, there is no independent absolute whole-worker kill guard covering
+Dict RPCs, imports, the child and tar return. Function timeout1560 remains
+relative to each execution; default startup has no shorter explicit bound.
+The passed deadline and immutable Dict are valuable admission controls, but do
+not themselves bound setup/serialization or a late startup's charged tail.
+
+Required focused correction
+1. Recompute remaining after version/setup checks and immediately before child
+   launch; refuse if insufficient/expired and derive the child timeout from that
+   fresh value. Add the exact slow-version fake-clock refusal/clamp test.
+2. Enforce the absolute campaign deadline outside the model/interpreter work,
+   covering the full worker and its child process group. The existing independent
+   OS-process Watchdog pattern is suitable, but killing only the parent must not
+   leave the training child orphaned. Cancel guards in finally on all paths.
+   Set an explicit bounded startup timeout and refuse already-expired work before
+   blocking RPC/import work. Keep one immutable deadline and the durable start
+   fence; no retries or fresh campaign namespace to bypass used admission state.
+3. Tie the shutdown/cost reserve to those controls and explicit bounded app-stop
+   plus zero-task/container verification. Current 300s stop latency remains an
+   assumption, and the claimed3.354 is therefore a reservation, not a proven
+   worst case. The971s extra headroom is useful but does not enforce termination.
+   Include a CPU-overuse margin: CPU tuple limits are soft throttles, as the
+   existing p2d_launch_guard documents. The resources/rates need not be changed.
+
+No design expansion is requested. Reuse the current image and valid endpoint/
+warm-container fixes; only repair and test the existing paid-budget guard. Keep
+the corrected proposal's execution section internally consistent (it still
+contains the old v0.2 Dict name, ledger and test counts beneath the delta).
+
+Next
+Refreeze the focused correction and its deadline/cleanup ledger for final
+review. The single scoped Modal launch remains already authorized after this
+check; no new user question is required. Do not advertise the current3.35 as a
+guaranteed upper bound while its stop term is explicitly unenforced.

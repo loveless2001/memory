@@ -1,0 +1,76 @@
+..........................................                               [100%]
+42 passed in 4.07s
+{
+  "registered_suite_exit_code": 0,
+  "verified_fixes": {
+    "TimeoutError_precheck": "Volume memsub-m4-sgm-p2p5-b3-shift2-fill-long-v1:b3-run-v1 listing failed (TimeoutError: listdir timed out): refusing",
+    "PermissionError_precheck": "Volume memsub-m4-sgm-p2p5-b3-shift2-fill-long-v1:b3-run-v1 listing failed (PermissionError: listdir denied): refusing",
+    "RuntimeError_precheck": "Volume memsub-m4-sgm-p2p5-b3-shift2-fill-long-v1:b3-run-v1 listing failed (RuntimeError: service failed): refusing",
+    "TimeoutError_stale_collect": {
+      "files": 0,
+      "ok": false,
+      "why": "Volume listing failed: TimeoutError: list failed"
+    },
+    "NotFoundError_stale_collect": {
+      "files": 0,
+      "ok": false,
+      "why": "B3/b3_result.json not fetched from the Volume in this collect (B3: valid, memory_used False, band partial)"
+    },
+    "fresh_fetch_collect": {
+      "files": 1,
+      "ok": true,
+      "why": "B3: valid, memory_used False, band partial"
+    },
+    "entry_lookup_failure": {
+      "refused": "worker exception RuntimeError",
+      "start": null,
+      "terminal_write_errors": [
+        "no start Dict"
+      ]
+    },
+    "terminal_write_failure_versions": {
+      "refused": "pinned versions differ: {}",
+      "start": "start-1",
+      "terminal_write_errors": [
+        "RuntimeError: simulated terminal Dict write failure"
+      ]
+    },
+    "terminal_write_failure_exception": {
+      "refused": "worker exception RuntimeError",
+      "start": "start-1",
+      "terminal_write_errors": [
+        "RuntimeError: simulated terminal Dict write failure"
+      ]
+    },
+    "terminal_write_failure_completed": {
+      "returncode": 0,
+      "start": "start-1",
+      "volume_commit_errors": 0,
+      "wall_s": 0,
+      "child_timeout_s": 9880,
+      "versions": {},
+      "cmd": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/b3-terminal-fault-jbjlqqz5/run/B3"
+      ],
+      "terminal_write_errors": [
+        "RuntimeError: simulated terminal Dict write failure"
+      ]
+    }
+  },
+  "v4_exact_id_records_consistent": 17,
+  "watch_budget_probe": {
+    "cleanup_started_at": 23579.0,
+    "cleanup_budget_seconds": 300,
+    "cleanup_budget_end": 23879.0,
+    "ledger_window_seconds": 23820,
+    "covered_by_ledger_window": false
+  },
+  "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/codex-b3-package-22519.scope",
+  "memory_max": "2097152000",
+  "memory_swap_max": "0"
+}

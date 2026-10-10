@@ -1,0 +1,45 @@
+{
+  "commit": "1306f2650e95bbbd8511c4afe274be359532fdf3",
+  "source_hashes": {
+    "scripts/sgm-p2p5-sgm-path-speedup-parity-check.py": "b384c1037438dad91a51a4f05b41caf3c1563433a63fb0002a97104c3fb8c16d",
+    "modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py": "e7b110ae0f3ce5cdae1470fc146d895cc1c4c035783bea3934b76ca2433df05f",
+    "scripts/sgm-p2p5-sgm-path-hotspot-profile.py": "0c0524ac3bed5bb24ad53da89cd8a9c2eae30c9056f1d0427667a22745234476"
+  },
+  "candidate_memsub_sha256": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085",
+  "reference_memsub_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "remaining_scope_probes": {
+    "dev_loss_nan": {
+      "pass": true,
+      "bitwise": false,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 8,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {
+        "loss": [
+          0.25,
+          "nan"
+        ]
+      },
+      "ref_train_s": 1.0,
+      "cand_train_s": 1.0
+    },
+    "telemetry_nan": {
+      "pass": true,
+      "bitwise": true,
+      "problems": [],
+      "n_problems": 0,
+      "max_rel": 0.0,
+      "worst": "loss/u0",
+      "max_abs": 0.0,
+      "n_compared": 8,
+      "dev_predictions_identical": true,
+      "dev_float_fields_differing": {},
+      "ref_train_s": 1.0,
+      "cand_train_s": 1.0
+    }
+  }
+}

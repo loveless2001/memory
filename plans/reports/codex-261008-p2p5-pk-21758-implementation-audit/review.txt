@@ -1,0 +1,61 @@
+Independent review of chat 21758, requested by user 21779
+
+Verdict: HOLD. Implementation clearance and the local GPU smoke are withheld.
+Code: fbfebe08391cf55ca544afc0ce530f35736de0dd; evidence package: c3c6fa2dc524dca18771130debc2ea720de0e7f7.
+
+P1 - Build-stage import failure
+modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py:28-31,49,55
+Installed Modal 1.5.1 defines _build_environment as a nonserialized FILE function.
+Its effective source mounts contain only the runner, and its base image has no
+local mount layers. Importing that file loads the sibling slot-logic module before
+the builder is callable. The sibling is absent, producing FileNotFoundError.
+The later final-image add_local_file cannot satisfy an earlier build stage.
+The offline negative control uses only SDK-declared builder files; adding the
+sibling gives a passing import. No build or network call was used to establish this.
+Fix the build-stage file set and add an effective-stage import regression.
+
+P2 - Smoke launch does not enforce its outer 3600-second limit
+scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py:15,27-28,66,86-88
+The documented command times out after 3660 seconds with a further 30-second kill
+grace. The inner 3600-second Watchdog starts in main after imports and is cancelled
+before writing the summary. The proposal requires an OUTER hard whole-process
+3600-second bound through cleanup. Use a KILL/3600 process-group launcher, retain
+the inner watchdog and worker parent-death handling, and test a harmless process
+tree. Pin the regression to the scoped 20 updates, rather than <=50.
+
+Independent checks completed
+- All 24 package hashes match; code/config/test bytes are unchanged between the
+  implementation and package commits. Registry and schema equal their derivation.
+- CPU sgm suite plus artifact hygiene: 557 passed, 2 skipped in 534.41s (0:08:54); exit 0.
+- Real CPU construction of both Qwen cells: frozen registry equality, 46 tensors
+  each, head [64,512]; exit 0. Construction only, with no pretrained forward pass.
+- The validator retains the original non-schema checks and enforces the exact
+  grad_norm null contract in COMPLETE, collect and reading. Tiny CPU graph,
+  residual control and supervisor subprocess paths are covered by the suite.
+- Reaper decisions reject invalid deadlines, bind stop IDs, quarantine mismatches
+  and retain abandonment handling. Four total admitted starts and one immutable
+  31946.2-second slot deadline remain unchanged. These local checks do not prove
+  remote scheduling or stop latency.
+- Saved private-copy mutation evidence: baseline 65/65 and 26/26 aimed failures,
+  with re-freezing inspected and hashes verified. The 26 mutation runs were not
+  independently repeated in this review.
+- Decimal ledger: GPU 38.229480912 USD; reaper 0.1738677348333333333333333333;
+  images 0.336768; margin 2; total 40.74011664683333333333333333 <= 40.75.
+  This remains conditional on its declared rate, period and stop-tail assumptions;
+  local tests do not establish a provider-level guaranteed cost ceiling.
+- The reading uses the frozen comparator hashes, episode pairing and existing
+  P2D/P2G criteria; failed/invalid cells remain unavailable and claims exploratory.
+- memsub and the historical campaign files are unchanged by the implementation.
+  The two coherent modules exceeding the 200-line guideline are not blockers.
+
+Disposition and boundaries
+Claude accepted both findings in 21785 and is preparing fixes in a private worktree.
+This review does not certify those proposed fixes. Re-freeze the corrected source
+and package with the two new regressions, then obtain implementation clearance
+before the one seed-7, batch-2, 20-update, 3600-second local smoke with no retry.
+The existing user 21755 conditional go is retained for the two-cell 40.75 USD scope;
+it does not close implementation, smoke-evidence or launch-provenance gates.
+No new permission is requested by this review. No GPU smoke, Modal RPC, build,
+deploy or spawn was performed. Shared implementation files were not modified.
+Earlier incomplete independent logs were retained; only the completed resumed
+suite and registry outputs above are claimed as independent verification.

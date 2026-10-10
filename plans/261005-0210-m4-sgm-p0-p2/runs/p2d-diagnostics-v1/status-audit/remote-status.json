@@ -1,0 +1,63 @@
+{
+  "checked_at_utc": "2026-10-05T07:14:03.209489+00:00",
+  "app_id": "ap-o9O7fnzaUFWlhhVsR1Y8Xh",
+  "evidence": {
+    "apps": {
+      "command": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "app",
+        "list",
+        "--json"
+      ],
+      "stdout": "[\n  {\n    \"app_id\": \"ap-o9O7fnzaUFWlhhVsR1Y8Xh\",\n    \"description\": \"memsub-m4-sgm-p2d\",\n    \"state\": \"stopped\",\n    \"tasks\": \"0\",\n    \"created_at\": \"2026-10-05 11:00:56+07:00\",\n    \"stopped_at\": \"2026-10-05 13:16:42+07:00\"\n  }\n]\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    "containers": {
+      "command": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "container",
+        "list",
+        "--json"
+      ],
+      "stdout": "[]\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    "halt_key": {
+      "command": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "dict",
+        "get",
+        "m4-sgm-p2d-diagnostics-v1-attempts",
+        "__halt__"
+      ],
+      "stdout": "None\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    "app_logs": {
+      "command": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "app",
+        "logs",
+        "ap-o9O7fnzaUFWlhhVsR1Y8Xh",
+        "--tail",
+        "160",
+        "--timestamps",
+        "--show-container-id"
+      ],
+      "stdout": "2026-10-05 12:38:23+07:00 ta-01M453HSZN3N5EVRE5WMPEV3KR Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption\n2026-10-05 12:38:23+07:00 ta-01M453HS81PBE5M0X9E1GHW0RR Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption\n2026-10-05 12:38:53+07:00 ta-01M453HV0JZ2QAXAXQ4KG1A8KR Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption\n2026-10-05 13:15:19+07:00 ta-01M453HSNPZC08W31KZHHZPDXR [modal-client] 2026-10-05T06:15:19+0000 Received a cancellation signal while processing input ('in-01M453HR8423VQTBJF2CY2C9FF:1791172862212-0',)\n2026-10-05 13:15:19+07:00 ta-01M453HSNPZC08W31KZHHZPDXR [modal-client] 2026-10-05T06:15:19+0000 Successfully canceled input ('in-01M453HR8423VQTBJF2CY2C9FF:1791172862212-0',)\n2026-10-05 13:15:19+07:00 ta-01M453HT76K1KEJFGHMEBGE68R [modal-client] 2026-10-05T06:15:19+0000 Received a cancellation signal while processing input ('in-01M453HR8771JGWPRB60154WNH:1791172862217-0',)\n2026-10-05 13:15:19+07:00 ta-01M453HT76K1KEJFGHMEBGE68R [modal-client] 2026-10-05T06:15:19+0000 Successfully canceled input ('in-01M453HR8771JGWPRB60154WNH:1791172862217-0',)\n2026-10-05 13:15:21+07:00 ta-01M453HTAYDB5DG32MVGQP7G3R [modal-client] 2026-10-05T06:15:21+0000 Received a cancellation signal while processing input ('in-01M453HR8GNQCXCC1Q4PXNXKJY:1791172862225-0',)\n2026-10-05 13:15:21+07:00 ta-01M453HTAYDB5DG32MVGQP7G3R [modal-client] 2026-10-05T06:15:21+0000 Successfully canceled input ('in-01M453HR8GNQCXCC1Q4PXNXKJY:1791172862225-0',)\n",
+      "stderr": "",
+      "returncode": 0
+    }
+  }
+}

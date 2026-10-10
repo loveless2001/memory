@@ -1,0 +1,184 @@
+{
+  "observed_at_utc": "2026-10-06T19:01:14.288343+00:00",
+  "app_id": "ap-NtWFBICc4quJgMn9gUqeTB",
+  "approval_message_id": 21577,
+  "approved_cap_usd": 8.57,
+  "planned_reservation_usd": 8.560027,
+  "reservation_is_conditional_not_observed_spend": true,
+  "spawn_epoch": 1791313081.805205,
+  "deadline_epoch": 1791319681.805205,
+  "deadline_bangkok": "2026-10-07T03:48:01.805205+07:00",
+  "seconds_since_spawn_at_observation": 192.48313784599304,
+  "seconds_until_guard_deadline_at_observation": 6407.516862154007,
+  "launch_head": "d62602cafb81872e362fa334fd2e3d62755e5339",
+  "current_head": "92267bcb3e4c3e355b35b10546bb625a8b4d886b",
+  "post_launch_commit_files": [
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1.deploy.log",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1.spawn.log",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1/calls.json",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1/launch_provenance.json"
+  ],
+  "checks": {
+    "launch_head_matches_approval": true,
+    "launch_identity_matches_approval": true,
+    "current_source_matches_launch": true,
+    "all_bound_files_unchanged": true,
+    "seven_unique_expected_calls": true,
+    "deadline_6600": true,
+    "reservation_within_approval": true,
+    "post_launch_commit_only_launch_artifacts": true,
+    "live_guard_app_and_deadline_match": true,
+    "reaper_first_tick_recorded": true,
+    "admission_keys_within_fixed_allowances": true
+  },
+  "calls": {
+    "A": "fc-01M49990RNYED10HZZSSJY60Z3",
+    "Aprime": "fc-01M4999131M4297DDC9DT9VJZD",
+    "B": "fc-01M49991CDRDVM1EWV3HQ0BGZB",
+    "C": "fc-01M49991P2SAGTB3393KJC4GGY",
+    "D": "fc-01M49992032QVXNQG18YCYS3S0",
+    "E": "fc-01M49992A6KK616TDQJEDK5H3Y",
+    "timing": "fc-01M49992KQW6SAWA3QPES3H69E"
+  },
+  "read_only_no_controller_or_remote_mutations": true,
+  "spend_and_scientific_validity": "Actual settled charges and GPU proof acceptance remain unverified until terminal audit.",
+  "app_inventory": {
+    "command": [
+      "/home/lenovo/projects/memory/.venv/bin/python",
+      "-m",
+      "modal",
+      "app",
+      "list",
+      "--json",
+      "--env",
+      "main"
+    ],
+    "returncode": 0,
+    "rows_examined": 3,
+    "row_keys_seen": [
+      "app_id",
+      "created_at",
+      "description",
+      "state",
+      "stopped_at",
+      "tasks"
+    ],
+    "bound_app_rows": [
+      {
+        "app_id": "ap-NtWFBICc4quJgMn9gUqeTB",
+        "description": "memsub-m4-sgm-p2p5-pk-proof",
+        "state": "deployed",
+        "tasks": "2",
+        "created_at": "2026-10-07 01:56:14+07:00",
+        "stopped_at": null
+      }
+    ]
+  },
+  "container_inventory": {
+    "command": [
+      "/home/lenovo/projects/memory/.venv/bin/python",
+      "-m",
+      "modal",
+      "container",
+      "list",
+      "--json",
+      "--env",
+      "main"
+    ],
+    "returncode": 0,
+    "rows_examined": 2,
+    "row_keys_seen": [
+      "app_id",
+      "app_name",
+      "container_id",
+      "start_time"
+    ],
+    "bound_app_rows": [
+      {
+        "container_id": "ta-01M499C8KM44FKDFQGC480GWHR",
+        "app_id": "ap-NtWFBICc4quJgMn9gUqeTB",
+        "app_name": "memsub-m4-sgm-p2p5-pk-proof",
+        "start_time": "2026-10-07 01:59:53+07:00"
+      },
+      {
+        "container_id": "ta-01M4999113VYW0F2YGXJY9Y5XR",
+        "app_id": "ap-NtWFBICc4quJgMn9gUqeTB",
+        "app_name": "memsub-m4-sgm-p2p5-pk-proof",
+        "start_time": "2026-10-07 01:58:08+07:00"
+      }
+    ]
+  },
+  "dicts": {
+    "guard": {
+      "first_tick": 1791313194.0376666,
+      "app_id": "ap-NtWFBICc4quJgMn9gUqeTB",
+      "deadline_epoch": 1791319681.805205
+    },
+    "admission": {
+      "A-start-1": 1791313088.9954422
+    }
+  },
+  "call_poll": {
+    "A": {
+      "kind": "pending"
+    },
+    "Aprime": {
+      "kind": "pending"
+    },
+    "B": {
+      "kind": "pending"
+    },
+    "C": {
+      "kind": "pending"
+    },
+    "D": {
+      "kind": "pending"
+    },
+    "E": {
+      "kind": "pending"
+    },
+    "timing": {
+      "kind": "pending"
+    }
+  },
+  "admission_start_keys": [
+    "A-start-1"
+  ],
+  "collector_status": {
+    "polls": {
+      "A": {
+        "kind": "pending",
+        "payload": null
+      },
+      "Aprime": {
+        "kind": "pending",
+        "payload": null
+      },
+      "B": {
+        "kind": "pending",
+        "payload": null
+      },
+      "C": {
+        "kind": "pending",
+        "payload": null
+      },
+      "D": {
+        "kind": "pending",
+        "payload": null
+      },
+      "E": {
+        "kind": "pending",
+        "payload": null
+      },
+      "timing": {
+        "kind": "pending",
+        "payload": null
+      }
+    },
+    "past_deadline": false
+  },
+  "collector_log_tail": "== 2026-10-07T01:58:16+07:00 collect #1\n{\"A\": \"pending\", \"Aprime\": \"pending\", \"B\": \"pending\", \"C\": \"pending\", \"D\": \"pending\", \"E\": \"pending\", \"timing\": \"pending\"} pending\nrc=0\n",
+  "collector_processes": [
+    "1098015 1098012 /bin/bash /tmp/claude-1000/-home-lenovo-projects/c31299e5-7d3f-4dd7-a15b-a3fd71648b89/scratchpad/pk-proof-collect-loop.sh"
+  ]
+}

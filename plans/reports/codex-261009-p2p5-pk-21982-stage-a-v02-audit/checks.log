@@ -1,0 +1,75 @@
+{
+  "package_files": 8,
+  "warm_container_failure": {
+    "first_arm_returncode": 0,
+    "second_arm_exception": "FileExistsError",
+    "error": "[Errno 17] File exists: '/tmp/tmpuu_zpb6v/stage-a-out'",
+    "children_started": 1,
+    "start_keys": [
+      "A0",
+      "A1"
+    ]
+  },
+  "classifier": {
+    "negative": {
+      "status": "valid",
+      "absent_read_weight_by_step": {
+        "0": -0.1,
+        "25": -0.1,
+        "50": -0.1,
+        "75": -0.1,
+        "100": -0.1
+      },
+      "band_at_100": "kept",
+      "kept_through_100": true,
+      "bands": {
+        "escaped": ">= 0.9",
+        "kept": "<= 0.2",
+        "partial": "between"
+      }
+    },
+    "over_one": {
+      "status": "valid",
+      "absent_read_weight_by_step": {
+        "0": 1.1,
+        "25": 1.1,
+        "50": 1.1,
+        "75": 1.1,
+        "100": 1.1
+      },
+      "band_at_100": "escaped",
+      "kept_through_100": false,
+      "bands": {
+        "escaped": ">= 0.9",
+        "kept": "<= 0.2",
+        "partial": "between"
+      }
+    },
+    "bool": {
+      "status": "valid",
+      "absent_read_weight_by_step": {
+        "0": true,
+        "25": true,
+        "50": true,
+        "75": true,
+        "100": true
+      },
+      "band_at_100": "escaped",
+      "kept_through_100": false,
+      "bands": {
+        "escaped": ">= 0.9",
+        "kept": "<= 0.2",
+        "partial": "between"
+      }
+    }
+  },
+  "ledger": {
+    "rate_usd_s": 0.0006654399999999999,
+    "outer_s": 5100,
+    "client_lifetime_gpu_container": 3.3937439999999994,
+    "image_build_worst": 0.08419199999999999,
+    "teardown_allowance": 0.23955839999999995,
+    "bound_usd": 3.717494399999999
+  },
+  "modal_calls": 0
+}

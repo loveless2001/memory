@@ -1,0 +1,52 @@
+{
+  "observed_utc": "2026-10-08T19:10:53.858083+00:00",
+  "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+  "launch_record": "head fe43fc9f07f9f935be7e28950852081b392c6322\nstart_utc 2026-10-08T19:09:55.402086451Z\npid 2912641 pgid 2912641 sid 2912641\nargv timeout --signal=TERM --kill-after=30s 4710 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py --out plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1\n",
+  "run_metadata": {
+    "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+    "base_image_id": "im-A7BXMB8v1cVYRvC9pMqZ3i",
+    "arms_planned": [
+      "A0",
+      "A1",
+      "A2"
+    ],
+    "ledger": {
+      "rate_usd_s": 0.0006785399999999999,
+      "cpu_overuse_margin": 1.25,
+      "outer_s": 4740,
+      "stop_allowance_s": 300,
+      "image_construction_usd": 0.0,
+      "reservation_usd": 3.4198416,
+      "cap_usd": 4.0,
+      "unenforced": "app-stop latency after client exit (cleanup-verify checks it)"
+    },
+    "started": 1791486600.2914708,
+    "gpu": "L40S",
+    "cpu": 4.0,
+    "memory_gib": 32,
+    "arms": {},
+    "outcome": "started",
+    "deadline": 1791491100.2921758
+  },
+  "local_processes": "    PID    PPID    PGID     SID     ELAPSED STAT COMMAND\n2912641     710 2912641 2912641       00:58 Ss   bash plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/launch-stage-a-once.sh\n2912670 2912641 2912670 2912641       00:58 S    timeout --signal=TERM --kill-after=30s 4710 .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py --out plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1\n2912672 2912670 2912670 2912641       00:58 Sl   .venv/bin/python -m modal run modal-runners/modal-m4-sgm-p2p5-stage-a-read-escape-blocker-runner.py --out plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1\n",
+  "app": {
+    "rows": [
+      {
+        "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+        "description": "memsub-m4-sgm-p2p5-stage-a-read-escape",
+        "state": "ephemeral",
+        "tasks": "0",
+        "created_at": "2026-10-09 02:09:57+07:00",
+        "stopped_at": null
+      }
+    ]
+  },
+  "container": {
+    "rows": []
+  },
+  "terminal_markers": {
+    "stage-a-run-v1.exit.txt": false,
+    "stage-a-run-v1.cleanup-exit.txt": false,
+    "stage-a-run-v1/cleanup.json": false
+  }
+}

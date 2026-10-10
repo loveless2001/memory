@@ -1,0 +1,66 @@
+{
+  "checked_at_utc": "2026-10-06T10:59:06.305836+00:00",
+  "evidence_commit": "5b89067a82f97709d5cfab305efe20844bff2a19",
+  "source_hashes": {
+    "modal-runners/modal-m4-sgm-p2p5-l40s-timing-profile.py": "e26013e6e34545552eb7d6d4fc8e07af2e1fc8c927f5e38818714a3de4069349",
+    "modal-runners/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "modal-runners/modal-m4-sgm-p2p5-reaper-self-stop-proof.py": "00509c185b26762eadea126e27b2dc55b71de5cf1e592d6bceda20276de1479b",
+    "scripts/sgm-p2p5-local-gpu-timing-profile.py": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "memsub/sgm/p2d_launch_guard.py": "52c0ec5ec873fa4cfafe82f1fa612c71969e64e184b6bd557665e9b55f7f3054"
+  },
+  "consumed_input_hashes": {
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/reaper-self-stop-proof-v1/posthoc-verify.json": "a3b122c04b9b447961ea3e12756cb1255f451bbbfda636e187b44e37eccc535f",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/reaper-self-stop-proof-v1/app-logs.txt": "72123622e421e5024be1cbc0e9fe84442aa2e89451afa63d1d50b92b63bca773",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/reaper-self-stop-proof-v1/proof_report.json": "acf256b3f6a71cddcce36772e4d029628f1a92a7c4eef75e3f6628436c67c660",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/reaper-self-stop-proof-v1/deploy.log": "464977d18489c10a69e8701feabf7fb22ef11bf2d16b1a445acec7d377138c71",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/reaper-self-stop-proof-v1/proof_provenance.json": "85f14f158ba816a1d2a1e0799f2a30a90f6d7891a382fc31ff29664bf9203481",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/reaper-self-stop-proof-v1.console.log": "c60cf0a119851def76a4cf056073f4646b13a1a94c32c00ba7822d143e43d923",
+    "plans/reports/codex-261006-p2p5-5b89067-live-shutdown.json": "36cd7acd814261b5386638a2de776ddc8c7f37d0066626513a1696eebf94ac68",
+    "plans/reports/codex-261006-p2p5-5b89067-launch-preflight.json": "517439e548473ebd0508eb69dce3c5133f72aa5023c22e094b684a47d555737a"
+  },
+  "proof_app_id": "ap-i4m6Qy73vjSs8LVFZza8Z6",
+  "deadline_epoch": 1791283924.0450027,
+  "stopped_at_epoch": 1791283925.697458,
+  "self_stop_delay_s": 1.6524553298950195,
+  "saved_bound_marker_found": true,
+  "proof_report_verified": true,
+  "original_verification_payload_missing": true,
+  "separate_live_shutdown_verified": true,
+  "local_fallback_in_saved_proof": false,
+  "current_proof_app_billing_usd": "0.00012308",
+  "billing_is_current_report_not_final_invoice": true,
+  "launch_identity": {
+    "runner": "e26013e6e34545552eb7d6d4fc8e07af2e1fc8c927f5e38818714a3de4069349",
+    "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "memsub": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6"
+  },
+  "profile_ledger": {
+    "gpu_container_lifetime_usd": 1.9563935999999997,
+    "reaper_ticks_usd": 0.009647,
+    "image_build_usd": 0.16838399999999998,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.3844245999999996,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 2700,
+    "reaper_period_s": 120,
+    "abandon_s": 1800,
+    "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance",
+    "assumptions": [
+      "reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+      "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+      "list prices from modal.com/pricing checked 2026-10-06"
+    ]
+  },
+  "retained_proof_reservation_usd": 0.052740625,
+  "combined_reservation_usd": 2.4371652249999998,
+  "gpu_state_unused_at_recorded_preflight": true,
+  "r1_remote_stop_api_proof": "PASS",
+  "clearance": "one frozen preemptible L40S timing/fit profile under existing total $3; no retry or full campaign",
+  "gpu_work_by_this_audit": false
+}

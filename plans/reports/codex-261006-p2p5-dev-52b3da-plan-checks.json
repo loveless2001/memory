@@ -1,0 +1,56 @@
+{
+  "reviewed_hashes": {
+    "modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py": "52b3da22236527c20319cbbb28958ec936635e7fab1fc2239513944f10a0fe38",
+    "scripts/sgm-p2p5-sgm-path-hotspot-profile.py": "c4f6e77e70797a328797c382fa96d69164f04690e45d6d427b05ff44bdc96d82"
+  },
+  "remote_calls": false,
+  "paid_work": false,
+  "entrypoint_failure_fixtures": [
+    {
+      "child_returncode": 7,
+      "entrypoint_returned_normally": true,
+      "saved_run_returncode": 7
+    },
+    {
+      "child_returncode": "timeout",
+      "entrypoint_returned_normally": true,
+      "saved_run_returncode": "timeout"
+    }
+  ],
+  "hotspot_failure_fixture": {
+    "status": "stopped: learned b16: RuntimeError: fixture first-config failure",
+    "main_returned_normally": true
+  },
+  "function_resource_fields": {
+    "cpu_request": 4.0,
+    "memory_request_mib": 32768,
+    "cpu_hard_tuple": false,
+    "memory_hard_tuple": false
+  },
+  "per_function_estimate_usd": 0.9582335999999998,
+  "three_functions_plus_original_full_build_allowance_usd": 3.0430847999999995,
+  "claim_guard_present": false,
+  "cumulative_admission_present": false,
+  "decorator_declared_settings": {
+    "timeout_s": 1440,
+    "startup_timeout_s_explicit": null,
+    "retries": 0,
+    "max_containers": 1,
+    "settings_evidence": "Reviewed decorator source; timeout/autoscaler options are not fields of the SDK FunctionSpec resource dataclass."
+  },
+  "nominal_1500s_client_resource_usd": 0.99816,
+  "run1_conditional_reservation_basis": {
+    "client_s": 1500,
+    "disconnect_teardown_allowance_s": 120,
+    "runtime_CPU_RAM_overuse_factor": 2,
+    "GPU_USD_s": 0.000542,
+    "CPU_USD_core_s": 1.31e-05,
+    "RAM_USD_GiB_s": 2.22e-06,
+    "build_reserve_usd": 0.168384,
+    "fixed_margin_usd": 0.1,
+    "assumptions": "Soft-resource 2x overuse and 120s disconnect/teardown are budgeting assumptions, not platform guarantees."
+  },
+  "run1_recommended_reservation_usd": 1.55,
+  "run1_calculated_conditional_reservation_usd": 1.5463696,
+  "remaining_from_3usd_envelope_after_full_1p55_reservation_usd": 1.45
+}

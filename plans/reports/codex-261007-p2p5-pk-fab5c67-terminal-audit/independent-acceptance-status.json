@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/home/lenovo/projects/memory/.venv/bin/python",
+    "scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py",
+    "--evidence",
+    "/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1/volume-evidence/p2p5-pk-proof-v1",
+    "--grid",
+    "configs/m4_sgm_p2p5_packed_proof_grid.json",
+    "--registry",
+    "configs/m4_sgm_p2p5_packed_proof_registry.json",
+    "--schema",
+    "configs/m4_sgm_p2p5_packed_proof_output_schema.json",
+    "--admission",
+    "/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1/admission.json",
+    "--provenance",
+    "/home/lenovo/projects/memory/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-pk-proof-v1/launch_provenance.json",
+    "--out",
+    "/home/lenovo/projects/memory/plans/reports/codex-261007-p2p5-pk-fab5c67-terminal-audit/independent-acceptance.json"
+  ],
+  "returncode": 0,
+  "wall_seconds": 8.243366537004476,
+  "pass": true,
+  "exactly_matches_committed_acceptance": true,
+  "independent_acceptance_sha256": "f4afca2b2e61704ba44d33d626442d92b4ef63689d6267e567551ac6eede1044",
+  "committed_acceptance_sha256": "f4afca2b2e61704ba44d33d626442d92b4ef63689d6267e567551ac6eede1044"
+}

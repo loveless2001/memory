@@ -1,0 +1,87 @@
+{
+  "head": "e1632cbaa9625db5e99c2df8b2bde8b639d23e2b",
+  "memsub_sha256": "99f0ea978c3c54c276c0b4cf568c40af95f78b1d01ac4eef656e5b1b579bfa47",
+  "expected_identity": {
+    "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+    "memsub": "99f0ea978c3c54c276c0b4cf568c40af95f78b1d01ac4eef656e5b1b579bfa47",
+    "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4",
+    "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "registry": "9d75343b61944a8a6da81439e29d9dcb4680ac759253e34297ebc8849a5dbac3",
+    "comparator": "aad579cc42d336b8cbeb7f178a4c4dfcd7960a97c5646f3bb382c8aaee2e6b43",
+    "schema": "3d1538b8ab8a5e6cc88b1ec80a80d524485b38fe1bce01219510802b802c3189",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c"
+  },
+  "sha256": {
+    "modal-runners/modal-m4-sgm-p2p5-pk-packed-slot-proof-runner.py": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+    "scripts/sgm-p2p5-pk-packed-proof-acceptance-compare.py": "aad579cc42d336b8cbeb7f178a4c4dfcd7960a97c5646f3bb382c8aaee2e6b43",
+    "scripts/sgm-p2p5-pk-packed-slot-timing-profile.py": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4",
+    "configs/m4_sgm_p2p5_packed_proof_grid.json": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "configs/m4_sgm_p2p5_packed_proof_registry.json": "9d75343b61944a8a6da81439e29d9dcb4680ac759253e34297ebc8849a5dbac3",
+    "configs/m4_sgm_p2p5_packed_proof_output_schema.json": "3d1538b8ab8a5e6cc88b1ec80a80d524485b38fe1bce01219510802b802c3189",
+    "scripts/sgm-p2p5-pk-proof-output-schema-freeze.py": "deade6c2434a309c0a4f6e6f7258c5dcd80bf8ce16b8e838705bec842d0c1f5c",
+    "scripts/sgm-p2p5-gpu-packing-concurrent-training-throughput-test.py": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "modal-runners/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg.md": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg-amendment-pk-packed-a100-resume.md": "8c829c1172aac787d83f103d876926c27425fb755f93a98cf514dab52d99aa56",
+    "configs/m4_sgm_p2p5_grid.json": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073"
+  },
+  "tracked_status": "",
+  "focused_tests": {
+    "cmd": [
+      "/home/lenovo/projects/memory/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--basetemp",
+      "plans/reports/codex-261007-p2p5-pk-e1632cb/pytest-tmp",
+      "tests/test_sgm_pk_packed_slot_epoch_state.py",
+      "tests/test_sgm_pk_packed_slot_supervisor_end_to_end.py",
+      "tests/test_sgm_pk_packed_proof_acceptance_compare.py",
+      "tests/test_sgm_pk_packed_slot_proof_runner.py",
+      "tests/test_sgm_training_resume_checkpoint.py",
+      "tests/test_sgm_p2p5_gpu_packing_throughput_measurement.py"
+    ],
+    "returncode": 0,
+    "wall_seconds": 237.1746945490013
+  },
+  "consumed_inputs_pass_independent_reconstruction": true,
+  "reservation": {
+    "gpu_container_lifetime_usd": 8.1242784,
+    "reaper_usd": 0.017364599999999997,
+    "image_reserve_usd": 0.168384,
+    "fixed_margin_usd": 0.25,
+    "reserved_total_usd": 8.560027,
+    "expected_usd_hard_tuples": 4.4033184,
+    "expected_usd_2x_basis": 5.5587168,
+    "max_concurrent_gpu_containers": 1,
+    "app_lifetime_s": 6600,
+    "expected_serial_wall_s": 4680,
+    "max_starts": {
+      "A": 1,
+      "Aprime": 1,
+      "E": 1,
+      "B": 2,
+      "C": 2,
+      "D": 2
+    },
+    "unit_timeout_s": 2400,
+    "startup_timeout_s": 300,
+    "usd_per_container_hour_2x": 4.275936,
+    "assumptions": [
+      "the in-app reaper stops the whole app within one period + stop latency of the deadline",
+      "CPU/RAM requests charged at 2x (audited conservative basis); not a platform cash ceiling",
+      "list prices modal.com/pricing 2026-10-06",
+      "expected wall: 9 slot starts x ~5.5 min + timing ~28.5 min (packing/profile timings)"
+    ]
+  },
+  "independent_reservation_math": {
+    "gpu_life": 8.1242784,
+    "reaper": 0.017364599999999997,
+    "total": 8.560027,
+    "matches": true
+  },
+  "training_sources_unchanged_from_de656de": true,
+  "no_gpu_deploy_launch_stop_commit_push": true,
+  "protected_prereg_amendment_registered_grid_unchanged": true
+}

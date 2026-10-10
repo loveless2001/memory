@@ -1,0 +1,64 @@
+{
+  "slot": "taskhead-learned-n32",
+  "call_id": "fc-01M4D02JY58FVB3QQ8AV4V9MK5",
+  "poll": "result",
+  "result": {
+    "slot": "taskhead-learned-n32",
+    "status": "done",
+    "epoch": 1,
+    "states": {
+      "taskhead-learned-n32-s0": "COMPLETE",
+      "taskhead-learned-n32-s1": "COMPLETE"
+    }
+  },
+  "past_deadline": true,
+  "final_shutdown": {
+    "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+    "stop_error": "NotFoundError(\"App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'\")",
+    "verification": {
+      "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+      "verified": true,
+      "app_rows": [
+        {
+          "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+          "description": "memsub-m4-sgm-p2p5-readout-probe",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-08 12:31:59+07:00",
+          "stopped_at": "2026-10-08 21:28:09+07:00"
+        }
+      ],
+      "container_rows": []
+    },
+    "status": "stopped_verified"
+  },
+  "evidence": {
+    "returncode": 0,
+    "stderr_tail": ""
+  },
+  "dicts": {
+    "guard": 5,
+    "admission": 1
+  },
+  "evidence_dir": "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1",
+  "cells": {
+    "taskhead-learned-n32-s0": {
+      "state": "COMPLETE",
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "validation": "valid"
+    },
+    "taskhead-learned-n32-s1": {
+      "state": "COMPLETE",
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "validation": "valid"
+    }
+  }
+}

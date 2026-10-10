@@ -1,0 +1,202 @@
+{
+  "timestamp_utc": "2026-10-06T10:47:38.421070+00:00",
+  "reviewed_head": "9e7b897a88526cf9c26589b2e69ddb9be44d45e0",
+  "hashes": {
+    "modal-m4-sgm-p2p5-l40s-timing-profile.py": "e26013e6e34545552eb7d6d4fc8e07af2e1fc8c927f5e38818714a3de4069349",
+    "modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "modal-m4-sgm-p2p5-reaper-self-stop-proof.py": "00509c185b26762eadea126e27b2dc55b71de5cf1e592d6bceda20276de1479b"
+  },
+  "production_logic_mounts": [
+    "/root/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"
+  ],
+  "proof_logic_mounts": [
+    "/root/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"
+  ],
+  "both_reapers_cpu_only_without_volumes": true,
+  "fixtures": {
+    "valid_stop": {
+      "result": "PASS",
+      "report_retained": true,
+      "local_stop_calls": [],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": 1120.0,
+      "errors": [],
+      "judgement": "self-stop by the bound scheduled reaper inside the intended window",
+      "fallback": null
+    },
+    "deploy_timeout": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": null,
+      "errors": [
+        "RuntimeError('deploy exit deploy_timeout, app id ap-owned-fixture')"
+      ],
+      "judgement": null,
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    },
+    "binding_exception": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": 1120.0,
+      "errors": [
+        "RuntimeError('fixture binding RPC failure')"
+      ],
+      "judgement": null,
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    },
+    "observer_exception": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": 1120.0,
+      "errors": [
+        "RuntimeError('fixture lifecycle RPC failure')"
+      ],
+      "judgement": null,
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    },
+    "premature_stop": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": 1120.0,
+      "errors": [],
+      "judgement": "stop at 1010 outside the intended window [1120, ...]",
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    },
+    "missing_marker": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": 1120.0,
+      "errors": [],
+      "judgement": "no server-side log evidence of the bound scheduled stop",
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    },
+    "lookup_recovery": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": null,
+      "provenance_deadline": null,
+      "errors": [
+        "RuntimeError('deploy exit 0, app id None')"
+      ],
+      "judgement": null,
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    },
+    "fallback_stop_failure": {
+      "result": "FAILED",
+      "report_retained": true,
+      "local_stop_calls": [
+        "ap-owned-fixture"
+      ],
+      "provenance_app_id": "ap-owned-fixture",
+      "provenance_deadline": 1120.0,
+      "errors": [],
+      "judgement": "no server-side log evidence of the bound scheduled stop",
+      "fallback": {
+        "app_id": "ap-owned-fixture",
+        "stop_error": "RuntimeError('fixture stop failed')",
+        "verify": {
+          "verified": true,
+          "app_state": "stopped",
+          "app_containers": 0
+        }
+      }
+    }
+  },
+  "profile_reservation": {
+    "gpu_container_lifetime_usd": 1.9563935999999997,
+    "reaper_ticks_usd": 0.009647,
+    "image_build_usd": 0.16838399999999998,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.3844245999999996,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 2700,
+    "reaper_period_s": 120,
+    "abandon_s": 1800,
+    "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance",
+    "assumptions": [
+      "reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+      "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+      "list prices from modal.com/pricing checked 2026-10-06"
+    ]
+  },
+  "proof_reservation": {
+    "max_app_life_s": 1380,
+    "max_ticks": 25,
+    "reserved_usd": 0.052740625,
+    "note": "counted inside the $3 P2.5 profile scope (user 21446); bare image build is negligible"
+  },
+  "combined_reservation_usd": 2.4371652249999998,
+  "probe_remote_calls": false,
+  "paid_work": false,
+  "clearance": "one frozen CPU prove attempt only, inside existing $3 scope; GPU remains held"
+}

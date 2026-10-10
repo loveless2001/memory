@@ -1,0 +1,313 @@
+{
+  "status": "PASS_arithmetic_and_preservation_only",
+  "input_sha256": {
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v2/volume-evidence/p2p5-l40s-profile-v2/profile-l40s/profile.json": "ff2a7a437a3a1ae43d8c720522ff97e130650d82b2035d6c69efbc95083f862b",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v2/campaign-ledger-from-profile-v2-52-20.json": "0290b1a35249f51119802da1f4caabdfd3e506c8f4747b001c21a7246931db06",
+    "configs/m4_sgm_p2p5_grid.json": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg.md": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002",
+    "memsub/sgm/synthetic_pilot_run.py": "9c45f6dde647014aa8ae67ceadf645465d90e871afcacf2793c8674f95d3ca1c",
+    "memsub/sgm/synthetic_pilot_evaluation.py": "85cf09b2ee6ba518b521826af987b5ce55f3c9ec196494c30b40a92b08d3be7a"
+  },
+  "artifact_eval_batches_by_arm": {
+    "learned": 84,
+    "random_fixed": 84,
+    "oracle": 84,
+    "single_cell": 68,
+    "memory_off": 20
+  },
+  "usd_per_container_s": 0.0006654399999999999,
+  "bases": {
+    "estimate": {
+      "historical_total_usd": 158.37643063514034,
+      "corrected": {
+        "cells": [
+          {
+            "cell": "learned-n16-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 6.525269060000006,
+            "wall_s": 11827.174408568493,
+            "charged_life_s": 11827.174408568493
+          },
+          {
+            "cell": "learned-n16-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 6.525269060000006,
+            "wall_s": 11827.174408568493,
+            "charged_life_s": 11827.174408568493
+          },
+          {
+            "cell": "learned-n32-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 18536.586574857
+          },
+          {
+            "cell": "learned-n32-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 18536.586574857
+          },
+          {
+            "cell": "singlecell-n16-s0",
+            "artifact_batches": 68,
+            "eval_batch_s": 6.525269060000006,
+            "wall_s": 11722.770103608493,
+            "charged_life_s": 11722.770103608493
+          },
+          {
+            "cell": "singlecell-n16-s1",
+            "artifact_batches": 68,
+            "eval_batch_s": 6.525269060000006,
+            "wall_s": 11722.770103608493,
+            "charged_life_s": 11722.770103608493
+          },
+          {
+            "cell": "singlecell-n32-s0",
+            "artifact_batches": 68,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18390.420547913,
+            "charged_life_s": 18390.420547913
+          },
+          {
+            "cell": "singlecell-n32-s1",
+            "artifact_batches": 68,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18390.420547913,
+            "charged_life_s": 18390.420547913
+          },
+          {
+            "cell": "randomfixed-n16-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 6.525269060000006,
+            "wall_s": 11827.174408568493,
+            "charged_life_s": 11827.174408568493
+          },
+          {
+            "cell": "randomfixed-n16-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 6.525269060000006,
+            "wall_s": 11827.174408568493,
+            "charged_life_s": 11827.174408568493
+          },
+          {
+            "cell": "randomfixed-n32-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 18536.586574857
+          },
+          {
+            "cell": "randomfixed-n32-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 18536.586574857
+          },
+          {
+            "cell": "memoryoff-n16-s0",
+            "artifact_batches": 20,
+            "eval_batch_s": 2.4794438385714153,
+            "wall_s": 2951.0056774499126,
+            "charged_life_s": 2951.0056774499126
+          },
+          {
+            "cell": "memoryoff-n16-s1",
+            "artifact_batches": 20,
+            "eval_batch_s": 2.4794438385714153,
+            "wall_s": 2951.0056774499126,
+            "charged_life_s": 2951.0056774499126
+          },
+          {
+            "cell": "memoryoff-n32-s0",
+            "artifact_batches": 20,
+            "eval_batch_s": 3.471221373999981,
+            "wall_s": 4501.295020790986,
+            "charged_life_s": 4501.295020790986
+          },
+          {
+            "cell": "memoryoff-n32-s1",
+            "artifact_batches": 20,
+            "eval_batch_s": 3.471221373999981,
+            "wall_s": 4501.295020790986,
+            "charged_life_s": 4501.295020790986
+          },
+          {
+            "cell": "oracle-n32-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 18536.586574857
+          },
+          {
+            "cell": "oracle-n32-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 18536.586574857
+          }
+        ],
+        "cell_gpu_hours": 64.90533327303912,
+        "readings_s": 7124.520177748122,
+        "cells_usd": 155.4861779035601,
+        "readings_usd": 4.740940707080709,
+        "image_build_usd": 0.16838399999999998,
+        "reaper_usd": 0.037864474999999995,
+        "fixed_margin_usd": 0.0,
+        "total_usd": 160.4333670856408,
+        "longest_cell_life_h": 5.149055555555555
+      },
+      "increase_usd": 2.056936450500473
+    },
+    "bound": {
+      "historical_total_usd": 270.5192411888874,
+      "corrected": {
+        "cells": [
+          {
+            "cell": "learned-n16-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "learned-n16-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "learned-n32-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "learned-n32-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "singlecell-n16-s0",
+            "artifact_batches": 68,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18390.420547913,
+            "charged_life_s": 25986.5887670782
+          },
+          {
+            "cell": "singlecell-n16-s1",
+            "artifact_batches": 68,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18390.420547913,
+            "charged_life_s": 25986.5887670782
+          },
+          {
+            "cell": "singlecell-n32-s0",
+            "artifact_batches": 68,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18390.420547913,
+            "charged_life_s": 25986.5887670782
+          },
+          {
+            "cell": "singlecell-n32-s1",
+            "artifact_batches": 68,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18390.420547913,
+            "charged_life_s": 25986.5887670782
+          },
+          {
+            "cell": "randomfixed-n16-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "randomfixed-n16-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "randomfixed-n32-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "randomfixed-n32-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "memoryoff-n16-s0",
+            "artifact_batches": 20,
+            "eval_batch_s": 3.471221373999981,
+            "wall_s": 4501.295020790986,
+            "charged_life_s": 6541.81302910738
+          },
+          {
+            "cell": "memoryoff-n16-s1",
+            "artifact_batches": 20,
+            "eval_batch_s": 3.471221373999981,
+            "wall_s": 4501.295020790986,
+            "charged_life_s": 6541.81302910738
+          },
+          {
+            "cell": "memoryoff-n32-s0",
+            "artifact_batches": 20,
+            "eval_batch_s": 3.471221373999981,
+            "wall_s": 4501.295020790986,
+            "charged_life_s": 6541.81302910738
+          },
+          {
+            "cell": "memoryoff-n32-s1",
+            "artifact_batches": 20,
+            "eval_batch_s": 3.471221373999981,
+            "wall_s": 4501.295020790986,
+            "charged_life_s": 6541.81302910738
+          },
+          {
+            "cell": "oracle-n32-s0",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          },
+          {
+            "cell": "oracle-n32-s1",
+            "artifact_batches": 84,
+            "eval_batch_s": 9.135376684000008,
+            "wall_s": 18536.586574857,
+            "charged_life_s": 26191.221204799796
+          }
+        ],
+        "cell_gpu_hours": 108.89606089798342,
+        "readings_s": 11566.716290321932,
+        "cells_usd": 260.86966115023466,
+        "readings_usd": 7.696955688231825,
+        "image_build_usd": 0.16838399999999998,
+        "reaper_usd": 0.05329967499999999,
+        "fixed_margin_usd": 5.0,
+        "total_usd": 273.7883005134665,
+        "longest_cell_life_h": 7.275333333333333
+      },
+      "increase_usd": 3.269059324579075
+    }
+  },
+  "limitations": [
+    "Historical L40S timing/proxy/linear-N16 assumptions retained.",
+    "The old key 'bound' is a planning reserve, not a measured or enforced execution bound.",
+    "Preemption, packed A100 overhead and performance are not modeled here.",
+    "No registered training, reserved readings, Modal call or spending."
+  ]
+}

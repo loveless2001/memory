@@ -1,0 +1,97 @@
+{
+  "at_utc": "2026-10-08T05:40:00.074577+00:00",
+  "bound_app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+  "modal_version": "1.5.1",
+  "inventory": {
+    "app": {
+      "argv": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "app",
+        "list",
+        "--json"
+      ],
+      "rc": 0,
+      "probe_rows": [
+        {
+          "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+          "description": "memsub-m4-sgm-p2p5-readout-probe",
+          "state": "deployed",
+          "tasks": "2",
+          "created_at": "2026-10-08 12:31:59+07:00",
+          "stopped_at": null
+        }
+      ]
+    },
+    "container": {
+      "argv": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "container",
+        "list",
+        "--json"
+      ],
+      "rc": 0,
+      "probe_rows": [
+        {
+          "container_id": "ta-01M4D09P617AS1DH27BY1W2NNR",
+          "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+          "app_name": "memsub-m4-sgm-p2p5-readout-probe",
+          "start_time": "2026-10-08 12:38:10+07:00"
+        },
+        {
+          "container_id": "ta-01M4D02K7VFMBTM6WWHRATX0FR",
+          "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+          "app_name": "memsub-m4-sgm-p2p5-readout-probe",
+          "start_time": "2026-10-08 12:34:18+07:00"
+        }
+      ]
+    }
+  },
+  "dicts": {
+    "guard": {
+      "first_tick": 1791437771.3842256,
+      "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+      "deadline_epoch": 1791469595.643849,
+      "self_app_id": "ap-O1KAZIvKbm2XnyURE5vBzc"
+    },
+    "admission": {
+      "start-1": 1791437658.5554333
+    }
+  },
+  "call_id": "fc-01M4D02JY58FVB3QQ8AV4V9MK5",
+  "call_poll": {
+    "state": "pending"
+  },
+  "stats": {
+    "run_slot": {
+      "backlog": 0,
+      "num_total_runners": 1
+    },
+    "reaper": {
+      "backlog": 0,
+      "num_total_runners": 0
+    }
+  },
+  "fetched": {
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/state.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s0/state.json",
+      "bytes": 3277
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/worker-args.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s0/attempt-1/worker-args.json",
+      "bytes": 1256
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s1/epoch-1/state.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s1/state.json",
+      "bytes": 3277
+    },
+    "m4-sgm/p2p5-readout-probe-v1/taskhead-learned-n32/cells/taskhead-learned-n32-s1/epoch-1/attempt-1/worker-args.json": {
+      "local": "remote-metadata/taskhead-learned-n32-s1/attempt-1/worker-args.json",
+      "bytes": 1256
+    }
+  },
+  "remote_mutations": false
+}

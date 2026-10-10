@@ -1,0 +1,70 @@
+{
+  "commit": "e03ca5a6837db104f79677a492a7d8e889335cdd",
+  "package_files": [
+    {
+      "file": "modal-runners/modal-m4-sgm-p2p5-b2-occupied-fill-resume-runner.py",
+      "sha256": "706696dfae6bcf7db86fdb9bd5b92642c63f948fe08fab85b004f11611761683"
+    },
+    {
+      "file": "plans/261009-1135-m4-sgm-p2p5-b2-occupied-fill-long-run/launch-b2-resume-once.sh",
+      "sha256": "34ea253a6e6a7f7545a4ec24f9bd6f4a1071aca79fc97fdfd2bb6bf539bb0c02"
+    },
+    {
+      "file": "tests/test_sgm_p2p5_b2_occupied_fill_resume_runner.py",
+      "sha256": "24b589be7fa2f2fd35e829139a0ad5c8768f98435fa24a71e73efc476d94e714"
+    },
+    {
+      "file": "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+      "sha256": "5be7cd941e43970d6b35dc753fb29641496f74dcee24619aa9795f2cd36a397e"
+    },
+    {
+      "file": "scripts/sgm-p2p5-taskhead-read-escape-stage-a-train.py",
+      "sha256": "273f3375a3e71f280a185c264595fe98c014abc7b81ac6c633b9650e3d3d8c7b"
+    },
+    {
+      "file": "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+      "sha256": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0"
+    },
+    {
+      "file": "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py",
+      "sha256": "b4904576c7294871570871b21994f9ccac424d697de22173179fc2c55488d3df"
+    },
+    {
+      "file": "plans/261009-1135-m4-sgm-p2p5-b2-occupied-fill-long-run/proposal-resume-v0.4.md",
+      "sha256": "d4348a3bec8c04baa3230959aa6fe5628407238d2de0eaca901044289c590595"
+    }
+  ],
+  "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+  "unchanged_vs_24b1432": [
+    "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+    "scripts/sgm-p2p5-taskhead-read-escape-stage-a-train.py",
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json"
+  ],
+  "shell_syntax_ok": true,
+  "checkpoint": "/home/lenovo/projects/memory/plans/reports/codex-261009-gravity-wait38-b2-manual-stop-audit/volume-evidence-verified/b2-run-v1/B2/resume.pt",
+  "checkpoint_step": 750,
+  "checkpoint_sha256": "cd1a7e72cbbf4fc2cf92e029395c7e4f78a727d2b6d165b5030bacc1bd753394",
+  "checkpoint_identity_and_config_match": true,
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "resume_s": 14400,
+    "startup_allowance_s": 300,
+    "reservation_usd": 9.974537999999999,
+    "start1_provisional_usd": 5.69262133,
+    "start1_budget_usd": 6.07089738,
+    "campaign_bound_usd": 16.04543538,
+    "cap_usd": 17.0,
+    "cleanup_budget_s": 300,
+    "assumptions": [
+      "every in-deadline start ends by the resume deadline (child timeout + worker SIGKILL, CPU-tested); a start after it refuses at entry within STARTUP_S",
+      "Modal scales the deployed function to zero after the call (scaledown 2 s, no min containers)",
+      "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+    ],
+    "unenforced": "if the in-worker guards failed, only the per-attempt function timeout (RESUME_S) and the local watcher (PC up) stop it; CPU overuse beyond the margin; start-1 billing backfill"
+  },
+  "decimal_rate_usd_s": "0.000678540",
+  "decimal_resume_reserve_usd": "9.974538000",
+  "decimal_campaign_compute_reserve_usd": "16.045435380",
+  "decimal_headroom_usd": "0.954564620"
+}

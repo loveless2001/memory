@@ -1,0 +1,57 @@
+{
+  "observed_utc": "2026-10-08T19:23:58.106391+00:00",
+  "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+  "run_metadata": {
+    "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+    "base_image_id": "im-A7BXMB8v1cVYRvC9pMqZ3i",
+    "arms_planned": [
+      "A0",
+      "A1",
+      "A2"
+    ],
+    "ledger": {
+      "rate_usd_s": 0.0006785399999999999,
+      "cpu_overuse_margin": 1.25,
+      "outer_s": 4740,
+      "stop_allowance_s": 300,
+      "image_construction_usd": 0.0,
+      "reservation_usd": 3.4198416,
+      "cap_usd": 4.0,
+      "unenforced": "app-stop latency after client exit (cleanup-verify checks it)"
+    },
+    "started": 1791486600.2914708,
+    "gpu": "L40S",
+    "cpu": 4.0,
+    "memory_gib": 32,
+    "arms": {},
+    "outcome": "started",
+    "deadline": 1791491100.2921758
+  },
+  "app": {
+    "rows": [
+      {
+        "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+        "description": "memsub-m4-sgm-p2p5-stage-a-read-escape",
+        "state": "ephemeral",
+        "tasks": "1",
+        "created_at": "2026-10-09 02:09:57+07:00",
+        "stopped_at": null
+      }
+    ]
+  },
+  "container": {
+    "rows": [
+      {
+        "container_id": "ta-01M4EFFEHF76SN3KM5K8AQP8QR",
+        "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+        "app_name": "memsub-m4-sgm-p2p5-stage-a-read-escape",
+        "start_time": "2026-10-09 02:22:41+07:00"
+      }
+    ]
+  },
+  "terminal_markers": {
+    "stage-a-run-v1.exit.txt": false,
+    "stage-a-run-v1.cleanup-exit.txt": false,
+    "stage-a-run-v1/cleanup.json": false
+  }
+}

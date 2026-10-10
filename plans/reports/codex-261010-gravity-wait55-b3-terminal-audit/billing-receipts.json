@@ -1,0 +1,38 @@
+{
+  "commands": [
+    {
+      "args": [
+        "modal",
+        "billing",
+        "report",
+        "--for",
+        "today",
+        "--resolution",
+        "h",
+        "--show-resources",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout_file": "billing-hourly-raw.json",
+      "stdout_file_mtime_utc": "2026-10-10T06:30:46.224765+00:00"
+    },
+    {
+      "args": [
+        "modal",
+        "billing",
+        "report",
+        "--for",
+        "today",
+        "--resolution",
+        "d",
+        "--show-resources",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout_file": "billing-daily-raw.json",
+      "stdout_file_mtime_utc": "2026-10-10T06:30:46.257605+00:00"
+    }
+  ],
+  "reported_app_id": "ap-uV0nVE4wGpjtep7vRs8tot",
+  "settled_invoice": false
+}

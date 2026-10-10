@@ -1,0 +1,151 @@
+{
+  "capture_started": "2026-10-09T14:57:20.413051+00:00",
+  "launch": {
+    "runner": "b2-resume-v0.4",
+    "ledger": {
+      "rate_usd_s": 0.0006785399999999999,
+      "cpu_overuse_margin": 1.25,
+      "resume_s": 14400,
+      "startup_allowance_s": 300,
+      "reservation_usd": 9.974537999999999,
+      "start1_provisional_usd": 5.69262133,
+      "start1_budget_usd": 6.07089738,
+      "campaign_bound_usd": 16.04543538,
+      "cap_usd": 17.0,
+      "cleanup_budget_s": 300,
+      "assumptions": [
+        "every in-deadline start ends by the resume deadline (child timeout + worker SIGKILL, CPU-tested); a start after it refuses at entry within STARTUP_S",
+        "Modal scales the deployed function to zero after the call (scaledown 2 s, no min containers)",
+        "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+      ],
+      "unenforced": "if the in-worker guards failed, only the per-attempt function timeout (RESUME_S) and the local watcher (PC up) stop it; CPU overuse beyond the margin; start-1 billing backfill"
+    },
+    "started": 1791537225.9707634,
+    "outcome": "spawned",
+    "app_id": "ap-bgncTcGPrYbwfmiQtprLN9",
+    "deadline": 1791551643.2783465,
+    "call_id": "fc-01M4FZ1SZJ6FVRZQ4Y9VCAXMNB",
+    "spawned": 1791537244.4658082
+  },
+  "dict": {
+    "deadline": 1791546912.6074162,
+    "start-1": {
+      "task": "ta-01M4FJAEGRVPR8T179Y5848N2R",
+      "t": 1791523898.360958
+    },
+    "start-2": {
+      "task": "ta-01M4FZCJ3Z083Y4P4EKTPHX3XR",
+      "t": 1791537598.461718,
+      "runner": "resume-v0.4"
+    },
+    "start-3": null,
+    "resume-1-deadline": 1791551643.2783465
+  },
+  "call_state": "done",
+  "call_info": {
+    "returncode": 0,
+    "start": "start-2",
+    "volume_commit_errors": 0,
+    "wall_s": 8610.676496505737,
+    "child_timeout_s": 13920.185520887375,
+    "versions": {
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2"
+    },
+    "cmd": [
+      "/usr/local/bin/python",
+      "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+      "--manifest",
+      "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+      "--out",
+      "/vol/b2-run-v1/B2"
+    ]
+  },
+  "files": [
+    {
+      "path": "B2.start-2.stdout.txt",
+      "bytes": 139,
+      "sha256": "9abcf3dc10ab83e1807c1deaba918aafd7f93976fb26c3792af8c0a4d718349f",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/trained_parameters.safetensors",
+      "bytes": 8625720,
+      "sha256": "2149c97517ad0f844b30a82f52b0072090f02b1709809f6bac5f09afe107fdb3",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/run_manifest.json",
+      "bytes": 2765,
+      "sha256": "7d6e2cb1f2e36695157f267942d2492a2325f846833de91b1329fc4cc341e4b9",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/final_bank_derange_eval.json",
+      "bytes": 942,
+      "sha256": "f07cded5f68bf0a1eefdc116a414ae7c69e10e0a11b3a25bdcfbb99089a5dfc1",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/b2_result.json",
+      "bytes": 4244,
+      "sha256": "2a34108de9197116f331ef5a76d3d0c4c9c3bbd9b1d75832f7778557576c6f74",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/routing_telemetry.jsonl",
+      "bytes": 373761,
+      "sha256": "c865bb149322c5a54bf5f3a1275112e84bcba7cdfcae67e1fc965586b5fcb2b2",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/resume.pt",
+      "bytes": 25159637,
+      "sha256": "443f041cae4efa21b7859415063c059248ce8fabe4f53b3f87c58d7c8f189634",
+      "matches_owner_collected_file": null
+    },
+    {
+      "path": "B2.starts.jsonl",
+      "bytes": 117,
+      "sha256": "7d9f65b5aab847f12c86fa022a11a4d34ea4a9fe8df339d5e109ca9a6bbcf76b",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2.start-2.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2.archive/start-2/routing_telemetry.jsonl",
+      "bytes": 193532,
+      "sha256": "a8fdd84f61f180c44a6928955d60f9f9d71968b0b4476390960f210520a525c2",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2.start-1.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2.start-1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "B2/identity.json",
+      "bytes": 921,
+      "sha256": "66e36eb0820dca667a70c028be3389d33bd22f6f3d6fabbcdcbffac00ed830cf",
+      "matches_owner_collected_file": true
+    },
+    {
+      "path": "campaign.json",
+      "bytes": 207,
+      "sha256": "36931bbc80de7fed351378a5f91d4a6e158cb213f09f4e195020a8df7f4899c9",
+      "matches_owner_collected_file": true
+    }
+  ],
+  "capture_finished": "2026-10-09T14:57:54.446214+00:00"
+}

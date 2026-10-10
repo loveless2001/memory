@@ -1,0 +1,73 @@
+{
+  "scenarios": {
+    "B": {
+      "learned-n32-s99": {
+        "bitwise": true,
+        "max_rel": 0.0
+      },
+      "learned-n32-s100": {
+        "bitwise": true,
+        "max_rel": 0.0
+      },
+      "resumed_from": 4,
+      "epochs": [
+        1,
+        2
+      ]
+    },
+    "C": {
+      "learned-n32-s99": {
+        "bitwise": true,
+        "max_rel": 0.0
+      },
+      "learned-n32-s100": {
+        "bitwise": true,
+        "max_rel": 0.0
+      },
+      "eval_only_epoch": 2,
+      "interrupted_artifact_units": 1
+    },
+    "D": {
+      "learned-n32-s99": {
+        "bitwise": true,
+        "max_rel": 0.0
+      },
+      "learned-n32-s100": {
+        "failed_persisted_epochs": [
+          1,
+          2
+        ]
+      }
+    },
+    "E": {
+      "learned-n32-s99": {
+        "bitwise": true,
+        "max_rel": 0.0
+      }
+    }
+  },
+  "pass": true,
+  "control": {
+    "mode": "bitwise",
+    "cells": {
+      "learned-n32-s99": {
+        "bitwise": true,
+        "max_rel": 0.0
+      },
+      "learned-n32-s100": {
+        "bitwise": true,
+        "max_rel": 0.0
+      }
+    }
+  },
+  "timing": {
+    "configs": 18,
+    "commit_s": [
+      2.3467690679999578,
+      2.1222269689999393,
+      2.7476388360000783
+    ],
+    "checkpoint_bytes_max": 26321609
+  },
+  "comparator_sha256": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c"
+}

@@ -1,0 +1,56 @@
+{
+  "reviewed_at_utc": "2026-10-08T05:10:09.366570+00:00",
+  "chat_request": 21800,
+  "package_commit": "30e2b3ecd879f883263b9852b2a89b37c2f61682",
+  "code_commits": [
+    "8b476fd",
+    "51b333d"
+  ],
+  "verdict": "PASS: r2 implementation gate; one bounded local smoke cleared",
+  "prior_findings": {
+    "P1_builder_import": "closed",
+    "P2_smoke_outer_boundary": "closed"
+  },
+  "independent_tests": {
+    "summary": "73 passed in 57.17s",
+    "rc": 0,
+    "wall_s": 59.82880719201057
+  },
+  "package_files_verified": 26,
+  "saved_full_suite": {
+    "summary": "565 passed, 2 skipped in 563.50s (0:09:23)",
+    "independently_repeated_in_r2_review": false
+  },
+  "saved_mutations": {
+    "baseline": {
+      "rc": 0,
+      "failed": [],
+      "summary": "73 passed in 56.42s",
+      "ok": true
+    },
+    "aimed_caught": 38,
+    "r1_mutations_unchanged": 26,
+    "preserved_first_run_survivor": "smoke ignores the timeout's argv tail",
+    "independently_repeated": false
+  },
+  "cleared_smoke": {
+    "number_of_attempts": 1,
+    "seed": 7,
+    "batch": 2,
+    "steps": 20,
+    "checkpoint_every": 10,
+    "outer_wall_s": 3600,
+    "inner_watchdog_s": 3540,
+    "automatic_retry": false,
+    "command": "timeout --signal=KILL 3600 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>"
+  },
+  "paid_launch_cleared": false,
+  "existing_paid_authorization": "User 21755 conditional two-cell go at 40.75 USD retained; smoke-evidence gate still open.",
+  "limitations": [
+    "Offline builder/runtime import checks do not execute a Modal image build.",
+    "Short harmless-tree timeout test plus command guard establishes the local launch mechanism; no GPU smoke was run by this audit.",
+    "The ledger remains conditional on its declared billing and stop-tail assumptions."
+  ],
+  "implementation_modified_by_auditor": false,
+  "modal_rpc_build_deploy_spawn_by_auditor": false
+}

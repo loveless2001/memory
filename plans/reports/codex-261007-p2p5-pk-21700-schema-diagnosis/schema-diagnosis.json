@@ -1,0 +1,407 @@
+{
+  "diagnosis": "documented nullable gradient diagnostics rejected by frozen homogeneous-layer schema",
+  "acceptance": "unchanged: learned-n32-s1 remains FAILED; original all-18-valid readings gate blocked",
+  "cells": {
+    "learned-n32-s0": {
+      "state": "COMPLETE",
+      "reason": null,
+      "epoch": 1,
+      "state_sha256": "d214c3fe8f65b5d9f084e662b5f7b06858f9fe037aa435df93916960681c340d",
+      "done_sha256": "769685bb3d56d62e731218b071509bdd4eafa43ea7e52ecd4d4ce2a09028cb15",
+      "record_has_complete_output_pointer": true,
+      "full_frozen_validator": "valid",
+      "all_checks_except_structural_schema": "valid",
+      "terminal_generation": {
+        "epoch": 1,
+        "file": "gen-30-step1500.pt",
+        "g": 30,
+        "sha256": "1b1fb675f3107815b6396f9e9a2432cf508a06916666adbdcb9aeae7e63d8690",
+        "step": 1500
+      },
+      "terminal_generation_hash_matches": true,
+      "output_hashes": {
+        "metrics.json": "c43787698418291f112568ed057b7cd9431b0c784fd00bee97ee0f81d736cd7f",
+        "per_example_results.jsonl": "ec67c4ac4361d5ed621acb072f04062aca091c08e3c1fbe548518396d1d89f5c",
+        "report.md": "01f8cb3eb011722b14c4510cd3c705d35a6075507c73f9d685afa31a02cb021e",
+        "routing_telemetry.jsonl": "eb8e8b08109c997acdc7b5bb7c1786adb1f8407d02b4162f4e6695cbf019376c",
+        "run_manifest.json": "54deff1b692449eb8f3be20e020958a6d5914ea5e739dbed885fe75da29338b3",
+        "split_manifest.json": "8c1cb773fda176e9ae882341eda81935c48173fe7afeb8020d21941562529a4d",
+        "trained_parameters.safetensors": "dcb73065301cc67af7214d334dfac5c5792d1bb73048fab26d7c9724764c6552"
+      },
+      "output_hashes_match_done": true,
+      "telemetry_rows": 166,
+      "train_rows": 150,
+      "schema_failure_rows": [],
+      "null_gradient_rows": [],
+      "null_gradient_leaf_count": 0,
+      "null_update_leaf_count": 0,
+      "otherwise_matches_frozen_telemetry_types": true,
+      "metrics_schema_matches": true
+    },
+    "learned-n32-s1": {
+      "state": "FAILED",
+      "reason": "output validation: output schema: layer-normalised key L{L}/k_proj has inconsistent schemas",
+      "epoch": 1,
+      "state_sha256": "d4996651f052ff82eb1d8e333316bddcbfd3247bd21a5ccd354d8fa8d20bcc54",
+      "done_sha256": "33a3dafb0ed6323d58be271d18442f7d360c4e95fa968f67d7afc9ef4e748d85",
+      "record_has_complete_output_pointer": false,
+      "full_frozen_validator": "output schema: layer-normalised key L{L}/k_proj has inconsistent schemas",
+      "all_checks_except_structural_schema": "valid",
+      "terminal_generation": {
+        "epoch": 1,
+        "file": "gen-30-step1500.pt",
+        "g": 30,
+        "sha256": "38982aab52b02bf3c666431e10e87d3ae64ebb41da0c6de5331e9655f2f94801",
+        "step": 1500
+      },
+      "terminal_generation_hash_matches": true,
+      "output_hashes": {
+        "metrics.json": "c48f3a36fd3603a8e6eebcc72c5eaa0abe4ec28d27ce8e2fd9292d97d3174879",
+        "per_example_results.jsonl": "f34311e1f97e3cb6ce54fba90c1271184b2c8812ce39994986d51f2f6c2d1e62",
+        "report.md": "4800942a857c0144c33798962194932e220e622dfcc1bd1bf1a51d2e8e9e2501",
+        "routing_telemetry.jsonl": "890ee5813c989e28c556e33411e5015f06e262eb910bac3588a542bd9fb3bd76",
+        "run_manifest.json": "3a4f38c8e689e51fc5d0b3d0449133455d1cc3f26261c6e85dda5bbd36b08378",
+        "split_manifest.json": "2d069df813c15ebe6718e7c080ae18d36b331da9c58351eca60ae5d9dd6f6041",
+        "trained_parameters.safetensors": "e6237df11a557f4c3471de58c8d0966b0992d75cbe7d396ce166f2ceec1c6cf0"
+      },
+      "output_hashes_match_done": true,
+      "telemetry_rows": 166,
+      "train_rows": 150,
+      "schema_failure_rows": [
+        {
+          "line": 7,
+          "step": 50,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 8,
+          "step": 60,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 13,
+          "step": 100,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 14,
+          "step": 110,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 16,
+          "step": 130,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 19,
+          "step": 160,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 20,
+          "step": 170,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 28,
+          "step": 240,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 36,
+          "step": 310,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 37,
+          "step": 320,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 39,
+          "step": 340,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 46,
+          "step": 400,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 49,
+          "step": 430,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 53,
+          "step": 470,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 98,
+          "step": 880,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 162,
+          "step": 1460,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        },
+        {
+          "line": 164,
+          "step": 1480,
+          "reason": "layer-normalised key L{L}/k_proj has inconsistent schemas"
+        }
+      ],
+      "null_gradient_rows": [
+        {
+          "line": 7,
+          "step": 50,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 8,
+          "step": 60,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 13,
+          "step": 100,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 14,
+          "step": 110,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 16,
+          "step": 130,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 19,
+          "step": 160,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 20,
+          "step": 170,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 28,
+          "step": 240,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 36,
+          "step": 310,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 37,
+          "step": 320,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 39,
+          "step": 340,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 46,
+          "step": 400,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 49,
+          "step": 430,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 53,
+          "step": 470,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 98,
+          "step": 880,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 162,
+          "step": 1460,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        },
+        {
+          "line": 164,
+          "step": 1480,
+          "keys": [
+            "L20/k_proj",
+            "L20/value",
+            "L20/beta"
+          ],
+          "update_norm": {
+            "L20/k_proj": 0.0,
+            "L20/value": 0.0,
+            "L20/beta": 0.0
+          }
+        }
+      ],
+      "null_gradient_leaf_count": 51,
+      "null_update_leaf_count": 0,
+      "otherwise_matches_frozen_telemetry_types": true,
+      "metrics_schema_matches": true
+    }
+  },
+  "tracked_diff": "",
+  "source_head": "537ace8bc30a5ec486e521b6adf7ee3c340abf9f",
+  "artifact_edits": 0,
+  "remote_mutations": 0
+}

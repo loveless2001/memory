@@ -1,0 +1,56 @@
+{
+  "revision": "6a81005820d4424401d1c99892093fc7ec6d6ae9",
+  "cpu_fakes_only_no_remote_calls": true,
+  "source_sha256": {
+    "modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py": "f2c17f6aa7daa5914b40948391c7dc93177b2484b8f3dd787d42b863087a761d",
+    "modal-m4-sgm-p2p5-pk-campaign-control-plane-reaper.py": "a0577397c0348388a0bcdd6a60933d2098846fd5a76dca34165ca58e3c07e3d5",
+    "modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py": "5a0abcefb4c06eb829a74b23b559d84555db14db89438ab5f54b67a2706f242d"
+  },
+  "ordinary_writer_failure_contained": {
+    "status": {
+      "evidence": "writer launch error OSError('controlled writer launch failure')",
+      "fallback_evidence": {
+        "__unresolved__": [
+          "slot"
+        ]
+      },
+      "self_stop": "stopped_verified"
+    },
+    "self_stop_attempted": true
+  },
+  "partial_binding_refused": {
+    "partial_guard_problem": "controller binding incomplete: ['deadline_epoch']",
+    "full_guard_accepted": true
+  },
+  "fallback_lost_on_immediate_self_stop": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "fallback_emitted_before_stop": false
+  },
+  "normal_timeout": {
+    "outcome": {
+      "slot": "stop/verify timeout (child killed and reaped)"
+    },
+    "parent_reaped": true,
+    "descendant_state": "Z",
+    "descendant_still_running": false,
+    "probe_cleanup_reaped_descendant": true
+  },
+  "worker_crash": {
+    "outcome": {
+      "slot": "unverified (child rc -9)"
+    },
+    "parent_reaped": true,
+    "descendant_state": "S",
+    "descendant_still_running": true,
+    "probe_cleanup_reaped_descendant": true
+  },
+  "checked_vs_written_deadline": {
+    "preflight_deadline": 32946.2,
+    "latest_allowed_deadline": 32946.2,
+    "written_deadline": 32947.2,
+    "excess_s": 1.0,
+    "fake_spawn_called": true
+  }
+}

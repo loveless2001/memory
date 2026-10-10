@@ -1,0 +1,15 @@
+# Test-cleanup package review: scoped implementation PASS, final close-out pending
+
+Reviewed the nine-file working diff on merged HEAD 244718e under user #gravity 22634 (merge) and 22660 (test cleanup). The snapshot and its hashes accompany this report; changes were uncommitted at review. All modified paths are tests/. Production configs/plans/memsub/scripts/modal-runners have no working diff. No shared file was edited by this auditor.
+
+The private-manifest helper changes only the copied memsub fingerprint. Actual launch, file-hash, script-closure and start/end guards remain in use. Seven independent helper probes pass: only the private source fingerprint differs, runner helper selects the real private manifest, valid fixture accepted, changed source refused, changed launch file hash refused, production manifest unchanged, and monkeypatch restored. All assertions in retained test functions are unchanged by AST comparison.
+
+All 28 reusable cases identified in the prior proof are retained: 23 orchestration/spawn/deadline/amended-label cases plus five nullable-grad_norm schema cases. Schema cases copy output telemetry only, avoiding the unrelated missing terminal checkpoint. Owner focused logs contain exactly 220 passes across eight edited test modules; conftest is exercised through those modules. No duplicate whole-suite run was launched by this auditor.
+
+Retirements are limited to closed historical integration/replay checks (61 parametrized cases): one frozen-registry=current-tree replay assertion; four post-hoc checkpoint functions / seven cases; 15 MergeCert functions / 53 cases. Historical definitions remain at the pre-merge tag. Verified f67ff34 removed the settled-amendment section from MERGECERT-Q1.md in July, so the bound closed registration no longer matches current documentation. Do not modify frozen registrations to repair that historical dependency. Tag preservation retains source/test definitions; replay still requires original evidence and dependencies.
+
+Two exact path/hash JSON console-trailer exemptions match independently inspected bytes; all other strict parsing remains unchanged. The fixture approach preserves active guard coverage while retiring closed campaign integrations under the user's authorized cleanup scope.
+
+Close-out still pending: final committed source/hash binding and complete per-file receipts. The pinned-model residual-readout file repeatedly exited 137, so it cannot be described as passing or silently omitted. Requested an explicit opt-in/default skip with instructions (or authorized historical retirement), without increasing memory/model work. Also identified unused post-hoc check(); frozen() remains required by _schema_problem() and must stay (corrected in #gravity 22678).
+
+This is scoped implementation PASS with those close-out items pending, not a final whole-suite PASS. No new model inference, training, cloud call, paid compute, push or publication occurred in this audit. Q7 was independently finalized in the wait75 audit and is not reopened.

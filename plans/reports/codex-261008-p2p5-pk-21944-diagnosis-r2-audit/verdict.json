@@ -1,0 +1,49 @@
+{
+  "verdict": "CLEAR_ONE_EXISTING_AUTHORIZED_LOCAL_INVOCATION",
+  "reviewed_commit": "167f3c3",
+  "bindings": {
+    "scripts/sgm-p2p5-taskhead-dead-start-address-diagnosis.py": "e9131a62ac57cca62915ae233914315412e302bf5ab954351f20544578311ea7",
+    "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/inputs-index.json": "832f545ec0dd19e953427ce5949c22f7093923a03cdb9353246070cafdda10fb"
+  },
+  "package_manifest_sha256": "997c4e367f606ddb3dce20b53a13c15b5987b6283b696c505baf6162d212df3f",
+  "independent_tests": {
+    "passed": 14,
+    "seconds": 10.05,
+    "environment": ".venv CPU"
+  },
+  "package_files_hash_verified": 14,
+  "input_entries_verified": 14,
+  "run_identity_preflight": {
+    "identity": {
+      "memsub_source_sha256": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2",
+      "qwen_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "qwen_files_sha256": {
+        "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+        "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+        "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+      },
+      "cuda_device": "NVIDIA GeForce RTX 3060 Laptop GPU"
+    },
+    "model_forward": false
+  },
+  "tracked_worktree_clean": true,
+  "independent_qwen_forward_or_backward": false,
+  "gpu_fit_verified": false,
+  "scope": {
+    "cost": "$0 local only",
+    "invocations": 1,
+    "outer_timeout_seconds": 3600,
+    "geometry_entries": 12,
+    "geometry_episodes_per_entry": 64,
+    "geometry_population": "heldout seed 4242, four batches of 16, N32 Q4 filler40",
+    "m4_entries": 2,
+    "m4_episodes": 2,
+    "m4_order": "last",
+    "optimizer_steps": 0,
+    "first_error_stops": true,
+    "automatic_retry": false,
+    "automatic_cpu_fallback": false
+  }
+}

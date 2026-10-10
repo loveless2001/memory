@@ -1,0 +1,82 @@
+{
+  "remote_calls": false,
+  "paid_work": false,
+  "v2_hash": "38b5f4b8e14c829aab779f9bee27b045655081b4f9454009b779123faa8a4c1a",
+  "identity": {
+    "runner": "38b5f4b8e14c829aab779f9bee27b045655081b4f9454009b779123faa8a4c1a",
+    "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "memsub": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085"
+  },
+  "ledger": {
+    "gpu_container_lifetime_usd": 1.9563935999999997,
+    "reaper_ticks_usd": 0.009647,
+    "image_build_usd": 0.16838399999999998,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.3844245999999996,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 2700,
+    "reaper_period_s": 120,
+    "abandon_s": 1800,
+    "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance",
+    "assumptions": [
+      "reaper period and stop latency are nominal scheduling allowances, not platform guarantees",
+      "build CPU/RAM are requests; the 2x overuse allowance is an assumption",
+      "list prices from modal.com/pricing checked 2026-10-06"
+    ]
+  },
+  "groups": {
+    "v1": "p2p5-l40s-profile-v1",
+    "v2": "p2p5-l40s-profile-v2",
+    "v2_attempts": "m4-sgm-p2p5-l40s-profile-v2-attempts",
+    "v2_guard": "m4-sgm-p2p5-l40s-profile-v2-guard"
+  },
+  "unchanged_function_asts": [
+    "_load_logic",
+    "logic",
+    "reap_decision",
+    "reap_and_stop",
+    "stop_bound_app",
+    "_build_environment",
+    "file_sha",
+    "admit",
+    "child_timeout_s",
+    "guard_decision",
+    "reaper",
+    "profile_usable",
+    "charge_bound",
+    "atomic_write",
+    "expected_identity",
+    "_load",
+    "spawn",
+    "collect"
+  ],
+  "function_resource_fields": {
+    "gpu_cpu": [
+      4.0,
+      4.0
+    ],
+    "gpu_memory_mib": [
+      32768,
+      32768
+    ],
+    "reaper_cpu": 0.125,
+    "reaper_memory_mib": 256
+  },
+  "gpu_mounts": [
+    "/root/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py",
+    "/root/repo/memsub",
+    "/root/repo/scripts/sgm-p2p5-local-gpu-timing-profile.py"
+  ],
+  "reaper_mounts": [
+    "/root/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py"
+  ],
+  "isolated_lazy_import_and_mocked_build_passed": true,
+  "runtime_shared_mount_and_stop_before_cancel_passed": true,
+  "new_sampler_cleanup_blocker": "Actual stop_gpu_sampler propagates kill-race ProcessLookupError; no deploy clearance until repaired."
+}

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/home/lenovo/projects/memory/plans/reports/codex-261007-p2p5-pk-84f0a69/independent-rejection-probes.py", line 138, in <module>
+    resumed = sup.run()
+              ^^^^^^^^^
+  File "/home/lenovo/projects/memory/memsub/sgm/packed_slot_supervisor.py", line 165, in run
+    self.serve_requests(cell)
+  File "/home/lenovo/projects/memory/memsub/sgm/packed_slot_supervisor.py", line 130, in serve_requests
+    self.publish(cell, lambda rec: es.add_generation(rec, r["g"], r["step"], r["file"], r["sha256"]))
+  File "/home/lenovo/projects/memory/memsub/sgm/packed_slot_supervisor.py", line 111, in publish
+    mutate(self.records[cell])
+  File "/home/lenovo/projects/memory/memsub/sgm/packed_slot_supervisor.py", line 130, in <lambda>
+    self.publish(cell, lambda rec: es.add_generation(rec, r["g"], r["step"], r["file"], r["sha256"]))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lenovo/projects/memory/memsub/sgm/packed_slot_epoch_state.py", line 129, in add_generation
+    raise ValueError("generation steps must strictly increase")
+ValueError: generation steps must strictly increase

@@ -1,0 +1,28 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/syntracts/main/ap-o9O7fnzaUFWlhhVsR1Y8Xh
+✓ Created objects.
+├── 🔨 Created mount 
+│   /home/lenovo/projects/memory/modal-runners/modal-m4-sgm-p2d-diagnostics-grid
+│   .py
+├── 🔨 Created mount /home/lenovo/projects/memory/memsub
+└── 🔨 Created function run_cell.
+╭─ Modal Deprecation Warning (2026-03-24) ─────────────────────────────────────╮
+│ The `wrap_returned_exceptions` parameter of `Function.starmap` no longer has │
+│ any effect and can be removed from your code. Exceptions are no longer       │
+│ wrapped before being returned from `Function.starmap`.                       │
+│                                                                              │
+│ Source:                                                                      │
+│ /home/lenovo/projects/memory/modal-runners/modal-m4-sgm-p2d-diagnostics-grid │
+│ .py:125                                                                      │
+│   results = run_cell.starmap(args, order_outputs=False,        # completion  │
+│ order: prompt HALT                                                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+ledger {"cells": 12, "usd_per_container_hour": 0.25257599999999997, "train_timeouts_usd": 10.87037992, "startup_teardown_usd": 0.30309119999999995, "replay_allowance_usd": 0.3536064, "image_build_usd": 0.3, "cpu_overuse_margin_usd": 0.81186988, "fixed_margin_usd": 1.5, "reserved_total_usd": 14.1389474, "cap_usd": 15.0, "admitted": true, "cell_timeouts_s": {"filleroff-learned-n16-s0": 6106, "filleroff-learned-n16-s1": 4640, "filleroff-learned-n64-s0": 11797, "filleroff-learned-n64-s1": 10809, "long-learned-n16-s0": 18318, "long-learned-n16-s1": 13922, "long-learned-n32-s0": 26321, "long-learned-n32-s1": 20858, "addrsup-learned-n32-s0": 9651, "addrsup-learned-n32-s1": 7648, "addrsup-learned-n64-s0": 12977, "addrsup-learned-n64-s1": 11890}}
+done filleroff-learned-n16-s0 {'heldout_none': 0.949, 'heldout_bank_derange': 0.017, 'heldout_coord_shuffle': 0.142, 'heldout_read_offset': 0.008, 'heldout_query_off': 0.01, 'train_split_none': 0.965}
+done filleroff-learned-n16-s1 {'heldout_none': 0.954, 'heldout_bank_derange': 0.013, 'heldout_coord_shuffle': 0.158, 'heldout_read_offset': 0.016, 'heldout_query_off': 0.016, 'train_split_none': 0.961}
+Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption
+Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption
+REPLAY REFUSED: {'run_id': 'long-learned-n32-s0', 'status': 'replay_refused', 'reason': 'long-learned-n32-s0: replay 1 of a claimed cell; no training'}
+REPLAY REFUSED: {'run_id': 'filleroff-learned-n64-s1', 'status': 'replay_refused', 'reason': 'filleroff-learned-n64-s1: replay 1 of a claimed cell; no training'}
+Container terminated due to preemption. Your Function will be restarted with the same input. For more details, see https://modal.com/docs/guide/preemption

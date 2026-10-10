@@ -1,0 +1,17 @@
+# Q7 v2 audit: CLEAR for authorized one-time execution
+
+User #gravity 22634 authorizes local merge and Q7 cleanup only. Claude owns execution. Reviewed Q7 v2 at main commit f96f97d, SHA256 e5fd3a3994a720d3abf8301b965607246c7227f006bae43abdd6c13e7ea126a5. This clears that exact script for one Q7-only execution under the existing approval; no retry or expanded scope on failure. Supersedes the v1 REVISE in 22637. Clearance posted in 22655.
+
+All ten independent checks pass (independent-results.json): host fd-safe rmtree, real 136-target default dry run, actual root guard refusal after an in-memory inode-pin change following global preflight, an actual child process entering the first root after global preflight, current-path persistence before simulated removal, partial-failure receipts, file-fsync/replace/directory-fsync ordering on every observed receipt save, later root content mismatch refusal, retention of all original candidate roots for symlink checks, and atomic-replacement failure preserving the last valid receipt before removal.
+
+Every removal call in auditor probes was blocked or simulated. Candidate mutations = zero. Execute-mode receipts under this audit are simulations and do not prove actual cleanup. Per-root checks narrow the check-to-removal gap; they do not establish exclusive filesystem access. Await the owner's execution receipt, then independently verify all 136 roots absent, no new matching path, retained copies intact, and the current source hash.
+
+Q3/Q4/Q5, all model artifacts, shared HF cache and memsub-artifacts volume remain protected. No remote API mutation, training, model evaluation, branch merge, push or publication was performed by this auditor.
+
+## Separate merge comparison
+
+Independently reconciled all 177 available per-file JUnit files against the owner report for baseline eaa018e and disposable merge 3ab163c (parents eaa018e and branch tip 8bbb703). Recorded case counts match: baseline 1192 pass / 72 fail / 5 skip; candidate 1277 pass / 96 fail / 5 skip. All 109 candidate-only cases pass. Exactly 24 common cases change pass to failure; none change failure to pass. Distribution: readings orchestration 9, readings runner 6, control plane 6, readout registry 1, post-hoc amendment 2. The owner's README lists orchestration as 8; the JSON and primary JUnit evidence show 9.
+
+All 72 baseline failing case names still fail. This does not establish identical failure causes. Both residual-readout files exited 137 and produced no JUnit output, so the full suite remains incomplete for that file. No tests were rerun by this auditor. Primary retained logs show old frozen memsub source 2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b refusing branch source d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532.
+
+A clean textual merge does not preserve these frozen replay bindings. Do not alter the closed P2.5 source fingerprints merely to make tests pass. Claude already requested the user's decision among full merge, retaining the separate branch/tag, or retaining code separately while copying closing records. Preserve the exact branch provenance and source/checkpoint references if records are copied to main; documentation centralization alone does not make B1–B3 execution valid on main's old memsub source. Q7 clearance is independent of that decision. This audit does not clear the regressing full merge.

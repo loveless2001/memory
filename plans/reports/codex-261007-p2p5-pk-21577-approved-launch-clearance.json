@@ -1,0 +1,77 @@
+{
+  "channel": "gravity",
+  "approval_message_id": 21577,
+  "approval_sender": "user",
+  "approval_text": "gô",
+  "approval_context_message_ids": [
+    21575,
+    21576
+  ],
+  "approval_interpretation": "Affirmative reply authorizing the frozen paid proof up to $8.57; not campaign or expanded retries.",
+  "verified_at_utc": "2026-10-06T18:56:55.716639+00:00",
+  "approved_cap_usd": 8.57,
+  "planned_reservation_usd": 8.560027,
+  "reservation_assumptions": [
+    "the in-app reaper stops the whole app within one period + stop latency of the deadline",
+    "CPU/RAM requests charged at 2x (audited conservative basis); not a platform cash ceiling",
+    "list prices modal.com/pricing 2026-10-06",
+    "expected wall: 9 slot starts x ~5.5 min + timing ~28.5 min (packing/profile timings)"
+  ],
+  "head": "d62602cafb81872e362fa334fd2e3d62755e5339",
+  "memsub_sha256": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+  "expected_identity": {
+    "runner": "a67906f6794cb59150aaf2b52205c189b333efc456057d32b7685bcd8641c488",
+    "memsub": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+    "grid": "4e32a3ef1e4cc6eef10deaac2972d857a2c7f42432e76cf4e7a959aada2e54da",
+    "timing_script": "baa472d2d85795020a802759dfc72a6c68ab2a71cdd750ccfbed8c0b823028e4",
+    "packing_helpers": "873bca626b195775f07734d1d470cf71eadbc36ec553fa26889fb77c8407f247",
+    "registry": "17db24aee70158588acf366a5a256e8eb7d56a0a602dbeaa4d090dd966d71f6f",
+    "comparator": "173614979a435a1bddb55bc900f5a13739644bac38f699e27d42174712ce0b5c",
+    "schema": "91813ba04a63c8f6f7c40ad8d2dd63ad9e680b06c28a66acb16a559fabecd10e",
+    "reaper_logic": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c"
+  },
+  "checks": {
+    "head_matches": true,
+    "source_matches": true,
+    "all_bound_files_match": true,
+    "scoped_tracked_tree_clean": true,
+    "identity_matches": true,
+    "reservation_within_approved_cap": true,
+    "frozen_lifecycle_matches": true,
+    "cpu_review_cleared": true
+  },
+  "changed_bound_files": [],
+  "scoped_tracked_status": "",
+  "decision": "CLEARED_FOR_ONE_INITIAL_DEPLOY_AND_ONE_SPAWN_OF_SEVEN_FROZEN_PROOF_UNITS",
+  "launch_owner": "claude-gravity",
+  "scope": {
+    "units": [
+      "A",
+      "Aprime",
+      "B",
+      "C",
+      "D",
+      "E",
+      "timing"
+    ],
+    "proof_seeds": [
+      99,
+      100
+    ],
+    "one_serial_gpu_container": true,
+    "overall_deadline_s": 6600,
+    "planned_scenario_starts": {
+      "A": 1,
+      "Aprime": 1,
+      "E": 1,
+      "B": 2,
+      "C": 2,
+      "D": 2
+    },
+    "timing_starts": 1,
+    "whole_app_stop_collection_and_audit": true,
+    "campaign_approved": false,
+    "reserved_readings_approved": false
+  },
+  "reviewer_no_deploy_spawn_gpu_stop_commit_push": true
+}

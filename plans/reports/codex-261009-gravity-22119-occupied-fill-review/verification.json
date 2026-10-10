@@ -1,0 +1,31 @@
+{
+  "candidate": "a66d800c4d4d4e10b0a4015d6f904d7b1b9a2562",
+  "baseline": "95856b153e874508726c604a8c593c6ff73684cb",
+  "independent_fallback_tests": {
+    "passed": 12,
+    "exit": 0
+  },
+  "independent_core_runtime_resume": {
+    "unique_passed": 31,
+    "initial_archive_fixture_error": 1,
+    "corrected_fixture_rerun_passed": 1
+  },
+  "default_off_parity": "Exact trained parameter, telemetry and policy match",
+  "owner_full_suite_failure_classification": {
+    "failed_total": 37,
+    "also_failed_baseline": 12,
+    "changed_source_guard_rejections": 25,
+    "sets_disjoint_and_cover_recorded_failures": true,
+    "full_suite_independently_rerun": false
+  },
+  "owner_log_sha256": {
+    "failed-at-HEAD.txt": "9766599bf03f776524c9e9c0abc7fcda05d0270957131758e4941bd021f43445",
+    "failed-only-after-change.txt": "be2a3bdb821fb4d29f816939060c529176531720e2c8457d1ab70d9d25129a4e",
+    "sgm-suite-cpu.txt": "6f179a4997b9ba8140d6c2fac1d7a68531890e6bd198a660ffb2778fd0337382",
+    "sgm-suite-failed-ids-rerun-at-HEAD.txt": "8803d7349a9255a447ad20f3b8227882fc61927b74ddb2a42fccd07282bc5bea"
+  },
+  "spec_sha256": "628fda316de8a9b0792fac5bc887bd446c0eb3332327ec3b4a74014b438f6647",
+  "blocking_issue": "FP32 1 - present_mass creates nonzero/negative fill and anchor on fully occupied stencil",
+  "cpu_kernel_results": "independent-kernel-results-a66d800.json",
+  "scope": "No GPU, Modal, Qwen forward, merge or source change to mvp"
+}

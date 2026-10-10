@@ -1,0 +1,60 @@
+{
+  "campaign_import_time_bindings": [
+    {
+      "line": 46,
+      "source": "APP_NAME = f\"memsub-m4-sgm-p2p5-pk-campaign-{SLOT.replace('_', '')}\""
+    },
+    {
+      "line": 47,
+      "source": "GUARD_DICT, ADMIT_DICT = f\"{APP_NAME}-guard\", f\"{APP_NAME}-admission\""
+    },
+    {
+      "line": 61,
+      "source": "app = modal.App(APP_NAME)"
+    },
+    {
+      "line": 62,
+      "source": "image = (modal.Image.debian_slim(python_version=\"3.12\")\n         .pip_install(\"huggingface_hub==0.36.2\")\n         .run_function(_build_environment, timeout=1200, cpu=4.0, memory=8 * 1024)\n         .env({\"HF_HUB_OFFLINE\": \"1\", \"TOKENIZERS_PARALLELISM\": \"false\", \"M4_SGM_QWEN3_0P6B_DIR\": MODEL_DIR,\n               \"M4_PK_SLOT\": SLOT})\n         .add_local_dir(\"memsub\", \"/root/repo/memsub\", ignore=[\"**/__pycache__/**\", \"**/*.pyc\"])\n         .add_local_dir(\"configs\", \"/root/repo/configs\")\n         .add_local_file(PRICE_FILE, f\"/root/repo/{PRICE_FILE}\"))"
+    },
+    {
+      "line": 70,
+      "source": "artifacts = modal.Volume.from_name(\"memsub-artifacts\")"
+    },
+    {
+      "line": 122,
+      "source": "app.function(image=image, gpu=GPU, cpu=(CPU_CORES, CPU_CORES), memory=(MEMORY_GIB * 1024, MEMORY_GIB * 1024),\n              timeout=FUNCTION_MAX_S, startup_timeout=300, max_containers=1, single_use_containers=True,\n              retries=modal.Retries(max_retries=MAX_STARTS - 1, initial_delay=1.0, backoff_coefficient=1.0),\n              volumes={\"/artifacts\": artifacts})"
+    }
+  ],
+  "canonical_schema_failure": "layer-normalised key L{L}/out_proj has inconsistent schemas",
+  "inputs_sha256": {
+    "configs/m4_sgm_p2p5_grid.json": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "memsub/runtime/sgm_model_runtime.py": "c13486b84ace7dadd079e8cfe68640011a3b4a1c7a9dca5f0c6a058e3a8563ce",
+    "memsub/sgm/layer_adapter.py": "add511eb98d82f3ca0979e7d336c817c5b84dffd56168bb4ad66359d35b531bb",
+    "memsub/sgm/packed_slot_cell_output_validation.py": "e636f98452f97e1ff3d8865769b24b0f43ba27741018bd4fdd1fe2afea592859",
+    "memsub/sgm/packed_slot_epoch_state.py": "67f71e14e774be6e08e61e587939bdf762fbe6d39e47329fbec84d3ae88698c1",
+    "memsub/sgm/packed_slot_supervisor.py": "13fc171039c8dcc1d51bd6a76fb1ba81e309d8a67e2b6f14b87f31bc31b9fac8",
+    "memsub/sgm/pinned_pretrained_qwen3_backbone.py": "6ff4d97376a3df08c5887e298e452a866e09dce51488620ad3e7e38ffd8829d7",
+    "memsub/sgm/synthetic_pilot.py": "aa99e0bdc742ef35544f44fedb73a98df02180851d856ed2022a20e27a8e2620",
+    "modal-runners/modal-m4-sgm-p2p5-pk-campaign-control-plane-reaper.py": "7947f05f0de0ad7e7a0afff10bafb6e4d2ef3fbccb83f8605c40e5693ae1e694",
+    "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py": "b4904576c7294871570871b21994f9ccac424d697de22173179fc2c55488d3df",
+    "modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py": "0e519cfd16bb908695b911f09741392e8808b8209400986de06d6d19905771c1",
+    "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1/curriculum-learned-n32-s0/metrics.json": "bac74a8cbfa8ee4ef90689a04b33ed811f6a6b7492c7f721ab70f52a1a97130a",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/proposal.md": "92e447aad371823afea525fc086ad6206671463fbdf8c2caba609c4fa67b7aa9",
+    "plans/reports/codex-261008-p2p5-pk-21749-proposal-audit/check-proposal.py": "390e3c8c38ce8d0a51e83c16e910e3b65588b36b7d706591e4c3bc7ba533d0ee",
+    "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+    "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01"
+  },
+  "proposal_matches_commit": "277b801",
+  "proposal_sha256": "92e447aad371823afea525fc086ad6206671463fbdf8c2caba609c4fa67b7aa9",
+  "saved_taskhead_unused_parameter_telemetry": {
+    "alpha": {
+      "grad_norm": null,
+      "update_norm": 0.0
+    },
+    "out_proj": {
+      "grad_norm": null,
+      "update_norm": 0.0
+    }
+  },
+  "scope": "static source and saved taskhead artifacts only"
+}

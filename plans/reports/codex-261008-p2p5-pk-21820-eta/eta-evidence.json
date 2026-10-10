@@ -1,0 +1,47 @@
+{
+  "verdict": "Read-only ETA estimate; no result claim",
+  "snapshot_utc": "2026-10-08T07:13:32.255830+00:00",
+  "reference_wall_hours": 5.9,
+  "reference_expected_end_bangkok": "2026-10-08T18:28:09.443849+07:00",
+  "rough_completion_window_bangkok": "2026-10-08 18:00 to 19:00 +07:00",
+  "deadline_bangkok": "2026-10-08T21:26:35.643849+07:00",
+  "progress": {
+    "taskhead-learned-n32-s0": {
+      "state": "STARTED",
+      "acknowledged_step": 550,
+      "observed_updates": 573,
+      "last_update": {
+        "update": 572,
+        "seconds": 9.64650154499941,
+        "t_end": 1791443609.789308
+      },
+      "last_update_utc": "2026-10-08T07:13:29.789308+00:00",
+      "median_recent_update_s": 9.618643250999867,
+      "recent_50_update_wall_s": 487.4723365306854
+    },
+    "taskhead-learned-n32-s1": {
+      "state": "STARTED",
+      "acknowledged_step": 500,
+      "observed_updates": 550,
+      "last_update": {
+        "update": 549,
+        "seconds": 10.002637608999976,
+        "t_end": 1791443610.8744674
+      },
+      "last_update_utc": "2026-10-08T07:13:30.874467+00:00",
+      "median_recent_update_s": 10.011611303000336,
+      "recent_50_update_wall_s": 555.6819376945496
+    }
+  },
+  "call_pending": true,
+  "admitted_starts": 1,
+  "limitations": [
+    "The 5.9h reference is prior comparable slot timing, not a guaranteed runtime.",
+    "Filler length rises at update 1000; extrapolating early update speed alone understates later work.",
+    "Final evaluation, collection and shutdown verification remain.",
+    "Live inventory/stats/metadata are non-atomic; stats reported zero runners while inventory retained the GPU container and update logs showed recent progress.",
+    "Checkpoint binaries were not fetched or hash-verified for this status response.",
+    "Actual charged usage has not been reconciled."
+  ],
+  "remote_mutations": false
+}

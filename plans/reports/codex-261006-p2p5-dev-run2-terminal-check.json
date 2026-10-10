@@ -1,0 +1,261 @@
+{
+  "checked_at_utc": "2026-10-06T13:29:27.712390+00:00",
+  "read_only_remote": true,
+  "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+  "no_historical_artifact_mutation": true,
+  "run_manifest": {
+    "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+    "script": "scripts/sgm-p2p5-sgm-path-speedup-parity-check.py",
+    "args": "--ref-tree dev-gpu-inputs/memsub-ref-2fda0d4 --suite qwen-gpu",
+    "started": 1791292707.7412467,
+    "function_only_charge_usd": 0.9582,
+    "gpu": "L40S",
+    "outcome": "ok",
+    "returncode": 0,
+    "wall_s": 400.37294816970825,
+    "cmd": [
+      "/usr/local/bin/python",
+      "scripts/sgm-p2p5-sgm-path-speedup-parity-check.py",
+      "--out",
+      "/tmp/dev-out/result",
+      "--ref-tree",
+      "dev-gpu-inputs/memsub-ref-2fda0d4",
+      "--suite",
+      "qwen-gpu"
+    ],
+    "client_wall_s": 406.7011933326721
+  },
+  "cases": [
+    {
+      "arm": "learned",
+      "batch": 16,
+      "train_filler_len": 0,
+      "steps": 2,
+      "seed": 99,
+      "n_compared": 140,
+      "checked_tensor_equality_reported": true,
+      "ref_train_s": 33.432138061,
+      "cand_train_s": 19.695138977999996,
+      "dev_aggregate_ref_over_candidate_ratio": 1.6974817033961835
+    },
+    {
+      "arm": "learned",
+      "batch": 16,
+      "train_filler_len": 40,
+      "steps": 2,
+      "seed": 99,
+      "n_compared": 140,
+      "checked_tensor_equality_reported": true,
+      "ref_train_s": 45.07587181700001,
+      "cand_train_s": 29.331666581000007,
+      "dev_aggregate_ref_over_candidate_ratio": 1.536764768974925
+    },
+    {
+      "arm": "oracle",
+      "batch": 4,
+      "train_filler_len": 40,
+      "steps": 2,
+      "seed": 99,
+      "n_compared": 108,
+      "checked_tensor_equality_reported": true,
+      "ref_train_s": 26.337049276000016,
+      "cand_train_s": 23.823538745999997,
+      "dev_aggregate_ref_over_candidate_ratio": 1.1055053389338325
+    },
+    {
+      "arm": "single_cell",
+      "batch": 4,
+      "train_filler_len": 40,
+      "steps": 2,
+      "seed": 99,
+      "n_compared": 108,
+      "checked_tensor_equality_reported": true,
+      "ref_train_s": 24.096217281999998,
+      "cand_train_s": 22.092116467999972,
+      "dev_aggregate_ref_over_candidate_ratio": 1.0907156549216517
+    },
+    {
+      "arm": "random_fixed",
+      "batch": 4,
+      "train_filler_len": 40,
+      "steps": 2,
+      "seed": 99,
+      "n_compared": 108,
+      "checked_tensor_equality_reported": true,
+      "ref_train_s": 27.93458889799996,
+      "cand_train_s": 23.88596795000001,
+      "dev_aggregate_ref_over_candidate_ratio": 1.1694978807840168
+    },
+    {
+      "arm": "memory_off",
+      "batch": 4,
+      "train_filler_len": 40,
+      "steps": 2,
+      "seed": 99,
+      "n_compared": 52,
+      "checked_tensor_equality_reported": true,
+      "ref_train_s": 8.26475730499999,
+      "cand_train_s": 8.474744873999953,
+      "dev_aggregate_ref_over_candidate_ratio": 0.9752219598203843
+    }
+  ],
+  "total_compared_tensor_rows": 656,
+  "self_test": {
+    "pass": false,
+    "max_rel": 0.9908984654940161,
+    "worst": "final/adapters.13.beta_proj.bias",
+    "problem": null,
+    "n_problems": 0
+  },
+  "isolation": {
+    "ok": true,
+    "leaks": [],
+    "reference_module_count": 21,
+    "candidate_module_count": 23
+  },
+  "artifact_binding": [
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1-billing-today-hourly.json",
+      "sha256": "dac06464e9fa1c8cbe77be1879ca7f126d2cc4e911a47f82915f7bb3beec2259",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1-containers-after.json",
+      "sha256": "4829bb904c971788d998455c211851a4c56c0dbd0a13bde699e7a38ec9178afa",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1-shutdown-state.txt",
+      "sha256": "c35b444d93d6033b97a21d492c8c4d484b8a8c84dd937864b6d8e284d5d1ccc4",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1.console.log",
+      "sha256": "efd7bce2df44cdd997323c518339fef5718f8d732be2b5067ae6cb51dd6c0426",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1/result/parity.json",
+      "sha256": "308c05ec13265622e87191bc5b9ca1483b2688bfec3cf04b418a6edd09864fe1",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1/run.json",
+      "sha256": "9ff212bbc81c2c27d363410bb66f80dece0d60cd6d9841ef733bc46bb6a9d30f",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_commit": "c17cfcc"
+    },
+    {
+      "path": "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1/stdout.txt",
+      "sha256": "b87ac848e616546f1bff9129dc970b492b51743768252bf8d93be209bb6fd981",
+      "matches_commit": "c17cfcc"
+    }
+  ],
+  "console_has_building_image_line": false,
+  "checker_source_binding": {
+    "launched_identity": "1306f26",
+    "frozen_sha256": "b384c1037438dad91a51a4f05b41caf3c1563433a63fb0002a97104c3fb8c16d",
+    "documentation_sha256": "a8969478a0f9a2fb77eb194ca57be15324772ff41991db7998c65ab7a1c85372",
+    "same_executable_ast_excluding_module_docstring": true
+  },
+  "scoped_apps_terminal": {
+    "ap-E2KdNOH6Vb0qjnJTVdKz4U": {
+      "app_rows": [
+        {
+          "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+          "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-06 20:18:21+07:00",
+          "stopped_at": "2026-10-06 20:25:15+07:00"
+        }
+      ],
+      "matching_containers": [],
+      "lifecycle": {
+        "created_at": "2026-10-06 13:18:21.524515+00:00",
+        "created_by": "doug-87818",
+        "deployed_at": null,
+        "deployed_by": null,
+        "stopped_at": "2026-10-06 13:25:15.511829+00:00",
+        "stopped_by": null
+      }
+    },
+    "ap-UUv74AxrTl2LhmY6g128Jk": {
+      "app_rows": [
+        {
+          "app_id": "ap-UUv74AxrTl2LhmY6g128Jk",
+          "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-06 19:25:10+07:00",
+          "stopped_at": "2026-10-06 19:41:27+07:00"
+        }
+      ],
+      "matching_containers": [],
+      "lifecycle": {
+        "created_at": "2026-10-06 12:25:10.949218+00:00",
+        "created_by": "doug-87818",
+        "deployed_at": null,
+        "deployed_by": null,
+        "stopped_at": "2026-10-06 12:41:27.891055+00:00",
+        "stopped_by": null
+      }
+    }
+  },
+  "billing_rows": [
+    {
+      "object_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 13:00:00+00:00",
+      "cost": "0.21822959",
+      "cost_by_resource": {
+        "CPU": "0.01723824",
+        "L40S": "0.17766688",
+        "Memory": "0.02332447"
+      },
+      "tags": {}
+    },
+    {
+      "object_id": "ap-UUv74AxrTl2LhmY6g128Jk",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 12:00:00+00:00",
+      "cost": "0.53878894",
+      "cost_by_resource": {
+        "CPU": "0.05030675",
+        "L40S": "0.42832320",
+        "Network Egress": "0.00098169",
+        "Memory": "0.05917731"
+      },
+      "tags": {}
+    }
+  ],
+  "reported_app_usage_usd": {
+    "ap-E2KdNOH6Vb0qjnJTVdKz4U": "0.21822959",
+    "ap-UUv74AxrTl2LhmY6g128Jk": "0.53878894"
+  },
+  "reported_scoped_app_usage_total_usd": "0.75701853",
+  "booked_reserves_usd": {
+    "run1": 1.55,
+    "run2": 1.18,
+    "total": 2.73,
+    "envelope": 3.0
+  },
+  "limits": [
+    "Accept complete bounded six-case checked-tensor/prediction parity from the frozen audited checker and its report; raw tensors were not saved for a second offline gradient/weight comparison.",
+    "Two training updates at seed99 and N32 per case do not establish all-run or mathematical equivalence. Controls use batch4; learned uses batch16.",
+    "Direct correction tensors, training telemetry and dev numeric metrics other than accuracy were not pass-gated. GPU checkpoint/resume and campaign integration are unverified.",
+    "Aggregate train_s includes model build, first-update warmup and CPU loss/gradient capture; reference always precedes candidate. It is not registered per-update retiming or an estimate of full-campaign cost.",
+    "No Building image log line supports apparent cache reuse, but does not prove settled zero build charge. App-only reported billing is a snapshot; retain reserves.",
+    "Shutdown is verified for these two option-A apps only; no claim about every workspace machine.",
+    "No new paid work, registered retiming, concurrency experiment, budget increase or automatic retry is authorized by this audit."
+  ],
+  "accepted_bounded_gpu_parity": true,
+  "terminal_verified": true,
+  "finished_at_utc": "2026-10-06T13:29:32.204738+00:00"
+}

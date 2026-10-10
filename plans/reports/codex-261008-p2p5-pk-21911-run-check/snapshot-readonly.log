@@ -1,0 +1,80 @@
+{
+  "started_utc": "2026-10-08T16:22:50.916020+00:00",
+  "modal_version": "1.5.1",
+  "expected_app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+  "call_id": "fc-01M4D02JY58FVB3QQ8AV4V9MK5",
+  "remote_mutations": false,
+  "inventory": {
+    "app": {
+      "argv": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "app",
+        "list",
+        "--json"
+      ],
+      "rc": 0,
+      "probe_rows": [
+        {
+          "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+          "description": "memsub-m4-sgm-p2p5-readout-probe",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-08 12:31:59+07:00",
+          "stopped_at": "2026-10-08 21:28:09+07:00"
+        }
+      ]
+    },
+    "container": {
+      "argv": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "-m",
+        "modal",
+        "container",
+        "list",
+        "--json"
+      ],
+      "rc": 0,
+      "probe_rows": []
+    }
+  },
+  "bound_app_lookup_error": "NotFoundError(\"App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'\")",
+  "dicts": {
+    "guard": {
+      "first_tick": 1791437771.3842256,
+      "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+      "reaper_fired": {
+        "t": 1791469687.654665,
+        "reason": "deadline passed",
+        "bound": "ap-O1KAZIvKbm2XnyURE5vBzc"
+      },
+      "deadline_epoch": 1791469595.643849,
+      "self_app_id": "ap-O1KAZIvKbm2XnyURE5vBzc"
+    },
+    "admission": {
+      "start-1": 1791437658.5554333
+    }
+  },
+  "call_poll": {
+    "state": "result",
+    "result": {
+      "slot": "taskhead-learned-n32",
+      "status": "done",
+      "epoch": 1,
+      "states": {
+        "taskhead-learned-n32-s0": "COMPLETE",
+        "taskhead-learned-n32-s1": "COMPLETE"
+      }
+    }
+  },
+  "stats": {
+    "run_slot": {
+      "error": "NotFoundError(\"Lookup failed for Function 'run_slot' from the 'memsub-m4-sgm-p2p5-readout-probe' app: App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'.\")"
+    },
+    "reaper": {
+      "error": "NotFoundError(\"Lookup failed for Function 'reaper' from the 'memsub-m4-sgm-p2p5-readout-probe' app: App 'memsub-m4-sgm-p2p5-readout-probe' not found in environment 'main'.\")"
+    }
+  },
+  "ended_utc": "2026-10-08T16:23:07.314725+00:00"
+}

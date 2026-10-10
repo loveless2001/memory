@@ -1,0 +1,72 @@
+{
+  "timestamp_utc": "2026-10-06T10:23:54.209933+00:00",
+  "reviewed_head": "4f9a25c07d9f4b98df320d99d29e38bb66e7129c",
+  "runner_sha256": "bf8d2c873b5497193d6f43ab352b84141b7d73a96dd1c28d61a1143f0454913e",
+  "identity": {
+    "runner": "bf8d2c873b5497193d6f43ab352b84141b7d73a96dd1c28d61a1143f0454913e",
+    "profile_script": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "memsub": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6"
+  },
+  "ledger": {
+    "gpu_container_lifetime_usd": 1.9563935999999997,
+    "reaper_ticks_usd": 0.009647,
+    "image_build_usd": 0.16838399999999998,
+    "fixed_margin_usd": 0.25,
+    "usd_per_container_hour": 2.3955839999999995,
+    "reserved_total_usd": 2.3844245999999996,
+    "cap_usd": 3.0,
+    "admitted": true,
+    "gpu": "L40S",
+    "preemptible": true,
+    "max_starts": 2,
+    "overall_deadline_s": 2700,
+    "reaper_period_s": 120,
+    "abandon_s": 1800,
+    "build_basis": "one run_function: timeout 1200s, 4.0 cores/8 GiB requested, 2.0x overuse allowance"
+  },
+  "corrected_metadata_probes": {
+    "wrong_source": "profile memsub source differs from the bound source",
+    "missing_environment": "incomplete or non-registered environment record",
+    "missing_warmups": "learned phase 1: incomplete or non-finite update timings",
+    "nonfinite_mean": "learned phase 1: reported mean inconsistent with measured timings",
+    "inconsistent_mean": "learned phase 1: reported mean inconsistent with measured timings",
+    "nonfinite_peak": "learned phase 1: non-finite dev-eval time or memory field",
+    "tf32_enabled": "incomplete or non-registered environment record"
+  },
+  "invalid_metadata_still_accepted": {
+    "wrong_torch": "complete registered matrix",
+    "wrong_cuda": "complete registered matrix",
+    "wrong_gpu": "complete registered matrix",
+    "missing_contract": "complete registered matrix",
+    "wrong_contract": "complete registered matrix",
+    "wrong_filler": "complete registered matrix"
+  },
+  "reaper_control_flow_probe": {
+    "stop_attempted_while_cancel_blocked": false,
+    "stop_target_after_release": "memsub-m4-sgm-p2p5-profile",
+    "outcome": [
+      {
+        "stop": true,
+        "reason": "deadline passed"
+      }
+    ],
+    "real_rpc": false
+  },
+  "cached_remaining_time_probe": {
+    "outer_timeout_s": 810.0,
+    "remaining_at_child_entry_s": 781.0,
+    "logical_timeout_epoch": 1029.0
+  },
+  "capture_pipe_probe": {
+    "requested_outer_timeout_s": 0.15,
+    "watchdog_s": 0.8,
+    "observed_return_s": 0.15226479900593404,
+    "real_owned_child_only": true,
+    "owned_helper_cleaned_up": true,
+    "blocked_by_helper": false,
+    "explanation": "Python 3.12 POSIX subprocess.run timeout cleanup returns promptly"
+  },
+  "real_modal_calls": false,
+  "gpu_work": false,
+  "clearance": "HOLD R1/R3; bounded CPU self-stop proof is an appropriate next stage"
+}

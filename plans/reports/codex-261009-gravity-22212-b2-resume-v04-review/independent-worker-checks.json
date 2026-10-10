@@ -1,0 +1,604 @@
+[
+  {
+    "name": "start-2 exact checkpoint succeeds",
+    "result": {
+      "returncode": 0,
+      "start": "start-2",
+      "volume_commit_errors": 0,
+      "wall_s": 60.0,
+      "child_timeout_s": 1880.0,
+      "versions": {},
+      "cmd": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/codex-b2-resume-cpu-e67d2ues/B2"
+      ]
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "trainer",
+        true
+      ],
+      [
+        "arm",
+        "-999999991",
+        2000.0
+      ],
+      [
+        "wait",
+        60
+      ],
+      [
+        "commit",
+        2
+      ],
+      [
+        "wait",
+        60
+      ],
+      [
+        "cancel",
+        "-999999991"
+      ],
+      [
+        "commit",
+        3
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": true,
+    "child_still_running": false,
+    "clock": 1060.0
+  },
+  {
+    "name": "start-2 advanced checkpoint refuses",
+    "result": {
+      "refused": "start-2 checkpoint is not the bound start-1 checkpoint (sha differs)",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "missing checkpoint refuses",
+    "result": {
+      "refused": "no /tmp/codex-b2-resume-cpu-x0yw4po8/B2/resume.pt: the resume runner never trains from scratch",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "resume deadline differs refuses",
+    "result": {
+      "refused": "resume deadline missing or differs from the write-once one",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "original deadline missing refuses",
+    "result": {
+      "refused": "original campaign deadline missing from the start Dict",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "foreign campaign marker refuses",
+    "result": {
+      "refused": "/tmp/codex-b2-resume-cpu-3yx7kcan does not belong to this campaign",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "all three starts already used refuses",
+    "result": {
+      "refused": "all 3 starts already used"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "missing start-1 cannot start a new campaign",
+    "result": {
+      "refused": "claimed start-1: this Dict never ran v0.3's start-1 (the resume runner never starts a campaign)",
+      "start": "start-1"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "pinned versions differ refuses",
+    "result": {
+      "refused": "pinned versions differ: {}",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "setup leaves less than minimum budget refuses",
+    "result": {
+      "refused": "only 800s left after setup (< 900)",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 2200.0
+  },
+  {
+    "name": "initial commit fails before trainer",
+    "result": {
+      "refused": "initial Volume commit failed (fail closed before any training)",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "initial commit leaves too little time refuses",
+    "result": {
+      "refused": "only 800s left after setup (< 900)",
+      "start": "start-2"
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 2200.0
+  },
+  {
+    "name": "poll exception reaps child and cancels guards",
+    "result": null,
+    "error": "RuntimeError: fake poll error",
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "trainer",
+        true
+      ],
+      [
+        "arm",
+        "-999999991",
+        2000.0
+      ],
+      [
+        "wait",
+        60
+      ],
+      [
+        "kill",
+        999999991,
+        9
+      ],
+      [
+        "wait",
+        null
+      ],
+      [
+        "cancel",
+        "-999999991"
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": true,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "child guard arming failure reaps child",
+    "result": null,
+    "error": "OSError: fake child guard error",
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "trainer",
+        true
+      ],
+      [
+        "arm",
+        "-999999991",
+        2000.0
+      ],
+      [
+        "kill",
+        999999991,
+        9
+      ],
+      [
+        "wait",
+        null
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": true,
+    "child_still_running": false,
+    "clock": 1000.0
+  },
+  {
+    "name": "deadline already expired refuses before setup",
+    "result": {
+      "refused": "resume deadline passed or within the end margin at worker entry"
+    },
+    "error": null,
+    "events": [],
+    "trainer_spawned": false,
+    "child_still_running": false,
+    "clock": 3000.0
+  },
+  {
+    "name": "start-3 advanced checkpoint allowed",
+    "result": {
+      "returncode": 0,
+      "start": "start-3",
+      "volume_commit_errors": 0,
+      "wall_s": 60.0,
+      "child_timeout_s": 1880.0,
+      "versions": {},
+      "cmd": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/codex-b2-resume-cpu-v75vjxea/B2"
+      ]
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "trainer",
+        true
+      ],
+      [
+        "arm",
+        "-999999991",
+        2000.0
+      ],
+      [
+        "wait",
+        60
+      ],
+      [
+        "commit",
+        2
+      ],
+      [
+        "wait",
+        60
+      ],
+      [
+        "cancel",
+        "-999999991"
+      ],
+      [
+        "commit",
+        3
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": true,
+    "child_still_running": false,
+    "clock": 1060.0
+  },
+  {
+    "name": "blocking commit consumes remaining time and kills child",
+    "result": {
+      "returncode": "timeout",
+      "start": "start-2",
+      "volume_commit_errors": 0,
+      "wall_s": 3860.0,
+      "child_timeout_s": 1880.0,
+      "versions": {},
+      "cmd": [
+        "/home/lenovo/projects/memory/.venv/bin/python",
+        "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+        "--manifest",
+        "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+        "--out",
+        "/tmp/codex-b2-resume-cpu-88b2hgzg/B2"
+      ]
+    },
+    "error": null,
+    "events": [
+      [
+        "arm",
+        "10822",
+        2000.0
+      ],
+      [
+        "reload"
+      ],
+      [
+        "commit",
+        1
+      ],
+      [
+        "trainer",
+        true
+      ],
+      [
+        "arm",
+        "-999999991",
+        2000.0
+      ],
+      [
+        "wait",
+        60
+      ],
+      [
+        "commit",
+        2
+      ],
+      [
+        "kill",
+        999999991,
+        9
+      ],
+      [
+        "wait",
+        null
+      ],
+      [
+        "cancel",
+        "-999999991"
+      ],
+      [
+        "commit",
+        3
+      ],
+      [
+        "cancel",
+        "10822"
+      ]
+    ],
+    "trainer_spawned": true,
+    "child_still_running": false,
+    "clock": 4860.0
+  }
+]

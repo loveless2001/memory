@@ -1,0 +1,15 @@
+report sha a8ad11020a1c7c45a0ab4428614f61bfabb3b4aeb617084ab07797d7cc7fac16
+groups {'p2d-diagnostics-v1': 6, 'p2d-diagnostics-v1-topup': 6}
+baseline baseline-v2-learned-n16-s0-fresh-rows.jsonl prior-partial: IDENTICAL
+baseline baseline-v2-learned-n16-s1-fresh-rows.jsonl prior-partial: IDENTICAL
+baseline baseline-v2-learned-n32-s0-fresh-rows.jsonl prior-partial: IDENTICAL
+baseline baseline-v2-learned-n32-s1-fresh-rows.jsonl prior-partial: IDENTICAL
+baseline baseline-v2-learned-n64-s0-fresh-rows.jsonl prior-partial: n/a
+baseline baseline-v2-learned-n64-s1-fresh-rows.jsonl prior-partial: n/a
+filleroff N16: vs_v2 s0 +88.67pp [+86.74,+90.60] acc 6.25->94.92 mem=True align=False / s1 +36.33pp [+32.98,+39.68] acc 59.08->95.41 mem=True align=False | gain=True | supports harm from tail-filler writes for this recipe
+filleroff N64: vs_v2 s0 +0.49pp [-0.58,+1.55] acc 2.05->2.54 mem=False align=False / s1 -0.39pp [-1.40,+0.62] acc 1.66->1.27 mem=False align=False | gain=False | no registered reproducible filler-off gain
+long      N16: vs_v2 s0 +69.92pp [+66.99,+72.85] acc 6.25->76.17 mem=True align=False / s1 +35.64pp [+32.42,+38.87] acc 59.08->94.73 mem=True align=False | gain=True own_gain=True own=+70.70/+35.64 cont=False/True | {'4500_vs_own_1500': 'reproducible gain', '4500_vs_v2': 'reproducible gain', 'overall': 'budget effect for this recipe'}
+long      N32: vs_v2 s0 +0.68pp [-0.66,+2.02] acc 2.44->3.12 mem=True align=False / s1 +29.10pp [+26.05,+32.15] acc 2.83->31.93 mem=True align=False | gain=False own_gain=False own=+1.27/+29.10 cont=False/True | {'4500_vs_own_1500': 'no registered reproducible gain', '4500_vs_v2': 'no registered reproducible gain', 'overall': 'budget effect not established (both registered contrasts required)'}
+addrsup   N32: vs_v2 s0 +0.49pp [-0.85,+1.83] acc 2.44->2.93 mem=False align=False / s1 +8.89pp [+6.73,+11.05] acc 2.83->11.72 mem=True align=False | gain=False | probe did not establish the intended alignment; cause unresolved
+addrsup   N64: vs_v2 s0 -0.39pp [-1.44,+0.66] acc 2.05->1.66 mem=False align=False / s1 +0.20pp [-0.96,+1.35] acc 1.66->1.86 mem=False align=False | gain=False | probe did not establish the intended alignment; cause unresolved
+FAILS: 0

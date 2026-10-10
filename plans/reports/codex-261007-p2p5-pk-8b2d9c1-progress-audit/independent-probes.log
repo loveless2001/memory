@@ -1,0 +1,58 @@
+{"m4_pk_control_tick": {"self_stop_due": true, "outcomes": {"__unresolved__": ["slot"]}}}
+spawned learned-n32 fc-cpu-fake
+{
+  "revision": "8b2d9c1a05579f2ef6110f981a4553f948da9dbc",
+  "cpu_fakes_only_no_remote_calls": true,
+  "source_sha256": {
+    "modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py": "8b8fcd6005b8339c8406769490f4e0a28af4f53c3aff9eab5cf2dff8b44f0da6",
+    "modal-m4-sgm-p2p5-pk-campaign-control-plane-reaper.py": "3c116b55569160c07ae47601c2ca31abd3daafda46e5440efcaa00ed108bed9e",
+    "modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py": "bcfff9e3943f4931729f8358e07d493b2a1018526bc5484fa9e3a017ef856c5b"
+  },
+  "ordinary_writer_failure_contained": {
+    "status": {
+      "evidence": "writer launch error OSError('controlled writer launch failure')",
+      "fallback_evidence": {
+        "__unresolved__": [
+          "slot"
+        ]
+      },
+      "self_stop": "stopped_verified"
+    },
+    "self_stop_attempted": true
+  },
+  "partial_binding_refused": {
+    "partial_guard_problem": "controller binding incomplete: ['deadline_epoch']",
+    "full_guard_accepted": true
+  },
+  "fallback_logged_before_immediate_self_stop": {
+    "exit_code": 0,
+    "stdout": "{\"m4_pk_control_tick\": {\"self_stop_due\": true, \"outcomes\": {\"__unresolved__\": [\"slot\"], \"__control__\": \"fallback due\"}}}\n",
+    "stderr": "",
+    "fallback_emitted_before_stop": true
+  },
+  "normal_timeout": {
+    "outcome": {
+      "slot": "stop/verify timeout (child killed and reaped)"
+    },
+    "parent_reaped": true,
+    "descendant_state": "Z",
+    "descendant_still_running": false,
+    "probe_cleanup_reaped_descendant": true
+  },
+  "worker_crash": {
+    "outcome": {
+      "slot": "unverified (child rc -9)"
+    },
+    "parent_reaped": true,
+    "descendant_state": "Z",
+    "descendant_still_running": false,
+    "probe_cleanup_reaped_descendant": true
+  },
+  "checked_vs_written_deadline": {
+    "preflight_deadline": 32946.2,
+    "latest_allowed_deadline": 32946.2,
+    "written_deadline": 32946.2,
+    "excess_s": 0.0,
+    "fake_spawn_called": true
+  }
+}

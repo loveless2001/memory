@@ -1,0 +1,15 @@
+{
+  "cpu_only": true,
+  "scratch_only": true,
+  "initial_ack_commit_calls": 1,
+  "checkpoint_generation_commit_calls": 60,
+  "acknowledged_generations": {
+    "cell-0": 30,
+    "cell-1": 30
+  },
+  "states": {
+    "cell-0": "TRAINED",
+    "cell-1": "TRAINED"
+  },
+  "limitations": "Counts actual publish/commit calls for two cells; does not measure latency or claim all waits are additive on the slot critical path. Output-completion and runner-final commits are outside this probe."
+}

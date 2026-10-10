@@ -1,0 +1,85 @@
+{
+  "device": "cpu",
+  "torch": "2.7.1+cpu",
+  "module_sha256": "2a51e55408be6c5a21d35305330236ed1373c8052a7542de036d26d744e0f496",
+  "fully_supported_roundoff_cases": [
+    {
+      "address": [
+        0.7645385265350342,
+        0.8300079107284546
+      ],
+      "all_stencil_cells_present": true,
+      "direct_absent_mass": 0.0,
+      "present_mass": 1.0000001192092896,
+      "base_read": 4.324542999267578,
+      "fill": 0.0,
+      "filled_read": 4.324542999267578,
+      "bitwise_same": true,
+      "anchor": 0.0,
+      "anchor_gradient": [
+        [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      ]
+    },
+    {
+      "address": [
+        -0.40615832805633545,
+        0.6633709669113159
+      ],
+      "all_stencil_cells_present": true,
+      "direct_absent_mass": 0.0,
+      "present_mass": 0.9999999403953552,
+      "base_read": 3.4050779342651367,
+      "fill": 0.0,
+      "filled_read": 3.4050779342651367,
+      "bitwise_same": true,
+      "anchor": 0.0,
+      "anchor_gradient": [
+        [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      ]
+    }
+  ],
+  "partial_read_derivative": {
+    "autograd": [
+      [
+        [
+          -0.7166664004325867,
+          -0.30879873037338257
+        ]
+      ]
+    ],
+    "finite_difference": [
+      -0.7166265845298767,
+      -0.30881166458129883
+    ],
+    "max_error": 3.981590270996094e-05
+  },
+  "far_empty_anchor_derivative": {
+    "autograd": [
+      [
+        [
+          0.8846517205238342,
+          -0.4423258602619171
+        ]
+      ]
+    ],
+    "expected": [
+      [
+        [
+          0.8846517205238342,
+          -0.4423258602619171
+        ]
+      ]
+    ]
+  },
+  "fully_supported_exact_contract_passes": true
+}

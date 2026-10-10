@@ -1,0 +1,207 @@
+"""M4-SGM P2.5 Amendment PK — CAMPAIGN slot runner: ONE app per slot (codex 21596 per-slot envelope).
+
+    M4_PK_SLOT=learned-n32 .venv/bin/python -m modal deploy modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py
+    M4_PK_SLOT=learned-n32 .venv/bin/python modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py plan|spawn|collect
+
+The slot id is fixed at deploy time (env, baked into the image env) and selects: the app name, the guard /
+admission Dicts, the artifact root and the slot's two registered cells (PK1 pairing: same arm + N, seeds 0+1).
+Each app: one GPU function (A100-80GB, max_containers=1, single_use_containers, platform retries 3 → at most 4
+ADMITTED starts via atomic Dict claims), an absolute deadline written ONCE at spawn (never reset) = the slot's
+PK6 reserve life; every start arms an in-process SIGKILL watchdog at that deadline. The whole-app stop past the
+deadline is done by the separate control-plane reaper app (one schedule for all apps), which receives this
+app's bound id + deadline at spawn (write-once registry). Registered populations: dev 4242, artifact
+9_300_011+s, train-split 555_001+s; the reserved readings population is never touched here.
+"""
+
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import modal
+
+GRID_FILE = "configs/m4_sgm_p2p5_grid.json"
+REGISTRY_FILE, SCHEMA_FILE = "configs/m4_sgm_p2p5_campaign_registry.json", "configs/m4_sgm_p2p5_campaign_output_schema.json"
+PRICE_FILE = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v5.json"
+CONTROL_REGISTRY_DICT = "m4-sgm-p2p5-pk-campaign-control-registry"
+GROUP, LOCAL_OUT = "p2p5-qwen3-0p6b-screen-v1", "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
+MODEL_DIR, MODEL_REVISION = "/root/models/qwen3-0.6b-base", "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+GPU, CPU_CORES, MEMORY_GIB, MAX_STARTS, C, EARLY_S = "A100-80GB", 8.0, 64, 4, 50, 120
+FUNCTION_MAX_S = 86400                                     # Modal per-call timeout ceiling
+EVAL = {"final_batches": 16, "final_batch_size": 16, "final_seed_base": 9_300_011, "dev_seed": 4242,
+        "train_eval_seed_base": 555_001}
+SLOT = os.environ.get("M4_PK_SLOT", "")
+SLOTS = ("learned-n16", "learned-n32", "single_cell-n16", "single_cell-n32", "random_fixed-n16", "random_fixed-n32",
+         "oracle-n32", "memory_off-n16", "memory_off-n32")
+if SLOT not in SLOTS:
+    raise SystemExit(f"M4_PK_SLOT must be one of {SLOTS}, got {SLOT!r}")
+APP_NAME = f"memsub-m4-sgm-p2p5-pk-campaign-{SLOT.replace('_', '')}"
+GUARD_DICT, ADMIT_DICT = f"{APP_NAME}-guard", f"{APP_NAME}-admission"
+
+
+def _build_environment():
+    import subprocess as sp
+    sp.run([sys.executable, "-m", "pip", "install", "--no-cache-dir", "torch==2.7.1",
+            "--index-url", "https://download.pytorch.org/whl/cu126"], check=True)
+    sp.run([sys.executable, "-m", "pip", "install", "--no-cache-dir", "transformers==4.55.2",
+            "safetensors==0.5.3", "numpy==2.2.6", "pytest==8.4.1"], check=True)
+    from huggingface_hub import snapshot_download
+    snapshot_download("Qwen/Qwen3-0.6B-Base", revision=MODEL_REVISION, local_dir=MODEL_DIR,
+                      allow_patterns=["config.json", "generation_config.json", "model.safetensors"])
+
+
+app = modal.App(APP_NAME)
+image = (modal.Image.debian_slim(python_version="3.12")
+         .pip_install("huggingface_hub==0.36.2")
+         .run_function(_build_environment, timeout=1200, cpu=4.0, memory=8 * 1024)
+         .env({"HF_HUB_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "M4_SGM_QWEN3_0P6B_DIR": MODEL_DIR,
+               "M4_PK_SLOT": SLOT})
+         .add_local_dir("memsub", "/root/repo/memsub", ignore=["**/__pycache__/**", "**/*.pyc"])
+         .add_local_dir("configs", "/root/repo/configs")
+         .add_local_file(PRICE_FILE, f"/root/repo/{PRICE_FILE}"))
+artifacts = modal.Volume.from_name("memsub-artifacts")
+
+
+def file_sha(p) -> str:
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def slot_cells(grid: dict) -> dict:
+    for root in ("/root/repo", str(Path(__file__).resolve().parents[1])):      # container / local checkout
+        if root not in sys.path:
+            sys.path.insert(0, root)
+    from memsub.sgm.packed_slot_supervisor import expand_cells
+    arm, n = SLOT.rsplit("-n", 1)
+    cells = {c: p for c, p in expand_cells(grid).items() if p["arm"] == arm and p["n_bindings"] == int(n)}
+    if sorted(p["seed"] for p in cells.values()) != [0, 1]:
+        raise SystemExit(f"slot {SLOT}: registered pairing differs from seeds 0+1")
+    return cells
+
+
+def slot_deadline_s() -> float:
+    """This slot's charged lifetime = its PK6 reserve life (seconds), from the bound price file."""
+    price = json.loads(Path(PRICE_FILE).read_text())
+    return float(price["slots"][SLOT]["reserve_life_s"])
+
+
+def admit(adm, guard, now: float) -> tuple[int | None, str | None]:
+    import math
+    deadline = guard.get("deadline_epoch", None)
+    if not (isinstance(deadline, (int, float)) and not isinstance(deadline, bool) and math.isfinite(deadline)
+            and deadline > 0) or now > deadline:                     # finite positive only (codex 21600 #4)
+        return None, "past the slot deadline (or deadline unset / non-finite)"
+    for n in range(1, MAX_STARTS + 1):
+        if adm.put(f"start-{n}", now, skip_if_exists=True):
+            return n, None
+    return None, "start allowance exhausted"
+
+
+def identity_now(root: str = "/root/repo") -> dict:
+    sys.path.insert(0, root)
+    import platform
+    import torch
+    import transformers
+    from memsub.sgm.pinned_pretrained_qwen3_backbone import QWEN3_0P6B_BASE
+    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+    return {"runner": file_sha(__file__), "memsub": source_tree_sha256(Path(root) / "memsub"), "slot": SLOT,
+            "grid": file_sha(Path(root) / GRID_FILE), "registry": file_sha(Path(root) / REGISTRY_FILE),
+            "schema": file_sha(Path(root) / SCHEMA_FILE), "price": file_sha(Path(root) / PRICE_FILE),
+            "env": {"python": platform.python_version(), "torch": torch.__version__, "cuda": torch.version.cuda,
+                    "transformers": transformers.__version__, "tf32_matmul": torch.backends.cuda.matmul.allow_tf32},
+            "model": QWEN3_0P6B_BASE}
+
+
+@app.function(image=image, gpu=GPU, cpu=(CPU_CORES, CPU_CORES), memory=(MEMORY_GIB * 1024, MEMORY_GIB * 1024),
+              timeout=FUNCTION_MAX_S, startup_timeout=300, max_containers=1, single_use_containers=True,
+              retries=modal.Retries(max_retries=MAX_STARTS - 1, initial_delay=1.0, backoff_coefficient=1.0),
+              volumes={"/artifacts": artifacts})
+def run_slot(expected: dict) -> dict:
+    sys.path.insert(0, "/root/repo")
+    from memsub.sgm.p2d_launch_guard import Watchdog
+    early = Watchdog(EARLY_S)
+    try:
+        adm = modal.Dict.from_name(ADMIT_DICT, create_if_missing=True)
+        guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
+        epoch, why = admit(adm, guard, time.time())
+        admitted = [n for n in range(1, MAX_STARTS + 1) if adm.contains(f"start-{n}")]
+        deadline = guard.get("deadline_epoch", None)
+    except Exception as e:
+        epoch, why, admitted, deadline = None, f"admission error {e!r:.200}", [], None
+    finally:
+        early.cancel()
+    if epoch is None:
+        return {"slot": SLOT, "status": "admission_refused", "reason": why}
+    life = Watchdog(max(1.0, deadline - time.time()))           # SIGKILL at the slot's absolute deadline
+    try:
+        got = identity_now()
+        if {k: got[k] for k in expected} != expected:
+            return {"slot": SLOT, "status": "identity_mismatch", "epoch": epoch, "got": got}
+        from memsub.sgm.packed_slot_supervisor import SlotSupervisor
+        grid = json.loads(Path("/root/repo", GRID_FILE).read_text())
+        cells = slot_cells(grid)
+        arm = next(iter(cells.values()))["arm"]
+        registry = json.loads(Path("/root/repo", REGISTRY_FILE).read_text())["by_arm"][arm]
+        schema = json.loads(Path("/root/repo", SCHEMA_FILE).read_text())["by_arm"][arm]
+        artifacts.reload()
+        sup = SlotSupervisor(root=Path("/artifacts/m4-sgm") / GROUP / SLOT, cells=cells, epoch=epoch,
+                             admitted=admitted, identity={**got, "runner_expected": expected}, checkpoint_every=C,
+                             eval_cfg=EVAL, commit=artifacts.commit, reload=artifacts.reload,
+                             newer_start=lambda: adm.contains(f"start-{epoch + 1}"), ack_timeout_s=900,
+                             provenance={"container_id": os.environ.get("MODAL_TASK_ID"), "admitted_at": time.time()},
+                             registry=registry, schema=schema)
+        res = sup.run()
+        artifacts.commit()
+        return {"slot": SLOT, "status": "slot_done", "epoch": epoch, **res}
+    finally:
+        life.cancel()
+
+
+# ---------------- local side ----------------
+
+def expected_identity() -> dict:
+    sys.path.insert(0, str(Path.cwd()))
+    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+    return {"runner": file_sha(__file__), "memsub": source_tree_sha256(Path("memsub")), "slot": SLOT,
+            "grid": file_sha(GRID_FILE), "registry": file_sha(REGISTRY_FILE), "schema": file_sha(SCHEMA_FILE),
+            "price": file_sha(PRICE_FILE)}
+
+
+def spawn() -> None:
+    tracked = ["memsub", __file__, GRID_FILE, REGISTRY_FILE, SCHEMA_FILE, PRICE_FILE]
+    if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                      check=True).stdout.strip():
+        raise SystemExit("refusing to spawn from a dirty tree")
+    guard = modal.Dict.from_name(GUARD_DICT, create_if_missing=True)
+    if len(guard.keys()):
+        raise SystemExit("guard Dict already used: this slot was spawned before")
+    root = Path(LOCAL_OUT) / GROUP / SLOT
+    root.mkdir(parents=True, exist_ok=False)
+    now = time.time()
+    prov = {"slot": SLOT, "expected_identity": expected_identity(), "spawn_epoch": now,
+            "deadline_epoch": now + slot_deadline_s(), "app_name": APP_NAME,
+            "git_head": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
+            "deployed_app_id": modal.App.lookup(APP_NAME).app_id}
+    (root / "launch_provenance.json").write_text(json.dumps(prov, indent=2))
+    if not (guard.put("app_id", prov["deployed_app_id"], skip_if_exists=True)
+            and guard.put("deadline_epoch", prov["deadline_epoch"], skip_if_exists=True)):
+        raise SystemExit("guard app id / deadline already set")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "cp", Path(__file__).with_name("modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py"))
+    cp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cp)
+    if not cp.register(modal.Dict.from_name(CONTROL_REGISTRY_DICT, create_if_missing=True), APP_NAME,
+                       prov["deployed_app_id"], prov["deadline_epoch"]):
+        raise SystemExit("slot already registered with the control-plane reaper")
+    call = modal.Function.from_name(APP_NAME, "run_slot").spawn(prov["expected_identity"]).object_id
+    (root / "call.json").write_text(json.dumps({"call_id": call}))
+    print("spawned", SLOT, call)
+
+
+if __name__ == "__main__":
+    os.chdir(Path(__file__).resolve().parents[1])
+    {"plan": lambda: print(json.dumps({"slot": SLOT, "app": APP_NAME, "deadline_s": slot_deadline_s()})),
+     "spawn": spawn}[sys.argv[1]]()

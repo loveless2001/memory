@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "checks": {
+    "addition_only_commit_in_scope": {
+      "ok": true,
+      "detail": {
+        "added_files": 1489
+      }
+    },
+    "no_binary_commits": {
+      "ok": true,
+      "detail": null
+    },
+    "expected_terminal_package_parent": {
+      "ok": true,
+      "detail": "44b1f187d52ab385d5fe11c62df55f256b03ffaa"
+    },
+    "package_and_source_clean_against_commit": {
+      "ok": true,
+      "detail": null
+    },
+    "metadata_index_matches": {
+      "ok": true,
+      "detail": {
+        "terminal-package.md": "24bb52c99a5e61e070051330f23f657500f077cc4407cc6e38ec7cfe1bdca42a",
+        "billing-reconciliation-prelim.json": "972bcffc8799ec2a3f4d30676cd4221637cc64eeb2c3e1d165da49b0f601a6e8",
+        "SHA256SUMS-excluded-binaries-not-in-git.txt": "186a0e4c3431a958904d8462d056876f4c2823a52b5d56fc56e81464b2bab99b"
+      }
+    },
+    "all_25_terminal_result_files_committed_and_unchanged": {
+      "ok": true,
+      "detail": null
+    },
+    "binary_index_exactly_covers_untracked_binaries": {
+      "ok": true,
+      "detail": {
+        "indexed": 558,
+        "on_disk": 558
+      }
+    },
+    "all_slot_nonbinary_evidence_committed": {
+      "ok": true,
+      "detail": {
+        "files": 1374,
+        "bytes": 21147371
+      }
+    },
+    "billing_snapshot_sha": {
+      "ok": true,
+      "detail": "ebb69e4889f20dac625e0cedfec31aca6da8f7416d519d3e21e527317c4a21c9"
+    },
+    "billing_all_nine_slot_subtotals": {
+      "ok": true,
+      "detail": {
+        "ap-8m9pZ6KD77ivuvmSQ1vb5k": "4.64863281",
+        "ap-ETP6e541BpdsPf11yzZGTe": "15.39625127",
+        "ap-FHeNdce7VkCSVBQWzTRmjk": "2.94470950",
+        "ap-MvPw7JVom3vnRTxVVyzldN": "7.08987892",
+        "ap-Q3tBU1VKHFfO7etg4jmeTz": "22.05052527",
+        "ap-RmkZbuerKMTGWBWtoY3E7r": "14.27187984",
+        "ap-eqwdT119XvSoBJC1I2kDqC": "0.00004958",
+        "ap-ifA2HmtzYE3CNXIcommxBa": "15.40371779",
+        "ap-seAC6uskFnK96xlpe0wLIQ": "20.10492774",
+        "ap-suOdTgdc8PNSfZ3jbnsesa": "0.08021808",
+        "ap-vAEMByn2pbJjoL46iekO9X": "13.29359160",
+        "ap-vaN80Zc8IAet0r37n4bC5q": "11.15671847"
+      }
+    },
+    "billing_totals_decimal_exact": {
+      "ok": true,
+      "detail": {
+        "slots": "119.27095429",
+        "readings": "7.08987892",
+        "controller_r2": "0.08021808",
+        "controller_attempt1": "0.00004958",
+        "total": "126.44110087"
+      }
+    },
+    "unrelated_app_excluded": {
+      "ok": true,
+      "detail": {
+        "selected_rows": 64,
+        "excluded_rows": 10,
+        "excluded_app_ids": [
+          "ap-Pu6Dy71P8DakYgOma6JC0A"
+        ]
+      }
+    },
+    "frozen_reserve_and_estimate_reference": {
+      "ok": true,
+      "detail": null
+    },
+    "all_excluded_binary_payload_hashes_match": {
+      "ok": true,
+      "detail": {
+        "checked": 558,
+        "bytes": 12378547780,
+        "gib": 11.528420988470316,
+        "mismatches": []
+      }
+    }
+  },
+  "commit": "428fc6d67feef70de47b6dd95569ef0cee7ec76e",
+  "completed_utc": "2026-10-07T17:53:28.787033+00:00",
+  "billing_app_attributed_preliminary_usd": "126.44110087",
+  "billing_subtotals": {
+    "ap-8m9pZ6KD77ivuvmSQ1vb5k": "4.64863281",
+    "ap-ETP6e541BpdsPf11yzZGTe": "15.39625127",
+    "ap-FHeNdce7VkCSVBQWzTRmjk": "2.94470950",
+    "ap-MvPw7JVom3vnRTxVVyzldN": "7.08987892",
+    "ap-Q3tBU1VKHFfO7etg4jmeTz": "22.05052527",
+    "ap-RmkZbuerKMTGWBWtoY3E7r": "14.27187984",
+    "ap-eqwdT119XvSoBJC1I2kDqC": "0.00004958",
+    "ap-ifA2HmtzYE3CNXIcommxBa": "15.40371779",
+    "ap-seAC6uskFnK96xlpe0wLIQ": "20.10492774",
+    "ap-suOdTgdc8PNSfZ3jbnsesa": "0.08021808",
+    "ap-vAEMByn2pbJjoL46iekO9X": "13.29359160",
+    "ap-vaN80Zc8IAet0r37n4bC5q": "11.15671847"
+  },
+  "billing_source_sha256": "ebb69e4889f20dac625e0cedfec31aca6da8f7416d519d3e21e527317c4a21c9",
+  "metadata_index_sha256": "93e516dbf64096bf391ade9241d90d71684a00abd7cf7e5f9207f8461be09d1f",
+  "excluded_binary_index_sha256": "186a0e4c3431a958904d8462d056876f4c2823a52b5d56fc56e81464b2bab99b",
+  "billing_limits": [
+    "snapshot hour still open; later billing may backfill",
+    "controller continued after snapshot",
+    "failed slot-image build not app-attributed",
+    "$8.57 proof hold remains separate",
+    "conditional reserve is not a platform cash ceiling"
+  ],
+  "elapsed_s": 25.43752884864807,
+  "remote_mutations": 0,
+  "artifact_edits": 0,
+  "gpu_launches": 0
+}

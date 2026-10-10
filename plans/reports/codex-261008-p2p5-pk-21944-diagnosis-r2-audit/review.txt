@@ -1,0 +1,50 @@
+Independent r2 implementation review (#gravity 21944)
+
+Verdict: CLEAR the single already-authorized $0 local diagnosis at 167f3c3.
+This clears implementation and provenance checks, not a scientific conclusion.
+
+Evidence
+- Independently reran the 14 focused CPU tests: 14 passed in 10.05 seconds.
+- All 14 frozen package files and all 14 indexed inputs pass hash checks.
+  Manifests, telemetry, final parameter bindings, step100 acknowledgement links,
+  intended devices and per-entry dev-eval steps agree. Script and index equal
+  both the advertised hashes and committed 167f3c3 bytes. Tracked tree is clean.
+- The actual .venv-gpu identity preflight passes: bound memsub source,
+  torch 2.7.1+cu126, transformers 4.55.2, pinned Qwen revision and all three
+  model-file hashes. Device inventory is RTX 3060 Laptop GPU.
+- Retained r2 toy end-to-end artifacts are hash-bound to the reviewed script
+  and internally consistent. They were inspected, not independently rerun.
+
+Previous hold points closed
+1. Oracle query addresses now follow query_logits wiring. The CPU oracle
+   geometry and backward tests exercise the formerly failing path.
+2. Dev replay requires exactly one finite logged eval; missing, duplicate,
+   malformed, non-finite and discrepant records fail. Telemetry is hash-bound.
+   Accuracy is explicitly labelled logged and not recomputed.
+3. All-absent detection checks presence at every positive-weight cell, not a
+   near-one mass threshold. The occupied 5e-7 counterexample passes the test.
+   Gradient language distinguishes read paths from head-bias gradients.
+4. Source/environment/device/FP32/TF32 and checkpoint config/step checks are
+   enforced. Setup and entry exceptions retain ERROR.txt and stop.
+
+Execution scope retained
+One shared timeout --signal=KILL 3600 process group covers all model loads,
+12 no-grad geometry entries (four batches of 16 fixed dev episodes each),
+then two M4 initialization backward entries (first two dev episodes), output
+and cleanup. No optimizer, reserved-seed evaluation, Modal, retry or CPU
+fallback. On OOM/error/timeout stop and retain partials. Preserve exact argv,
+stdout/stderr, external exit status, PID/process-group evidence and terminal
+cleanup evidence. Do not overwrite prior retained artifacts.
+
+Limits
+No independent Qwen forward/backward ran during this review. GPU fit and
+runtime are unproved; a first-entry failure is a retained bounded outcome.
+Geometry is descriptive; alignment is not a causal explanation. Dev gradients
+at reconstructed initialization do not establish historical training gradients.
+Logged replay checks absent-read mass and occupancy, not accuracy.
+
+Audit-reader correction
+The first metadata-only reader assumed every old toy manifest included an
+explicit backbone field and raised KeyError. The corrected reader applies the
+runtime PilotConfig default of tiny. Both logs are retained; this was an audit
+reader assumption and caused no model work or changes to the reviewed package.

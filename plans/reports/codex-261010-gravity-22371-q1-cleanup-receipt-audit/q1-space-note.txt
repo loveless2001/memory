@@ -1,0 +1,1 @@
+Q1 space note (2026-10-09T17:50:54Z): .venv-gpu apparent size 5,471,593,161 B, but disk free rose only 64,651,264 B. uv installs packages as hard links into its shared cache (~/.cache/uv, 7.3 GB after Q1, incl. archive-v0/…/torch), so the package bytes remain there. That cache is shared by every uv project on this machine and was NOT touched (out of the approved scope).

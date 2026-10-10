@@ -1,0 +1,132 @@
+{
+ "mode": "s1",
+ "wall_s": 1800,
+ "threads": 8,
+ "n_boot": 4000,
+ "seeds": {
+  "perm_fit": 9799031,
+  "perm_ev": 9799032,
+  "folds": 9799041,
+  "boot": 9799051
+ },
+ "fit": [
+  "train",
+  2,
+  9799011
+ ],
+ "ev": [
+  "heldout",
+  2,
+  9799021
+ ],
+ "sha256": {
+  "sgm-p2p5-previous-key-probe-run-s1-s2-full.py": "ded287595a0c7bf7cf4492caf82a7d255df6f5d8a1a07f898db95d90244d414c",
+  "sgm-p2p5-previous-key-probe-ridge-retrieval-readings.py": "8bec84c5122f7cbc94081ac496aa06feba9647b89bf73683c78dc05a64111789",
+  "sgm-p2p5-previous-key-probe-capture-qwen-adapter-inputs.py": "8c639546cf7a660cc5accedaf0b473c9c04764a43d7fc451ac2fbe7b4b8973a7",
+  "sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py": "87ebee711164d65feb79c62f02b9e253678008e01037b18a21109c2469c09131",
+  "probe-taskhead-learned-n32-s0-run_manifest.json": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0",
+  "run-probe-chain-s1-s2-full.sh": "aa1cbd6b7a86fca58a717bf6a9a2537a89c8f78a28fe854b7ea4d070e452800a",
+  "memsub_tree": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b"
+ },
+ "blas_env": {
+  "OMP_NUM_THREADS": "8",
+  "OPENBLAS_NUM_THREADS": "8",
+  "MKL_NUM_THREADS": "8"
+ },
+ "threadpools": [
+  {
+   "user_api": "blas",
+   "internal_api": "openblas",
+   "num_threads": 8,
+   "prefix": "libscipy_openblas",
+   "filepath": "/home/lenovo/projects/memory/.venv/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-017048f4.so",
+   "version": "0.3.33.112.0",
+   "threading_layer": "pthreads",
+   "architecture": "Haswell"
+  },
+  {
+   "user_api": "openmp",
+   "internal_api": "openmp",
+   "num_threads": 8,
+   "prefix": "libgomp",
+   "filepath": "/home/lenovo/projects/memory/.venv/lib/python3.12/site-packages/torch/lib/libgomp.so.1",
+   "version": null
+  }
+ ],
+ "git_head": "935f91dba30f439c60e1424a40ba05b382985883",
+ "identities": {
+  "pilot_config_resolved": {
+   "arm": "learned",
+   "readout": "taskhead",
+   "n_bindings": 32,
+   "n_queries": 4,
+   "filler_len": 40,
+   "steps": 1500,
+   "batch": 16,
+   "lr": 0.003,
+   "eval_every": 100,
+   "eval_batches": 4,
+   "seed": 0,
+   "sgm": {},
+   "filler_writes": true,
+   "aux_address_lambda": 0.0,
+   "checkpoint_steps": [],
+   "beta_bias_init": null,
+   "filler_len_schedule": [
+    [
+     0,
+     0
+    ],
+    [
+     1000,
+     40
+    ]
+   ],
+   "backbone": "qwen3-0.6b-base",
+   "device": "cpu"
+  },
+  "sgm_config_resolved": {
+   "selected_layers": [
+    6,
+    13,
+    20,
+    27
+   ],
+   "memory_heads": 4,
+   "key_dim": 32,
+   "value_dim": 32,
+   "address_hidden": 64,
+   "address_scale": 8.0,
+   "address_init_spread": 1.0,
+   "local_recent_tokens": 32,
+   "pinned_sink_tokens": 4,
+   "max_cells_per_bank": 2048,
+   "alpha_init_logit": -4.0,
+   "out_init_std": 0.02,
+   "feature_shift": 1,
+   "address_mode": "learned",
+   "stencil": "quadratic_bspline_3x3_v1",
+   "update": "weighted_delta_v1",
+   "read_order": "read_before_write_v1",
+   "ingest": "token_serial_v1",
+   "resolved": {
+    "hidden_size": 1024,
+    "num_hidden_layers": 28,
+    "model_type": "qwen3"
+   }
+  },
+  "backbone_pin": {
+   "repo": "Qwen/Qwen3-0.6B-Base",
+   "revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+   "files": {
+    "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+    "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+    "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+   }
+  },
+  "initial_adapter_params_sha256": "ef5741865072c27d7620d33ddbcb2d3c773e1e1ac5e23a8432b6f0e30d15c2f9",
+  "torch_version": "2.7.1+cpu",
+  "torch_threads": 8
+ },
+ "features_sha256": "13f3ce347fc1bb023f0f0feb0cc232af30b390acefeab584802d9b10f6229454"
+}

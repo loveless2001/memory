@@ -1,0 +1,137 @@
+{
+  "capture_started": "2026-10-10T06:30:44.427616+00:00",
+  "errors": {},
+  "app_id": "ap-uV0nVE4wGpjtep7vRs8tot",
+  "launch": {
+    "runner": "b3-v0.1",
+    "ledger": {
+      "rate_usd_s": 0.0006785399999999999,
+      "cpu_overuse_margin": 1.25,
+      "campaign_s": 23400,
+      "watch_grace_s": 120,
+      "cleanup_s": 300,
+      "window_s": 23880.0,
+      "compute_reservation_usd": 16.203535199999997,
+      "build_allowance_usd": 0.1,
+      "reservation_usd": 16.3035352,
+      "cap_usd": 17.0,
+      "headroom_usd": 0.6964648000000011,
+      "assumptions": [
+        "<= 5 billed CPU cores (Modal CPU limits are soft)",
+        "<= 23880.0 aggregate billed container-seconds across ALL starts and container attempts incl. startup/refusal/retry/crash-reschedule tails (max_containers=1 + the PC-dependent watch stopping the app by deadline + grace + one poll + cleanup; status-call, network and stop tails beyond that are NOT covered)",
+        "memory billed at <= 32 GiB",
+        "the deployed app is stopped within the cleanup window",
+        "rates unchanged",
+        "storage/transfer small and unpriced"
+      ],
+      "unenforced": "CPU overuse beyond the margin; billing tails; a PC-down period delays cleanup-verify: zero-container idle is guaranteed only on a healthy completed path; a crashing deployed container may be rescheduled indefinitely (Modal retries guide), so a crash loop while the PC is down is NOT bounded by this reservation"
+    },
+    "started": 1791601484.0300987,
+    "outcome": "spawned",
+    "app_id": "ap-uV0nVE4wGpjtep7vRs8tot",
+    "deadline": 1791624887.65667,
+    "call_id": "fc-01M4HWABMJ4SHV1CRX72J7WTMM",
+    "spawned": 1791601488.6237137
+  },
+  "call_result": {
+    "returncode": 0,
+    "start": "start-1",
+    "volume_commit_errors": 0,
+    "wall_s": 12209.196365118027,
+    "child_timeout_s": 23269.103543519974,
+    "versions": {
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2"
+    },
+    "cmd": [
+      "/usr/local/bin/python",
+      "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py",
+      "--manifest",
+      "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+      "--out",
+      "/vol/b3-run-v1/B3"
+    ]
+  },
+  "dict": {
+    "start-1": {
+      "task": "ta-01M4HWABYE68TY018WJCDFM5GR",
+      "t": 1791601491.563972,
+      "runner": "b3-v0.1"
+    },
+    "terminal": {
+      "start": "start-1",
+      "reason": "completed",
+      "t": 1791613706.981137
+    },
+    "campaign-deadline": 1791624887.65667
+  },
+  "files": [
+    {
+      "path": "B3.start-1.stdout.txt",
+      "listed_bytes": 136,
+      "bytes": 136,
+      "sha256": "44eac93a5ad6f5162d96ff29959e3b36fafd433ec30b0cb4f54474904d1cd91c"
+    },
+    {
+      "path": "B3/trained_parameters.safetensors",
+      "listed_bytes": 14982744,
+      "bytes": 14982744,
+      "sha256": "7e0b4999af3a9e961dfd2d939a68b7e0e905821a557e749818dd929a52f9d295"
+    },
+    {
+      "path": "B3/run_manifest.json",
+      "listed_bytes": 2833,
+      "bytes": 2833,
+      "sha256": "00bd28c941546541cd4edb440fea4f86e004ae545bdcf7c149a10fd12272cf50"
+    },
+    {
+      "path": "B3/final_bank_derange_eval.json",
+      "listed_bytes": 936,
+      "bytes": 936,
+      "sha256": "eee91e6a0464a918e51c50a9537152996138d3c932ba9d54bc8fb1941b6c80d9"
+    },
+    {
+      "path": "B3/b3_result.json",
+      "listed_bytes": 4267,
+      "bytes": 4267,
+      "sha256": "1e7993bac91085162595eb7d4d23e1c171a028709521abd9e08e7e4887ee08a4"
+    },
+    {
+      "path": "B3/routing_telemetry.jsonl",
+      "listed_bytes": 376641,
+      "bytes": 376641,
+      "sha256": "11ce8b205a11e5c1cf58e3efeb13bfde6cf43d8073553bf0454ac3cb25eb8fe7"
+    },
+    {
+      "path": "B3/resume.pt",
+      "listed_bytes": 44229525,
+      "bytes": 44229525,
+      "sha256": "c9bb22935002e5fb09f2f5a6366a1bc7fd63ca25bb84737911ef3f879c75e198"
+    },
+    {
+      "path": "B3.starts.jsonl",
+      "listed_bytes": 59,
+      "bytes": 59,
+      "sha256": "1d1bc44310a8912dc95139bc497362c0a0b89c1371dbe4f594ab38e26e43f0e3"
+    },
+    {
+      "path": "B3.start-1.stderr.txt",
+      "listed_bytes": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "B3/identity.json",
+      "listed_bytes": 942,
+      "bytes": 942,
+      "sha256": "7387c0866a76505583a8c643b8f85a447d8633df4153bc5bd01ae397329e0dd5"
+    },
+    {
+      "path": "campaign.json",
+      "listed_bytes": 199,
+      "bytes": 199,
+      "sha256": "7d2202846a821b284e03bde0281091c0c470cecae495b1421f91ead892f73145"
+    }
+  ],
+  "capture_finished": "2026-10-10T06:31:21.394806+00:00"
+}

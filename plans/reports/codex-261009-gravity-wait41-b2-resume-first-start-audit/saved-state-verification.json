@@ -1,0 +1,72 @@
+{
+  "verified_at": "2026-10-09T09:44:01.775305+00:00",
+  "capture_finished": "2026-10-09T09:42:33.063247+00:00",
+  "status": "RUNNING_PARTIAL",
+  "app_id": "ap-bgncTcGPrYbwfmiQtprLN9",
+  "call_id": "fc-01M4FZ1SZJ6FVRZQ4Y9VCAXMNB",
+  "admitted_starts": 2,
+  "start3_unused": true,
+  "worker_task_id": "ta-01M4FZCJ3Z083Y4P4EKTPHX3XR",
+  "worker_claim_utc": "2026-10-09T09:19:58.461718+00:00",
+  "training_start_utc": "2026-10-09T09:20:05.847223+00:00",
+  "spawn_to_worker_claim_s": 353.9959099292755,
+  "resume_step": 750,
+  "original_deadline_and_start1_preserved": true,
+  "archived_original_partial_byte_identical": true,
+  "original_checkpoint_telemetry_prefix_preserved": true,
+  "checkpoint": {
+    "step": 900,
+    "bytes": 25047381,
+    "sha256": "56aba21eb22af520b4d945523710d0b3d5332b269d5e831aaac09cd05dea339f",
+    "identity_and_config_match": true,
+    "all_tensors_finite": true,
+    "tensor_counts": {
+      "adapters": 44,
+      "head": 2,
+      "optimizer": 132,
+      "data_generator": 1,
+      "torch_rng": 1,
+      "cuda_rng": 1
+    },
+    "changed_parameter_tensors": 43,
+    "optimizer_entries": 44,
+    "optimizer_and_cpu_cuda_data_rng_present": true
+  },
+  "telemetry": {
+    "rows": 101,
+    "saved_checkpoint_rows": 99,
+    "checkpoint_is_exact_prefix": true,
+    "last_logged_train_step": 900,
+    "completed_logical_updates_lower_bound": 901,
+    "new_physical_updates_lower_bound": 151,
+    "eval_correct_by_step": {
+      "0": 9,
+      "100": 8,
+      "200": 4,
+      "300": 3,
+      "400": 3,
+      "500": 3,
+      "600": 1,
+      "700": 3,
+      "800": 3,
+      "900": 2
+    },
+    "latest_dev_correct": 2,
+    "latest_dev_step": 900,
+    "latest_absent_weight": 0.1345899616717361,
+    "median_resumed_short_logged_step_s": 8.064760420500022,
+    "last_task_ce": 4.134717494249344
+  },
+  "remaining_deadline_s_at_capture": 12690.215099573135,
+  "missing_final_artifacts": [
+    "b2_result.json",
+    "run_manifest.json",
+    "final_bank_derange_eval.json"
+  ],
+  "final_classifier": {
+    "arm": "B2",
+    "status": "INVALID",
+    "why": "dev eval steps [0, 100, 200, 300, 400, 500, 600, 700, 800, 900] != [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500]"
+  },
+  "cpu_snapshot_only_no_model_forward_or_restore": true
+}

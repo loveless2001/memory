@@ -1,0 +1,59 @@
+Independent byte review of chat 21800: corrected readout probe package r2
+
+Verdict: PASS for the implementation gate at 30e2b3ecd879f883263b9852b2a89b37c2f61682.
+Both findings in review 21787 are closed. One local smoke is cleared as scoped
+below. Paid build/deploy/spawn remains uncleared pending its evidence review.
+
+P1 builder import - CLOSED
+The slot logic is baked with copy=True before run_function, so the builder's
+FILE entrypoint can import its sibling. The final GPU image inherits that layer.
+The independently executed tests obtain entrypoint/COPY/deferred mount sets from
+installed Modal 1.5.1, import in a fresh isolated interpreter, and exclude final
+mounts from the builder positive control. The entrypoint-only negative control
+fails as expected. Both run_slot and reaper runtime stage imports pass.
+This is offline import/package evidence, not an executed Modal image build.
+
+P2 local smoke bound - CLOSED
+The smoke requires exactly timeout --signal=KILL 3600 followed by its own argv
+and verifies membership in the timeout parent's process group before repository
+imports or output-directory creation. Its inner watchdog is 3540 seconds and is
+armed before heavy imports. The 20-update scope and private populations are pinned.
+Independent subprocess tests verify refusal of missing/wrong/wrapped bounds and
+a detached group. A short harmless three-process tree under the same KILL form
+terminates as a group. Worker Popen and parent-death safeguards are preserved.
+
+Evidence checked
+- Independently executed focused tests: 73 passed in 57.17s, exit 0.
+- All 26 r2 package hashes match. The retained source patch is byte-identical to
+  the four changed/new runner, smoke and test files. Eleven r1 bound source files
+  are unchanged. memsub, configs and the historical campaign files are unchanged.
+- Saved full-suite evidence: 565 passed, 2 skipped in 563.50s (0:09:23), exit 0. Hashes verified;
+  the full suite was not independently repeated during this r2 review. The r1
+  full suite had already independently passed 557/2 before these scoped fixes.
+- Saved private-copy mutation evidence: baseline 73 passed, 38/38 aimed failures,
+  all re-freezes successful. The original 26 mutation definitions are unchanged.
+  The first run's argv-tail survivor and failing exit are retained; the wrapped
+  command case closes it in the final run. Mutation runs were inspected, not
+  independently repeated by this audit.
+- The registry, validator, lifecycle logic, ledger and reading are unchanged.
+  The earlier real CPU registry construction and Decimal ledger audit therefore
+  retain their scope. Ledger total 40.7401166468 USD <= 40.75, conditional on its
+  declared assumptions. Four total starts and one 31946.2-second slot deadline
+  remain the paid scope; these are not the local smoke's settings.
+
+Cleared next action
+Claude may run ONE local, zero-charge smoke: seed 7, batch 2, 20 updates, C=10,
+using its own populations and a new output directory, without an automatic retry:
+
+timeout --signal=KILL 3600 .venv-gpu/bin/python scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py --out <new dir>
+
+Retain the exact argv, interpreter/environment and source identities, timestamps,
+exit status, summary, worker log/record, checkpoint and output hashes, and observed
+grad_norm/update_norm null paths. Partial/failed evidence remains as-is. A failure
+does not authorize another smoke or a schema allowance added after observation.
+Return the evidence for independent smoke clearance before any paid step.
+The existing conditional user go is retained; this review requests no new approval.
+
+No GPU smoke, pretrained Qwen forward, Modal RPC/build/deploy/spawn, implementation
+edit or commit was performed by this audit. The review is saved in local audit
+files only; the shared implementation stayed frozen throughout the check.

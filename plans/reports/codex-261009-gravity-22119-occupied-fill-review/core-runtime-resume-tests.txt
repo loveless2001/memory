@@ -1,0 +1,33 @@
+........................F......                                          [100%]
+=================================== FAILURES ===================================
+___________ test_observer_traces_match_the_frozen_v2_runtime_exactly ___________
+
+    def test_observer_traces_match_the_frozen_v2_runtime_exactly():
+        """P2D telemetry (write_coords, read_q) must not change behaviour relative
+        to the frozen P2 training code at 1d62903 (bank tensors, reads, logits)."""
+        import importlib
+        import importlib.util
+        from pathlib import Path
+        spec = importlib.util.spec_from_file_location(
+            "p2d_obs", Path(__file__).resolve().parents[1] / "scripts" / "sgm-p2d-address-telemetry-from-saved-runs.py")
+        obs = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(obs)
+
+tests/test_sgm_runtime.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x711ef9c89e80>
+path = '/tmp/codex-occupied-fill-candidate-zivml36c/scripts/sgm-p2d-address-telemetry-from-saved-runs.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/codex-occupied-fill-candidate-zivml36c/scripts/sgm-p2d-address-telemetry-from-saved-runs.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_sgm_runtime.py::test_observer_traces_match_the_frozen_v2_runtime_exactly
+1 failed, 30 passed in 27.10s

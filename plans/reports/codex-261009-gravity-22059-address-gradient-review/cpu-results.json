@@ -1,0 +1,844 @@
+{
+  "scope": "Fixed CPU autograd examples and saved JSON arithmetic; no model, optimizer, training or GPU calls",
+  "torch": "2.7.1+cpu",
+  "device": "cpu",
+  "threads": 1,
+  "seed": 0,
+  "source_sha256": {
+    "memsub/sgm/delta_memory.py": "5eff93487286c584f3b25a792fe091e0a86017d339410b483daa9218d5f92d86",
+    "memsub/sgm/interpolation.py": "ac6d2d95a885349765f3e11f8848cc459006162b1bf250624ba36e87f6290fba",
+    "memsub/sgm/sparse_cell_bank.py": "9c118a41d8e3b2efa24f02761b63f7855893573f4bd9317055303d58ada1e771",
+    "memsub/sgm/layer_adapter.py": "add511eb98d82f3ca0979e7d336c817c5b84dffd56168bb4ad66359d35b531bb",
+    "memsub/runtime/sgm_model_runtime.py": "c13486b84ace7dadd079e8cfe68640011a3b4a1c7a9dca5f0c6a058e3a8563ce",
+    "memsub/sgm/synthetic_pilot.py": "aa99e0bdc742ef35544f44fedb73a98df02180851d856ed2022a20e27a8e2620",
+    "memsub/sgm/synthetic_pilot_evaluation.py": "85cf09b2ee6ba518b521826af987b5ce55f3c9ec196494c30b40a92b08d3be7a",
+    "memsub/sgm/address_supervision.py": "7101ad8f8cf04d3bdafb95f4ef0c2ca9dc92ca5251135e52066ee8ebd4412669"
+  },
+  "actual_kernel_cases": {
+    "helpful_value": {
+      "value": 4.0,
+      "read_xy": [
+        0.6,
+        0.0
+      ],
+      "read": [
+        [
+          [
+            0.4482812285423279
+          ]
+        ]
+      ],
+      "loss": 0.4939185380935669,
+      "absent_mass": 0.005000002216547728,
+      "loss_grad": {
+        "read_address": [
+          [
+            [
+              0.2661394774913788,
+              0.0
+            ]
+          ]
+        ],
+        "write_address": [
+          [
+            [
+              -0.13654114305973053,
+              0.0
+            ]
+          ]
+        ],
+        "q": [
+          [
+            [
+              -0.17472635209560394
+            ]
+          ]
+        ],
+        "k": [
+          [
+            [
+              -0.17472636699676514
+            ]
+          ]
+        ],
+        "v": [
+          [
+            [
+              -0.043681591749191284
+            ]
+          ]
+        ],
+        "beta": [
+          [
+            -0.3494527339935303
+          ]
+        ]
+      },
+      "absent_mass_read_address_grad": [
+        [
+          [
+            0.10000002384185791,
+            0.0
+          ]
+        ]
+      ]
+    },
+    "harmful_value": {
+      "value": -4.0,
+      "read_xy": [
+        0.6,
+        0.0
+      ],
+      "read": [
+        [
+          [
+            -0.4482812285423279
+          ]
+        ]
+      ],
+      "loss": 0.9421997666358948,
+      "absent_mass": 0.005000002216547728,
+      "loss_grad": {
+        "read_address": [
+          [
+            [
+              -0.416672945022583,
+              0.0
+            ]
+          ]
+        ],
+        "write_address": [
+          [
+            [
+              0.21377137303352356,
+              0.0
+            ]
+          ]
+        ],
+        "q": [
+          [
+            [
+              0.27355489134788513
+            ]
+          ]
+        ],
+        "k": [
+          [
+            [
+              0.27355486154556274
+            ]
+          ]
+        ],
+        "v": [
+          [
+            [
+              -0.06838871538639069
+            ]
+          ]
+        ],
+        "beta": [
+          [
+            0.5471097230911255
+          ]
+        ]
+      },
+      "absent_mass_read_address_grad": [
+        [
+          [
+            0.10000002384185791,
+            0.0
+          ]
+        ]
+      ]
+    },
+    "exact_empty_stencil": {
+      "value": 4.0,
+      "read_xy": [
+        10.0,
+        10.0
+      ],
+      "read": [
+        [
+          [
+            0.0
+          ]
+        ]
+      ],
+      "loss": 0.6931471824645996,
+      "absent_mass": 1.0,
+      "loss_grad": {
+        "read_address": [
+          [
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        ],
+        "write_address": null,
+        "q": [
+          [
+            [
+              -0.0
+            ]
+          ]
+        ],
+        "k": null,
+        "v": null,
+        "beta": null
+      },
+      "absent_mass_read_address_grad": [
+        [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      ]
+    },
+    "partial_empty_stencil": {
+      "value": 4.0,
+      "read_xy": [
+        1.4,
+        0.0
+      ],
+      "read": [
+        [
+          [
+            0.09203125536441803
+          ]
+        ]
+      ],
+      "loss": 0.6481899619102478,
+      "absent_mass": 0.4049999713897705,
+      "loss_grad": {
+        "read_address": [
+          [
+            [
+              0.09912833571434021,
+              0.0
+            ]
+          ]
+        ],
+        "write_address": [
+          [
+            [
+              -0.16710203886032104,
+              0.0
+            ]
+          ]
+        ],
+        "q": [
+          [
+            [
+              -0.04389968886971474
+            ]
+          ]
+        ],
+        "k": [
+          [
+            [
+              -0.04389968886971474
+            ]
+          ]
+        ],
+        "v": [
+          [
+            [
+              -0.010974922217428684
+            ]
+          ]
+        ],
+        "beta": [
+          [
+            -0.08779937773942947
+          ]
+        ]
+      },
+      "absent_mass_read_address_grad": [
+        [
+          [
+            0.8999999761581421,
+            0.0
+          ]
+        ]
+      ]
+    }
+  },
+  "symmetric_independent_logit_noise": [
+    {
+      "amplitude": 0.0,
+      "expected_loss": 0.6931471824645996,
+      "amplitude_derivative": 0.0
+    },
+    {
+      "amplitude": 0.25,
+      "expected_loss": 0.700939416885376,
+      "amplitude_derivative": 0.06217649579048157
+    },
+    {
+      "amplitude": 1.0,
+      "expected_loss": 0.8132616281509399,
+      "amplitude_derivative": 0.23105859756469727
+    },
+    {
+      "amplitude": 2.0,
+      "expected_loss": 1.1269280910491943,
+      "amplitude_derivative": 0.38079705834388733
+    }
+  ],
+  "shared_final_bias_differential_error": 5.960464477539063e-08,
+  "distance_to_fixed_occupied_cell_gradient": [
+    20.0,
+    20.0
+  ],
+  "constant_map_pair_loss": 0.0,
+  "stage_a_saved_telemetry": {
+    "A0": {
+      "sha256": "13fd0c24c8c129d3b7195289ceb570ae03bc98ec29a39a9a380863ffea4a9e2f",
+      "evals": [
+        {
+          "step": 0,
+          "absent_mass": 0.046701282903086394,
+          "accuracy": 0.03515625
+        },
+        {
+          "step": 25,
+          "absent_mass": 0.9960536565631628,
+          "accuracy": 0.0234375
+        },
+        {
+          "step": 50,
+          "absent_mass": 0.9993223361670971,
+          "accuracy": 0.0234375
+        },
+        {
+          "step": 75,
+          "absent_mass": 0.999745893292129,
+          "accuracy": 0.015625
+        },
+        {
+          "step": 100,
+          "absent_mass": 0.9927543895319104,
+          "accuracy": 0.015625
+        }
+      ],
+      "initial_address_update_sum_of_tensor_norms": {
+        "L6/address_mlp": 0.19792169705033302,
+        "L13/address_mlp": 0.1979144373908639,
+        "L20/address_mlp": 0.19793898006901145,
+        "L27/address_mlp": 0.19794610841199756
+      },
+      "first_step_sign_limit_sum_of_tensor_norms": 0.1979482681718907,
+      "first_step_sign_limit_concatenated_l2": 0.1420492872210206
+    },
+    "A1": {
+      "sha256": "5b2588b1534cf746f96cb19c77b931e9f18dc648724bacc28e7d736d8a993fa5",
+      "evals": [
+        {
+          "step": 0,
+          "absent_mass": 0.046701282903086394,
+          "accuracy": 0.03515625
+        },
+        {
+          "step": 25,
+          "absent_mass": 0.4886660152114928,
+          "accuracy": 0.0078125
+        },
+        {
+          "step": 50,
+          "absent_mass": 0.5301995989866555,
+          "accuracy": 0.0234375
+        },
+        {
+          "step": 75,
+          "absent_mass": 0.6111422991380095,
+          "accuracy": 0.03125
+        },
+        {
+          "step": 100,
+          "absent_mass": 0.6523364614695311,
+          "accuracy": 0.0078125
+        }
+      ],
+      "initial_address_update_sum_of_tensor_norms": {
+        "L6/address_mlp": 0.019792147038970143,
+        "L13/address_mlp": 0.01979141478659585,
+        "L20/address_mlp": 0.019793876766925678,
+        "L27/address_mlp": 0.019794604973867536
+      },
+      "first_step_sign_limit_sum_of_tensor_norms": 0.019794826817189068,
+      "first_step_sign_limit_concatenated_l2": 0.014204928722102056
+    }
+  },
+  "saved_geometry_head_summaries": [
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-p2p5-learned-n32-residual-s0-final.json",
+      "sha256": "52f2754318ede1c8b7c95ae81427f1b2c0f422f48e94328632ab1181e10ea14d",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.5611687885069552,
+        "head_min": 0.0,
+        "head_max": 1.0
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.47900390625,
+        "head_min": 0.0,
+        "head_max": 1.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.9818347990512848,
+        "head_min": 0.9436184167861938,
+        "head_max": 0.9987660646438599
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.9425778687000275,
+        "head_min": 0.7963987588882446,
+        "head_max": 0.9880771040916443
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": -0.17410924658179283,
+        "head_min": -0.787855327129364,
+        "head_max": 0.9285582900047302
+      },
+      "centroid_offset_cells": {
+        "head_mean": 6.581472643651068,
+        "head_min": 0.1807704120874405,
+        "head_max": 17.87455177307129
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.9349837764166296,
+        "head_min": 0.44172126799821854,
+        "head_max": 1.0
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-p2p5-oracle-n32-residual-s0-final.json",
+      "sha256": "0a9734572b49e9114557fa8b08fe69c3a90b308e502d37a19c7f3c30974717f8",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.9680607095360756,
+        "head_min": 0.8887375593185425,
+        "head_max": 0.9989712238311768
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.6768434764817357,
+        "head_min": 0.12670645117759705,
+        "head_max": 0.9844722747802734
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": 0.17814409857965074,
+        "head_min": -0.9668353199958801,
+        "head_max": 0.9463137984275818
+      },
+      "centroid_offset_cells": {
+        "head_mean": 1.9422181844711304,
+        "head_min": 1.9422181844711304,
+        "head_max": 1.9422181844711304
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-probe-taskhead-s0-final.json",
+      "sha256": "2c0b8d02250356a85283666cc18be4fff7908e86454544267c6b642bb656049b",
+      "query_read_absent_weight_mean": {
+        "head_mean": 1.0,
+        "head_min": 1.0,
+        "head_max": 1.0
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 1.0,
+        "head_min": 1.0,
+        "head_max": 1.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.9505196437239647,
+        "head_min": 0.8882789015769958,
+        "head_max": 0.9713195562362671
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.9502158053219318,
+        "head_min": 0.9099000096321106,
+        "head_max": 0.9780468344688416
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": -0.6471338104456663,
+        "head_min": -0.8499005436897278,
+        "head_max": -0.32721003890037537
+      },
+      "centroid_offset_cells": {
+        "head_mean": 14.035053431987762,
+        "head_min": 7.6546125411987305,
+        "head_max": 23.4835262298584
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.9477243749424815,
+        "head_min": 0.789094015955925,
+        "head_max": 1.0
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-probe-taskhead-s0-init.json",
+      "sha256": "46da2c7b85532be833792df6d6db44c75ab7d4d97a4d4c3511b1d8c06b62ffd0",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.04670127433547577,
+        "head_min": 1.4753602044947911e-05,
+        "head_max": 0.16495434939861298
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.6194219682365656,
+        "head_min": 0.4778690040111542,
+        "head_max": 0.7297475934028625
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.620088554918766,
+        "head_min": 0.45341870188713074,
+        "head_max": 0.7945718765258789
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": 0.002813240949762985,
+        "head_min": -0.2250964492559433,
+        "head_max": 0.1851833611726761
+      },
+      "centroid_offset_cells": {
+        "head_mean": 1.4594288794323802,
+        "head_min": 0.22062082588672638,
+        "head_max": 2.407557487487793
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.982630580663681,
+        "head_min": 0.9548891186714172,
+        "head_max": 0.9995904713869095
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-probe-taskhead-s0-step100.json",
+      "sha256": "95e61b1661c13a5750d85b1b270626e9d46ad1c29f8099ef5b95ccb2751dd21e",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.9928118102252483,
+        "head_min": 0.8852142095565796,
+        "head_max": 1.0
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.9658203125,
+        "head_min": 0.55078125,
+        "head_max": 1.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.9398012086749077,
+        "head_min": 0.8511121869087219,
+        "head_max": 0.9713186621665955
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.9440414011478424,
+        "head_min": 0.9098909497261047,
+        "head_max": 0.9741527438163757
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": -0.6295375358313322,
+        "head_min": -0.8029607534408569,
+        "head_max": -0.31972989439964294
+      },
+      "centroid_offset_cells": {
+        "head_mean": 10.78147292137146,
+        "head_min": 7.006015300750732,
+        "head_max": 14.697595596313477
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.9758556699380279,
+        "head_min": 0.9231035709381104,
+        "head_max": 1.0
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-probe-taskhead-s1-final.json",
+      "sha256": "0459f68c8186f7e5684ebf3c442dc397f7c20126c6a223f6e2c994d47af0784f",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.9913600236177444,
+        "head_min": 0.8618918657302856,
+        "head_max": 1.0
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.93701171875,
+        "head_min": 0.0859375,
+        "head_max": 1.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.9409276805818081,
+        "head_min": 0.8898667097091675,
+        "head_max": 0.9699808359146118
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.9431002736091614,
+        "head_min": 0.8893010020256042,
+        "head_max": 0.978107213973999
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": -0.4803219447931042,
+        "head_min": -0.8598163723945618,
+        "head_max": 0.0010504929814487696
+      },
+      "centroid_offset_cells": {
+        "head_mean": 10.054186284542084,
+        "head_min": 7.263461112976074,
+        "head_max": 12.701969146728516
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.9736800659447908,
+        "head_min": 0.9455960243940353,
+        "head_max": 1.0
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-probe-taskhead-s1-init.json",
+      "sha256": "5b39d3ae7f03bfbad4ca53625cf9de7cccae3cd99fe90e822ddc574642ce572b",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.04172052199282916,
+        "head_min": 0.00014802347868680954,
+        "head_max": 0.34447818994522095
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.004638671875,
+        "head_min": 0.0,
+        "head_max": 0.0546875
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.6197371501475573,
+        "head_min": 0.4546574354171753,
+        "head_max": 0.7630493640899658
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.6106461808085442,
+        "head_min": 0.44250041246414185,
+        "head_max": 0.7378196716308594
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": 0.011970781022682786,
+        "head_min": -0.19162216782569885,
+        "head_max": 0.2264576554298401
+      },
+      "centroid_offset_cells": {
+        "head_mean": 1.2142414767295122,
+        "head_min": 0.3613123595714569,
+        "head_max": 2.6703391075134277
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.9861568352207541,
+        "head_min": 0.9600554555654526,
+        "head_max": 0.9992754608392715
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/qwen-probe-taskhead-s1-step100.json",
+      "sha256": "11cb6f755deba3c46bce02e134ff0411a078805aa1d090c07c144d5caf6939cf",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.9913676753640175,
+        "head_min": 0.8620776534080505,
+        "head_max": 1.0
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.933349609375,
+        "head_min": 0.0859375,
+        "head_max": 1.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.9404695741832256,
+        "head_min": 0.8898618221282959,
+        "head_max": 0.9700015187263489
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.9395998232066631,
+        "head_min": 0.8781967163085938,
+        "head_max": 0.9779802560806274
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": -0.46605519898730563,
+        "head_min": -0.8592787384986877,
+        "head_max": 0.0010342829627916217
+      },
+      "centroid_offset_cells": {
+        "head_mean": 9.948361307382584,
+        "head_min": 7.263272762298584,
+        "head_max": 12.7034912109375
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.9728058846667409,
+        "head_min": 0.9352948665618896,
+        "head_max": 1.0
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/toy-p2c-curriculum-taskhead-s0-final.json",
+      "sha256": "808721b24dd4ab1c795993c89fa6847f2d7c4572ca955e79202a592a1793223f",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.015082398992490198,
+        "head_min": 7.967752026161179e-06,
+        "head_max": 0.05265523120760918
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.0029296875,
+        "head_min": 0.0,
+        "head_max": 0.01171875
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.14279175677802414,
+        "head_min": 0.005811135750263929,
+        "head_max": 0.3632616102695465
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.17260025825817138,
+        "head_min": 0.0059209358878433704,
+        "head_max": 0.37148991227149963
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": 0.5838624350726604,
+        "head_min": 0.18543289601802826,
+        "head_max": 0.9070447683334351
+      },
+      "centroid_offset_cells": {
+        "head_mean": 1.0998968202620745,
+        "head_min": 0.07924436032772064,
+        "head_max": 2.6921374797821045
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.5962465368211269,
+        "head_min": 0.5164440497756004,
+        "head_max": 0.6895161271095276
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/toy-p2c-curriculum-taskhead-s0-init.json",
+      "sha256": "16096f88e60fb53b6506f87f74be71aa8ce1153a4a6a1a31331f69e541343a6a",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.000714061527105514,
+        "head_min": 0.00010064864181913435,
+        "head_max": 0.0012394329532980919
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.033043236122466624,
+        "head_min": 0.006847942713648081,
+        "head_max": 0.0446588471531868
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.08873011916875839,
+        "head_min": 0.019919846206903458,
+        "head_max": 0.15172286331653595
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": -0.008984610089100897,
+        "head_min": -0.04963613301515579,
+        "head_max": 0.022837713360786438
+      },
+      "centroid_offset_cells": {
+        "head_mean": 0.5021253786981106,
+        "head_min": 0.17956975102424622,
+        "head_max": 0.915464460849762
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.8238328509032726,
+        "head_min": 0.7943548411130905,
+        "head_max": 0.8482232838869095
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/toy-p2c-curriculum-taskhead-s1-final.json",
+      "sha256": "485dfa96f20d49a888b362d31c7d4ad84eb837f7dd560d16a745bc238512a6c7",
+      "query_read_absent_weight_mean": {
+        "head_mean": 5.9709434446886256e-05,
+        "head_min": 1.3354557459877014e-09,
+        "head_max": 0.0001918578054755926
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.26261326123494655,
+        "head_min": 0.004835727158933878,
+        "head_max": 0.6152987480163574
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.20553752279374748,
+        "head_min": 0.006959083024412394,
+        "head_max": 0.49808210134506226
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": 0.67682945728302,
+        "head_min": 0.3506097197532654,
+        "head_max": 0.9325087070465088
+      },
+      "centroid_offset_cells": {
+        "head_mean": 0.16505677811801434,
+        "head_min": 0.05106288194656372,
+        "head_max": 0.29944151639938354
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.7512600794434547,
+        "head_min": 0.5446698516607285,
+        "head_max": 0.9856980741024017
+      }
+    },
+    {
+      "file": "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/run-v1/toy-p2c-curriculum-taskhead-s1-init.json",
+      "sha256": "94bb65ac5af00ace7426134d12e1320655706d5c726b8e485202245b1c0558db",
+      "query_read_absent_weight_mean": {
+        "head_mean": 0.0017561686836415902,
+        "head_min": 0.0003648594720289111,
+        "head_max": 0.003967699594795704
+      },
+      "query_read_all_positive_cells_absent_fraction": {
+        "head_mean": 0.0,
+        "head_min": 0.0,
+        "head_max": 0.0
+      },
+      "query_q_mean_pairwise_cos": {
+        "head_mean": 0.013926524523412809,
+        "head_min": 0.0008600702276453376,
+        "head_max": 0.03459387645125389
+      },
+      "value_k_mean_pairwise_cos": {
+        "head_mean": 0.09793710568919778,
+        "head_min": 0.02292979322373867,
+        "head_max": 0.2391846776008606
+      },
+      "cos_q_bound_k_mean": {
+        "head_mean": 0.024760751519352198,
+        "head_min": -0.010870787315070629,
+        "head_max": 0.07151192426681519
+      },
+      "centroid_offset_cells": {
+        "head_mean": 0.4383375719189644,
+        "head_min": 0.14829939603805542,
+        "head_max": 0.8944189548492432
+      },
+      "binding_pair_intersect_rate": {
+        "head_mean": 0.8958622105419636,
+        "head_min": 0.8732673823833466,
+        "head_max": 0.9259387701749802
+      }
+    }
+  ]
+}

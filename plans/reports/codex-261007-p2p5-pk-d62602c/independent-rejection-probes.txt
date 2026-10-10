@@ -1,0 +1,468 @@
+{
+  "baseline": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2,
+        "interrupted_artifact_units": 1
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    }
+  },
+  "prior_joint_metric_omission": {
+    "scenarios": {},
+    "pass": false,
+    "failure": "learned-n4-s99: output validation: metrics heldout_none correct/total disagree with the per-example rows"
+  },
+  "joint_one_layer_telemetry_omission": {
+    "scenarios": {},
+    "pass": false,
+    "failure": "learned-n4-s99: output validation: output schema: per-layer key L{L}/q_proj covers layers ['3'] != ['1', '3']"
+  },
+  "joint_duplicated_prediction_rows": {
+    "scenarios": {},
+    "pass": false,
+    "failure": "learned-n4-s99: output validation: per-example rows do not cover intervention x batch x episode x query exactly once"
+  },
+  "layer_omission_supervisor_state": "FAILED",
+  "duplicated_rows_supervisor_state": "FAILED",
+  "overflow_literal_acceptance": {
+    "scenarios": {},
+    "pass": false,
+    "failure": "learned-n4-s99: output validation: non-strict JSON: non-finite number literal 1e999"
+  },
+  "overflow_literal_supervisor_state": "FAILED",
+  "prior_zeroed_predecessor_digest": {
+    "scenarios": {},
+    "pass": false,
+    "failure": "learned-n4-s99: predecessor snapshot does not match its inherited digest"
+  },
+  "timing-valid-synthetic-baseline": {
+    "accepted": true,
+    "validation": {
+      "configs": 18,
+      "commit_s": [
+        0.5,
+        0.6,
+        0.7
+      ],
+      "checkpoint_bytes_max": 275453
+    },
+    "SYNTHETIC_VALIDATOR_FIXTURE": true
+  },
+  "prior-empty-timing-measurements": {
+    "accepted": false,
+    "failure": "timing learned N16 P1: workers/entries/seeds do not cover exactly k = 2 ranks",
+    "SYNTHETIC_VALIDATOR_FIXTURE": true
+  },
+  "timing-duplicate-rank": {
+    "accepted": false,
+    "failure": "timing learned N16 P1: worker ranks differ from 0..k-1",
+    "SYNTHETIC_VALIDATOR_FIXTURE": true
+  },
+  "timing-wrong-k": {
+    "accepted": false,
+    "failure": "timing learned N16 P1: rank 0: phase/k/seed mismatch",
+    "SYNTHETIC_VALIDATOR_FIXTURE": true
+  },
+  "timing-duplicate-update-ids": {
+    "accepted": false,
+    "failure": "timing learned N16 P1: rank 0: update ids [0, 0, 0, 0, 0, 0]",
+    "SYNTHETIC_VALIDATOR_FIXTURE": true
+  },
+  "timing-inconsistent-fixed-work-rate": {
+    "accepted": false,
+    "failure": "timing learned N16 P1: reported fixed_work_updates_per_s differs from the summary recomputed from raw records",
+    "SYNTHETIC_VALIDATOR_FIXTURE": true
+  },
+  "whole_checker_with_synthetic_timing_baseline": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2,
+        "interrupted_artifact_units": 1
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": true,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "timing": {
+      "configs": 18,
+      "commit_s": [
+        0.5,
+        0.6,
+        0.7
+      ],
+      "checkpoint_bytes_max": 275453
+    }
+  },
+  "whole_timing_duplicate-rank": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2,
+        "interrupted_artifact_units": 1
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": false,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "failure": "timing learned N16 P1: worker ranks differ from 0..k-1"
+  },
+  "whole_timing_wrong-k": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2,
+        "interrupted_artifact_units": 1
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": false,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "failure": "timing learned N16 P1: rank 0: phase/k/seed mismatch"
+  },
+  "whole_timing_duplicate-update-ids": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2,
+        "interrupted_artifact_units": 1
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": false,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "failure": "timing learned N16 P1: rank 0: update ids [0, 0, 0, 0, 0, 0]"
+  },
+  "whole_timing_inconsistent-rate": {
+    "scenarios": {
+      "B": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "resumed_from": 4,
+        "epochs": [
+          1,
+          2
+        ]
+      },
+      "C": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "eval_only_epoch": 2,
+        "interrupted_artifact_units": 1
+      },
+      "D": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "failed_persisted_epochs": [
+            1,
+            2
+          ]
+        }
+      },
+      "E": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "pass": false,
+    "control": {
+      "mode": "bitwise",
+      "cells": {
+        "learned-n4-s99": {
+          "bitwise": true,
+          "max_rel": 0.0
+        },
+        "learned-n4-s100": {
+          "bitwise": true,
+          "max_rel": 0.0
+        }
+      }
+    },
+    "failure": "timing learned N16 P1: reported fixed_work_updates_per_s differs from the summary recomputed from raw records"
+  },
+  "frozen_schema_reconstruction": {
+    "matches": true,
+    "tiny_layers_seen": [
+      "1",
+      "3"
+    ]
+  },
+  "targeted_rejections_all_pass": true,
+  "scope": "CPU_ONLY_SCRATCH_COPIES_NO_GPU_DEPLOY_LAUNCH_STOP_COMMIT_PUSH"
+}

@@ -1,0 +1,59 @@
+{
+  "cleanup": {
+    "groups": {
+      "A": {
+        "files": 581,
+        "bytes": 13300144773
+      },
+      "B": {
+        "files": 51,
+        "bytes": 1276221807
+      },
+      "C": {
+        "files": 11700,
+        "bytes": 1664290626
+      },
+      "D": {
+        "files": 259,
+        "bytes": 293263511
+      }
+    },
+    "files_confirmed_absent": 12591,
+    "B_C_exact_manifest_match": true,
+    "protected_hashes_verified": 30,
+    "deleted_logical_bytes": 16533920717,
+    "recorded_free_space_increase_bytes": 16503693312,
+    "before_free_bytes_recorded": 525232877568,
+    "after_free_bytes_recorded": 541736570880,
+    "git_changes": [
+      "plans/reports/claude-261009-0237-gravity-cleanup-receipt/SHA256SUMS.txt",
+      "plans/reports/claude-261009-0237-gravity-cleanup-receipt/cleanup-approved-a-b-c-d.py",
+      "plans/reports/claude-261009-0237-gravity-cleanup-receipt/receipt.jsonl",
+      "plans/reports/claude-261009-0237-gravity-cleanup-receipt/summary.json"
+    ],
+    "limitations": "A/D predeletion hashes and filesystem-before reading are receipt evidence; not independently observed before deletion."
+  },
+  "A0": {
+    "arm": "A0",
+    "status": "valid",
+    "absent_read_weight_by_step": {
+      "0": 0.046701282903086394,
+      "25": 0.9960536565631628,
+      "50": 0.9993223361670971,
+      "75": 0.999745893292129,
+      "100": 0.9927543895319104
+    },
+    "band_at_100": "escaped",
+    "kept_through_100": false,
+    "bands": {
+      "escaped": ">= 0.9",
+      "kept": "<= 0.2",
+      "partial": "between"
+    }
+  },
+  "terminal_markers": {
+    "stage-a-run-v1.exit.txt": false,
+    "stage-a-run-v1.cleanup-exit.txt": false,
+    "stage-a-run-v1/cleanup.json": false
+  }
+}

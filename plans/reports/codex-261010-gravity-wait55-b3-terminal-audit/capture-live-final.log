@@ -1,0 +1,38 @@
+{
+  "capture_started": "2026-10-10T06:30:44.427616+00:00",
+  "capture_finished": "2026-10-10T06:31:21.394806+00:00",
+  "call_result": {
+    "returncode": 0,
+    "start": "start-1",
+    "volume_commit_errors": 0,
+    "wall_s": 12209.196365118027,
+    "child_timeout_s": 23269.103543519974,
+    "versions": {
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2"
+    },
+    "cmd": [
+      "/usr/local/bin/python",
+      "scripts/sgm-p2p5-b3-shift2-fill-long-run-train.py",
+      "--manifest",
+      "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+      "--out",
+      "/vol/b3-run-v1/B3"
+    ]
+  },
+  "dict": {
+    "start-1": {
+      "task": "ta-01M4HWABYE68TY018WJCDFM5GR",
+      "t": 1791601491.563972,
+      "runner": "b3-v0.1"
+    },
+    "terminal": {
+      "start": "start-1",
+      "reason": "completed",
+      "t": 1791613706.981137
+    },
+    "campaign-deadline": 1791624887.65667
+  },
+  "files": 11,
+  "errors": {}
+}

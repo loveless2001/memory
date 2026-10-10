@@ -1,0 +1,79 @@
+{
+  "verdict": "PASS: launch identity and scope verified; call running/pending",
+  "package_commit": "622b17c073d04754c7b9be0a75a74a72ec9427a7",
+  "source_commit": "eb41ab7e6ff5f3023222855592b5c1a65f9ed8c3",
+  "app_id": "ap-O1KAZIvKbm2XnyURE5vBzc",
+  "call_id": "fc-01M4D02JY58FVB3QQ8AV4V9MK5",
+  "saved_launch_hashes": {
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/00-app-list-before-deploy.json": "ae806fecbc338836828998542a1fa1602c89dbde33b354070ca092a55507a408",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/01-plan.json": "570a6263900bd86e99a90909a4b6a00a06c76dd688f2905fa88ad3821218ae08",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/01-resources-introspected.json": "9d4f2be8ff472903a49f251a28154729fb34fc5ab172ff9bb87b80e671a9dc20",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/02-deploy.exit.txt": "2b6243a6d77183ffc86275a894cf536fc4406fe1acb962fb76d42b30c9ff36a6",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/02-deploy.txt": "bdfe3bc57187e7b9acc52b5741170443467bd5fd9d3389deb0cede889111bef7",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/03-app-list-after-deploy.json": "44f3058bbece3de0b30e9dbb93eeec75e99baae6ceafcf5f77a0525b719eb202",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/04-spawn.exit.txt": "c732a356ba5dd11efa530401caffb34f936d547dc3a3ba2c3efbd64ebafdd55f",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/04-spawn.txt": "e5b2278cc4981569c0ea3bca34f7639a4f9cebbb3c7c2ab8f5d2cd9727335edf",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/05-dicts-after-spawn.json": "4a1ec757ab63eb0853345d54bc2d44a22eb8cc9cfa853eb068a8f5a4db62d9c0",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/06-dicts-after-first-ticks.json": "8d7f79877951824fe0294d0603229abb1da0173acfe95275e724e9e7c3757dad",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/07-container-list-after-start.json": "31e1d1fea0e0e6ceb5abe9ab7517e9c5ec106016726b020639d683437f31f058",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/launch/launch-deploy-then-spawn.sh": "d3820bbe79ca7c5ab302dc08de2c1d429a12024139129b72a26944c66484082c"
+  },
+  "deploy_spawn_exit_records": {
+    "02-deploy": {
+      "start_utc": "2026-10-08T05:31:57Z",
+      "EXIT_STATUS": "0",
+      "end_utc": "2026-10-08T05:34:07Z"
+    },
+    "04-spawn": {
+      "start_utc": "2026-10-08T05:34:09Z",
+      "EXIT_STATUS": "0",
+      "end_utc": "2026-10-08T05:34:15Z"
+    }
+  },
+  "snapshot_at_utc": "2026-10-08T05:40:00.074577+00:00",
+  "admitted_starts": 1,
+  "total_start_allowance": 4,
+  "deadline_epoch": 1791469595.643849,
+  "deadline_utc": "2026-10-08T14:26:35.643849+00:00",
+  "deadline_bangkok": "2026-10-08T21:26:35.643849+07:00",
+  "immutable_slot_duration_s": 31946.2,
+  "cap_usd": 40.75,
+  "cell_checks": {
+    "taskhead-learned-n32-s0": {
+      "state": "STARTED",
+      "epoch": 1,
+      "source_identity_matches": true,
+      "pilot_matches": true,
+      "checkpoint_chain": [],
+      "environment": {
+        "cuda": "12.6",
+        "python": "3.12.10",
+        "tf32_matmul": false,
+        "torch": "2.7.1+cu126",
+        "transformers": "4.55.2"
+      }
+    },
+    "taskhead-learned-n32-s1": {
+      "state": "STARTED",
+      "epoch": 1,
+      "source_identity_matches": true,
+      "pilot_matches": true,
+      "checkpoint_chain": [],
+      "environment": {
+        "cuda": "12.6",
+        "python": "3.12.10",
+        "tf32_matmul": false,
+        "torch": "2.7.1+cu126",
+        "transformers": "4.55.2"
+      }
+    }
+  },
+  "remote_mutations_by_audit": false,
+  "learning_result_available": false,
+  "billing_reconciled": false,
+  "snapshot_limit": "The app/container, stats, Dict and volume reads are sequential point-in-time reads, not an atomic snapshot. Empty retained checkpoint chains do not imply zero optimizer updates.",
+  "collector_note": "The wrapper exits on final=true (stop attempted), not necessarily stopped_verified. The final shutdown status and zero tasks/containers must be checked explicitly.",
+  "review_file": "review.txt",
+  "collector_wrapper_sha256": "306d0c79528856911850d0b5f79dd6bd267b8c02c0e12af327632c8ca09c08d3",
+  "review_verdict": "PASS launch verification only; existing bounded run continues"
+}

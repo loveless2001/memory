@@ -1,0 +1,54 @@
+{
+  "parity_script_sha256": "1408d91b9e9f0e54fe915e1cc1ec120a2e3e621d2b16f560d683fc7a992d3b7f",
+  "reference_source": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "missing_gradient_probe": {
+    "pass": true,
+    "bitwise": true,
+    "max_rel": 0.0,
+    "worst": "init/w",
+    "max_abs": 0.0,
+    "n_compared": 4,
+    "dev_predictions_identical": true,
+    "dev_float_fields_differing": {},
+    "ref_train_s": 1,
+    "cand_train_s": 1
+  },
+  "nan_gradient_probe": {
+    "pass": true,
+    "bitwise": false,
+    "max_rel": 0.0,
+    "worst": "init/w",
+    "max_abs": 0.0,
+    "n_compared": 5,
+    "dev_predictions_identical": true,
+    "dev_float_fields_differing": {},
+    "ref_train_s": 1,
+    "cand_train_s": 1
+  },
+  "nonidentical_init_probe": {
+    "pass": true,
+    "bitwise": false,
+    "max_rel": 9.5367431640625e-07,
+    "worst": "init/w",
+    "max_abs": 9.5367431640625e-07,
+    "n_compared": 5,
+    "dev_predictions_identical": true,
+    "dev_float_fields_differing": {},
+    "ref_train_s": 1,
+    "cand_train_s": 1
+  },
+  "no_grad_scatter_storage_probe": [
+    {
+      "implementation": "memsub_ref.sgm.sparse_cell_bank",
+      "cell_changed_when_source_mutated": false,
+      "retained_storage_bytes_for_one_16byte_cell": 16
+    },
+    {
+      "implementation": "memsub.sgm.sparse_cell_bank",
+      "cell_changed_when_source_mutated": true,
+      "retained_storage_bytes_for_one_16byte_cell": 144
+    }
+  ],
+  "remote_calls": false,
+  "paid_work": false
+}

@@ -1,0 +1,31 @@
+{
+  "runner": "b3-v0.1",
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "campaign_s": 23400,
+    "watch_grace_s": 120,
+    "cleanup_s": 300,
+    "window_s": 23880.0,
+    "compute_reservation_usd": 16.203535199999997,
+    "build_allowance_usd": 0.1,
+    "reservation_usd": 16.3035352,
+    "cap_usd": 17.0,
+    "headroom_usd": 0.6964648000000011,
+    "assumptions": [
+      "<= 5 billed CPU cores (Modal CPU limits are soft)",
+      "<= 23880.0 aggregate billed container-seconds across ALL starts and container attempts incl. startup/refusal/retry/crash-reschedule tails (max_containers=1 + the PC-dependent watch stopping the app by deadline + grace + one poll + cleanup; status-call, network and stop tails beyond that are NOT covered)",
+      "memory billed at <= 32 GiB",
+      "the deployed app is stopped within the cleanup window",
+      "rates unchanged",
+      "storage/transfer small and unpriced"
+    ],
+    "unenforced": "CPU overuse beyond the margin; billing tails; a PC-down period delays cleanup-verify: zero-container idle is guaranteed only on a healthy completed path; a crashing deployed container may be rescheduled indefinitely (Modal retries guide), so a crash loop while the PC is down is NOT bounded by this reservation"
+  },
+  "started": 1791601484.0300987,
+  "outcome": "spawned",
+  "app_id": "ap-uV0nVE4wGpjtep7vRs8tot",
+  "deadline": 1791624887.65667,
+  "call_id": "fc-01M4HWABMJ4SHV1CRX72J7WTMM",
+  "spawned": 1791601488.6237137
+}

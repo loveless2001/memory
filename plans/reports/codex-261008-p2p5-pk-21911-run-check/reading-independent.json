@@ -1,0 +1,132 @@
+{
+  "accuracy": {
+    "0": {
+      "residual_head": {
+        "bank_derange": 0.072265625,
+        "coord_shuffle": 0.048828125,
+        "none": 0.072265625,
+        "query_off": 0.0224609375,
+        "read_offset": 0.021484375
+      },
+      "taskhead": {
+        "bank_derange": 0.01171875,
+        "coord_shuffle": 0.01171875,
+        "none": 0.01171875,
+        "query_off": 0.01171875,
+        "read_offset": 0.01171875
+      }
+    },
+    "1": {
+      "residual_head": {
+        "bank_derange": 0.0625,
+        "coord_shuffle": 0.0556640625,
+        "none": 0.0634765625,
+        "query_off": 0.037109375,
+        "read_offset": 0.037109375
+      },
+      "taskhead": {
+        "bank_derange": 0.015625,
+        "coord_shuffle": 0.015625,
+        "none": 0.015625,
+        "query_off": 0.015625,
+        "read_offset": 0.015625
+      }
+    }
+  },
+  "bank_dependence": {
+    "met": false,
+    "per_seed": {
+      "0": {
+        "derange_accuracy": 0.01171875,
+        "none_minus_derange": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "none_minus_read_offset": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "pass": false
+      },
+      "1": {
+        "derange_accuracy": 0.015625,
+        "none_minus_derange": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "none_minus_read_offset": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "pass": false
+      }
+    }
+  },
+  "cells": {
+    "taskhead-learned-n32-s0": {
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "state": "COMPLETE",
+      "validation": "valid"
+    },
+    "taskhead-learned-n32-s1": {
+      "epoch": 1,
+      "epochs": [
+        1
+      ],
+      "reason": null,
+      "state": "COMPLETE",
+      "validation": "valid"
+    }
+  },
+  "comparator_note": "seed-1 residual-head rows = the post-hoc amended cell's bound outputs (original FAILED record unchanged)",
+  "contrast": {
+    "label": "positive gain >=5pp excluded",
+    "per_seed_taskhead_minus_residual": {
+      "0": {
+        "diff": -0.060546875,
+        "hi": -0.04438888300744996,
+        "lo": -0.07670486699255004,
+        "n": 256
+      },
+      "1": {
+        "diff": -0.0478515625,
+        "hi": -0.031174195556794664,
+        "lo": -0.06452892944320533,
+        "n": 256
+      }
+    }
+  },
+  "format": "p2p5-readout-probe-reading-v1",
+  "inputs_sha256": {
+    "configs/m4_sgm_p2p5_pk_posthoc_validation_amendment.json": "3bce0817a163ef69a3a5ac6a52a8a1958278f1c1c2d8d4a84e23718513011097",
+    "configs/m4_sgm_p2p5_readout_probe_grid.json": "b418f39e493b5949a4197d1b9b2fdf6bc81e4db49670808cbc89f0818b6e34d8",
+    "configs/m4_sgm_p2p5_readout_probe_output_schema.json": "44d1136b50b512e7740d56fc9f0b88d4505e6d2c133d339df31978cf115ec932",
+    "configs/m4_sgm_p2p5_readout_probe_registry.json": "5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427",
+    "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py": "93c7c7789494e22f7d51bc65e3a563b14984fc73df0add2b59a5deb64207142e",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s0/epoch-1/attempt-1/out/per_example_results.jsonl": "ec67c4ac4361d5ed621acb072f04062aca091c08e3c1fbe548518396d1d89f5c",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/attempt-1/out/per_example_results.jsonl": "f34311e1f97e3cb6ce54fba90c1271184b2c8812ce39994986d51f2f6c2d1e62",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/admission.json": "195adf371eae748dc6cd7983d2182bd001798f2122815dce5b0dd2907e6e6961",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/collect_status.json": "503830f528b3343b2bf8c54a4e3b0b57a3d592fd6561c8f9600c2475da53ebd1",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/launch_provenance.json": "99700e6777a0b508788d34db92b0e4160ddfb0d061fb8c5167aaecbccb255997",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/out/per_example_results.jsonl": "d64c512a0a26019964e60c12f386ce87441d4e19ab3762260090ad46182e6aac",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1/taskhead-learned-n32/cells/taskhead-learned-n32-s1/epoch-1/attempt-1/out/per_example_results.jsonl": "41d012f4196d631a3014dbcd8e1a7ad0d3dc938aac41af637b97529736b04d10",
+    "scripts/sgm-p2d-step2-decision-rules.py": "88dda56b3bf6e78b57719ac034a8651f68ecb876d76dbd1d0831b7c0a87ca25d",
+    "scripts/sgm-p2g-decision-rules.py": "723b67140f7e62de2b4a7a9719487111836f357d109a11974fb9391acd408b01",
+    "scripts/sgm-p2p5-readout-probe-output-validation.py": "b0c01a8e02efc42be947f252c82eb22b62372d0bf6602e3566d2299c9864c380"
+  },
+  "label": "EXPLORATORY (known artifact population; not a registered screen result)",
+  "reading": "rescue by the taskhead recipe not shown (C = positive gain >=5pp excluded)",
+  "script_sha256": "299fa1c9cad8ee0a972ec780a982e31dae298659b56aea8fbd4c377e352e0f5b"
+}

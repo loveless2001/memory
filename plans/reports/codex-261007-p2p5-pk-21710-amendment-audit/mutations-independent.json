@@ -1,0 +1,164 @@
+{
+  "baseline": {
+    "rc": 0,
+    "failed": [],
+    "summary": "27 passed in 8.96s",
+    "ok": true
+  },
+  "null-set equality dropped": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[extra_grad_null]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[extra_grad_null]",
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[missing_listed_null]"
+    ],
+    "summary": "2 failed, 25 passed in 9.26s",
+    "ok": true
+  },
+  "update_norm also exempted (codex 21701: unsupported)": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[update_norm_null]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[update_norm_null]"
+    ],
+    "summary": "1 failed, 26 passed in 8.91s",
+    "ok": true
+  },
+  "frozen numeric grad_norm leaf check dropped": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[unlisted_layer_key]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[unlisted_layer_key]"
+    ],
+    "summary": "1 failed, 26 passed in 8.84s",
+    "ok": true
+  },
+  "FAILED record bytes not bound": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[state]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[state]"
+    ],
+    "summary": "1 failed, 26 passed in 9.21s",
+    "ok": true
+  },
+  "terminal checkpoint not bound": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[checkpoint]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_passes_and_every_binding_is_enforced",
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[checkpoint]"
+    ],
+    "summary": "2 failed, 25 passed in 9.69s",
+    "ok": true
+  },
+  "done.json sha not bound": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[done]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[done]"
+    ],
+    "summary": "1 failed, 26 passed in 8.90s",
+    "ok": true
+  },
+  "original failure not required": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[output]",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_passes_and_every_binding_is_enforced",
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[output]"
+    ],
+    "summary": "2 failed, 25 passed in 8.63s",
+    "ok": true
+  },
+  "checks after the schema stage skipped": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_checks_after_the_schema_stage_still_apply",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_checks_after_the_schema_stage_still_apply"
+    ],
+    "summary": "1 failed, 26 passed in 8.83s",
+    "ok": true
+  },
+  "FAILED state / original reason not required": {
+    "file": "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_passes_and_every_binding_is_enforced",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_passes_and_every_binding_is_enforced"
+    ],
+    "summary": "1 failed, 26 passed in 10.97s",
+    "ok": true
+  },
+  "readings: amendment applied to any non-COMPLETE cell": {
+    "file": "scripts/sgm-p2p5-pk-campaign-readings.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18"
+    ],
+    "summary": "1 failed, 26 passed in 8.71s",
+    "ok": true
+  },
+  "readings: original gate not recorded": {
+    "file": "scripts/sgm-p2p5-pk-campaign-readings.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading"
+    ],
+    "summary": "1 failed, 26 passed in 8.53s",
+    "ok": true
+  },
+  "readings: per-N label dropped": {
+    "file": "scripts/sgm-p2p5-pk-campaign-readings.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading",
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled"
+    ],
+    "summary": "2 failed, 25 passed in 8.90s",
+    "ok": true
+  },
+  "runner: any FAILED cell accepted": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_runner_accepts_only_the_spec_cell_with_the_original_reason",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_runner_accepts_only_the_spec_cell_with_the_original_reason"
+    ],
+    "summary": "1 failed, 26 passed in 8.49s",
+    "ok": true
+  },
+  "runner: original reason not required": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_runner_accepts_only_the_spec_cell_with_the_original_reason",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_runner_accepts_only_the_spec_cell_with_the_original_reason"
+    ],
+    "summary": "1 failed, 26 passed in 8.47s",
+    "ok": true
+  },
+  "runner: record not bound to the spec sha": {
+    "file": "modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py",
+    "aimed_test": "tests/test_sgm_pk_posthoc_validation_amendment.py::test_runner_amendment_gate_requires_the_sha_bound_amended_valid_record",
+    "rc": 1,
+    "failed": [
+      "tests/test_sgm_pk_posthoc_validation_amendment.py::test_runner_amendment_gate_requires_the_sha_bound_amended_valid_record"
+    ],
+    "summary": "1 failed, 26 passed in 8.68s",
+    "ok": true
+  },
+  "all_ok": true,
+  "shared_tree_untouched": "mutations applied only under /tmp/codex-gravity-a17cd40-mutations"
+}

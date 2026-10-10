@@ -1,0 +1,70 @@
+{
+  "reviewed_head": "244718ec83074b7f18d8a7c277d2d35f2a169f39",
+  "reviewed_source_sha256": {
+    "tests/conftest.py": "ee74a126805112d7dd20acd55c9a0da4653fe5ef350c4bbafc8728cc5f084f80",
+    "tests/test_experiment_artifact_hygiene.py": "d7df5db84252094149d84ff0b93a7775cfdfb1ace2df5690386ea1e6d8c06014",
+    "tests/test_mergecert_campaign_contract.py": "c8dec778ccb1ce1f8d6bd5272405972810ec0c32beab3e20aed33df9aca8c8b3",
+    "tests/test_mergecert_q1_report.py": "cdc042f3a4f12e4b1f506e2e9c4264ac04d301ac3288e2e15f4e58f58b9e57c2",
+    "tests/test_sgm_p2p5_readout_probe_validation_contract.py": "23d26c878401cebe5672abb0e77a9e3a4d0942b4aa665a81b570a7b993f217f2",
+    "tests/test_sgm_pk_campaign_readings_orchestration_fast.py": "06f2532c3494daffd1863a46fe1d3248feb36a018fa8d44d71e4430fa93a3571",
+    "tests/test_sgm_pk_campaign_readings_runner.py": "9257f35e1053eaf76d6ff9bd136d0e7226706f8a13b708f157776187a3d95d9d",
+    "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py": "9565841b7195f4f953dd96de3a286ad72aa61ba9d6a46ab26585b123af06e78e",
+    "tests/test_sgm_pk_posthoc_validation_amendment.py": "d1cd28ade3298a5b50e3130750486c94af388a83669ee4c15ed0167299c8c9a1"
+  },
+  "only_tests_modified": true,
+  "retired_test_functions": {
+    "tests/conftest.py": [],
+    "tests/test_experiment_artifact_hygiene.py": [],
+    "tests/test_mergecert_campaign_contract.py": [
+      "test_mergecert_q1_addendum_accepts_only_the_settled_negative_p0",
+      "test_mergecert_q1_provenance_binds_the_settled_budget_amendment"
+    ],
+    "tests/test_mergecert_q1_report.py": [
+      "test_aggregation_only_positive_report_names_the_measured_axis",
+      "test_manifest_records_report_and_every_loaded_evidence_file",
+      "test_negative_report_is_complete_private_and_evidence_only",
+      "test_positive_report_renders_conditional_evidence_and_scoped_axes",
+      "test_validator_fails_closed_on_trigger_conditional_or_billing_drift",
+      "test_validator_permits_explicit_negative_limitations",
+      "test_validator_rejects_amended_q2_report_evidence_drift",
+      "test_validator_rejects_formatted_or_case_variant_forbidden_claims",
+      "test_validator_rejects_loaded_evidence_that_differs_from_hashed_files",
+      "test_validator_rejects_nonfinite_numeric_evidence",
+      "test_validator_rejects_report_tampering_and_hash_drift",
+      "test_validator_requires_f5_evidence_for_completed_q2",
+      "test_validator_strictly_binds_billing_id_phase_and_source"
+    ],
+    "tests/test_sgm_p2p5_readout_probe_validation_contract.py": [
+      "test_frozen_registry_and_schema_equal_their_derivation"
+    ],
+    "tests/test_sgm_pk_campaign_readings_orchestration_fast.py": [],
+    "tests/test_sgm_pk_campaign_readings_runner.py": [],
+    "tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py": [],
+    "tests/test_sgm_pk_posthoc_validation_amendment.py": [
+      "test_checks_after_the_schema_stage_still_apply",
+      "test_private_copy_byte_changes_are_refused",
+      "test_private_copy_passes_and_every_binding_is_enforced",
+      "test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18"
+    ]
+  },
+  "retained_test_assertion_changes": {},
+  "focused_counts_from_owner_logs": {
+    "focused-test_experiment_artifact_hygiene.log": 6,
+    "focused-test_mergecert_campaign_contract.log": 113,
+    "focused-test_mergecert_q1_report.log": 22,
+    "focused-test_sgm_p2p5_readout_probe_validation_contract.log": 21,
+    "focused-test_sgm_pk_campaign_readings_orchestration_fast.log": 9,
+    "focused-test_sgm_pk_campaign_readings_runner.log": 10,
+    "focused-test_sgm_pk_control_plane_reaper_and_manifest_label.log": 29,
+    "focused-test_sgm_pk_posthoc_validation_amendment.log": 10
+  },
+  "focused_passes": 220,
+  "production_pins": {
+    "configs/m4_sgm_p2p5_campaign_analysis_manifest.json": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492",
+    "configs/m4_sgm_p2p5_readout_probe_registry.json": "5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427",
+    "configs/m4_sgm_p2p5_readout_probe_output_schema.json": "44d1136b50b512e7740d56fc9f0b88d4505e6d2c133d339df31978cf115ec932"
+  },
+  "working_diff_sha256": "27d8b55a1ec2982b2db4fac8d0bbe0bc376f48dd54fced74013448f04b5f0e18",
+  "final_commit_and_full_results_pending": true,
+  "helper_all_pass": true
+}

@@ -1,0 +1,752 @@
+{
+  "status": "PASS",
+  "started_utc": "2026-10-07T09:32:20.070232+00:00",
+  "completed_utc": "2026-10-07T09:32:41.148209+00:00",
+  "issues": [],
+  "slots": {
+    "learned-n32": {
+      "admission": {
+        "start-1": 1791356070.0332403
+      },
+      "admitted": [
+        1
+      ],
+      "remaining_starts": 3,
+      "guard": {
+        "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+        "deadline_epoch": 1791387999.7697344
+      },
+      "deadline_utc": "2026-10-07T15:46:39.769734+00:00",
+      "apps": [
+        {
+          "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-learned-n32",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:39:55+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4AJ8PVVYT1XQE4TCC8DSN1R",
+          "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-learned-n32",
+          "start_time": "2026-10-07 13:54:30+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "learned-n32-s0": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 800,
+          "physical": {
+            "last_observed_update": 799,
+            "observed_updates": 800,
+            "resume_step": 0
+          },
+          "reason": null
+        },
+        "learned-n32-s1": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 900,
+          "physical": {
+            "last_observed_update": 899,
+            "observed_updates": 900,
+            "resume_step": 0
+          },
+          "reason": null
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "oracle-n32": {
+      "admission": {
+        "start-1": 1791356076.5979097,
+        "start-2": 1791358321.2836132
+      },
+      "admitted": [
+        1,
+        2
+      ],
+      "remaining_starts": 2,
+      "guard": {
+        "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+        "deadline_epoch": 1791387476.6819432
+      },
+      "deadline_utc": "2026-10-07T15:37:56.681943+00:00",
+      "apps": [
+        {
+          "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-oracle-n32",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:42:23+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4AMDE2BAJHNFKQA9KC1Y9JR",
+          "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-oracle-n32",
+          "start_time": "2026-10-07 14:32:01+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "oracle-n32-s0": {
+          "state": "STARTED",
+          "authority_epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "resume",
+          "last_acknowledged_step": 700,
+          "physical": {
+            "last_observed_update": 699,
+            "observed_updates": 600,
+            "predecessor_unobserved_tail_bound_updates": 51,
+            "resume_step": 100
+          },
+          "reason": null,
+          "worker_resume_step": 100,
+          "worker_resume_sha256": "96738b88ae341cdb355443c03ad796eccb72d9b8c1c4155bafe90fd09a9692b2"
+        },
+        "oracle-n32-s1": {
+          "state": "STARTED",
+          "authority_epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "resume",
+          "last_acknowledged_step": 700,
+          "physical": {
+            "last_observed_update": 699,
+            "observed_updates": 600,
+            "predecessor_unobserved_tail_bound_updates": 51,
+            "resume_step": 100
+          },
+          "reason": null,
+          "worker_resume_step": 100,
+          "worker_resume_sha256": "b4df3599e7bf8f658cc1bc6210bf946712ec194f1277c6e018775cb96113f811"
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "random_fixed-n32": {
+      "admission": {
+        "start-1": 1791356088.6769295,
+        "start-2": 1791359810.6845112
+      },
+      "admitted": [
+        1,
+        2
+      ],
+      "remaining_starts": 2,
+      "guard": {
+        "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+        "deadline_epoch": 1791387313.338976
+      },
+      "deadline_utc": "2026-10-07T15:35:13.338976+00:00",
+      "apps": [
+        {
+          "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n32",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:42:29+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4ANTX6PX7571KF3X8QKZFZR",
+          "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n32",
+          "start_time": "2026-10-07 14:56:50+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "randomfixed-n32-s0": {
+          "state": "STARTED",
+          "authority_epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "resume",
+          "last_acknowledged_step": 1000,
+          "physical": {
+            "last_observed_update": 999,
+            "observed_updates": 650,
+            "predecessor_unobserved_tail_bound_updates": 51,
+            "resume_step": 350
+          },
+          "reason": null,
+          "worker_resume_step": 350,
+          "worker_resume_sha256": "02ee1e0ecd8a28c5c61d6bb63916bf820481c4ef37b5d2080462b3811078af9a"
+        },
+        "randomfixed-n32-s1": {
+          "state": "STARTED",
+          "authority_epoch": 2,
+          "canonical_epochs": [
+            1,
+            2
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "resume",
+          "last_acknowledged_step": 1000,
+          "physical": {
+            "last_observed_update": 999,
+            "observed_updates": 650,
+            "predecessor_unobserved_tail_bound_updates": 51,
+            "resume_step": 350
+          },
+          "reason": null,
+          "worker_resume_step": 350,
+          "worker_resume_sha256": "53ab3ec56f8aeb8ec409eed3a8ae57e5cfc72e7f089614a3c5e91a3406d3a587"
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "single_cell-n32": {
+      "admission": {
+        "start-3": 1791359978.26392,
+        "start-1": 1791356091.227367,
+        "start-2": 1791358409.6386805
+      },
+      "admitted": [
+        1,
+        2,
+        3
+      ],
+      "remaining_starts": 1,
+      "guard": {
+        "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+        "deadline_epoch": 1791384851.238087
+      },
+      "deadline_utc": "2026-10-07T14:54:11.238087+00:00",
+      "apps": [
+        {
+          "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n32",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:42:37+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4ANZZX49W6RFX0M67A3R94R",
+          "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n32",
+          "start_time": "2026-10-07 14:59:38+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "singlecell-n32-s0": {
+          "state": "STARTED",
+          "authority_epoch": 3,
+          "canonical_epochs": [
+            1,
+            2,
+            3
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "resume",
+          "last_acknowledged_step": 1000,
+          "physical": {
+            "last_observed_update": 999,
+            "observed_updates": 750,
+            "predecessor_unobserved_tail_bound_updates": 51,
+            "resume_step": 250
+          },
+          "reason": null,
+          "worker_resume_step": 250,
+          "worker_resume_sha256": "7c3dcf2be29d4d035a98c9cd19fbea07118d166a41c23396b4ecdfc090167e44"
+        },
+        "singlecell-n32-s1": {
+          "state": "STARTED",
+          "authority_epoch": 3,
+          "canonical_epochs": [
+            1,
+            2,
+            3
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "resume",
+          "last_acknowledged_step": 1050,
+          "physical": {
+            "last_observed_update": 1049,
+            "observed_updates": 800,
+            "predecessor_unobserved_tail_bound_updates": 51,
+            "resume_step": 250
+          },
+          "reason": null,
+          "worker_resume_step": 250,
+          "worker_resume_sha256": "372f004a59ff4571a9743dbff964b42d7026218264db6093564e9e592ad45448"
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "learned-n16": {
+      "admission": {
+        "start-1": 1791356131.9129777
+      },
+      "admitted": [
+        1
+      ],
+      "remaining_starts": 3,
+      "guard": {
+        "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+        "deadline_epoch": 1791377613.7132132
+      },
+      "deadline_utc": "2026-10-07T12:53:33.713213+00:00",
+      "apps": [
+        {
+          "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-learned-n16",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:42:48+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4AJAHDDKFZVE5PVX4DMP9XR",
+          "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-learned-n16",
+          "start_time": "2026-10-07 13:55:31+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "learned-n16-s0": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1100,
+          "physical": {
+            "last_observed_update": 1099,
+            "observed_updates": 1100,
+            "resume_step": 0
+          },
+          "reason": null
+        },
+        "learned-n16-s1": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1100,
+          "physical": {
+            "last_observed_update": 1099,
+            "observed_updates": 1100,
+            "resume_step": 0
+          },
+          "reason": null
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "random_fixed-n16": {
+      "admission": {
+        "start-1": 1791356111.2793329
+      },
+      "admitted": [
+        1
+      ],
+      "remaining_starts": 3,
+      "guard": {
+        "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+        "deadline_epoch": 1791376070.634326
+      },
+      "deadline_utc": "2026-10-07T12:27:50.634326+00:00",
+      "apps": [
+        {
+          "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n16",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:42:56+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4AJ9YG3VQXQG4QETQY6E42R",
+          "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n16",
+          "start_time": "2026-10-07 13:55:11+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "randomfixed-n16-s0": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1300,
+          "physical": {
+            "last_observed_update": 1299,
+            "observed_updates": 1300,
+            "resume_step": 0
+          },
+          "reason": null
+        },
+        "randomfixed-n16-s1": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1300,
+          "physical": {
+            "last_observed_update": 1299,
+            "observed_updates": 1300,
+            "resume_step": 0
+          },
+          "reason": null
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "single_cell-n16": {
+      "admission": {
+        "start-1": 1791356148.9791245
+      },
+      "admitted": [
+        1
+      ],
+      "remaining_starts": 3,
+      "guard": {
+        "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+        "deadline_epoch": 1791374219.611603
+      },
+      "deadline_utc": "2026-10-07T11:56:59.611603+00:00",
+      "apps": [
+        {
+          "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n16",
+          "state": "deployed",
+          "tasks": "1",
+          "created_at": "2026-10-07 13:43:04+07:00",
+          "stopped_at": null
+        }
+      ],
+      "containers": [
+        {
+          "container_id": "ta-01M4AJB3TV0BV9MP7SPBX3JC4R",
+          "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+          "app_name": "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n16",
+          "start_time": "2026-10-07 13:55:48+07:00"
+        }
+      ],
+      "poll": {
+        "kind": "pending"
+      },
+      "cells": {
+        "singlecell-n16-s0": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1100,
+          "physical": {
+            "last_observed_update": 1099,
+            "observed_updates": 1100,
+            "resume_step": 0
+          },
+          "reason": null
+        },
+        "singlecell-n16-s1": {
+          "state": "STARTED",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1100,
+          "physical": {
+            "last_observed_update": 1099,
+            "observed_updates": 1100,
+            "resume_step": 0
+          },
+          "reason": null
+        }
+      },
+      "final_output_validation": {},
+      "issues": []
+    },
+    "memory_off-n32": {
+      "admission": {
+        "start-1": 1791356131.9920297
+      },
+      "admitted": [
+        1
+      ],
+      "remaining_starts": 3,
+      "guard": {
+        "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+        "deadline_epoch": 1791364167.2702665
+      },
+      "deadline_utc": "2026-10-07T09:09:27.270267+00:00",
+      "apps": [
+        {
+          "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n32",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:43:13+07:00",
+          "stopped_at": "2026-10-07 15:19:14+07:00"
+        }
+      ],
+      "containers": [],
+      "poll": {
+        "kind": "result",
+        "payload": {
+          "slot": "memory_off-n32",
+          "status": "done",
+          "epoch": 1,
+          "states": {
+            "memoryoff-n32-s0": "COMPLETE",
+            "memoryoff-n32-s1": "COMPLETE"
+          }
+        }
+      },
+      "cells": {
+        "memoryoff-n32-s0": {
+          "state": "COMPLETE",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1500,
+          "physical": {
+            "last_observed_update": 1499,
+            "observed_updates": 1500,
+            "resume_step": 0
+          },
+          "reason": null
+        },
+        "memoryoff-n32-s1": {
+          "state": "COMPLETE",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1500,
+          "physical": {
+            "last_observed_update": 1499,
+            "observed_updates": 1500,
+            "resume_step": 0
+          },
+          "reason": null
+        }
+      },
+      "final_output_validation": {
+        "memoryoff-n32-s0": "valid",
+        "memoryoff-n32-s1": "valid"
+      },
+      "issues": []
+    },
+    "memory_off-n16": {
+      "admission": {
+        "start-1": 1791356157.0838766
+      },
+      "admitted": [
+        1
+      ],
+      "remaining_starts": 3,
+      "guard": {
+        "app_id": "ap-FHeNdce7VkCSVBQWzTRmjk",
+        "deadline_epoch": 1791361761.6344142
+      },
+      "deadline_utc": "2026-10-07T08:29:21.634414+00:00",
+      "apps": [
+        {
+          "app_id": "ap-FHeNdce7VkCSVBQWzTRmjk",
+          "description": "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n16",
+          "state": "stopped",
+          "tasks": "0",
+          "created_at": "2026-10-07 13:43:22+07:00",
+          "stopped_at": "2026-10-07 14:49:51+07:00"
+        }
+      ],
+      "containers": [],
+      "poll": {
+        "kind": "result",
+        "payload": {
+          "slot": "memory_off-n16",
+          "status": "done",
+          "epoch": 1,
+          "states": {
+            "memoryoff-n16-s0": "COMPLETE",
+            "memoryoff-n16-s1": "COMPLETE"
+          }
+        }
+      },
+      "cells": {
+        "memoryoff-n16-s0": {
+          "state": "COMPLETE",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1500,
+          "physical": {
+            "last_observed_update": 1499,
+            "observed_updates": 1500,
+            "resume_step": 0
+          },
+          "reason": null
+        },
+        "memoryoff-n16-s1": {
+          "state": "COMPLETE",
+          "authority_epoch": 1,
+          "canonical_epochs": [
+            1
+          ],
+          "missing_higher_epochs": [],
+          "recovery": "fresh",
+          "last_acknowledged_step": 1500,
+          "physical": {
+            "last_observed_update": 1499,
+            "observed_updates": 1500,
+            "resume_step": 0
+          },
+          "reason": null
+        }
+      },
+      "final_output_validation": {
+        "memoryoff-n16-s0": "valid",
+        "memoryoff-n16-s1": "valid"
+      },
+      "issues": []
+    }
+  },
+  "control": {
+    "app_id": "ap-suOdTgdc8PNSfZ3jbnsesa",
+    "price_sha256": "6745896e3f4b6ae4abc33020c6c195bbf9d3bedd800980e0ae8e0cd3b461c7c5",
+    "deadline_epoch": 1791408417.2529736,
+    "self_app_id": "ap-suOdTgdc8PNSfZ3jbnsesa"
+  },
+  "registry": {
+    "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n16": {
+      "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+      "deadline_epoch": 1791374219.611603
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n32": {
+      "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+      "deadline_epoch": 1791387313.338976
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-oracle-n32": {
+      "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+      "deadline_epoch": 1791387476.6819432
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n16": {
+      "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+      "deadline_epoch": 1791376070.634326
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-learned-n16": {
+      "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+      "deadline_epoch": 1791377613.7132132
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-learned-n32": {
+      "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+      "deadline_epoch": 1791387999.7697344
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n32": {
+      "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+      "deadline_epoch": 1791364167.2702665
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n16": {
+      "app_id": "ap-FHeNdce7VkCSVBQWzTRmjk",
+      "deadline_epoch": 1791361761.6344142
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n32": {
+      "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+      "deadline_epoch": 1791384851.238087
+    }
+  },
+  "readings": {
+    "apps": [
+      {
+        "app_id": "ap-MvPw7JVom3vnRTxVVyzldN",
+        "description": "memsub-m4-sgm-p2p5-pk-campaign-readings",
+        "state": "deployed",
+        "tasks": "0",
+        "created_at": "2026-10-07 13:43:34+07:00",
+        "stopped_at": null
+      }
+    ],
+    "containers": [],
+    "guard_admission_names": []
+  },
+  "head": "537ace8bc30a5ec486e521b6adf7ee3c340abf9f",
+  "tracked_diff": "",
+  "remote_mutations": 0
+}

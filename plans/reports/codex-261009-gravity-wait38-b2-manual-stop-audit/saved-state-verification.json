@@ -1,0 +1,153 @@
+{
+  "verified_utc": "2026-10-09T08:02:22.804820+00:00",
+  "status": "INTERRUPTED_PARTIAL_NO_FINAL_READOUT",
+  "original_app_id": "ap-VsAmnu1E7eS5rXLrKD7vXd",
+  "original_campaign_deadline": 1791546912.6074162,
+  "admitted_starts": 1,
+  "worker_task_id": "ta-01M4FJAEGRVPR8T179Y5848N2R",
+  "worker_claim_utc": "2026-10-09T05:31:38.360958+00:00",
+  "checkpoint": {
+    "path": "/home/lenovo/projects/memory/plans/reports/codex-261009-gravity-wait38-b2-manual-stop-audit/volume-evidence-verified/b2-run-v1/B2/resume.pt",
+    "bytes": 25018453,
+    "sha256": "cd1a7e72cbbf4fc2cf92e029395c7e4f78a727d2b6d165b5030bacc1bd753394",
+    "step": 750,
+    "identity": {
+      "campaign": "m4-sgm-p2p5-b2-occupied-fill-long-v1",
+      "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+      "script_sha256": "5be7cd941e43970d6b35dc753fb29641496f74dcee24619aa9795f2cd36a397e",
+      "probe_manifest_sha256": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0",
+      "pilot_config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {
+          "read_fallback": "occupied_softmax_fill_v1",
+          "read_fallback_tau": 1.0,
+          "read_fallback_anchor": 0.1
+        },
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ],
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda"
+      }
+    },
+    "pilot_config_exact": true,
+    "all_tensors_finite": true,
+    "tensor_counts": {
+      "adapters": 44,
+      "head": 2,
+      "optimizer": 132,
+      "data_generator": 1,
+      "torch_rng": 1,
+      "cuda_rng": 1
+    },
+    "parameter_tensors": 46,
+    "parameter_numel": 2155356,
+    "optimizer_state_entries": 44,
+    "has_optimizer_and_cpu_cuda_data_rng": true,
+    "telemetry_rows": 83
+  },
+  "telemetry": {
+    "rows": 86,
+    "checkpoint_telemetry_is_exact_prefix": true,
+    "last_logged_training_step": 770,
+    "completed_updates_lower_bound": 771,
+    "updates_past_checkpoint_lower_bound": 21,
+    "exact_final_physical_update_count": null,
+    "eval_steps": [
+      0,
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700
+    ],
+    "correct_by_step": {
+      "0": 9,
+      "100": 8,
+      "200": 4,
+      "300": 3,
+      "400": 3,
+      "500": 3,
+      "600": 1,
+      "700": 3
+    },
+    "absent_weight_by_step": {
+      "0": 0.046701195984496735,
+      "100": 0.2600495081860572,
+      "200": 0.3683279734104872,
+      "300": 0.16072085975611117,
+      "400": 0.17966490192338824,
+      "500": 0.11226237652590498,
+      "600": 0.15565175493247807,
+      "700": 0.15918848157161847
+    },
+    "last_eval": {
+      "step": 700,
+      "eval": {
+        "accuracy": 0.01171875,
+        "correct": 3,
+        "total": 256,
+        "chance": 0.015625,
+        "query_empty_read_weight": 0.15918848157161847,
+        "query_read_address_std_cells": 213.32879638671875,
+        "occupancy_mean": 189.216796875,
+        "occupancy_max": 805.0,
+        "effective_cells_mean": 14.47460512655943,
+        "neural_bytes": 198408192.0,
+        "query_fully_absent_fraction": 0.053955078125,
+        "query_without_occupied_fraction": 0.0,
+        "query_nearest_occupied_cells_mean": 0.5627322281920897,
+        "query_fill_support_cells_mean": 5.777859202644322,
+        "beta_by_token_class": {
+          "sink": 0.13689234107732773,
+          "key": 0.1206530352937989,
+          "value": 0.12059277872322127,
+          "filler": 0.12129610222764313
+        },
+        "effective_beta_by_token_class": {
+          "sink": 0.13689234107732773,
+          "key": 0.1206530352937989,
+          "value": 0.12059277872322127,
+          "filler": 0.12129610222764313
+        },
+        "episodes": 64,
+        "accuracy_ci95_halfwidth_episode": 0.013048824080959682
+      }
+    },
+    "last_eval_band": "kept",
+    "last_task_ce": 4.136131238937378,
+    "uniform_ce": 4.1588830833596715
+  },
+  "resume_state_verification": "CPU inspection only; no model load, forward, training, or restore performed",
+  "missing_final_artifacts": true,
+  "final_classifier": {
+    "arm": "B2",
+    "status": "INVALID",
+    "why": "dev eval steps [0, 100, 200, 300, 400, 500, 600, 700] != [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500]"
+  },
+  "first_start_stdout_bytes": 0,
+  "first_start_stderr_bytes": 0
+}

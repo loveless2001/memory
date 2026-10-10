@@ -1,0 +1,141 @@
+{
+  "reviewed_commit": "1b66312",
+  "script_sha256": "3841865ccb01d4fccb20a414488affee5df9487f494c5132b45656076338e091",
+  "index_sha256": "f73fa19dcaa9fd4ac52d145d0ef343456ff4a89aa534ff122f00a0779f2477c0",
+  "qwen_forward": false,
+  "cuda": false,
+  "oracle_missing_query_addresses": "ValueError(\"oracle addresses iff address_mode == 'oracle'\")",
+  "missing_telemetry_check_returned": {
+    "status": "no training dev eval at step 100"
+  },
+  "nonfinite_telemetry_check_returned_status": "reproduced",
+  "near_empty_counterexample": {
+    "empty_mass": 0.9999995,
+    "labelled_fully_empty": true,
+    "actually_all_positive_weight_cells_absent": false
+  },
+  "zero_read_features_head_gradient_counterexample": {
+    "weight_gradient_norm": 0.0,
+    "bias_gradient_norm": 0.9921567440032959
+  },
+  "input_checks": [
+    {
+      "name": "qwen-probe-taskhead-s0-init",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40
+    },
+    {
+      "name": "qwen-probe-taskhead-s0-step100",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "checkpoint_step": 100,
+      "config_matches_manifest": true,
+      "chain_hash_matches_index": true
+    },
+    {
+      "name": "qwen-probe-taskhead-s0-final",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "parameter_hash_matches_manifest": true
+    },
+    {
+      "name": "qwen-probe-taskhead-s1-init",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40
+    },
+    {
+      "name": "qwen-probe-taskhead-s1-step100",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "checkpoint_step": 100,
+      "config_matches_manifest": true,
+      "chain_hash_matches_index": true
+    },
+    {
+      "name": "qwen-probe-taskhead-s1-final",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "parameter_hash_matches_manifest": true
+    },
+    {
+      "name": "qwen-p2p5-learned-n32-residual-s0-final",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "parameter_hash_matches_manifest": true
+    },
+    {
+      "name": "qwen-p2p5-oracle-n32-residual-s0-final",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "parameter_hash_matches_manifest": true
+    },
+    {
+      "name": "toy-p2c-curriculum-taskhead-s0-init",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40
+    },
+    {
+      "name": "toy-p2c-curriculum-taskhead-s0-final",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "parameter_hash_matches_manifest": true
+    },
+    {
+      "name": "toy-p2c-curriculum-taskhead-s1-init",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40
+    },
+    {
+      "name": "toy-p2c-curriculum-taskhead-s1-final",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40,
+      "parameter_hash_matches_index": true,
+      "parameter_hash_matches_manifest": true
+    },
+    {
+      "name": "toy-p2c-curriculum-taskhead-s0-grad-at-init",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40
+    },
+    {
+      "name": "qwen-probe-taskhead-s0-grad-at-init",
+      "manifest_matches": true,
+      "batch": 16,
+      "eval_batches": 4,
+      "filler_len": 40
+    }
+  ]
+}

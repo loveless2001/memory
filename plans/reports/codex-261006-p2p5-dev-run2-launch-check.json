@@ -1,0 +1,106 @@
+{
+  "checked_at_utc": "2026-10-06T13:20:51.385829+00:00",
+  "read_only_remote": true,
+  "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+  "no_launch_retry_stop_or_result_mutation": true,
+  "run_manifest": {
+    "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+    "script": "scripts/sgm-p2p5-sgm-path-speedup-parity-check.py",
+    "args": "--ref-tree dev-gpu-inputs/memsub-ref-2fda0d4 --suite qwen-gpu",
+    "started": 1791292707.7412467,
+    "function_only_charge_usd": 0.9582,
+    "gpu": "L40S",
+    "outcome": "started"
+  },
+  "candidate_memsub_sha256": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085",
+  "reference_memsub_sha256": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "checker_source": {
+    "frozen_sha256": "b384c1037438dad91a51a4f05b41caf3c1563433a63fb0002a97104c3fb8c16d",
+    "current_sha256": "a8969478a0f9a2fb77eb194ca57be15324772ff41991db7998c65ab7a1c85372",
+    "same_executable_ast_excluding_module_docstring": true,
+    "limit": "Local docstring-only correction does not establish which exact script bytes were mounted remotely. Retain original launch identity and distinguish later documentation source."
+  },
+  "matching_outer_timeout_processes": [
+    {
+      "pid": 829405,
+      "argv": [
+        "timeout",
+        "--kill-after=15s",
+        "1200",
+        ".venv/bin/python",
+        "-m",
+        "modal",
+        "run",
+        "modal-runners/modal-m4-sgm-p2p5-dev-gpu-test-runner.py",
+        "--script",
+        "scripts/sgm-p2p5-sgm-path-speedup-parity-check.py",
+        "--out",
+        "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/dev-gpu/parity-qwen-gpu-v1",
+        "--args",
+        "--ref-tree dev-gpu-inputs/memsub-ref-2fda0d4 --suite qwen-gpu"
+      ],
+      "elapsed_s": 151.55999999999767,
+      "approx_started_at_utc": "2026-10-06T13:18:19.942537+00:00",
+      "approx_SIGTERM_at_utc": "2026-10-06T13:38:19.942537+00:00",
+      "approx_SIGKILL_escalation_at_utc": "2026-10-06T13:38:34.942537+00:00"
+    }
+  ],
+  "exact_outer_command_verified": true,
+  "app_rows": [
+    {
+      "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "state": "ephemeral",
+      "tasks": "1",
+      "created_at": "2026-10-06 20:18:21+07:00",
+      "stopped_at": null
+    }
+  ],
+  "matching_containers": [
+    {
+      "container_id": "ta-01M48NV7Q4CR36CJPZ1E3HEYXR",
+      "app_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+      "app_name": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "start_time": "2026-10-06 20:18:33+07:00"
+    }
+  ],
+  "lifecycle": {
+    "created_at": "2026-10-06 13:18:21.524515+00:00",
+    "created_by": "doug-87818",
+    "deployed_at": null,
+    "deployed_by": null,
+    "stopped_at": null,
+    "stopped_by": null
+  },
+  "billing_rows": [
+    {
+      "object_id": "ap-E2KdNOH6Vb0qjnJTVdKz4U",
+      "description": "memsub-m4-sgm-p2p5-dev-gpu-test",
+      "environment_name": "main",
+      "interval_start": "2026-10-06 13:00:00+00:00",
+      "cost": "0.05588838",
+      "cost_by_resource": {
+        "Memory": "0.00597337",
+        "L40S": "0.04550031",
+        "CPU": "0.00441470"
+      },
+      "tags": {}
+    }
+  ],
+  "reported_app_usage_usd": "0.05588838",
+  "local_parity_result_exists": false,
+  "booked_reserves_usd": {
+    "run1": 1.55,
+    "run2": 1.18,
+    "total": 2.73,
+    "envelope": 3.0
+  },
+  "limits": [
+    "Live launch evidence is not a complete or passing GPU parity result.",
+    "Reported app usage can lag and excludes unbound image/build objects; reserves remain booked.",
+    "1200s is the client timeout, plus kill escalation and disconnect/teardown allowance; no shutdown verified while running.",
+    "Parity train_s includes model construction and loss/gradient CPU capture; it is a dev timing signal, not registered retiming or proof of speed-up.",
+    "GPU resume, campaign integration, telemetry and dev numeric fields other than accuracy remain unverified."
+  ],
+  "finished_at_utc": "2026-10-06T13:21:00.079194+00:00"
+}

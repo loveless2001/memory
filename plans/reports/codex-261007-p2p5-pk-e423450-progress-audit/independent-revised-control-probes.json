@@ -1,0 +1,106 @@
+{
+  "revision": "e4234507f2bcab7bf0c134b9776223ff00190741",
+  "scope": "targeted early progress review; not Gate-3 clearance",
+  "cpu_fakes_only_no_remote_calls": true,
+  "snapshot_sha256": {
+    "frozen-control-logic.py": "c64982236c486b78b44f79c736cd402319c319160c31d8c0b04f348bd9e86b26",
+    "frozen-control-app.py": "d3bc59ea8d378ea26540c62f1fc3454d9ddce264f215d73a07d8d43a35bdf0f5",
+    "frozen-slot-runner.py": "c67797893c1e33e64e2a7c573b775d7df19294646ba4f55cf452575d78710325"
+  },
+  "corrected_validation_binding_abandonment": {
+    "rejected_deadlines": [
+      "nan",
+      "inf",
+      "True",
+      "-1",
+      "0"
+    ],
+    "quarantine_output": {
+      "bad": "quarantined: malformed entry (no name-only stop)",
+      "good": "stopped_verified",
+      "__unresolved__": [
+        "bad"
+      ]
+    },
+    "bound_stop_calls": [
+      [
+        "good",
+        "ap-g"
+      ]
+    ],
+    "unarmed_view": {
+      "app_name": "memsub-m4-sgm-p2p5-pk-campaign-control",
+      "app_id": "ap-self",
+      "deadline_epoch": 1810
+    },
+    "first_tick_not_due": true
+  },
+  "timed_out_requests_survive": {
+    "outputs": [
+      {
+        "slot": "stop/verify timeout",
+        "__unresolved__": [
+          "slot"
+        ]
+      },
+      {
+        "slot": "stop/verify timeout",
+        "__unresolved__": [
+          "slot"
+        ]
+      }
+    ],
+    "tick_pair_elapsed_s": 0.10134169399680104,
+    "started_stop_calls": [
+      [
+        "slot",
+        "ap-slot"
+      ],
+      [
+        "slot",
+        "ap-slot"
+      ]
+    ],
+    "surviving_workers_after_two_timeouts": [
+      "ThreadPoolExecutor-1_0"
+    ],
+    "request_work_cancelled": false
+  },
+  "evidence_after_self_stop": {
+    "probe_exit_code": 0,
+    "stderr": "",
+    "events": [
+      {
+        "event": "dict_put",
+        "key": "self_app_id",
+        "value": "ap-self"
+      },
+      {
+        "event": "stop",
+        "name": "slot",
+        "app_id": "ap-slot"
+      },
+      {
+        "event": "stop",
+        "name": "memsub-m4-sgm-p2p5-pk-campaign-control",
+        "app_id": "ap-self"
+      }
+    ],
+    "tick_evidence_persisted": false
+  },
+  "horizon_arithmetic_and_remaining_enforcement": {
+    "control_deadline_relative_s": 50225.1,
+    "fallback_end_relative_s": 52025.1,
+    "priced_control_life_s": 52265.1,
+    "late_valid_slot_admitted": true,
+    "terminal_tick": {
+      "late-slot": "not due",
+      "__unresolved__": [],
+      "__control__": "self stop issued"
+    },
+    "self_stop_calls": [
+      "control"
+    ],
+    "note": "slot spawn/admit currently do not consult controller state/horizon; final orchestration must enforce offsets and admission windows"
+  }
+}

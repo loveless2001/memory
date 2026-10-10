@@ -1,0 +1,188 @@
+{
+  "approval_channel": "gravity",
+  "approval_message_id": 21341,
+  "approval_text": "@codex ok go",
+  "scoping_message_id": 21342,
+  "approved_cap_usd": 13.0,
+  "reviewed_commit": "2613ced101810bd248c1d82d1c3b83d994076120",
+  "cleared_implementation": "07261613b206087dcddc50a1ed74ec5925ddb708",
+  "runner_sha256": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+  "runtime_ast_unchanged_except_cap": true,
+  "changed_scoped_files": [
+    "modal-runners/modal-m4-sgm-p2g-nonpreemptible-spawn.py",
+    "tests/test_sgm_p2g_observer_runner_and_preflight.py"
+  ],
+  "group": "p2g-selective-write-v1",
+  "cells": [
+    {
+      "run_id": "gateclosed-learned-n16-s0",
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": -3.0,
+        "n_bindings": 16,
+        "seed": 0
+      },
+      "timeout_s": 6106
+    },
+    {
+      "run_id": "gateclosed-learned-n16-s1",
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": -3.0,
+        "n_bindings": 16,
+        "seed": 1
+      },
+      "timeout_s": 4640
+    },
+    {
+      "run_id": "gateclosed-learned-n32-s0",
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": -3.0,
+        "n_bindings": 32,
+        "seed": 0
+      },
+      "timeout_s": 8773
+    },
+    {
+      "run_id": "gateclosed-learned-n32-s1",
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": -3.0,
+        "n_bindings": 32,
+        "seed": 1
+      },
+      "timeout_s": 6952
+    },
+    {
+      "run_id": "filleroff-learned-n32-s0",
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "n_bindings": 32,
+        "seed": 0
+      },
+      "timeout_s": 8773
+    },
+    {
+      "run_id": "filleroff-learned-n32-s1",
+      "pilot": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "sgm": {},
+        "filler_writes": false,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "n_bindings": 32,
+        "seed": 1
+      },
+      "timeout_s": 6952
+    }
+  ],
+  "ledger": {
+    "cells": 6,
+    "price_multiplier": 3.0,
+    "usd_per_container_hour": 0.757728,
+    "train_timeouts_usd": 8.881414079999999,
+    "startup_teardown_usd": 0.45463679999999995,
+    "replay_allowance_usd": 0.5304096,
+    "cpu_overuse_margin_usd": 0.66332112,
+    "image_build_usd": 0.3,
+    "fixed_margin_usd": 1.5,
+    "reserved_total_usd": 12.329781599999999,
+    "cap_usd": 13.0,
+    "admitted": true,
+    "cell_timeouts_s": {
+      "gateclosed-learned-n16-s0": 6106,
+      "gateclosed-learned-n16-s1": 4640,
+      "gateclosed-learned-n32-s0": 8773,
+      "gateclosed-learned-n32-s1": 6952,
+      "filleroff-learned-n32-s0": 8773,
+      "filleroff-learned-n32-s1": 6952
+    }
+  },
+  "launch_provenance": {
+    "grid_file": "configs/m4_sgm_p2g_grid.json",
+    "grid_sha256": "465fa3439ddadccc009ea2b7b5b18cc0c172b7c8d67f7511ec2a8f1515e7e5ee",
+    "inputs_index_sha256": "8824cd030bb6b3ee7b573e1a8044452b0176f680b514b026c3cb8a269acd37f3",
+    "prereg_sha256": "c2fa7394e9e621766af705743d46715b9584c83e161a90bdfd45d928908925c3",
+    "runner_sha256": "731edc0090c9c8da864b963cf79c29807b339e31562a1ae580ec5bb5718f50e0",
+    "deployed_app": "memsub-m4-sgm-p2g",
+    "nonpreemptible": true,
+    "memsub_source_sha256": "5c3b5420152de933a04264604fdc1fb6312a24609b631ad9fd0c614755bde6a2",
+    "artifact_eval_seed_base": 9300011,
+    "readings_seed_base_reserved": 9400011
+  },
+  "targeted_tests": "8 passed, 5 deselected in 1.23s",
+  "single_launch_owner": "claude-gravity",
+  "launch_clearance": "PASS",
+  "no_duplicate_launch_by_auditor": true
+}

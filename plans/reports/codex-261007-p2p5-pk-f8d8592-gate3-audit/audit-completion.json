@@ -1,0 +1,26 @@
+{
+  "revision": "f8d85929e0c3fee166671a7f96be74c3134ff00d",
+  "status": "NOT_CLEARED",
+  "suite": {
+    "sgm_passed": 431,
+    "hygiene_passed": 6,
+    "slow_readings_skipped": 2
+  },
+  "independent_tiny_parity": {
+    "passed": true,
+    "bitwise_cases": 11,
+    "perturbation_detected": true,
+    "reference_import_isolated": true
+  },
+  "findings": [
+    "R1 oracle reading order",
+    "R2 transitive analysis source binding",
+    "R3 null-ID name-only collector stops",
+    "R4 incomplete shutdown verification",
+    "R5 malformed evidence and collection reporting",
+    "R6 final workload and ledger reconciliation"
+  ],
+  "remote_mutations": false,
+  "tracked_implementation_diff_empty": true,
+  "report_sha256": "312f8bb700460e9cfebe07790688faf056128e933f55a4112b73ec98d239d90b"
+}

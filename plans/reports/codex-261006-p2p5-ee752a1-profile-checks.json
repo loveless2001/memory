@@ -1,0 +1,65 @@
+{
+  "timestamp_utc": "2026-10-06T09:31:26.947241+00:00",
+  "reviewed_head": "ee752a1064aff1ccbb87580bf4d3728ff517326e",
+  "memsub_source_sha256_start": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "memsub_source_sha256_end": "048df6402d9ee52f04228f736e4c40d31c9ed527bb7d868c9c12b49d388f5eb6",
+  "input_sha256": {
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg.md": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/profile-local/profile.json": "9b92f2c4d90011830d552c7b347c10021486651838e0471559743604584d6550",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/profile-local.log": "cb8dc09b7a37386ebe01fce70388b2bc06cb63c50b4448946d7a9eceac50e824",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/gpu-prep/cpu-cuda-tolerance.json": "c33b5fe024b9762d29ebcead35db5c8aa53cac687c4081a40af57d9e72d31fc5",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/gpu-prep/full-suite.txt": "2d9a04ee8abafac5c7be5f1891f8facbd8e0122d384535456ad9482fc16655a3",
+    "configs/m4_sgm_p2p5_grid.json": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "scripts/sgm-p2p5-local-gpu-timing-profile.py": "83ccb450d6ce97fdbec7887deaa6f79ba351626f174a872bd4916af6d1508ca9",
+    "scripts/sgm-p2p5-cpu-cuda-tolerance-check.py": "e27de376fdba6940ce6f80616d1f15794134ff0a48be808d8953081561840fb1",
+    "scripts/sgm-p2p5-pretrained-observer.py": "c141e3c3423cc89b62fc254a8f1fc2dbcc223751e089ba96cbc6bf82758dc763",
+    "scripts/sgm-p2p5-decision-rules.py": "747c85b0f451edb41472591a060a84b379e597642d29964f6bed081e37caa5fe"
+  },
+  "cpu_environment": {
+    "torch": "2.7.1+cpu",
+    "transformers": "4.55.2",
+    "safetensors": "0.5.3"
+  },
+  "retained_oom_artifact_matches_current_source": true,
+  "completed_profile_configs": 0,
+  "recorded_wall_s": 49.441318772005616,
+  "cuda_tolerance": {
+    "saved_evidence_arithmetic_checked": true,
+    "independent_gpu_rerun": false
+  },
+  "grid_cells": 18,
+  "reading_table_cases": 1024,
+  "malformed_interface_cases_rejected": 4,
+  "observer_registered_heads": 16,
+  "deadline_probe": {
+    "substituted_workload": "CPU sleep only; no model/GPU",
+    "wall_limit_s": 0.01,
+    "observed_wall_s": 0.1512772730056895,
+    "configs_accepted_after_deadline": 1,
+    "hard_deadline_enforced": false
+  },
+  "hypothetical_3_to_6_seconds_per_update": {
+    "updates": 27000,
+    "training_gpu_hours": [
+      22.5,
+      45.0
+    ],
+    "l40s_gpu_only_usd": [
+      43.902,
+      87.804
+    ],
+    "l40s_nonpreemptible_gpu_only_usd": [
+      131.706,
+      263.412
+    ],
+    "rate_source": "https://modal.com/pricing",
+    "l40s_usd_per_second": 0.000542,
+    "measured_estimate": false
+  },
+  "paid_profile_clearance": "HOLD: concrete bounded runner and fresh explicit cap approval required",
+  "limits": [
+    "No fit/throughput/learning result",
+    "WSL OOM diagnostic is not a reliable physical peak",
+    "Observer/readings/launch protocol not end-to-end certified"
+  ]
+}

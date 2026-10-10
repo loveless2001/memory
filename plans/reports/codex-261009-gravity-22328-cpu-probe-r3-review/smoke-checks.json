@@ -1,0 +1,55 @@
+{
+  "init": {
+    "batch_count": 2,
+    "episode_count": 2,
+    "issues": [],
+    "losses": [
+      {
+        "task_ce": 3.910053253173828,
+        "anchor": 0.0037211887538433075,
+        "acc": 0.0
+      },
+      {
+        "task_ce": 4.240548133850098,
+        "anchor": 0.011215527541935444,
+        "acc": 0.0
+      }
+    ],
+    "consistency_unit": "per-batch gradient = mean over 1 episode(s); ratio over 2 batches",
+    "n_gradient_groups": {
+      "task": 29,
+      "anchor": 29
+    },
+    "differences_vs_b2": "none (B2 config)"
+  },
+  "oracle": {
+    "batch_count": 2,
+    "episode_count": 2,
+    "issues": [],
+    "losses": [
+      {
+        "task_ce": 4.1894426345825195,
+        "anchor": null,
+        "acc": 0.0
+      },
+      {
+        "task_ce": 4.152883052825928,
+        "anchor": null,
+        "acc": 0.0
+      }
+    ],
+    "consistency_unit": "per-batch gradient = mean over 1 episode(s); ratio over 2 batches",
+    "n_gradient_groups": {
+      "task": 29
+    },
+    "differences_vs_b2": "arm oracle (perfect read=write cells), read_fallback off, anchor off (SGMConfig rejects fill with oracle routing)"
+  },
+  "init_first_episode_deterministic": {
+    "task_ce": true,
+    "anchor": true,
+    "acc": true
+  },
+  "script_sha256": "0a3d6e96f3ffe578f182a95daeffd3e553f199d57a203b91f4ad9de8bc770eea",
+  "wrapper_sha256": "d5facdf3e2e029ee1369db511bb7187cf4eee7121650964378f94f31b5290f76",
+  "source_matches_commit": true
+}

@@ -1,0 +1,77 @@
+{
+  "reviewed_at_utc": "2026-10-08T03:30:06.649512+00:00",
+  "chat_request": [
+    21758,
+    21779
+  ],
+  "code_commit": "fbfebe08391cf55ca544afc0ce530f35736de0dd",
+  "package_commit": "c3c6fa2dc524dca18771130debc2ea720de0e7f7",
+  "verdict": "HOLD: implementation clearance and local GPU smoke withheld",
+  "findings": [
+    {
+      "priority": "P1",
+      "file": "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py",
+      "line": 49,
+      "title": "Build-stage module import lacks sibling slot logic",
+      "evidence": "package-and-import-evidence.json",
+      "required_fix": "Supply the dependency before run_function or isolate the builder; verify the effective builder files offline."
+    },
+    {
+      "priority": "P2",
+      "file": "scripts/sgm-p2p5-readout-probe-local-gpu-smoke.py",
+      "line": 15,
+      "title": "Documented outer timeout exceeds the 3600-second whole-process limit",
+      "evidence": "smoke-boundary-evidence.json",
+      "required_fix": "Retain an executable outer hard KILL/3600 process-group boundary and a harmless termination regression."
+    }
+  ],
+  "independent_cpu_suite": {
+    "rc": 0,
+    "summary": "557 passed, 2 skipped in 534.41s (0:08:54)",
+    "wall_s": 541.2362784929865
+  },
+  "real_cpu_registry": {
+    "grid_sha256": "b418f39e493b5949a4197d1b9b2fdf6bc81e4db49670808cbc89f0818b6e34d8",
+    "registry_sha256": "5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427",
+    "cells": {
+      "taskhead-learned-n32-s0": {
+        "equal": true,
+        "n_state": 46,
+        "head": [
+          64,
+          512
+        ]
+      },
+      "taskhead-learned-n32-s1": {
+        "equal": true,
+        "n_state": 46,
+        "head": [
+          64,
+          512
+        ]
+      }
+    },
+    "all_equal": true
+  },
+  "package_files_sha256_verified": 24,
+  "registry_schema_rederive_equal": true,
+  "saved_mutation_evidence": {
+    "aimed_tests_caught": 26,
+    "independently_rerun": false,
+    "note": "Private-copy driver, re-freeze procedure, aimed failures, baseline and stored hashes inspected."
+  },
+  "ledger_decimal": {
+    "gpu": "38.229480912",
+    "reaper": "0.1738677348333333333333333333",
+    "total": "40.74011664683333333333333333",
+    "cap": "40.75"
+  },
+  "scope": {
+    "pretrained_qwen_forward_passes": 0,
+    "gpu_smokes": 0,
+    "modal_rpc_or_build_deploy_spawn": false,
+    "shared_implementation_modified": false
+  },
+  "authorization": "User 21755 conditional go is retained for the scoped two-cell probe at 40.75 USD; unresolved gates remain.",
+  "next_gate": "Review the corrected frozen implementation and evidence, then the single bounded local smoke; no paid launch yet."
+}

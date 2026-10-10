@@ -1,0 +1,96 @@
+{
+  "utc": "2026-10-09T19:28:36.522990+00:00",
+  "s1_receipt": {
+    "mode": "s1",
+    "label": "INVALID",
+    "initial_adapter_params_sha256": "ef5741865072c27d7620d33ddbcb2d3c773e1e1ac5e23a8432b6f0e30d15c2f9",
+    "wall_s": 5074.704992934041
+  },
+  "s1_admission": {
+    "estimate_s": 2537.3524964670205,
+    "wall_s": 5074.704992934041,
+    "admit": true,
+    "components": {
+      "capture_s_per_episode": 12.571025927250048,
+      "model_load_s": 16.897651004999716,
+      "fit_s": 175.67130523002925,
+      "boot_s": 0.05827027198392898,
+      "output_s": 33.3611216,
+      "timings": {
+        "cv_fit_1024": 0.8296041180001339,
+        "cv_pred_1024": 0.14051073600057862,
+        "final_fit_1024": 0.8586048209999717,
+        "cv_fit_2048": 4.2467693260005035,
+        "cv_pred_2048": 0.21431906099860498,
+        "final_fit_2048": 6.729034808999131,
+        "boot_one": 0.0018209459994977806
+      }
+    }
+  },
+  "full_wall_ceiling_s": 5075,
+  "s1_reading_read": false,
+  "s1_peak_rss_mb": 3597.9765625,
+  "s2_init_hash": "ef5741865072c27d7620d33ddbcb2d3c773e1e1ac5e23a8432b6f0e30d15c2f9",
+  "s2_status": {
+    "state": "COMPLETE",
+    "mode": "s2"
+  },
+  "s2_exit": "0",
+  "active_scopes": [
+    {
+      "unit": "pkprobe-full-1791574041.scope",
+      "properties": {
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/pkprobe-full-1791574041.scope",
+        "TasksCurrent": "30",
+        "MemoryMax": "4613734400",
+        "MemorySwapMax": "1258291200",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "cgroup_files": {
+        "memory.max": "4613734400",
+        "memory.swap.max": "1258291200",
+        "memory.current": "2913689600",
+        "memory.peak": "2916548608",
+        "memory.swap.current": "0",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "cgroup.procs": "220812\n220813"
+      },
+      "processes": [
+        {
+          "pid": 220812,
+          "cmdline": "/usr/bin/timeout --signal=KILL 5075 .venv/bin/python scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py --mode full --wall-s 5075 --out plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1 --s1-dir plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke --s2-dir plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke ",
+          "thread_env": {
+            "OMP_NUM_THREADS": "8",
+            "OPENBLAS_NUM_THREADS": "8",
+            "MKL_NUM_THREADS": "8",
+            "PKPROBE_FORBID_MODEL": null
+          }
+        },
+        {
+          "pid": 220813,
+          "cmdline": ".venv/bin/python scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py --mode full --wall-s 5075 --out plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1 --s1-dir plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke --s2-dir plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke ",
+          "thread_env": {
+            "OMP_NUM_THREADS": "8",
+            "OPENBLAS_NUM_THREADS": "8",
+            "MKL_NUM_THREADS": "8",
+            "PKPROBE_FORBID_MODEL": null
+          }
+        }
+      ]
+    }
+  ],
+  "full_dir_exists": true,
+  "chain_status": "RUNNING",
+  "chain_log_tail": [
+    "2026-10-09T19:24:32Z chain start head=935f91dba30f439c60e1424a40ba05b382985883",
+    "2026-10-09T19:24:32Z start s1 wall=1800s out=plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+    "2026-10-09T19:26:05Z end s1 rc=0",
+    "{\"mode\": \"s1\", \"label\": \"INVALID\", \"initial_adapter_params_sha256\": \"ef5741865072c27d7620d33ddbcb2d3c773e1e1ac5e23a8432b6f0e30d15c2f9\", \"wall_s\": 5074.704992934041}",
+    "2026-10-09T19:26:10Z start s2 wall=2400s out=plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke",
+    "2026-10-09T19:27:15Z end s2 rc=0",
+    "{\"mode\": \"s2\", \"label\": \"INCONCLUSIVE\", \"initial_adapter_params_sha256\": \"ef5741865072c27d7620d33ddbcb2d3c773e1e1ac5e23a8432b6f0e30d15c2f9\"}",
+    "2026-10-09T19:27:21Z admitted full wall 5075s",
+    "2026-10-09T19:27:21Z start full wall=5075s out=plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1"
+  ]
+}

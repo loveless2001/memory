@@ -1,0 +1,170 @@
+{
+  "status": "PASS",
+  "checks": {
+    "package_index": {
+      "ok": true,
+      "detail": {
+        "sha256": "efc80e8b473cf76900b4bc1a5259abdb65cba6b5d66f0d9baae9e62bd001a8a3",
+        "files": 17,
+        "mismatches": []
+      }
+    },
+    "fresh_manifest_exact": {
+      "ok": true,
+      "detail": null
+    },
+    "analysis_and_launch_manifest": {
+      "ok": true,
+      "detail": null
+    },
+    "exact_manifest_delta": {
+      "ok": true,
+      "detail": {
+        "analysis": [
+          "configs/m4_sgm_p2p5_pk_posthoc_validation_amendment.json",
+          "scripts/sgm-p2p5-pk-campaign-analysis-dependency-manifest.py",
+          "scripts/sgm-p2p5-pk-campaign-readings.py",
+          "scripts/sgm-p2p5-pk-posthoc-validation-amendment.py"
+        ],
+        "launch": [
+          "modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py",
+          "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-campaign-posthoc-amendment/learned-n32-s1-revalidation-record.json",
+          "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg-amendment-posthoc-validation-learned-n32-s1.md"
+        ]
+      }
+    },
+    "protected_scientific_inputs": {
+      "ok": true,
+      "detail": {
+        "configs/m4_sgm_p2p5_grid.json": true,
+        "configs/m4_sgm_p2p5_campaign_registry.json": true,
+        "configs/m4_sgm_p2p5_campaign_output_schema.json": true,
+        "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg.md": true,
+        "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/prereg-amendment-pk-packed-a100-resume.md": true,
+        "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk6/priced-estimate-v6.json": true
+      }
+    },
+    "numerical_source_unchanged": {
+      "ok": true,
+      "detail": {
+        "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+        "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+      }
+    },
+    "full_spec_vs_independent_baseline": {
+      "ok": true,
+      "detail": {
+        "cell": true,
+        "slot": true,
+        "epoch": true,
+        "attempt": true,
+        "state_sha256": true,
+        "done_sha256": true,
+        "outputs": true,
+        "terminal_checkpoint": true,
+        "original_reason": true,
+        "original_validation": true,
+        "nullable_leaves": true,
+        "label": true
+      }
+    },
+    "real_original_gate": {
+      "ok": true,
+      "detail": {
+        "bound": 17,
+        "problem": "learned-n32-s1: state FAILED"
+      }
+    },
+    "real_amended_gate": {
+      "ok": true,
+      "detail": {
+        "bound": [
+          "learned-n16-s0",
+          "learned-n16-s1",
+          "learned-n32-s0",
+          "learned-n32-s1",
+          "memoryoff-n16-s0",
+          "memoryoff-n16-s1",
+          "memoryoff-n32-s0",
+          "memoryoff-n32-s1",
+          "oracle-n32-s0",
+          "oracle-n32-s1",
+          "randomfixed-n16-s0",
+          "randomfixed-n16-s1",
+          "randomfixed-n32-s0",
+          "randomfixed-n32-s1",
+          "singlecell-n16-s0",
+          "singlecell-n16-s1",
+          "singlecell-n32-s0",
+          "singlecell-n32-s1"
+        ],
+        "problem": null
+      }
+    },
+    "all18_states_and_terminal_payloads_unchanged": {
+      "ok": true,
+      "detail": {
+        "learned-n32-s0": true,
+        "learned-n32-s1": true,
+        "oracle-n32-s0": true,
+        "oracle-n32-s1": true,
+        "randomfixed-n32-s0": true,
+        "randomfixed-n32-s1": true,
+        "singlecell-n32-s0": true,
+        "singlecell-n32-s1": true,
+        "learned-n16-s0": true,
+        "learned-n16-s1": true,
+        "randomfixed-n16-s0": true,
+        "randomfixed-n16-s1": true,
+        "singlecell-n16-s0": true,
+        "singlecell-n16-s1": true,
+        "memoryoff-n32-s0": true,
+        "memoryoff-n32-s1": true,
+        "memoryoff-n16-s0": true,
+        "memoryoff-n16-s1": true
+      }
+    },
+    "real_runner_preconditions": {
+      "ok": true,
+      "detail": null
+    },
+    "revalidation_cli_byte_identical": {
+      "ok": true,
+      "detail": {
+        "rc": 0,
+        "stdout": "{\"result\": \"amended_valid\", \"sha256\": \"e4a2a04e3e389c723da20f605c513108b70fd8449e597d7327446f6150b7ea51\"}\n",
+        "stderr": ""
+      }
+    },
+    "revalidation_cli_write_once": {
+      "ok": true,
+      "detail": {
+        "rc": 1,
+        "stderr": "refusing to overwrite /home/lenovo/projects/memory/plans/reports/codex-261007-p2p5-pk-21710-amendment-audit/record-reproduced.json (write-once record)"
+      }
+    },
+    "labels_early_identity_refusal": {
+      "ok": true,
+      "detail": null
+    },
+    "labels_parity_refusal": {
+      "ok": true,
+      "detail": null
+    },
+    "labels_end_binding_refusal": {
+      "ok": true,
+      "detail": null
+    },
+    "original_outcome_retained_after_end_refusal": {
+      "ok": true,
+      "detail": null
+    },
+    "submitted_tree_still_frozen": {
+      "ok": true,
+      "detail": ""
+    }
+  },
+  "completed_utc": "2026-10-07T15:30:53.149673+00:00",
+  "remote_mutations": 0,
+  "shared_artifact_edits": 0
+}

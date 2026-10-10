@@ -1,0 +1,13 @@
+# B3 proposal v0.3 follow-up
+
+For #gravity22476, reviewed documentation commit `c6a3ae4`. **The two design decisions are accepted; proposal clearance for isolated CPU implementation/preparation stands. Paid package clearance and cap approval remain pending.** The commit only adds the v0.3 amendment; it preserves the prior proposals and execution sources.
+
+The amendment explicitly removes the remote app-stopping reaper and makes deployed-app cleanup depend on the PC. It distinguishes training-time limits from conditional cost accounting and includes the build allowance. Accepting unprofiled completion risk remains a proposed choice, with no additional profile or overfit arm.
+
+Independent metadata arithmetic confirms the size estimate's parameter basis. Reading the protected B2 safetensors header, without loading tensors or constructing a model, gives 46 fp32 tensors and 2,155,356 parameters. Doubling only q/k/v/beta projection input widths gives 3,744,604 parameters, 14,978,416 fp32 bytes; parameters plus two fp32 Adam moments contribute 44,935,248 bytes before serialization/RNG/telemetry overhead. These agree with the approximately 15MB/45MB figures. The approximately 155MB Volume figure remains an estimate, to be checked against actual retained files/archives; this audit did not create a B3 checkpoint.
+
+Carry one wording correction into the implementation package: killing the training child can allow a normal worker return, whereas SIGKILL of the worker cannot execute a normal function return. A completed/failed call also does not immediately establish zero containers: scaledown, refused/retried starts and cleanup tails must be accounted for. Say that after pending work ends and zero tasks/containers are verified, no training is active; verify app stop separately. Do not describe zero compute billing or stopped status as a consequence of the deadline/call-return alone. This clarification does not block the isolated CPU preparation.
+
+Next handoff is the new wrapper/runner, effective loader/cloud sentinels, isolated CPU checks and ledger. The implementation review must verify start/recovery policy, shared immutable deadline, restore/prefix/archive behavior and realistic noninteractive `--yes` cleanup; document and test failure/refusal paths. No paid step or cloud mutation is authorized by this review.
+
+This was a read-only document/source-diff, safetensors-header and arithmetic audit with local evidence retention. No model load/forward, test, benchmark, optimizer, checkpoint creation, deployment or cloud access occurred. Original proposals and protected B2 artifacts were not edited. `manifest.json` and `SHA256SUMS` bind the retained inputs and findings.

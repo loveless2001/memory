@@ -1,0 +1,39 @@
+{
+  "call_state": "done",
+  "call_info": {
+    "returncode": 0,
+    "start": "start-2",
+    "volume_commit_errors": 0,
+    "wall_s": 8610.676496505737,
+    "child_timeout_s": 13920.185520887375,
+    "versions": {
+      "torch": "2.7.1+cu126",
+      "transformers": "4.55.2"
+    },
+    "cmd": [
+      "/usr/local/bin/python",
+      "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+      "--manifest",
+      "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+      "--out",
+      "/vol/b2-run-v1/B2"
+    ]
+  },
+  "dict": {
+    "deadline": 1791546912.6074162,
+    "start-1": {
+      "task": "ta-01M4FJAEGRVPR8T179Y5848N2R",
+      "t": 1791523898.360958
+    },
+    "start-2": {
+      "task": "ta-01M4FZCJ3Z083Y4P4EKTPHX3XR",
+      "t": 1791537598.461718,
+      "runner": "resume-v0.4"
+    },
+    "start-3": null,
+    "resume-1-deadline": 1791551643.2783465
+  },
+  "captured_files": 14,
+  "capture_finished": "2026-10-09T14:57:54.446214+00:00",
+  "billing_returncode": 0
+}

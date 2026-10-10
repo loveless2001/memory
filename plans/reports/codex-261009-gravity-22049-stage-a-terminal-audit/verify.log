@@ -1,0 +1,57 @@
+{
+  "exits": {
+    "client": "124 2026-10-08T20:28:32.793063855Z",
+    "cleanup": "0 2026-10-08T20:28:39.021825487Z"
+  },
+  "shutdown": true,
+  "completed": {
+    "A0": "escaped",
+    "A1": "partial"
+  },
+  "A2": {
+    "status": "not run / unevaluable",
+    "arm_start_claim": false,
+    "artifacts_returned": false,
+    "reason": "client outer timeout while remote call pending; scheduling cause unverified",
+    "billing": "no-training inference does not independently settle infrastructure charges"
+  },
+  "billing": {
+    "app_rows": [
+      {
+        "object_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+        "description": "memsub-m4-sgm-p2p5-stage-a-read-escape",
+        "environment": "main",
+        "interval_start": "2026-10-08T19:00:00",
+        "cost": "0.92112117"
+      }
+    ],
+    "reported_cost_usd": "0.92112117",
+    "status": "preliminary; 20:00 UTC hour incomplete at capture, backfill not verified",
+    "reservation_usd": 3.4198416,
+    "cap_usd": 4.0
+  },
+  "geometry": {
+    "index_sha256": "98d9c3835c9a5377a696bf5828e6b42a33655543224bca1729088856d1e0bb87",
+    "script_sha256": "e9131a62ac57cca62915ae233914315412e302bf5ab954351f20544578311ea7",
+    "entries": [
+      "stage-a-A0-final-step100",
+      "stage-a-A1-final-step100"
+    ],
+    "audit": "CLEAR one scoped local pass after active smollm controller exits and GPU availability is rechecked",
+    "argv": [
+      "timeout",
+      "--signal=KILL",
+      "3600",
+      ".venv-gpu/bin/python",
+      "scripts/sgm-p2p5-taskhead-dead-start-address-diagnosis.py",
+      "--index",
+      "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/geometry-index-v1.json",
+      "--out",
+      "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/geometry-run-v1"
+    ],
+    "no_retry": true,
+    "optimizer_steps": 0,
+    "paid_compute": false
+  },
+  "gpu": "77 %, 1343 MiB, 4652 MiB"
+}

@@ -1,0 +1,157 @@
+{
+  "accuracy": {
+    "0": {
+      "residual_head": {
+        "bank_derange": 0.072265625,
+        "coord_shuffle": 0.048828125,
+        "none": 0.072265625,
+        "query_off": 0.0224609375,
+        "read_offset": 0.021484375
+      },
+      "taskhead": {
+        "bank_derange": 0.01171875,
+        "coord_shuffle": 0.01171875,
+        "none": 0.01171875,
+        "query_off": 0.01171875,
+        "read_offset": 0.01171875
+      }
+    },
+    "1": {
+      "residual_head": {
+        "bank_derange": 0.0625,
+        "coord_shuffle": 0.0556640625,
+        "none": 0.0634765625,
+        "query_off": 0.037109375,
+        "read_offset": 0.037109375
+      },
+      "taskhead": {
+        "bank_derange": 0.015625,
+        "coord_shuffle": 0.015625,
+        "none": 0.015625,
+        "query_off": 0.015625,
+        "read_offset": 0.015625
+      }
+    }
+  },
+  "at_utc": "2026-10-08T16:31:26.978523+00:00",
+  "bank_dependence": {
+    "met": false,
+    "per_seed": {
+      "0": {
+        "derange_accuracy": 0.01171875,
+        "none_minus_derange": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "none_minus_read_offset": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "pass": false
+      },
+      "1": {
+        "derange_accuracy": 0.015625,
+        "none_minus_derange": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "none_minus_read_offset": {
+          "diff": 0.0,
+          "hi": 0.0,
+          "lo": 0.0,
+          "n": 256
+        },
+        "pass": false
+      }
+    }
+  },
+  "billing": "actual charges not audited; cap remains 40.75 USD",
+  "cells": {
+    "taskhead-learned-n32-s0": {
+      "checkpoint_hashes_checked": 30,
+      "checkpoint_integrity_problem": "generation sha mismatch: gen-17-step850.pt (epoch 1)",
+      "cuda_rng_devices": 1,
+      "heldout_none": {
+        "accuracy": 0.01171875,
+        "correct": 12,
+        "total": 1024
+      },
+      "output_hashes_checked": 7,
+      "physical_last_update_utc": "2026-10-08T10:31:21.792943+00:00",
+      "physical_updates": 1500,
+      "prediction_changes_vs_none": {
+        "bank_derange": 0,
+        "coord_shuffle": 0,
+        "query_off": 0,
+        "read_offset": 0
+      },
+      "state": "COMPLETE",
+      "terminal_checkpoint_equals_trained_tensors": true,
+      "validation": "valid",
+      "wall_seconds": 18795.04554080963
+    },
+    "taskhead-learned-n32-s1": {
+      "checkpoint_hashes_checked": 30,
+      "checkpoint_integrity_problem": "generation sha mismatch: gen-4-step200.pt (epoch 1)",
+      "cuda_rng_devices": 1,
+      "heldout_none": {
+        "accuracy": 0.015625,
+        "correct": 16,
+        "total": 1024
+      },
+      "output_hashes_checked": 7,
+      "physical_last_update_utc": "2026-10-08T10:45:39.535339+00:00",
+      "physical_updates": 1500,
+      "prediction_changes_vs_none": {
+        "bank_derange": 0,
+        "coord_shuffle": 0,
+        "query_off": 0,
+        "read_offset": 0
+      },
+      "state": "COMPLETE",
+      "terminal_checkpoint_equals_trained_tensors": true,
+      "validation": "valid",
+      "wall_seconds": 19621.851863861084
+    }
+  },
+  "checkpoint_integrity": "FAIL: see checkpoint-hash-checks.json and remote-checkpoint-verification.json",
+  "contrast": {
+    "label": "positive gain >=5pp excluded",
+    "per_seed_taskhead_minus_residual": {
+      "0": {
+        "diff": -0.060546875,
+        "hi": -0.04438888300744996,
+        "lo": -0.07670486699255004,
+        "n": 256
+      },
+      "1": {
+        "diff": -0.0478515625,
+        "hi": -0.031174195556794664,
+        "lo": -0.06452892944320533,
+        "n": 256
+      }
+    }
+  },
+  "independent_live_stopped_zero_tasks_zero_containers": true,
+  "memsub_sha256": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+  "only_start_1": true,
+  "output_validation": "PASS for both cells; separate from checkpoint-chain integrity",
+  "reading": "rescue by the taskhead recipe not shown (C = positive gain >=5pp excluded)",
+  "remote_mutations_by_audit": false,
+  "source_bindings_checked": {
+    "configs/m4_sgm_p2p5_readout_probe_grid.json": "b418f39e493b5949a4197d1b9b2fdf6bc81e4db49670808cbc89f0818b6e34d8",
+    "configs/m4_sgm_p2p5_readout_probe_output_schema.json": "44d1136b50b512e7740d56fc9f0b88d4505e6d2c133d339df31978cf115ec932",
+    "configs/m4_sgm_p2p5_readout_probe_registry.json": "5228052dfe7692080f7aeb3a36d293ea78d07b01e9d5c1be962a8306a49fb427",
+    "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py": "93c7c7789494e22f7d51bc65e3a563b14984fc73df0add2b59a5deb64207142e",
+    "modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-runner.py": "7fdf42adce24465a2e813305955390aab37e7a879be7078651083502812f46ec",
+    "modal-runners/modal-m4-sgm-p2p5-reaper-lifetime-stop-logic.py": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/probe-priced-ledger.json": "723517ae46f218c186025cb2013f4fb59a3b1634d8a331d97ee36e7621eb3ac3",
+    "scripts/sgm-p2p5-readout-probe-output-validation.py": "b0c01a8e02efc42be947f252c82eb22b62372d0bf6602e3566d2299c9864c380"
+  }
+}

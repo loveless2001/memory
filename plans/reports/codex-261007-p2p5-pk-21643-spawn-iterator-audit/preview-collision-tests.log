@@ -1,0 +1,660 @@
+.......................FFFFFF....FFFFFFss............................... [ 81%]
+................                                                         [100%]
+=================================== FAILURES ===================================
+____________ test_failed_interfaces_leave_other_corners_unevaluated ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7587443a6600>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_failed_interfaces_leave_o0')
+
+    def test_failed_interfaces_leave_other_corners_unevaluated(monkeypatch, tmp_path):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p=0.1)
+>       assert all(v["interface"] is False and "interface not established" in v["reading"] for v in rep["n"].values())
+E       assert False
+E        +  where False = all(<generator object test_failed_interfaces_leave_other_corners_unevaluated.<locals>.<genexpr> at 0x758746795490>)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:90: AssertionError
+______________ test_no_gain_over_one_control_is_not_a_screen_pass ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75874423ec30>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_no_gain_over_one_control_0')
+
+    def test_no_gain_over_one_control_is_not_a_screen_pass(monkeypatch, tmp_path):
+>       rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, learned=0.5, control=0.5)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:64: in run
+    return rd.readings(tmp_path, {}, rd.current_identity(), tmp_path / "out"), calls
+scripts/sgm-p2p5-pk-campaign-readings.py:176: in readings
+    problem, cells, ckpts = binding_problem(expected), {}, {}    # BEFORE any evidence or population access
+scripts/sgm-p2p5-pk-campaign-readings.py:139: in binding_problem
+    manifest = json.loads(MANIFEST.read_text())
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x758765e08050>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:356: JSONDecodeError
+___________ test_decision_rule_mutation_is_refused_before_any_access ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7587467bc3b0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_decision_rule_mutation_is0')
+
+    def test_decision_rule_mutation_is_refused_before_any_access(monkeypatch, tmp_path):
+>       tree = _copied_tree(tmp_path)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:102: in _copied_tree
+    manifest = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json").read_text())
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x758765e08050>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:356: JSONDecodeError
+__________________ test_unlisted_script_dependency_is_refused __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_unlisted_script_dependenc0')
+
+    def test_unlisted_script_dependency_is_refused(tmp_path):
+>       tree = _copied_tree(tmp_path)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:102: in _copied_tree
+    manifest = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json").read_text())
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x758765e08050>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:356: JSONDecodeError
+_____ test_change_during_the_run_makes_every_reading_unavailable[manifest] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758746802180>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_change_during_the_run_mak0')
+what = 'manifest'
+
+    @pytest.mark.parametrize("what", ["manifest", "checkpoint"])
+    def test_change_during_the_run_makes_every_reading_unavailable(monkeypatch, tmp_path, what):
+        mcopy = tmp_path / "manifest.json"
+        shutil.copy2(rd.MANIFEST, mcopy)
+        monkeypatch.setattr(rd, "MANIFEST", mcopy)
+    
+        def during(calls):
+            if len(calls) == 6:                                                         # inside phase 2
+                target = mcopy if what == "manifest" else tmp_path / "trained_parameters.safetensors"
+                target.write_bytes(target.read_bytes() + b" ")
+>       rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, during=during)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:148: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:64: in run
+    return rd.readings(tmp_path, {}, rd.current_identity(), tmp_path / "out"), calls
+scripts/sgm-p2p5-pk-campaign-readings.py:176: in readings
+    problem, cells, ckpts = binding_problem(expected), {}, {}    # BEFORE any evidence or population access
+scripts/sgm-p2p5-pk-campaign-readings.py:139: in binding_problem
+    manifest = json.loads(MANIFEST.read_text())
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x758765e08050>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:356: JSONDecodeError
+____ test_change_during_the_run_makes_every_reading_unavailable[checkpoint] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7587443e4b00>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_change_during_the_run_mak1')
+what = 'checkpoint'
+
+    @pytest.mark.parametrize("what", ["manifest", "checkpoint"])
+    def test_change_during_the_run_makes_every_reading_unavailable(monkeypatch, tmp_path, what):
+        mcopy = tmp_path / "manifest.json"
+        shutil.copy2(rd.MANIFEST, mcopy)
+        monkeypatch.setattr(rd, "MANIFEST", mcopy)
+    
+        def during(calls):
+            if len(calls) == 6:                                                         # inside phase 2
+                target = mcopy if what == "manifest" else tmp_path / "trained_parameters.safetensors"
+                target.write_bytes(target.read_bytes() + b" ")
+>       rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, during=during)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:148: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:64: in run
+    return rd.readings(tmp_path, {}, rd.current_identity(), tmp_path / "out"), calls
+scripts/sgm-p2p5-pk-campaign-readings.py:176: in readings
+    problem, cells, ckpts = binding_problem(expected), {}, {}    # BEFORE any evidence or population access
+scripts/sgm-p2p5-pk-campaign-readings.py:139: in binding_problem
+    manifest = json.loads(MANIFEST.read_text())
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x758765e08050>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py:356: JSONDecodeError
+__________ test_spawn_guard_check_handles_modal_generator_keys[empty] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743db0920>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles0')
+kind = 'empty'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+                r.spawn()
+            assert calls == [] and not (tmp_path / r.GROUP / "readings").exists()
+            assert r.APP_NAME not in dicts.get(r.CONTROL_REGISTRY_DICT, {})
+        else:
+>           r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:132: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:168: SystemExit
+__________ test_spawn_guard_check_handles_modal_generator_keys[used] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743db3890>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles1')
+kind = 'used'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:168: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743db3890>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles1')
+kind = 'used'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: "refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+________ test_spawn_guard_check_handles_modal_generator_keys[none-key] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d760f0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles2')
+kind = 'none-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:168: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d760f0>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles2')
+kind = 'none-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: "refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+________ test_spawn_guard_check_handles_modal_generator_keys[false-key] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d36d80>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles3')
+kind = 'false-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:168: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d36d80>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles3')
+kind = 'false-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: "refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+______ test_spawn_guard_check_handles_modal_generator_keys[empty-str-key] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d74920>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles4')
+kind = 'empty-str-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:168: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d74920>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles4')
+kind = 'empty-str-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: "refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+_______ test_spawn_guard_check_handles_modal_generator_keys[keys-error] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758743d9b140>
+tmp_path = PosixPath('/tmp/pytest-of-lenovo/pytest-159/test_spawn_guard_check_handles5')
+kind = 'keys-error'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md"]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest unreadable: JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:168: SystemExit
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_failed_interfaces_leave_other_corners_unevaluated
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_no_gain_over_one_control_is_not_a_screen_pass
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_decision_rule_mutation_is_refused_before_any_access
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_unlisted_script_dependency_is_refused
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_change_during_the_run_makes_every_reading_unavailable[manifest]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_change_during_the_run_makes_every_reading_unavailable[checkpoint]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[used]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[none-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[false-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty-str-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[keys-error]
+12 failed, 74 passed, 2 skipped in 8.95s

@@ -1,0 +1,56 @@
+{
+  "observed_utc": "2026-10-08T20:12:16.393163+00:00",
+  "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+  "deadline_epoch": 1791491100.2921758,
+  "remaining_s_at_snapshot": 763.8989837169647,
+  "A1_result": {
+    "arm": "A1",
+    "status": "valid",
+    "absent_read_weight_by_step": {
+      "0": 0.046701282903086394,
+      "25": 0.4886660152114928,
+      "50": 0.5301995989866555,
+      "75": 0.6111422991380095,
+      "100": 0.6523364614695311
+    },
+    "band_at_100": "partial",
+    "kept_through_100": false,
+    "bands": {
+      "escaped": ">= 0.9",
+      "kept": "<= 0.2",
+      "partial": "between"
+    }
+  },
+  "A1_manifest_verified": true,
+  "A1_worker_wall_s": 727.1210882663727,
+  "A0_A1_config_only_difference": "global learning rate 0.003 -> 0.0003",
+  "A1_artifact_hashes": {
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1/A1/routing_telemetry.jsonl": "5b2588b1534cf746f96cb19c77b931e9f18dc648724bacc28e7d736d8a993fa5",
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1/A1/run_manifest.json": "b02e59a9fa639b9ac2b337588c3e970f72c9fa557b27d6c47f278f0367157b46",
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1/A1/stage_a_result.json": "f95e867818b1d9e5aeb2815dee41f74a5cb905789caf1d710ae4306e2f8cf684",
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/stage-a-run-v1/A1/trained_parameters.safetensors": "b096292acf445586a7ba915a7c1c0210b18ce96d9018f76be40d2228f2aa2011"
+  },
+  "model_forwards": 0,
+  "paid_compute_calls": 0,
+  "intervention": false,
+  "app": {
+    "rows": [
+      {
+        "app_id": "ap-cCYlrnTz0Tj7tcm7TYovau",
+        "description": "memsub-m4-sgm-p2p5-stage-a-read-escape",
+        "state": "ephemeral",
+        "tasks": "0",
+        "created_at": "2026-10-09 02:09:57+07:00",
+        "stopped_at": null
+      }
+    ]
+  },
+  "container": {
+    "rows": []
+  },
+  "terminal_markers": {
+    "stage-a-run-v1.exit.txt": false,
+    "stage-a-run-v1.cleanup-exit.txt": false,
+    "stage-a-run-v1/cleanup.json": false
+  }
+}

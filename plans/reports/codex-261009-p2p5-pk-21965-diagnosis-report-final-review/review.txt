@@ -1,0 +1,18 @@
+Final report review: ACCEPT corrected descriptive diagnosis.
+Verified r2 at 0ddf4dc and preserved its original report and checksum bytes.
+Applied r3 prose corrections: explicit final-layer gradient exceptions, rounded
+absent-weight bounds, persistence without a monotonic claim, finite early-gradient
+interval, and conditional hypotheses/intervention proposals. Head-bias-only
+logits require all taskhead read features to be zero. Replay checks support
+consistency; manifests and parameter hashes bind the loaded inputs separately.
+
+Recomputed all 22 package checksums. Only diagnosis-report.md differs among
+the package files; 21 run/provenance/summary artifacts match r2 exactly. Updated
+SHA256SUMS-run-v1.txt and preserved both revisions plus the exact patch here.
+No model execution, optimizer update or new experiment was performed.
+
+Accepted observation: on the fixed dev population, over 99% of read weight is
+absent by step100 in both probe seeds; severe separation persists at the final
+snapshot. The causal driver, permanence of the state and effective remedies
+remain unproven. No new training or retry is cleared by this report review.
+The r3 report and checksum are ready for the owner's commit/refreeze.

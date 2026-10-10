@@ -1,0 +1,202 @@
+{
+  "status": "PASS",
+  "checks": {
+    "all_nine_training_apps_stopped": true,
+    "readings_app_stopped": true,
+    "call_success": true,
+    "one_admission_and_bindings_unchanged": true,
+    "remote_report_exit_and_failed_evidence_match_collected": true,
+    "original_failed_hashes_match_spec": true,
+    "original_and_amended_canonical_bindings": true,
+    "collected_stop_within_readings_deadline": true,
+    "frozen_source_still_clean": true
+  },
+  "started_utc": "2026-10-07T17:48:25.586158+00:00",
+  "completed_utc": "2026-10-07T17:48:44.590479+00:00",
+  "slots": {
+    "learned-n32": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "oracle-n32": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "random_fixed-n32": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "single_cell-n32": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "learned-n16": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "random_fixed-n16": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "single_cell-n16": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "memory_off-n32": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    },
+    "memory_off-n16": {
+      "verified": true,
+      "apps": [],
+      "containers": []
+    }
+  },
+  "readings": {
+    "verified": true,
+    "apps": [
+      {
+        "app_id": "ap-MvPw7JVom3vnRTxVVyzldN",
+        "description": "memsub-m4-sgm-p2p5-pk-campaign-readings",
+        "state": "stopped",
+        "tasks": "0",
+        "created_at": "2026-10-07 13:43:34+07:00",
+        "stopped_at": "2026-10-08 00:42:47+07:00"
+      }
+    ],
+    "containers": []
+  },
+  "controller": {
+    "verified": false,
+    "apps": [
+      {
+        "app_id": "ap-suOdTgdc8PNSfZ3jbnsesa",
+        "description": "memsub-m4-sgm-p2p5-pk-campaign-control",
+        "state": "deployed",
+        "tasks": "0",
+        "created_at": "2026-10-07 13:43:59+07:00",
+        "stopped_at": null
+      }
+    ],
+    "containers": []
+  },
+  "control": {
+    "app_id": "ap-suOdTgdc8PNSfZ3jbnsesa",
+    "price_sha256": "6745896e3f4b6ae4abc33020c6c195bbf9d3bedd800980e0ae8e0cd3b461c7c5",
+    "deadline_epoch": 1791408417.2529736,
+    "self_app_id": "ap-suOdTgdc8PNSfZ3jbnsesa"
+  },
+  "guard": {
+    "app_id": "ap-MvPw7JVom3vnRTxVVyzldN",
+    "deadline_epoch": 1791401164.8439689
+  },
+  "admission": {
+    "start-1": 1791387349.7650313
+  },
+  "registry": {
+    "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n16": {
+      "app_id": "ap-RmkZbuerKMTGWBWtoY3E7r",
+      "deadline_epoch": 1791374219.611603
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n32": {
+      "app_id": "ap-ifA2HmtzYE3CNXIcommxBa",
+      "deadline_epoch": 1791387313.338976
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-oracle-n32": {
+      "app_id": "ap-Q3tBU1VKHFfO7etg4jmeTz",
+      "deadline_epoch": 1791387476.6819432
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-randomfixed-n16": {
+      "app_id": "ap-vaN80Zc8IAet0r37n4bC5q",
+      "deadline_epoch": 1791376070.634326
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-learned-n16": {
+      "app_id": "ap-ETP6e541BpdsPf11yzZGTe",
+      "deadline_epoch": 1791377613.7132132
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-learned-n32": {
+      "app_id": "ap-seAC6uskFnK96xlpe0wLIQ",
+      "deadline_epoch": 1791387999.7697344
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n32": {
+      "app_id": "ap-8m9pZ6KD77ivuvmSQ1vb5k",
+      "deadline_epoch": 1791364167.2702665
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-memoryoff-n16": {
+      "app_id": "ap-FHeNdce7VkCSVBQWzTRmjk",
+      "deadline_epoch": 1791361761.6344142
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-singlecell-n32": {
+      "app_id": "ap-vAEMByn2pbJjoL46iekO9X",
+      "deadline_epoch": 1791384851.238087
+    },
+    "memsub-m4-sgm-p2p5-pk-campaign-readings": {
+      "app_id": "ap-MvPw7JVom3vnRTxVVyzldN",
+      "deadline_epoch": 1791401164.8439689
+    }
+  },
+  "call_payload": {
+    "status": "read",
+    "rc": 0
+  },
+  "remote_hashes": {
+    "readings-v1/readings.json": {
+      "remote_sha256": "e8764c427dd8bfc63098adc5de8f6499ef2f8ced679cbd192c77f36fadb4dfda",
+      "local_sha256": "e8764c427dd8bfc63098adc5de8f6499ef2f8ced679cbd192c77f36fadb4dfda",
+      "match": true
+    },
+    "readings-v1.exit.json": {
+      "remote_sha256": "80a632adfe6291e68758f0c1d3dba15304e524d1fb70a8d13cdc59128d3dabf5",
+      "local_sha256": "80a632adfe6291e68758f0c1d3dba15304e524d1fb70a8d13cdc59128d3dabf5",
+      "match": true
+    },
+    "learned-n32/cells/learned-n32-s1/epoch-1/state.json": {
+      "remote_sha256": "d4996651f052ff82eb1d8e333316bddcbfd3247bd21a5ccd354d8fa8d20bcc54",
+      "local_sha256": "d4996651f052ff82eb1d8e333316bddcbfd3247bd21a5ccd354d8fa8d20bcc54",
+      "match": true
+    },
+    "learned-n32/cells/learned-n32-s1/epoch-1/attempt-1/done.json": {
+      "remote_sha256": "33a3dafb0ed6323d58be271d18442f7d360c4e95fa968f67d7afc9ef4e748d85",
+      "local_sha256": "33a3dafb0ed6323d58be271d18442f7d360c4e95fa968f67d7afc9ef4e748d85",
+      "match": true
+    }
+  },
+  "all18_states_and_terminal_payloads_unchanged": {
+    "learned-n32-s0": true,
+    "learned-n32-s1": true,
+    "oracle-n32-s0": true,
+    "oracle-n32-s1": true,
+    "randomfixed-n32-s0": true,
+    "randomfixed-n32-s1": true,
+    "singlecell-n32-s0": true,
+    "singlecell-n32-s1": true,
+    "learned-n16-s0": true,
+    "learned-n16-s1": true,
+    "randomfixed-n16-s0": true,
+    "randomfixed-n16-s1": true,
+    "singlecell-n16-s0": true,
+    "singlecell-n16-s1": true,
+    "memoryoff-n32-s0": true,
+    "memoryoff-n32-s1": true,
+    "memoryoff-n16-s0": true,
+    "memoryoff-n16-s1": true
+  },
+  "original_bound_count": 17,
+  "original_gate": "learned-n32-s1: state FAILED",
+  "amended_bound_count": 18,
+  "amended_gate": null,
+  "head": "a17cd401c9046b1aa92826c0ecb47914d06270c7",
+  "tracked_dirty": "",
+  "controller_cleanup": "still deployed/running; owner cleanup outstanding",
+  "billing_reconciliation": "not yet audited",
+  "remote_mutations": 0,
+  "model_evaluations": 0
+}

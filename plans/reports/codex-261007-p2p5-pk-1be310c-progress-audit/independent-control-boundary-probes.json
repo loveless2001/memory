@@ -1,0 +1,92 @@
+{
+  "scope": "early progress review, not complete Gate-3 audit",
+  "revision": "1be310c05fb65b5fb875c85e825a643e6beba72b",
+  "cpu_fakes_only_no_remote_calls": true,
+  "source_sha256": {
+    "frozen-control-logic.py": "ce6f3b66aa0b786d5dac5621d9e10c28bacb778e4451a54b5173132cd9a85433",
+    "frozen-control-app.py": "ce8186c1fe21273dc8978005e6be51a517a78207bfe50fb135830a3a34260902",
+    "frozen-shared-stop-logic.py": "32bb3a3a38bf375e4c9107e4b3d7dc4c6392076cb5ba55f7c599fab644329e6c",
+    "frozen-slot-runner.py": "754cc4536f37d9487518c30b4afe93a925a3549ab59806df3f21c0fc4723d33c"
+  },
+  "late_readings": {
+    "longest_training_life_s": 31946.2,
+    "control_self_deadline_s": 33746.2,
+    "latest_readings_deadline_without_validation_setup_s": 43025.1,
+    "uncovered_interval_s": 9278.900000000001,
+    "tick_output": {
+      "readings": "not due",
+      "__control__": "self stop issued"
+    },
+    "stop_calls": [
+      [
+        "controller",
+        "ap-controller"
+      ]
+    ],
+    "controller_stops_while_readings_not_due": true
+  },
+  "unarmed_first_tick": {
+    "view": {
+      "app_name": "memsub-m4-sgm-p2p5-pk-campaign-control",
+      "app_id": null,
+      "deadline_epoch": 1900.0
+    },
+    "tick_output": {
+      "__control__": "self stop issued"
+    },
+    "self_stop_calls": [
+      [
+        "memsub-m4-sgm-p2p5-pk-campaign-control",
+        null
+      ]
+    ],
+    "stops_before_abandonment_deadline": true
+  },
+  "failed_cleanup_at_self_deadline": {
+    "tick_output": {
+      "slot": "stop error RuntimeError('controlled stop failure')",
+      "__control__": "self stop issued"
+    },
+    "self_stop_calls": [
+      [
+        "controller",
+        "ap-controller"
+      ]
+    ],
+    "self_stops_with_unresolved_target": true
+  },
+  "nonfinite_deadline": {
+    "nan": {
+      "registration_accepted": true,
+      "classified_due": false,
+      "slot_admission_result": [
+        1,
+        null
+      ]
+    },
+    "infinity": {
+      "registration_accepted": true,
+      "classified_due": false,
+      "slot_admission_result": [
+        1,
+        null
+      ]
+    }
+  },
+  "missing_id_stop": {
+    "tick_output": {
+      "unbound-name": "stop issued"
+    },
+    "lookup_calls": [],
+    "stop_app_names": [
+      "unbound-name"
+    ],
+    "unbound_name_stop_issued": true
+  },
+  "blocked_first_request": {
+    "tick_budget_s": 0.5,
+    "outer_probe_timeout": true,
+    "stdout": "attempt a\n",
+    "second_app_not_attempted": true
+  }
+}

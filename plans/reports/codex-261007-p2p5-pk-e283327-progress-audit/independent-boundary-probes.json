@@ -1,0 +1,50 @@
+{
+  "revision": "e2833270692a49a5d0bdc023d8d4660a64017984",
+  "cpu_fakes_only_no_remote_calls": true,
+  "snapshot_sha256": {
+    "modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py": "68ee4f5752a47461fa979f76ebffc6938446ce69a7748837bf738bad7b8ae385",
+    "modal-m4-sgm-p2p5-pk-campaign-control-plane-reaper.py": "a51e129055149a11e3e5aaf4519183c0b1138fa3fe6f563a19c4033c6577bc62",
+    "modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py": "64c4dbda7094f14de1e2feec9d476960d9139e3a14938510b10adb590135f363"
+  },
+  "direct_children": {
+    "outcomes": {
+      "ok": "stopped_verified",
+      "a": "stop/verify timeout (child killed and reaped)",
+      "b": "stop/verify timeout (child killed and reaped)",
+      "c": "stop/verify timeout (child killed and reaped)"
+    },
+    "all_reaped": true
+  },
+  "writer_launch_failure": {
+    "raised": "OSError('controlled evidence child launch failure')",
+    "self_stop_attempts": []
+  },
+  "nested_cli_survives": {
+    "production_child_pid": 1187122,
+    "nested_cli": {
+      "pid": 1187123,
+      "ppid": 1187122
+    },
+    "run_owned_outcome": {
+      "slot": "stop/verify timeout (child killed and reaped)"
+    },
+    "direct_child_reaped": true,
+    "nested_cli_still_alive_after_tick": true,
+    "probe_cleanup_killed_and_reaped_nested_cli": true
+  },
+  "partial_controller_guard": {
+    "controller_guard": {
+      "deadline_epoch": 100000.0
+    },
+    "dicts_accessed": [
+      "memsub-m4-sgm-p2p5-pk-campaign-learned-n32-guard",
+      "m4-sgm-p2p5-pk-campaign-control-guard",
+      "m4-sgm-p2p5-pk-campaign-control-registry"
+    ],
+    "app_lookups": [
+      "memsub-m4-sgm-p2p5-pk-campaign-learned-n32"
+    ],
+    "slot_spawn_called": true,
+    "note": "finite deadline is present, but controller app_id is absent; no controller identity/state lookup occurs"
+  }
+}

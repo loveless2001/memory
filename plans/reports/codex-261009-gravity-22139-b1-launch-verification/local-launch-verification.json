@@ -1,0 +1,78 @@
+{
+  "snapshot_utc": "2026-10-09T03:59:27.409926+00:00",
+  "app_id": "ap-ROPSmaSeABkUyr4X1d4RD2",
+  "audited_revision": "7e9213adc803e06aa43c3c13b56c2190eb32d11d",
+  "current_head": "7e9213adc803e06aa43c3c13b56c2190eb32d11d",
+  "tracked_status": "",
+  "package_file_bindings": [
+    {
+      "path": "scripts/sgm-p2p5-b1-occupied-fill-retention-screen-train.py",
+      "sha256": "aac4d4b6cce38990df0e485094d178acf4a8f20e565cf40ae579f4cd70ee77a9"
+    },
+    {
+      "path": "modal-runners/modal-m4-sgm-p2p5-b1-occupied-fill-retention-screen-runner.py",
+      "sha256": "93f919547bdc9627731e39479a0fc0ce2c18dbbac57df04446d8737d432d28fe"
+    },
+    {
+      "path": "tests/test_sgm_p2p5_b1_occupied_fill_retention_screen.py",
+      "sha256": "c36929d90d731e02e824818850cf20f6e703f13ab5eff7a0a8c761c2e7964d28"
+    },
+    {
+      "path": "plans/261009-1040-m4-sgm-p2p5-b1-occupied-fill-retention-screen/proposal.md",
+      "sha256": "8100589597bc8112ebc3bc62135bb03b0aea21a4101364ca3ad93da6af69151d"
+    },
+    {
+      "path": "plans/261009-1040-m4-sgm-p2p5-b1-occupied-fill-retention-screen/launch-b1-once.sh",
+      "sha256": "cee9b855e37d7903653179c562a30f4d182efe55a8f47ad3e97a6a44eacc869e"
+    },
+    {
+      "path": "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+      "sha256": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0"
+    },
+    {
+      "path": "scripts/sgm-p2p5-taskhead-read-escape-stage-a-train.py",
+      "sha256": "273f3375a3e71f280a185c264595fe98c014abc7b81ac6c633b9650e3d3d8c7b"
+    },
+    {
+      "path": "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py",
+      "sha256": "b4904576c7294871570871b21994f9ccac424d697de22173179fc2c55488d3df"
+    }
+  ],
+  "run_metadata": {
+    "app_id": "ap-ROPSmaSeABkUyr4X1d4RD2",
+    "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+    "base_image_id": "im-A7BXMB8v1cVYRvC9pMqZ3i",
+    "arms_planned": [
+      "B1"
+    ],
+    "ledger": {
+      "rate_usd_s": 0.0006785399999999999,
+      "cpu_overuse_margin": 1.25,
+      "outer_s": 2640,
+      "stop_allowance_s": 300,
+      "image_construction_usd": 0.0,
+      "reservation_usd": 1.9949076,
+      "cap_usd": 2.5,
+      "cleanup_budget_s": 300,
+      "assumptions": [
+        "the app stops within CLEANUP_S after the client exits (cleanup-verify checks; if unverified: manual stop, and billing past it is NOT covered)",
+        "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+      ],
+      "unenforced": "app-stop latency after client exit; CPU overuse beyond the margin"
+    },
+    "started": 1791518277.7524948,
+    "gpu": "L40S",
+    "cpu": 4.0,
+    "memory_gib": 32,
+    "arms": {},
+    "outcome": "started",
+    "deadline": 1791520677.753763
+  },
+  "launcher_pid": 3341150,
+  "training_progress_confirmed": false,
+  "result_or_exit_exists": {
+    "b1-run-v1.exit.txt": false,
+    "b1-run-v1.cleanup-exit.txt": false,
+    "b1-run-v1/B1/b1_result.json": false
+  }
+}

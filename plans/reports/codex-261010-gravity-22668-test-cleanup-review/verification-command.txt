@@ -1,0 +1,12 @@
+Private setup: .venv/bin/python isolate-fixture-proof.py (copy audit to a writable directory for replay).
+Run from fixture-tree, using project .venv/bin/python; environment: PKPROBE_FORBID_MODEL=1, HF_HUB_OFFLINE=1, TRANSFORMERS_OFFLINE=1, MODAL_SERVER_URL=http://127.0.0.1:9, invalid dummy Modal tokens, M4_PK_EVIDENCE_REPO=/home/lenovo/projects/memory.
+Host scope: systemd-run --user --scope --quiet -p MemoryMax=3500M -p MemorySwapMax=0; timeout --signal=KILL 300.
+Pytest targets:
+ tests/test_sgm_pk_campaign_readings_orchestration_fast.py
+ tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys
+ tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance
+ tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys
+ tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading
+ tests/test_sgm_pk_posthoc_validation_amendment.py::test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled
+ tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves
+Options: -q -p no:cacheprovider, private --basetemp, --junitxml fixture-proof.xml. Exit 0; 28 pass, 6.96 seconds.

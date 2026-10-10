@@ -1,0 +1,77 @@
+Independent smoke review of chat 21810, package eb41ab7
+
+Verdict: PASS for the single bounded local smoke. The implementation and smoke
+gates are closed for the frozen two-cell readout probe. Claude may perform the
+initial paid deploy/spawn under user 21755's existing conditional authorization,
+subject to the frozen prelaunch checks and scope below. No new cap is requested.
+
+Evidence independently verified
+- All 24 committed metadata hashes and all three excluded local binary hashes
+  match. The source/config/test bytes still equal cleared r2 at 30e2b3e. The launch
+  identity binds the exact KILL/3600 argv, clean source, interpreter and versions.
+- Exactly one retained fresh epoch/attempt, seed 7, batch 2, 20 physical updates
+  numbered 0-19, checkpoint interval 10, and separate smoke populations. No resume
+  or injected fault. The state, summary, worker args, manifest and update log agree.
+- The actual validate_probe_outputs accepts the retained COMPLETE output using the
+  frozen registry/schema and smoke evaluation configuration. All seven output
+  hashes match done.json and the COMPLETE pointer.
+- Canonical record and checkpoint chain verify: g1 step 10 and g2 step 20, both
+  acknowledged and sha-bound. Both checkpoint configurations match the CUDA smoke
+  and contain one device's CUDA RNG state. Every terminal adapter/head tensor
+  equals the corresponding trained_parameters.safetensors tensor exactly.
+- Exit status 0. The script reports 620.5235 seconds; retained UTC endpoints span
+  627 seconds including startup, within the outer 3600-second bound.
+- Logged training steps 0 and 10 and metrics.train_last have exactly L27/alpha and
+  L27/out_proj grad_norm nulls. update_norm has no nulls and both disconnected
+  groups have numeric zero updates. The existing schema is unchanged.
+- CPU construction only, with the pinned model file hashes rechecked, reproduced
+  the optimizer's exact 46-parameter name/index order. All 44 optimizer moment
+  shapes match both checkpoints. L27 alpha_logit and out_proj never stepped.
+  After 10 updates every other parameter has 10 optimizer steps. After 20 updates,
+  the four write-path parameters at L6 have 12 steps and those at L20 have 15;
+  all other parameters have 20. The saved coverage sidecar matches this independent
+  reconstruction. With the frozen zero_grad(set_to_none=True) and AdamW code,
+  this supports None gradients on 8 and 5 of the last 10 updates, respectively.
+  It is aggregate counter evidence, not a per-update routing trace.
+- Current live local cleanup check: no matching smoke/worker process, GPU at
+  0 MiB, and no CUDA compute application. The t+4 process-group and immediate-exit
+  observations are described in the package but have no separate raw snapshot.
+  Group enforcement is supported indirectly by the audited launcher guard and
+  successful invocation; the group-kill mechanism was independently tested in r2.
+- Read-only Modal app inventory at 2026-10-08T05:28:48Z completed with exit 0,
+  empty stderr, and no readout-probe app match. This is a point-in-time inventory,
+  not deployment or proof of future launch state.
+
+Scientific boundary
+This is engineering clearance of the output contract and bounded launch path.
+Twenty local updates at batch 2, four final smoke episodes and zero accuracy do
+not establish learning, taskhead rescue, bank dependence or a paid probe result.
+The optimizer counter observation changes no schema allowance or decision rule.
+
+Cleared paid scope
+- One initial deploy/spawn of memsub-m4-sgm-p2p5-readout-probe, using the exact
+  reviewed runner/config/validator/lifecycle bytes. Claude remains launch owner.
+- Exactly taskhead-learned-n32-s0 and taskhead-learned-n32-s1 in the single
+  A100-80GB slot: 1500 updates, batch 16, checkpoint interval 50; artifact population
+  9300011+s only, with the reserved population untouched.
+- Four TOTAL admitted starts: initial plus at most three registered re-entries.
+  One immutable slot deadline of 31946.2 seconds. The frozen FAILED/COMPLETE states
+  remain terminal; there is no extension or extra run after an unavailable result.
+- Existing cap 40.75 USD, ledger total 40.7401166468 USD. The rate, reaper period
+  and stop-tail assumptions remain declared operational assumptions, not a
+  provider-level guaranteed billing limit. Preserve actual billing evidence.
+- chat_read immediately before the paid step; verify the shared tracked source
+  remains clean and the probe's own admission/guard namespace is unused. Deploy
+  once, retain its exact app identity, and use the frozen spawn guard (at least
+  600 seconds before abandonment, no later than its 20-minute first-tick window).
+  A failed deployment/binding is not authorization for an improvised retry or reset.
+- Retain build/deploy logs, source and resource identities, launch provenance,
+  immutable deadline, bound app id and persisted call id. Send those artifacts for
+  launch verification. Collect through bound-id shutdown with zero tasks and
+  containers, preserve failed/partial evidence, then run the frozen reading and
+  independent result/billing audit.
+
+No training or inference was launched by this audit. It used saved outputs and
+checkpoints, CPU model construction without a forward pass, a current local
+process/GPU check and a read-only Modal app listing. No paid build/deploy/spawn,
+retry, schema change, implementation edit, commit or push was performed.

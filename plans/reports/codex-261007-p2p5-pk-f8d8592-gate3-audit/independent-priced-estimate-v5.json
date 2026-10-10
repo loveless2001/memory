@@ -1,0 +1,271 @@
+{
+  "inputs": {
+    "proof_timing_sha256": "6381c986972af93ddb712171b0bbe2e1fc1465dc524a549d0e9650a3e514f537",
+    "proof_exit_sha256": "d92cf667c73d63a92e6f7afb10fb70a42c14e7da405f852e3e00e22d8020df17",
+    "grid_sha256": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "script_sha256": "3ed144d0fd072f83fba1c88e32b18826cc6732b791c93e9ffd2a209fff4bdc09",
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "memsub_source_sha256": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+    "prereg_sha256": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002",
+    "amendment_sha256": "8c829c1172aac787d83f103d876926c27425fb755f93a98cf514dab52d99aa56",
+    "accepted_proof": {
+      "commit": "fab5c67",
+      "acceptance_sha256": "f4afca2b2e61704ba44d33d626442d92b4ef63689d6267e567551ac6eede1044",
+      "audit": "codex 21585"
+    },
+    "git_head": "f8d85929e0c3fee166671a7f96be74c3134ff00d"
+  },
+  "envelope_design": "per-slot lifecycle envelope: 9 slot apps + 1 readings app; each app has max_containers=1, <= 4 admitted starts, its own guard Dict deadline = that slot's reserve life, and the proven in-app whole-app reaper; pre-admission crash loops, refused starts, startups and teardown of a slot are all inside its own app lifetime. Not yet implemented (campaign runner pending).",
+  "slots": {
+    "learned-n16": {
+      "cells": [
+        "learned-n16-s0",
+        "learned-n16-s1"
+      ],
+      "training_s": 10611.9,
+      "dev_evals_s": 432.3,
+      "artifact_eval_s": 571.9,
+      "checkpoint_write_s": 35.7,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 12135.9,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 1511.2,
+      "reserve_life_s": 21523.8,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        4.903238296508789,
+        11.41723883152008
+      ],
+      "dev_batch_s": 6.754128156999997,
+      "artifact_batch_s": 6.808386629999994
+    },
+    "learned-n32": {
+      "cells": [
+        "learned-n32-s0",
+        "learned-n32-s1"
+      ],
+      "training_s": 16880.6,
+      "dev_evals_s": 599.4,
+      "artifact_eval_s": 766.2,
+      "checkpoint_write_s": 35.5,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 18765.9,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 1891.3,
+      "reserve_life_s": 31946.2,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        9.453267276287079,
+        14.854694664478304
+      ],
+      "dev_batch_s": 9.366138403000036,
+      "artifact_batch_s": 9.121985238000036
+    },
+    "single_cell-n16": {
+      "cells": [
+        "singlecell-n16-s0",
+        "singlecell-n16-s1"
+      ],
+      "training_s": 9561.5,
+      "dev_evals_s": 242.7,
+      "artifact_eval_s": 249.9,
+      "checkpoint_write_s": 35.3,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 10573.4,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 1102.3,
+      "reserve_life_s": 18109.5,
+      "artifact_batches": 68,
+      "s_per_update_p1_p2": [
+        4.58855527639389,
+        9.945860207080841
+      ],
+      "dev_batch_s": 3.7914898719999997,
+      "artifact_batch_s": 3.6743604040000264
+    },
+    "single_cell-n32": {
+      "cells": [
+        "singlecell-n32-s0",
+        "singlecell-n32-s1"
+      ],
+      "training_s": 16184.0,
+      "dev_evals_s": 352.9,
+      "artifact_eval_s": 383.6,
+      "checkpoint_write_s": 35.2,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 17439.7,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 1451.6,
+      "reserve_life_s": 28770.3,
+      "artifact_batches": 68,
+      "s_per_update_p1_p2": [
+        9.165586173534393,
+        14.036734163761139
+      ],
+      "dev_batch_s": 5.513826783000013,
+      "artifact_batch_s": 5.641714072000013
+    },
+    "random_fixed-n16": {
+      "cells": [
+        "randomfixed-n16-s0",
+        "randomfixed-n16-s1"
+      ],
+      "training_s": 9739.4,
+      "dev_evals_s": 420.4,
+      "artifact_eval_s": 554.6,
+      "checkpoint_write_s": 35.2,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 11233.7,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 1414.2,
+      "reserve_life_s": 19969.8,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        4.804811596870422,
+        9.86917382478714
+      ],
+      "dev_batch_s": 6.568499339000027,
+      "artifact_batch_s": 6.60235408099993
+    },
+    "random_fixed-n32": {
+      "cells": [
+        "randomfixed-n32-s0",
+        "randomfixed-n32-s1"
+      ],
+      "training_s": 16114.5,
+      "dev_evals_s": 602.7,
+      "artifact_eval_s": 864.1,
+      "checkpoint_write_s": 35.9,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 18101.3,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 1966.5,
+      "reserve_life_s": 31241.5,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        8.91120445728302,
+        14.406532227993011
+      ],
+      "dev_batch_s": 9.416699318000042,
+      "artifact_batch_s": 10.287498699000025
+    },
+    "memory_off-n16": {
+      "cells": [
+        "memoryoff-n16-s0",
+        "memoryoff-n16-s1"
+      ],
+      "training_s": 2246.2,
+      "dev_evals_s": 153.1,
+      "artifact_eval_s": 46.8,
+      "checkpoint_write_s": 12.4,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 2942.6,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 504.3,
+      "reserve_life_s": 5632.7,
+      "artifact_batches": 20,
+      "s_per_update_p1_p2": [
+        1.0894335508346558,
+        2.3135727643966675
+      ],
+      "dev_batch_s": 2.3922797010000068,
+      "artifact_batch_s": 2.3384048139998868
+    },
+    "memory_off-n32": {
+      "cells": [
+        "memoryoff-n32-s0",
+        "memoryoff-n32-s1"
+      ],
+      "training_s": 3730.5,
+      "dev_evals_s": 220.4,
+      "artifact_eval_s": 64.9,
+      "checkpoint_write_s": 12.8,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 4512.7,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 576.6,
+      "reserve_life_s": 8047.7,
+      "artifact_batches": 20,
+      "s_per_update_p1_p2": [
+        2.0836508870124817,
+        3.29373025894165
+      ],
+      "dev_batch_s": 3.444117279000011,
+      "artifact_batch_s": 3.2442291730001216
+    },
+    "oracle-n32": {
+      "cells": [
+        "oracle-n32-s0",
+        "oracle-n32-s1"
+      ],
+      "training_s": 15853.9,
+      "dev_evals_s": 726.2,
+      "artifact_eval_s": 941.6,
+      "checkpoint_write_s": 35.4,
+      "commits_s": 184.1,
+      "startup_s": 300,
+      "life_s": 18041.2,
+      "commits_per_slot": 67,
+      "restart_allowance_s": 2052.0,
+      "reserve_life_s": 31413.8,
+      "artifact_batches": 84,
+      "s_per_update_p1_p2": [
+        8.64722228050232,
+        14.413322627544403
+      ],
+      "dev_batch_s": 11.34703429199999,
+      "artifact_batch_s": 11.209293460000026
+    }
+  },
+  "readings": {
+    "life_s": 7913.5,
+    "reserve_life_s": 11078.9,
+    "admitted_starts": 1,
+    "population_units": 20
+  },
+  "control_plane": {
+    "schedules": 1,
+    "period_s": 120,
+    "life_s": 52265.1
+  },
+  "estimate": {
+    "slot_gpu_hours": 31.596222222222224,
+    "readings_gpu_hours": 2.198195745163558,
+    "usd": 114.46737111775417,
+    "wall_h_slots_parallel": 5.212750000000001,
+    "wall_h_end_to_end": 7.410945745163558
+  },
+  "planning_reserve_per_app_envelope": {
+    "slot_apps_usd": 236.14486072799997,
+    "readings_app_usd": 13.444144450508356,
+    "image_usd": 1.68384,
+    "reaper_usd": 0.10504197561293914,
+    "margin_usd": 5.0,
+    "total_usd": 256.37788715412125
+  },
+  "single_app_lifecycle_for_comparison_usd": 362.67785665850835,
+  "margin_covers": "billing rounding and unmodelled small I/O (log/telemetry writes); NOT restarts, commits, evaluation repeats or lifetimes, which are charged explicitly above (no double counting)",
+  "assumptions": [
+    "timings = audited proof T (one A100-80GB host, k = 2, 2 warmup + 4 measured updates per config); host variation not modelled",
+    "per-worker s/update = k / PRIMARY fixed-work rate; dev/artifact batch = the max measured for that arm/N",
+    "generation write 50.0 MB/s incl. fsync (assumed); all 3 extra commits per cell + 1 per slot and every generation commit serialised on the critical path at the max measured commit",
+    "resumed start reload 30.0 s; readings parameter load + validation 30.0 s per population",
+    "any comparison with the preserved single-L40S model is arithmetic across differently scoped models, not a measured matched-host saving",
+    "readings app: ONE admitted start, retries 0, fails closed on crash re-entry (no restart allowance)",
+    "one control-plane reaper schedule stops every app at its own absolute deadline (+ period + stop latency)",
+    "at most 3 restarts per slot (4 admitted starts), each replaying <= 50 + 1 P2 updates and one full final evaluation",
+    "deadline factor 1.4 on every slot life; readings x 1.4 with a 10% parity allowance",
+    "CPU/RAM on the audited 2x basis for the reserve; hard tuples for the estimate; list prices modal.com 2026-10-06; nominal reaper period / stop latency",
+    "9 slots run concurrently (A100-80GB availability / queueing not modelled); readings afterwards on one container",
+    "preemption rate unknown: the reserve covers 3 restarts per slot, not more",
+    "not a price guarantee and not a platform cash ceiling"
+  ]
+}

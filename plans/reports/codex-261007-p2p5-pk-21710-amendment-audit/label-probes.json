@@ -1,0 +1,306 @@
+{
+  "early_identity_refusal": {
+    "identity": {
+      "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+      "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+    },
+    "expected": {
+      "memsub": "wrong",
+      "manifest": "wrong"
+    },
+    "readings_seed_base": 9600011,
+    "environment": {
+      "python": "3.12.13",
+      "torch": "2.7.1+cpu",
+      "cuda": null
+    },
+    "n": {
+      "32": {
+        "reading": "unavailable: identity differs: ['manifest', 'memsub']",
+        "reading_before_end_binding_failure": "unavailable: identity differs: ['manifest', 'memsub']",
+        "label": "post-hoc amended",
+        "original_reading": "not computed: binding failed before the gates"
+      },
+      "16": {
+        "reading": "unavailable: identity differs: ['manifest', 'memsub']",
+        "reading_before_end_binding_failure": "unavailable: identity differs: ['manifest', 'memsub']",
+        "label": "post-hoc amended",
+        "original_reading": "not computed: binding failed before the gates"
+      }
+    },
+    "unavailable": "identity differs: ['manifest', 'memsub']",
+    "end_binding": "identity differs: ['manifest', 'memsub']",
+    "campaign_label": "post-hoc amended"
+  },
+  "parity_refusal": {
+    "identity": {
+      "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+      "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+    },
+    "expected": {
+      "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+      "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+    },
+    "readings_seed_base": 9600011,
+    "environment": {
+      "python": "3.12.13",
+      "torch": "2.7.1+cpu",
+      "cuda": null
+    },
+    "n": {
+      "32": {
+        "reading": "unavailable: independent parity refusal",
+        "label": "post-hoc amended",
+        "original_reading": "unavailable: learned-n32-s1: state FAILED"
+      },
+      "16": {
+        "reading": "unavailable: independent parity refusal",
+        "label": "post-hoc amended",
+        "original_reading": "unavailable: learned-n32-s1: state FAILED"
+      }
+    },
+    "posthoc_amendment": {
+      "label": "post-hoc amended",
+      "cell": "learned-n32-s1",
+      "spec_sha256": "3bce0817a163ef69a3a5ac6a52a8a1958278f1c1c2d8d4a84e23718513011097",
+      "original_gate": "learned-n32-s1: state FAILED",
+      "original_reading": {
+        "32": "unavailable: learned-n32-s1: state FAILED",
+        "16": "unavailable: learned-n32-s1: state FAILED"
+      }
+    },
+    "unavailable": "independent parity refusal",
+    "end_binding": "verified",
+    "campaign_label": "post-hoc amended"
+  },
+  "end_binding_refusal": {
+    "identity": {
+      "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+      "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+    },
+    "expected": {
+      "memsub": "2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b",
+      "manifest": "882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492"
+    },
+    "readings_seed_base": 9600011,
+    "environment": {
+      "python": "3.12.13",
+      "torch": "2.7.1+cpu",
+      "cuda": null
+    },
+    "n": {
+      "32": {
+        "corners": {
+          "oracle-n32-s0-on-n32": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.8876953125
+          },
+          "oracle-n32-s1-on-n32": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.8935546875
+          },
+          "learned-n32-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.904296875
+          },
+          "learned-n32-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.8984375
+          },
+          "singlecell-n32-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.109375
+          },
+          "singlecell-n32-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.0966796875
+          },
+          "randomfixed-n32-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.109375
+          },
+          "randomfixed-n32-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.12109375
+          },
+          "memoryoff-n32-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.087890625
+          },
+          "memoryoff-n32-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.0966796875
+          }
+        },
+        "interface": true,
+        "per_control": {
+          "memory_off": {
+            "0": {
+              "diff": 0.81640625,
+              "lo": 0.7894245041309698,
+              "hi": 0.8433879958690302,
+              "n": 256
+            },
+            "1": {
+              "diff": 0.8017578125,
+              "lo": 0.7778022504583266,
+              "hi": 0.8257133745416734,
+              "n": 256
+            }
+          },
+          "single_cell": {
+            "0": {
+              "diff": 0.794921875,
+              "lo": 0.768926193020499,
+              "hi": 0.820917556979501,
+              "n": 256
+            },
+            "1": {
+              "diff": 0.8017578125,
+              "lo": 0.7756004229845711,
+              "hi": 0.8279152020154289,
+              "n": 256
+            }
+          },
+          "random_fixed": {
+            "0": {
+              "diff": 0.794921875,
+              "lo": 0.768785090835124,
+              "hi": 0.821058659164876,
+              "n": 256
+            },
+            "1": {
+              "diff": 0.77734375,
+              "lo": 0.7489667758552552,
+              "hi": 0.8057207241447448,
+              "n": 256
+            }
+          }
+        },
+        "labels": {
+          "memory_off": "reproducible gain",
+          "single_cell": "reproducible gain",
+          "random_fixed": "reproducible gain"
+        },
+        "memory_use": true,
+        "read_address": "read-address use established",
+        "reading": "unavailable: independent end binding refusal",
+        "reading_before_end_binding_failure": "SCREEN PASS at N32",
+        "label": "post-hoc amended",
+        "original_reading": "unavailable: learned-n32-s1: state FAILED"
+      },
+      "16": {
+        "corners": {
+          "oracle-n32-s0-on-n16": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.9033203125
+          },
+          "oracle-n32-s1-on-n16": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.896484375
+          },
+          "learned-n16-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.908203125
+          },
+          "learned-n16-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.900390625
+          },
+          "singlecell-n16-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.0966796875
+          },
+          "singlecell-n16-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.09765625
+          },
+          "randomfixed-n16-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.1123046875
+          },
+          "randomfixed-n16-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.099609375
+          },
+          "memoryoff-n16-s0": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.10546875
+          },
+          "memoryoff-n16-s1": {
+            "rows_sha256": "x",
+            "accuracy_none": 0.115234375
+          }
+        },
+        "interface": true,
+        "per_control": {
+          "memory_off": {
+            "0": {
+              "diff": 0.802734375,
+              "lo": 0.7763960807589547,
+              "hi": 0.8290726692410453,
+              "n": 256
+            },
+            "1": {
+              "diff": 0.78515625,
+              "lo": 0.7589349498190374,
+              "hi": 0.8113775501809626,
+              "n": 256
+            }
+          },
+          "single_cell": {
+            "0": {
+              "diff": 0.8115234375,
+              "lo": 0.7867030619318878,
+              "hi": 0.8363438130681122,
+              "n": 256
+            },
+            "1": {
+              "diff": 0.802734375,
+              "lo": 0.7769607116220469,
+              "hi": 0.8285080383779531,
+              "n": 256
+            }
+          },
+          "random_fixed": {
+            "0": {
+              "diff": 0.7958984375,
+              "lo": 0.7704289790233344,
+              "hi": 0.8213678959766656,
+              "n": 256
+            },
+            "1": {
+              "diff": 0.80078125,
+              "lo": 0.775965216163264,
+              "hi": 0.825597283836736,
+              "n": 256
+            }
+          }
+        },
+        "labels": {
+          "memory_off": "reproducible gain",
+          "single_cell": "reproducible gain",
+          "random_fixed": "reproducible gain"
+        },
+        "memory_use": true,
+        "read_address": "read-address use established",
+        "reading": "unavailable: independent end binding refusal",
+        "reading_before_end_binding_failure": "SCREEN PASS at N16",
+        "label": "post-hoc amended",
+        "original_reading": "unavailable: learned-n32-s1: state FAILED"
+      }
+    },
+    "posthoc_amendment": {
+      "label": "post-hoc amended",
+      "cell": "learned-n32-s1",
+      "spec_sha256": "3bce0817a163ef69a3a5ac6a52a8a1958278f1c1c2d8d4a84e23718513011097",
+      "original_gate": "learned-n32-s1: state FAILED",
+      "original_reading": {
+        "32": "unavailable: learned-n32-s1: state FAILED",
+        "16": "unavailable: learned-n32-s1: state FAILED"
+      }
+    },
+    "end_binding": "independent end binding refusal",
+    "campaign_label": "post-hoc amended"
+  }
+}

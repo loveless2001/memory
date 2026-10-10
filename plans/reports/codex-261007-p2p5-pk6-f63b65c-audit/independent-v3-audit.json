@@ -1,0 +1,174 @@
+{
+  "read_only_inputs_free_cpu_only": true,
+  "cli_returncode": 0,
+  "hashchecks": {
+    "proof_timing_sha256": "6381c986972af93ddb712171b0bbe2e1fc1465dc524a549d0e9650a3e514f537",
+    "proof_exit_sha256": "d92cf667c73d63a92e6f7afb10fb70a42c14e7da405f852e3e00e22d8020df17",
+    "grid_sha256": "d1c045eadfb562829cab72f58ba6b293f573f2e853629d3a3dd324b740a13073",
+    "script_sha256": "55cb88fe49d3e9de13e72656d1ce53f3e55b122ec5cc860c6b474bc0dd1d9e1e",
+    "memsub_source_sha256": "2e422cea223ab8fb27dad1ca796ff9a1f1f7f03ebd98dfa5ed541e208b75ffc5",
+    "prereg_sha256": "0ce61a096b0c7150e00f0a604ed85cb8f9694584cb70790d43d5fb3d010c2002",
+    "amendment_sha256": "8c829c1172aac787d83f103d876926c27425fb755f93a98cf514dab52d99aa56"
+  },
+  "cli_only_git_head_changed": true,
+  "git_head_difference": {
+    "git_head": [
+      "1cd0469ba5199fd8c0084a1fd67ae23b9f184852",
+      "f63b65c719e3b497f72b1a77f89cfc79d9461579"
+    ]
+  },
+  "git_head_note": "Published JSON was generated before f63b65c commit, so records its parent1cd0469. All actual script/source/input hashes bind exact consumed bytes.",
+  "numeric_checks": {
+    "per_slot_arithmetic_matches": true,
+    "all_estimate_fields_match": true,
+    "all_reserve_fields_match": true
+  },
+  "independent_estimate": {
+    "slot_gpu_hours": 31.596222222222224,
+    "readings_gpu_hours": 2.198195745163558,
+    "usd": 114.46737111775415,
+    "wall_h_slots_parallel": 5.212750000000001,
+    "wall_h_end_to_end": 7.410945745163558
+  },
+  "independent_reserve": {
+    "slot_apps_usd": 236.14486072799997,
+    "readings_app_usd": 13.444144450508356,
+    "image_usd": 1.68384,
+    "reaper_usd": 0.42232597721710574,
+    "margin_usd": 5,
+    "total_usd": 256.69517115572546
+  },
+  "readings_population_count": 20,
+  "readings_populations": [
+    {
+      "arm": "learned",
+      "trained_n": 16,
+      "seed": 0,
+      "population_n": 16
+    },
+    {
+      "arm": "learned",
+      "trained_n": 16,
+      "seed": 1,
+      "population_n": 16
+    },
+    {
+      "arm": "learned",
+      "trained_n": 32,
+      "seed": 0,
+      "population_n": 32
+    },
+    {
+      "arm": "learned",
+      "trained_n": 32,
+      "seed": 1,
+      "population_n": 32
+    },
+    {
+      "arm": "single_cell",
+      "trained_n": 16,
+      "seed": 0,
+      "population_n": 16
+    },
+    {
+      "arm": "single_cell",
+      "trained_n": 16,
+      "seed": 1,
+      "population_n": 16
+    },
+    {
+      "arm": "single_cell",
+      "trained_n": 32,
+      "seed": 0,
+      "population_n": 32
+    },
+    {
+      "arm": "single_cell",
+      "trained_n": 32,
+      "seed": 1,
+      "population_n": 32
+    },
+    {
+      "arm": "random_fixed",
+      "trained_n": 16,
+      "seed": 0,
+      "population_n": 16
+    },
+    {
+      "arm": "random_fixed",
+      "trained_n": 16,
+      "seed": 1,
+      "population_n": 16
+    },
+    {
+      "arm": "random_fixed",
+      "trained_n": 32,
+      "seed": 0,
+      "population_n": 32
+    },
+    {
+      "arm": "random_fixed",
+      "trained_n": 32,
+      "seed": 1,
+      "population_n": 32
+    },
+    {
+      "arm": "memory_off",
+      "trained_n": 16,
+      "seed": 0,
+      "population_n": 16
+    },
+    {
+      "arm": "memory_off",
+      "trained_n": 16,
+      "seed": 1,
+      "population_n": 16
+    },
+    {
+      "arm": "memory_off",
+      "trained_n": 32,
+      "seed": 0,
+      "population_n": 32
+    },
+    {
+      "arm": "memory_off",
+      "trained_n": 32,
+      "seed": 1,
+      "population_n": 32
+    },
+    {
+      "arm": "oracle",
+      "trained_n": 32,
+      "seed": 0,
+      "population_n": 32
+    },
+    {
+      "arm": "oracle",
+      "trained_n": 32,
+      "seed": 0,
+      "population_n": 16
+    },
+    {
+      "arm": "oracle",
+      "trained_n": 32,
+      "seed": 1,
+      "population_n": 32
+    },
+    {
+      "arm": "oracle",
+      "trained_n": 32,
+      "seed": 1,
+      "population_n": 16
+    }
+  ],
+  "checkpoint_commit_count_note": "67 is a conservative allowance: current consumer has60 generations+1 joint inheritance+4 completion+1 runner final=66 successful-start commits. Repeated-start commits remain inside the app lifetime envelope.",
+  "design_is_not_implemented_or_launch_cleared": true,
+  "implementation_requirements": [
+    "Nine unique slot apps with immutable app-id-bound guards/deadlines, one GPU function container per app, <=4 admitted TRAINING starts.",
+    "Exactly one admitted reserved-readings start; no automatic readings retry/re-execution after a crash. Refuse further starts before touching reserved populations.",
+    "Confirm active schedule capacity for10 per-app periodic reapers, or choose and reprice a bounded control-plane topology that preserves all ten app-specific stop deadlines.",
+    "Recompute and bind the final package after the metadata-only source change/campaign implementation; preserve all prior proof/quote bytes and audit the source bridge.",
+    "Implement and test fail-closed consumption of exact accepted proof/pricing/source/grid bindings; snapshots recording hashes alone are not validation."
+  ],
+  "arithmetic_pass": true
+}

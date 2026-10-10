@@ -1,0 +1,482 @@
+{
+  "candidate": "77e6a36c506e84b0afa6fd1a39650c84fa17fa4a",
+  "worker_cases": [
+    {
+      "name": "periodic commit then success",
+      "result": {
+        "returncode": 0,
+        "start": "start-1",
+        "volume_commit_errors": 0,
+        "wall_s": 60.0,
+        "child_timeout_s": 1880.0,
+        "versions": {},
+        "cmd": [
+          "/home/lenovo/projects/memory/.venv/bin/python",
+          "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+          "--manifest",
+          "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+          "--out",
+          "/tmp/codex-b2-worker-mock-7zq4788_/B2"
+        ],
+        "tar_members": [
+          ".",
+          "./B2",
+          "./B2/routing_telemetry.jsonl",
+          "./B2.start-1.stderr.txt",
+          "./B2.start-1.stdout.txt"
+        ]
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "spawn",
+          true
+        ],
+        [
+          "arm",
+          "-987654321",
+          2000.0
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "commit"
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "cancel",
+          "-987654321"
+        ],
+        [
+          "commit"
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1060.0
+    },
+    {
+      "name": "commit failure counted, completed child",
+      "result": {
+        "returncode": 0,
+        "start": "start-1",
+        "volume_commit_errors": 2,
+        "wall_s": 60.0,
+        "child_timeout_s": 1880.0,
+        "versions": {},
+        "cmd": [
+          "/home/lenovo/projects/memory/.venv/bin/python",
+          "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+          "--manifest",
+          "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+          "--out",
+          "/tmp/codex-b2-worker-mock-5wd5guh6/B2"
+        ],
+        "tar_members": [
+          ".",
+          "./B2",
+          "./B2/routing_telemetry.jsonl",
+          "./B2.start-1.stderr.txt",
+          "./B2.start-1.stdout.txt"
+        ]
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "spawn",
+          true
+        ],
+        [
+          "arm",
+          "-987654321",
+          2000.0
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "commit"
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "cancel",
+          "-987654321"
+        ],
+        [
+          "commit"
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1060.0
+    },
+    {
+      "name": "poll exception cleanup",
+      "result": null,
+      "error": "RuntimeError: simulated poll failure",
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "spawn",
+          true
+        ],
+        [
+          "arm",
+          "-987654321",
+          2000.0
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "kill",
+          987654321,
+          9
+        ],
+        [
+          "wait",
+          null
+        ],
+        [
+          "cancel",
+          "-987654321"
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1000.0
+    },
+    {
+      "name": "child watchdog arming failure",
+      "result": null,
+      "error": "OSError: simulated child watchdog Popen failure",
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "spawn",
+          true
+        ],
+        [
+          "arm",
+          "-987654321",
+          2000.0
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": true,
+      "clock": 1000.0
+    },
+    {
+      "name": "late commit reaches child budget",
+      "result": {
+        "returncode": "timeout",
+        "start": "start-1",
+        "volume_commit_errors": 0,
+        "wall_s": 1960.0,
+        "child_timeout_s": 1880.0,
+        "versions": {},
+        "cmd": [
+          "/home/lenovo/projects/memory/.venv/bin/python",
+          "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+          "--manifest",
+          "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+          "--out",
+          "/tmp/codex-b2-worker-mock-xa5uwt56/B2"
+        ],
+        "tar_members": [
+          ".",
+          "./B2",
+          "./B2/routing_telemetry.jsonl",
+          "./B2.start-1.stderr.txt",
+          "./B2.start-1.stdout.txt"
+        ]
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "spawn",
+          true
+        ],
+        [
+          "arm",
+          "-987654321",
+          2000.0
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "commit"
+        ],
+        [
+          "kill",
+          987654321,
+          9
+        ],
+        [
+          "wait",
+          null
+        ],
+        [
+          "cancel",
+          "-987654321"
+        ],
+        [
+          "commit"
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 2960.0
+    },
+    {
+      "name": "setup consumes minimum remaining budget",
+      "result": {
+        "refused": "only 800s to the campaign deadline (< 900)",
+        "start": "start-1"
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 2200.0
+    },
+    {
+      "name": "three starts already used",
+      "result": {
+        "refused": "all 3 starts already used"
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1000.0
+    },
+    {
+      "name": "immutable deadline mismatch",
+      "result": {
+        "refused": "campaign deadline missing or differs from the immutable one",
+        "start": "start-1"
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1000.0
+    },
+    {
+      "name": "version mismatch",
+      "result": {
+        "refused": "pinned versions differ: {}",
+        "start": "start-1"
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1000.0
+    },
+    {
+      "name": "nonzero trainer exit is a normal function return",
+      "result": {
+        "returncode": 7,
+        "start": "start-1",
+        "volume_commit_errors": 0,
+        "wall_s": 0.0,
+        "child_timeout_s": 1880.0,
+        "versions": {},
+        "cmd": [
+          "/home/lenovo/projects/memory/.venv/bin/python",
+          "scripts/sgm-p2p5-b2-occupied-fill-long-run-train.py",
+          "--manifest",
+          "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/inputs/probe-taskhead-learned-n32-s0-run_manifest.json",
+          "--out",
+          "/tmp/codex-b2-worker-mock-qisq9928/B2"
+        ],
+        "tar_members": [
+          ".",
+          "./B2",
+          "./B2/routing_telemetry.jsonl",
+          "./B2.start-1.stderr.txt",
+          "./B2.start-1.stdout.txt"
+        ]
+      },
+      "error": null,
+      "events": [
+        [
+          "arm",
+          "3387707",
+          2000.0
+        ],
+        [
+          "reload"
+        ],
+        [
+          "spawn",
+          true
+        ],
+        [
+          "arm",
+          "-987654321",
+          2000.0
+        ],
+        [
+          "wait",
+          60
+        ],
+        [
+          "cancel",
+          "-987654321"
+        ],
+        [
+          "commit"
+        ],
+        [
+          "cancel",
+          "3387707"
+        ]
+      ],
+      "child_still_running": false,
+      "clock": 1000.0
+    }
+  ],
+  "malformed_results_accepted": [
+    {
+      "case": "duplicate final eval",
+      "status": "valid",
+      "memory_used": true,
+      "band_at_end": "partial"
+    },
+    {
+      "case": "final total 1 with correct 12",
+      "status": "valid",
+      "memory_used": true,
+      "band_at_end": "partial"
+    },
+    {
+      "case": "derange total 1 with correct 6",
+      "status": "valid",
+      "memory_used": true,
+      "band_at_end": "partial"
+    },
+    {
+      "case": "NaN absent weight",
+      "status": "valid",
+      "memory_used": true,
+      "band_at_end": "partial"
+    },
+    {
+      "case": "negative derange correct",
+      "status": "valid",
+      "memory_used": true,
+      "band_at_end": "partial"
+    }
+  ],
+  "partial_telemetry_deleted_without_checkpoint": true,
+  "post_checkpoint_partial_telemetry_overwritten_on_resume": true,
+  "same_config_foreign_checkpoint_accepted_without_source_campaign_binding": true,
+  "binomial_tail_if_256_independent_trials": 0.0008134323391238844
+}

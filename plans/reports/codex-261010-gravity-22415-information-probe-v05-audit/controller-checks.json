@@ -1,0 +1,717 @@
+[
+  {
+    "case": "success",
+    "exit": 0,
+    "stages": [
+      "s1",
+      "s2",
+      "full"
+    ],
+    "state": "COMPLETE",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573240",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s2-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "2400",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s2",
+          "--wall-s",
+          "2400",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s2",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--full-wall",
+          "--s1",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-full-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1234",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "full",
+          "--wall-s",
+          "1234",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1",
+          "--s1-dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2-dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "full",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1",
+          "--s1",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "s1_fail",
+    "exit": 1,
+    "stages": [
+      "s1"
+    ],
+    "state": "STOPPED: s1 rc != 0",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "s1_validation_fail",
+    "exit": 1,
+    "stages": [
+      "s1"
+    ],
+    "state": "STOPPED: s1 receipt invalid",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "s2_fail",
+    "exit": 1,
+    "stages": [
+      "s1",
+      "s2"
+    ],
+    "state": "STOPPED: s2 rc != 0",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s2-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "2400",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s2",
+          "--wall-s",
+          "2400",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "s2_validation_fail",
+    "exit": 1,
+    "stages": [
+      "s1",
+      "s2"
+    ],
+    "state": "STOPPED: s2 receipt invalid",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s2-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "2400",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s2",
+          "--wall-s",
+          "2400",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s2",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "admission_fail",
+    "exit": 1,
+    "stages": [
+      "s1",
+      "s2"
+    ],
+    "state": "STOPPED: full wall not admitted",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s2-1791573241",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "2400",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s2",
+          "--wall-s",
+          "2400",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s2",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--full-wall",
+          "--s1",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "full_fail",
+    "exit": 1,
+    "stages": [
+      "s1",
+      "s2",
+      "full"
+    ],
+    "state": "STOPPED: full rc != 0",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573242",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s2-1791573242",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "2400",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s2",
+          "--wall-s",
+          "2400",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s2",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--full-wall",
+          "--s1",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-full-1791573242",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1234",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "full",
+          "--wall-s",
+          "1234",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1",
+          "--s1-dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2-dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "full_validation_fail",
+    "exit": 1,
+    "stages": [
+      "s1",
+      "s2",
+      "full"
+    ],
+    "state": "STOPPED: full receipt invalid",
+    "calls": [
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s1-1791573242",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1800",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s1",
+          "--wall-s",
+          "1800",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s1",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-s2-1791573242",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "2400",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "s2",
+          "--wall-s",
+          "2400",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "s2",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--full-wall",
+          "--s1",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "systemd-run",
+        "args": [
+          "--user",
+          "--scope",
+          "--quiet",
+          "--unit=pkprobe-full-1791573242",
+          "-p",
+          "MemoryMax=4400M",
+          "-p",
+          "MemorySwapMax=1200M",
+          "timeout",
+          "--signal=KILL",
+          "1234",
+          ".venv/bin/python",
+          "scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+          "--mode",
+          "full",
+          "--wall-s",
+          "1234",
+          "--out",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1",
+          "--s1-dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2-dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      },
+      {
+        "kind": "python",
+        "args": [
+          "scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+          "--validate",
+          "full",
+          "--dir",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1",
+          "--s1",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke",
+          "--s2",
+          "plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke"
+        ]
+      }
+    ]
+  },
+  {
+    "case": "existing_dir",
+    "exit": 1,
+    "stages": [],
+    "state": "STOPPED: s1-smoke already exists (no reuse, no retry)",
+    "calls": []
+  },
+  {
+    "case": "existing_exit",
+    "exit": 1,
+    "stages": [],
+    "state": "STOPPED: s1-smoke already exists (no reuse, no retry)",
+    "calls": []
+  }
+]

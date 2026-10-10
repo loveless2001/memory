@@ -1,0 +1,1080 @@
+{
+  "created_utc": "2026-10-09T19:01:58.188025+00:00",
+  "reviewed_commit": "bf7e0652c919eaea79a3b614939b6fbaaf9a6025",
+  "decision": "HOLD_RECEIPT_AND_CONSUMED_SOURCE_BINDING",
+  "model_loads": 0,
+  "real_backbone_forwards": 0,
+  "real_probe_fits_or_profiles": 0,
+  "mutator_executions": 0,
+  "model_free_tests_passed": 44,
+  "controller_scenarios_passed": 10,
+  "retained_fake_mutant_feature_files": 23,
+  "prior_artifacts_reverified": 36,
+  "files": [
+    {
+      "path": "check-controller-model-free.py",
+      "bytes": 3232,
+      "sha256": "7fc3fd609204ef395ec191fbda482567bdc804942528f79bdda979d75fb85579"
+    },
+    {
+      "path": "check-receipts-model-free.py",
+      "bytes": 2589,
+      "sha256": "69f71e2ca2b4da3c2049f4b88e41d29212f7d4d60f23808ce165aecc56f00a03"
+    },
+    {
+      "path": "controller-checks.json",
+      "bytes": 19055,
+      "sha256": "5163557a301a2a73493d3934c6b95d2133170941b19126f13b8c0daf6f8b8162"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/calls.jsonl",
+      "bytes": 1552,
+      "sha256": "437bf71c05242925dc2acefce7b5243f83f909c2373cc0d0c98ab4ee3bbb60c0"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/controller.sh",
+      "bytes": 2623,
+      "sha256": "2e1f3c03484725013930567482969521c179d070eeae5878fe22a21a5ecaee3e"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 32,
+      "sha256": "f4404d9a4e35b17185f9546a78f356bbb1540c1f27a816e60c6c1e51a6d46697"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 458,
+      "sha256": "e7273553163c4900a26db77a13b2f43ab091f04937a2532f24cfb78ab4e0dc5a"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/admission_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/existing_dir/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/existing_dir/controller.sh",
+      "bytes": 2621,
+      "sha256": "215be42ac4525f530203b49f482973826a67a6d38962cfccfe2aa71a0b8c1665"
+    },
+    {
+      "path": "controller-fixtures/existing_dir/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/existing_dir/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 54,
+      "sha256": "555d1f6006b9d2e3e18fd3da2c0f580ef4ebed3412e5f58c82f65ac48f87139a"
+    },
+    {
+      "path": "controller-fixtures/existing_dir/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 81,
+      "sha256": "9850f501dca42fad070ccf43cc6d7bbff818f42822988c73c2d5cc25c28d5c1d"
+    },
+    {
+      "path": "controller-fixtures/existing_exit/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/existing_exit/controller.sh",
+      "bytes": 2622,
+      "sha256": "13f4095ad00faa83b3be134686fee3f5457ec101235b0a33e2d0274eabdbdfde"
+    },
+    {
+      "path": "controller-fixtures/existing_exit/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/existing_exit/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 54,
+      "sha256": "555d1f6006b9d2e3e18fd3da2c0f580ef4ebed3412e5f58c82f65ac48f87139a"
+    },
+    {
+      "path": "controller-fixtures/existing_exit/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 81,
+      "sha256": "9850f501dca42fad070ccf43cc6d7bbff818f42822988c73c2d5cc25c28d5c1d"
+    },
+    {
+      "path": "controller-fixtures/existing_exit/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "controller-fixtures/full_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/full_fail/calls.jsonl",
+      "bytes": 2149,
+      "sha256": "8a08a1c09d7999f09cc77d96349a3905228a7647f30506c13f0bfd5727d67040"
+    },
+    {
+      "path": "controller-fixtures/full_fail/controller.sh",
+      "bytes": 2618,
+      "sha256": "095881363ee1c729361337b47827e7368c2c5a3ba38f601b4ebe10e8c2dea570"
+    },
+    {
+      "path": "controller-fixtures/full_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 22,
+      "sha256": "95676919061df33d93a91516bf6cdb8d5ee626340a761b2e9dd4928d4949f401"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 664,
+      "sha256": "62e102351980069df59e954eae537aa626097573376cbd85d924aaee7e9fae0d"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1.exit",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/full_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/calls.jsonl",
+      "bytes": 2380,
+      "sha256": "23802269447b3d12b6bc7d520f1a2f834fa714ffbfabd949525be5106d57776a"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/controller.sh",
+      "bytes": 2629,
+      "sha256": "895116c886df8d76c57ebe3b05f8dfcc14e611ce62c39f14ce8e0c5556f44efa"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 30,
+      "sha256": "04af2fb5bb15d0b8765bb32af63b19c1ea0292fc6ecf24ea69d8645519c1c895"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 670,
+      "sha256": "0a7f4dee9180f1c58e6f7f830f1d0c1fb9a127817ee596e90acef7698bf6d88a"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/full_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/calls.jsonl",
+      "bytes": 395,
+      "sha256": "b248e2faa4378468185516bd28a6531787bc5f4ffcbf4ae335fd77b02e0270f8"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/controller.sh",
+      "bytes": 2616,
+      "sha256": "ddc7ee486b05c7889bda339ffa436720861207abd5597d25178c5754baec87a6"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 20,
+      "sha256": "f0b0084ed521d61690eccd27c645e02db39f23819dac6df6a942713ba3f8cffa"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 288,
+      "sha256": "0435b94bcf25a7b699c44a326e26e01e2e9e429fa29547ff8971ebd0cf5e6b51"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "controller-fixtures/s1_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/calls.jsonl",
+      "bytes": 620,
+      "sha256": "886f4bbc0d0f96dc9cb29576780456b60f874b2f64ae6c6e55d71f6201f7137e"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/controller.sh",
+      "bytes": 2627,
+      "sha256": "f5c5dc4fc34085d04f7f487f41375498060e622c14ee0fe7b4c79cf5cb295d9e"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 28,
+      "sha256": "0cc0ab5e7c284ea0a4f850ac03340b13f88e5d3ce56fe24c8cbb707f9b2b25df"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 294,
+      "sha256": "9b944f47c41c91b221ef9ec325686bbc5fb1a733f668f64459460a882e53e29d"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/s1_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/calls.jsonl",
+      "bytes": 1015,
+      "sha256": "9a1ec22fd5efee5d60883f76cf6af492ce2e8bbb545e3fc19ab0897d37278a13"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/controller.sh",
+      "bytes": 2616,
+      "sha256": "cec66745dab677a57e983986e595368281b64471320f45f4cecdb5604d4d6370"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 20,
+      "sha256": "9ff1dfbd8f0a42555b9e31b84cbfe9b7bc13c5dda8893005f6a8240ff14cc03a"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 448,
+      "sha256": "6e3528d4204badc7fd79fdafe063f5341c787e6b8f9944547aee2f2f481806e1"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.exit",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "controller-fixtures/s2_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/calls.jsonl",
+      "bytes": 1240,
+      "sha256": "78156323451e324e66af4b37fec80a75287a4fa6526223493de929327b2667a6"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/controller.sh",
+      "bytes": 2627,
+      "sha256": "38d514c05db25a35baf730adcf924ac973c181de525906b3179a067321aa6d1c"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 28,
+      "sha256": "b6e8d8a885fd08abfcd294c8c5c2cc7450d8cf642950f9c39b0b9ead8bb2d801"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 454,
+      "sha256": "0957d1df54eb928d04461fbf0e526f481ac4d22da453398ad7f41cbf5befbc38"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/s2_validation_fail/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/success/.venv/bin/python",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/success/calls.jsonl",
+      "bytes": 2380,
+      "sha256": "4738f3b0162f6f07351ce67e9be948009e51230cad5f1ddd7217401f1b7e87ec"
+    },
+    {
+      "path": "controller-fixtures/success/controller.sh",
+      "bytes": 2616,
+      "sha256": "ecfb6c168e8ef13fbee3e346fa1508bed6bb898e7a88e4b6c4cc8fab8cd0a32b"
+    },
+    {
+      "path": "controller-fixtures/success/fakebin/systemd-run",
+      "bytes": 581,
+      "sha256": "a24ba897936588f3cb159a8a073ee3fe39fa5604177b61f98f9d05d37b57caeb"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain-status.txt",
+      "bytes": 9,
+      "sha256": "a4bccf5c13ef5ff8311e59b34d492bc7072a55298723601a6a9c127053aee8fc"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/chain.log",
+      "bytes": 649,
+      "sha256": "b59f375e7e0b7ee5839049cd60195782b76d48a0861a3a023332dcc3017ea3bb"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/probe-run-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s1-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "controller-fixtures/success/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/s2-smoke.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "focused-tests.txt",
+      "bytes": 113,
+      "sha256": "d125af1531f5d52c8315c64558b44eb958b82ba88a50e904c0983bb69108bb4a"
+    },
+    {
+      "path": "prior-evidence-check.json",
+      "bytes": 4087,
+      "sha256": "5438e6ee6979ccc147b46e704a13d7ef35e48e2b8f94f55f3f3ed789b6170f93"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s1/admission.json",
+      "bytes": 28,
+      "sha256": "42aaa0dcc3748e309407ef140017b4a44078caaa096c27374b65403c80e85e15"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re1/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s1/admission.json",
+      "bytes": 32,
+      "sha256": "3650d830e0e656aec7fd1448b4bddb8d24812f215fa6223c41ba776e04357be9"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re2/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s1/admission.json",
+      "bytes": 33,
+      "sha256": "9cbc11b59e75dc814abd73adb4da10346f97afa26d99e5e620a947bd9b0e47b5"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s2/status.json",
+      "bytes": 20,
+      "sha256": "5f177cadb097944bbcc640cded9b8337b3fdd1311cebf0358c886393619d3d53"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re3/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s1/admission.json",
+      "bytes": 33,
+      "sha256": "9cbc11b59e75dc814abd73adb4da10346f97afa26d99e5e620a947bd9b0e47b5"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re4/s2.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s1/admission.json",
+      "bytes": 33,
+      "sha256": "9cbc11b59e75dc814abd73adb4da10346f97afa26d99e5e620a947bd9b0e47b5"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s1/result.json",
+      "bytes": 754,
+      "sha256": "68a912a9d14eec50324b4b864227cb662a45af210e1e29954ebbd41d043e5a26"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re5/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s1/admission.json",
+      "bytes": 33,
+      "sha256": "9cbc11b59e75dc814abd73adb4da10346f97afa26d99e5e620a947bd9b0e47b5"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s1/result.json",
+      "bytes": 744,
+      "sha256": "ecd37cc4e5869ae1d8e0cc28ebbca18469813c53dc141724ed7c4c76110be18b"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re6/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s1/admission.json",
+      "bytes": 33,
+      "sha256": "9cbc11b59e75dc814abd73adb4da10346f97afa26d99e5e620a947bd9b0e47b5"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re7/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s1/admission.json",
+      "bytes": 34,
+      "sha256": "3fdb6d8c7354fb0998fe4a8ab68ab23fbb07b02db14e654a68105221f068deb4"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_receipt_gate_re8/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/o/progress.log",
+      "bytes": 102,
+      "sha256": "00e5715e29d0dde475ebb33e9677bd3d8eba39a54727b2cc48e7612de14adb3f"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/o/run.json",
+      "bytes": 1660,
+      "sha256": "3b083d6c288128ff419dd0f2d89b261daad17513042fe0b199752637c30fb9af"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/o/status.json",
+      "bytes": 84,
+      "sha256": "070c1073069ddd6e10c5bf2520220cf67118e6f71c192593c8ff345f67719af8"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s1/admission.json",
+      "bytes": 32,
+      "sha256": "5d0adbf6ba72668586a7b4d0027005b5a12e0a7a7e91523d74f9b5476d4fc026"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_full_mode_valid_receipts_0/s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s1/admission.json",
+      "bytes": 33,
+      "sha256": "8e43bbbb385538138c8ea1b831fb13228cace997584f60e67e8beff086491ea1"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s1/result.json",
+      "bytes": 744,
+      "sha256": "75a71b80c089f0b41cfe7e0503752415e934aa51ca8b29498628f714834e1252"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s1/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s1.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s2/result.json",
+      "bytes": 744,
+      "sha256": "0100b25d1fed819324af5d2ade598726f7436023c09890fad24d9be0dfc627fb"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s2/status.json",
+      "bytes": 21,
+      "sha256": "00f52ce34084d75a8f79d4e15e892dc86159a15680c15c8d8d95ca7b5c6820ba"
+    },
+    {
+      "path": "pytest-isolated/test_receipt_cli_full_wall0/s2.exit",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "pytest-isolated/test_s2_path_runs_end_to_end_w0/o/features.npz",
+      "bytes": 927714,
+      "sha256": "42b62798f0f3bfe579be5323e62c3c0df8dc17da161910a08630da0d8b3412a7"
+    },
+    {
+      "path": "pytest-isolated/test_s2_path_runs_end_to_end_w0/o/progress.log",
+      "bytes": 277,
+      "sha256": "39aa481a05d7a7f3dbbaf4b4d436755b7cf27523b672dee160f0a8ad35314523"
+    },
+    {
+      "path": "pytest-isolated/test_s2_path_runs_end_to_end_w0/o/result.json",
+      "bytes": 6267,
+      "sha256": "96751aa022c4e4922ac88cbf911febdf445c67e50939526a0654604e963d1511"
+    },
+    {
+      "path": "pytest-isolated/test_s2_path_runs_end_to_end_w0/o/run.json",
+      "bytes": 1680,
+      "sha256": "f13b104cf08b7afad816ec8df692fe6c1aba26e5cb990b6f47ca18fa22649cc1"
+    },
+    {
+      "path": "pytest-isolated/test_s2_path_runs_end_to_end_w0/o/status.json",
+      "bytes": 35,
+      "sha256": "c8f57bbffc79885875a1ae08595fba21f0c36a3c7ee744024615fa9d1129759a"
+    },
+    {
+      "path": "pytest-isolated/test_strict_json_reader_reject0/x.json",
+      "bytes": 10,
+      "sha256": "e7e254618d40dbced5b4229207c021806222ebaa4a9bb8336a3d52976e40684f"
+    },
+    {
+      "path": "receipt-counterexamples.json",
+      "bytes": 711,
+      "sha256": "4d2d254109f7e5f4b268e5ff32f70f16da7a70a86e7354d9612b29b9ff6d4a20"
+    },
+    {
+      "path": "receipt-fixtures/actual-fake-s2/features.npz",
+      "bytes": 927714,
+      "sha256": "42b62798f0f3bfe579be5323e62c3c0df8dc17da161910a08630da0d8b3412a7"
+    },
+    {
+      "path": "receipt-fixtures/actual-fake-s2/progress.log",
+      "bytes": 277,
+      "sha256": "39aa481a05d7a7f3dbbaf4b4d436755b7cf27523b672dee160f0a8ad35314523"
+    },
+    {
+      "path": "receipt-fixtures/actual-fake-s2/result.json",
+      "bytes": 6267,
+      "sha256": "96751aa022c4e4922ac88cbf911febdf445c67e50939526a0654604e963d1511"
+    },
+    {
+      "path": "receipt-fixtures/actual-fake-s2/run.json",
+      "bytes": 1680,
+      "sha256": "f13b104cf08b7afad816ec8df692fe6c1aba26e5cb990b6f47ca18fa22649cc1"
+    },
+    {
+      "path": "receipt-fixtures/actual-fake-s2/status.json",
+      "bytes": 35,
+      "sha256": "c8f57bbffc79885875a1ae08595fba21f0c36a3c7ee744024615fa9d1129759a"
+    },
+    {
+      "path": "receipt-fixtures/actual-fake-s2.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "receipt-fixtures/changed-source/admission.json",
+      "bytes": 31,
+      "sha256": "b95331f674161d72e3c17ec302bee6c96e4595d1a9a0c670782ac521eef143b7"
+    },
+    {
+      "path": "receipt-fixtures/changed-source/result.json",
+      "bytes": 772,
+      "sha256": "4bc1a92bf9a5a1c6c4416833a3beb50f0c42bf5b686c174632bf2c21cfdeb034"
+    },
+    {
+      "path": "receipt-fixtures/changed-source/status.json",
+      "bytes": 35,
+      "sha256": "f99b0a4070cea930429e4f2eecc7a1a345b44549f5c42b36f136885701647d56"
+    },
+    {
+      "path": "receipt-fixtures/changed-source.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "receipt-fixtures/contradictory-admission/admission.json",
+      "bytes": 49,
+      "sha256": "413b701a25fe9018e2728260882d9cdc5a3a48eedb5116b274b3a7fdf8130f74"
+    },
+    {
+      "path": "receipt-fixtures/contradictory-admission/result.json",
+      "bytes": 827,
+      "sha256": "81c6f82d0150380e1ad4748ba7cbbe413d8cbd530cd31cf0014212122ac5ce33"
+    },
+    {
+      "path": "receipt-fixtures/contradictory-admission/status.json",
+      "bytes": 35,
+      "sha256": "f99b0a4070cea930429e4f2eecc7a1a345b44549f5c42b36f136885701647d56"
+    },
+    {
+      "path": "receipt-fixtures/contradictory-admission.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "receipt-fixtures/nonfinite-profile/admission.json",
+      "bytes": 73,
+      "sha256": "ad3251cfd29489ef995348c6a40f3daaa1044905ea9caa4b42c638e0aaf1fcc5"
+    },
+    {
+      "path": "receipt-fixtures/nonfinite-profile/result.json",
+      "bytes": 758,
+      "sha256": "62b5d68d5a5abeeba904f05a69793b9805212f10e9514c8a46824a1c93f4239b"
+    },
+    {
+      "path": "receipt-fixtures/nonfinite-profile/status.json",
+      "bytes": 35,
+      "sha256": "f99b0a4070cea930429e4f2eecc7a1a345b44549f5c42b36f136885701647d56"
+    },
+    {
+      "path": "receipt-fixtures/nonfinite-profile.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "retained-mutant-feature-headers.json",
+      "bytes": 18051,
+      "sha256": "bf68159e1d2c14cf0f250381deaf660372fd42803261ca4f8a56483f04b163d1"
+    },
+    {
+      "path": "review.md",
+      "bytes": 8021,
+      "sha256": "3b28449228ee5610aedb96467ac82f061d4b4d98ca90d8e1dbbc394287a18cd7"
+    },
+    {
+      "path": "reviewed-source-index.json",
+      "bytes": 2764,
+      "sha256": "de4d6299c4febdc8713690ad281e456b484bf442969307486ad523c522475340"
+    },
+    {
+      "path": "source-drift-at-terminal.json",
+      "bytes": 1728,
+      "sha256": "de24602ebb5b9dd154074a6def4ef02361098d161bec9085e9d70cf2c7e997f4"
+    },
+    {
+      "path": "sources-bf7e065/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/implementation/focused-tests-r3.txt",
+      "bytes": 113,
+      "sha256": "ae8e88b2af0430579644730dd6f5b33de92695af0d6f71ce699c4714210165eb"
+    },
+    {
+      "path": "sources-bf7e065/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/implementation/mutation-checks.json",
+      "bytes": 3260,
+      "sha256": "95b84b6e2e169770c2c610e52e90d3ec20042538dae9ee47db1add1fc6de2fa9"
+    },
+    {
+      "path": "sources-bf7e065/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/implementation/mutation-checks.py",
+      "bytes": 4976,
+      "sha256": "f667cd2dcc3f4fde01b799b23d6f6eda001f826a60e47c5762d2a065541f4528"
+    },
+    {
+      "path": "sources-bf7e065/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/implementation/unintended-m10-real-model-run-record.md",
+      "bytes": 2000,
+      "sha256": "a8c2cd762d6d93461f9e6a533bfdab68b185296fc2aba16e4e8a3dd6c747742d"
+    },
+    {
+      "path": "sources-bf7e065/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/proposal-v0.4.md",
+      "bytes": 4618,
+      "sha256": "1d280e2cabd54e81e31e9552e04dd8084ab059c34e30ab04d39c259b2055c3ad"
+    },
+    {
+      "path": "sources-bf7e065/plans/261010-0107-m4-sgm-qwen-value-token-previous-key-information-probe/run-probe-chain-s1-s2-full.sh",
+      "bytes": 2519,
+      "sha256": "429068bec6f9ac1b8f3e51db52123c2e10691721e2df19ec8f864f19bccba1b8"
+    },
+    {
+      "path": "sources-bf7e065/scripts/sgm-p2p5-previous-key-probe-capture-qwen-adapter-inputs.py",
+      "bytes": 5759,
+      "sha256": "8c639546cf7a660cc5accedaf0b473c9c04764a43d7fc451ac2fbe7b4b8973a7"
+    },
+    {
+      "path": "sources-bf7e065/scripts/sgm-p2p5-previous-key-probe-ridge-retrieval-readings.py",
+      "bytes": 8166,
+      "sha256": "8bec84c5122f7cbc94081ac496aa06feba9647b89bf73683c78dc05a64111789"
+    },
+    {
+      "path": "sources-bf7e065/scripts/sgm-p2p5-previous-key-probe-run-s1-s2-full.py",
+      "bytes": 12105,
+      "sha256": "eabf14764940df5bce86ad9901e147bad4cccf7fa73dab56b3c7de58d693b454"
+    },
+    {
+      "path": "sources-bf7e065/scripts/sgm-p2p5-previous-key-probe-stage-receipts-and-admission-validation.py",
+      "bytes": 4607,
+      "sha256": "b785a778c03dbc8bb8400363ce309bce12e3691759cb326caf7a335612dcee53"
+    },
+    {
+      "path": "sources-bf7e065/tests/test_sgm_p2p5_previous_key_probe_math_c0.py",
+      "bytes": 6724,
+      "sha256": "6ac7564447c41c8349c3c099eb30a8fe45accd7641aa829a337edb25eec1dac2"
+    },
+    {
+      "path": "sources-bf7e065/tests/test_sgm_p2p5_previous_key_probe_orchestration_fake_capture.py",
+      "bytes": 8335,
+      "sha256": "f9886d5a4436f3a1b8fbdb0eeb508858fda821d2aa78a39c302e86bcf5029b63"
+    },
+    {
+      "path": "threadpool-checks.json",
+      "bytes": 1320,
+      "sha256": "c1a9d0bb921bc258302d617091b658fcf7a36dc20386ef1b6913ef30fe998abe"
+    }
+  ]
+}

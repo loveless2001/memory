@@ -1,0 +1,13 @@
+# Targeted regression review of 8b2d9c1
+
+Reviewed immutable revision `8b2d9c1a05579f2ef6110f981a4553f948da9dbc`, responding to gravity 21607. The relevant five source/test files still matched that revision at completion. **The three regressions reported in gravity 21606 are closed in the tested local scope.** This is a targeted progress review, not full Gate-3 clearance.
+
+The 28 submitted control/slot tests independently passed in 6.09 s (`independent-control-tests.log`). Independent probes reuse the previously reviewed failing scenarios against new immutable source snapshots, with acceptance assertions for the intended corrections. Preparation and generated probe code are retained in `prepare-regression-probes.py` and `independent-regression-probes.py`; results are `independent-boundary-probes.json` and `independent-probes.log`.
+
+- The exact production stop-child/launcher code, with a fake CLI and no-op stop helper, now terminates the nested descendant after both normal timeout and controlled early worker crash. The early-crash outcome remains unverified rc -9, preserving the failure rather than treating cleanup as successful verification. The probe separately adopts/reaps its terminated descendants. No running probe workers remain.
+- Writer OSError plus immediate self-stop termination now emits a flushed structured log containing the full outcome map and `self_stop_due=true` before exit. This establishes the local ordering and fallback log behavior. Stop intent remains distinct from actual independently verified Modal shutdown.
+- Concrete mocked slot spawn at the exact horizon boundary carries the same 32,946.2 s candidate into its immutable guard; the former one-second deadline drift is gone. The candidate is computed once. Submitted tests additionally verify agreement across launch provenance, guard, and control registry. Incomplete controller binding remains refused.
+
+All operations were CPU/local fakes. No Modal RPC, deployment, real GPU spawn, scientific population access, shared-source mutation, or protected proof-byte change occurred. `fc-cpu-fake` is a mock launch identifier, and its provenance files live only in reviewer scratch storage.
+
+Free preparation can proceed to the remaining concrete package: per-slot collection and boundary tests, exact-once readings implementation/admission, source bridge, execution supplement, and full validation. The complete source/config/output/cost binding and operational cleanup still need the final package audit. This review does not clear a cap request, campaign deployment/training/readings, additional paid proof, or new spending; the held proof reservation remains separate pending settled charge reconciliation.

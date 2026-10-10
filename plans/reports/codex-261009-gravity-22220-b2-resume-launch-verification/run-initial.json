@@ -1,0 +1,27 @@
+{
+  "runner": "b2-resume-v0.4",
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "resume_s": 14400,
+    "startup_allowance_s": 300,
+    "reservation_usd": 9.974537999999999,
+    "start1_provisional_usd": 5.69262133,
+    "start1_budget_usd": 6.07089738,
+    "campaign_bound_usd": 16.04543538,
+    "cap_usd": 17.0,
+    "cleanup_budget_s": 300,
+    "assumptions": [
+      "every in-deadline start ends by the resume deadline (child timeout + worker SIGKILL, CPU-tested); a start after it refuses at entry within STARTUP_S",
+      "Modal scales the deployed function to zero after the call (scaledown 2 s, no min containers)",
+      "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+    ],
+    "unenforced": "if the in-worker guards failed, only the per-attempt function timeout (RESUME_S) and the local watcher (PC up) stop it; CPU overuse beyond the margin; start-1 billing backfill"
+  },
+  "started": 1791537225.9707634,
+  "outcome": "spawned",
+  "app_id": "ap-bgncTcGPrYbwfmiQtprLN9",
+  "deadline": 1791551643.2783465,
+  "call_id": "fc-01M4FZ1SZJ6FVRZQ4Y9VCAXMNB",
+  "spawned": 1791537244.4658082
+}

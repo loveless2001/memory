@@ -1,0 +1,23 @@
+{
+  "package_files": 9,
+  "deadline_counterexample": {
+    "deadline": 1000.0,
+    "calls": [
+      {
+        "clock_at_child_launch": 1001.0,
+        "child_timeout": 910.0
+      }
+    ],
+    "explanation": "Version check consumes time after remaining was sampled; an expired child is still launched."
+  },
+  "ledger": {
+    "rate_usd_s": 0.0006654399999999999,
+    "outer_s": 4740,
+    "stop_allowance_s": 300,
+    "image_build_usd": 0.0,
+    "bound_usd": 3.3538175999999993,
+    "cap_usd": 4.0,
+    "extra_unenforced_seconds_before_cap": 971.0603510459257
+  },
+  "modal_calls": 0
+}

@@ -1,0 +1,778 @@
+{
+  "reviewed_utc": "2026-10-08T17:32:31.037932+00:00",
+  "proposal_commit": "41ffbd2",
+  "constant_address_map_aux_loss": 0.0,
+  "constant_map_counterexample_scope": "auxiliary objective only; no retrieval or capability conclusion",
+  "pretrained_aux_default_label": "frozen-qwen3-0.6b-base+taskhead",
+  "one_occupied_head_of_sixteen_absent_mean": 0.9375,
+  "early_saved_evidence": {
+    "qwen-probe-taskhead-s0-init": {
+      "config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ],
+        "backbone": "qwen3-0.6b-base",
+        "device": "cuda"
+      },
+      "dev_rows": [
+        {
+          "step": 0,
+          "eval": {
+            "accuracy": 0.03515625,
+            "correct": 9,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.0467012845329009,
+            "query_read_address_std_cells": 0.9706604480743408,
+            "occupancy_mean": 33.89453125,
+            "occupancy_max": 46.25,
+            "effective_cells_mean": 15.997166055725701,
+            "neural_bytes": 35540992.0,
+            "beta_by_token_class": {
+              "sink": 0.514686793088913,
+              "key": 0.5162118608132005,
+              "value": 0.5204825277905911,
+              "filler": 0.5169194424524903
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.514686793088913,
+              "key": 0.5162118608132005,
+              "value": 0.5204825277905911,
+              "filler": 0.5169194424524903
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.021460924701943763
+          }
+        },
+        {
+          "step": 100,
+          "eval": {
+            "accuracy": 0.015625,
+            "correct": 4,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.992811806499958,
+            "query_read_address_std_cells": 3.835667610168457,
+            "occupancy_mean": 36.931640625,
+            "occupancy_max": 59.25,
+            "effective_cells_mean": 13.262043795279798,
+            "neural_bytes": 38725632.0,
+            "beta_by_token_class": {
+              "sink": 0.46548010408878326,
+              "key": 0.34538826113566756,
+              "value": 0.3458522038999945,
+              "filler": 0.3414530260488391
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.46548010408878326,
+              "key": 0.34538826113566756,
+              "value": 0.3458522038999945,
+              "filler": 0.3414530260488391
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.014943469867024415
+          }
+        },
+        {
+          "step": 500,
+          "eval": {
+            "accuracy": 0.01171875,
+            "correct": 3,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.9996466618031263,
+            "query_read_address_std_cells": 4.63742208480835,
+            "occupancy_mean": 39.669921875,
+            "occupancy_max": 64.75,
+            "effective_cells_mean": 13.116693123047861,
+            "neural_bytes": 41596928.0,
+            "beta_by_token_class": {
+              "sink": 0.4371407851576805,
+              "key": 0.3101654890924692,
+              "value": 0.31235291925258934,
+              "filler": 0.3085187911987305
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.4371407851576805,
+              "key": 0.3101654890924692,
+              "value": 0.31235291925258934,
+              "filler": 0.3085187911987305
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.013048824080959682
+          }
+        },
+        {
+          "step": 900,
+          "eval": {
+            "accuracy": 0.0078125,
+            "correct": 2,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 1.0,
+            "query_read_address_std_cells": 5.03206729888916,
+            "occupancy_mean": 44.2548828125,
+            "occupancy_max": 83.5,
+            "effective_cells_mean": 13.775271318816898,
+            "neural_bytes": 46404608.0,
+            "beta_by_token_class": {
+              "sink": 0.43499698489904404,
+              "key": 0.3096932051703334,
+              "value": 0.3119561676867306,
+              "filler": 0.308175808377564
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.43499698489904404,
+              "key": 0.3096932051703334,
+              "value": 0.3119561676867306,
+              "filler": 0.308175808377564
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.010741295733186837
+          }
+        },
+        {
+          "step": 1000,
+          "eval": {
+            "accuracy": 0.00390625,
+            "correct": 1,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 1.0,
+            "query_read_address_std_cells": 5.0320844650268555,
+            "occupancy_mean": 44.1845703125,
+            "occupancy_max": 83.5,
+            "effective_cells_mean": 13.771347046132547,
+            "neural_bytes": 46330880.0,
+            "beta_by_token_class": {
+              "sink": 0.4349970445036888,
+              "key": 0.30969292228110135,
+              "value": 0.3119556368328631,
+              "filler": 0.3081756319850683
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.4349970445036888,
+              "key": 0.30969292228110135,
+              "value": 0.3119556368328631,
+              "filler": 0.3081756319850683
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.00765625
+          }
+        },
+        {
+          "step": 1100,
+          "eval": {
+            "accuracy": 0.00390625,
+            "correct": 1,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 1.0,
+            "query_read_address_std_cells": 5.051375389099121,
+            "occupancy_mean": 44.1337890625,
+            "occupancy_max": 83.5,
+            "effective_cells_mean": 13.760431650415129,
+            "neural_bytes": 46277632.0,
+            "beta_by_token_class": {
+              "sink": 0.4349902868270874,
+              "key": 0.3096600335557014,
+              "value": 0.31192103191278875,
+              "filler": 0.30814575906842945
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.4349902868270874,
+              "key": 0.3096600335557014,
+              "value": 0.31192103191278875,
+              "filler": 0.30814575906842945
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.00765625
+          }
+        },
+        {
+          "step": 1500,
+          "eval": {
+            "accuracy": 0.01953125,
+            "correct": 5,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 1.0,
+            "query_read_address_std_cells": 5.051403045654297,
+            "occupancy_mean": 44.20703125,
+            "occupancy_max": 84.25,
+            "effective_cells_mean": 13.7036916064242,
+            "neural_bytes": 46354432.0,
+            "beta_by_token_class": {
+              "sink": 0.43496157228946686,
+              "key": 0.30965604539960623,
+              "value": 0.31191765214316547,
+              "filler": 0.3081429785117507
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.43496157228946686,
+              "key": 0.30965604539960623,
+              "value": 0.31191765214316547,
+              "filler": 0.3081429785117507
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.01656749466094007
+          }
+        }
+      ]
+    },
+    "toy-p2c-curriculum-taskhead-s0-init": {
+      "config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 0,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ]
+      },
+      "dev_rows": [
+        {
+          "step": 0,
+          "eval": {
+            "accuracy": 0.01953125,
+            "correct": 5,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.0007140615706973108,
+            "query_read_address_std_cells": 1.0507304668426514,
+            "occupancy_mean": 44.796875,
+            "occupancy_max": 52.5,
+            "effective_cells_mean": 24.275161319400517,
+            "neural_bytes": 733952.0,
+            "beta_by_token_class": {
+              "sink": 0.5614141374826431,
+              "key": 0.4990619181189686,
+              "value": 0.5016724930610508,
+              "filler": 0.5012252300977706
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.5614141374826431,
+              "key": 0.4990619181189686,
+              "value": 0.5016724930610508,
+              "filler": 0.5012252300977706
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.01656749466094007
+          }
+        },
+        {
+          "step": 100,
+          "eval": {
+            "accuracy": 0.01171875,
+            "correct": 3,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.030648398838344804,
+            "query_read_address_std_cells": 1.5777288675308228,
+            "occupancy_mean": 71.46484375,
+            "occupancy_max": 88.25,
+            "effective_cells_mean": 42.27962475390093,
+            "neural_bytes": 1170880.0,
+            "beta_by_token_class": {
+              "sink": 0.381269246339798,
+              "key": 0.37609975156374276,
+              "value": 0.37766006076708436,
+              "filler": 0.41824601050466303
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.381269246339798,
+              "key": 0.37609975156374276,
+              "value": 0.37766006076708436,
+              "filler": 0.41824601050466303
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.013048824080959682
+          }
+        },
+        {
+          "step": 500,
+          "eval": {
+            "accuracy": 0.01171875,
+            "correct": 3,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.11399555577906995,
+            "query_read_address_std_cells": 2.2111268043518066,
+            "occupancy_mean": 82.0859375,
+            "occupancy_max": 100.5,
+            "effective_cells_mean": 48.26388681413017,
+            "neural_bytes": 1344896.0,
+            "beta_by_token_class": {
+              "sink": 0.17912195809185505,
+              "key": 0.291533320909366,
+              "value": 0.2920247104484588,
+              "filler": 0.3602015355601907
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.17912195809185505,
+              "key": 0.291533320909366,
+              "value": 0.2920247104484588,
+              "filler": 0.3602015355601907
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.013048824080959682
+          }
+        },
+        {
+          "step": 900,
+          "eval": {
+            "accuracy": 0.0234375,
+            "correct": 6,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.041579745425521925,
+            "query_read_address_std_cells": 2.2904162406921387,
+            "occupancy_mean": 61.50390625,
+            "occupancy_max": 91.75,
+            "effective_cells_mean": 32.144908742848564,
+            "neural_bytes": 1007680.0,
+            "beta_by_token_class": {
+              "sink": 0.15755759365856647,
+              "key": 0.29051456367596984,
+              "value": 0.30966211727354676,
+              "filler": 0.379194406606257
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.15755759365856647,
+              "key": 0.29051456367596984,
+              "value": 0.30966211727354676,
+              "filler": 0.379194406606257
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.01799432057391072
+          }
+        },
+        {
+          "step": 1000,
+          "eval": {
+            "accuracy": 0.015625,
+            "correct": 4,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.016382210590349063,
+            "query_read_address_std_cells": 3.135009288787842,
+            "occupancy_mean": 66.44921875,
+            "occupancy_max": 108.5,
+            "effective_cells_mean": 35.04390394978038,
+            "neural_bytes": 1088704.0,
+            "beta_by_token_class": {
+              "sink": 0.15482011809945107,
+              "key": 0.27825238957302645,
+              "value": 0.3040359388105571,
+              "filler": 0.3771630793809891
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.15482011809945107,
+              "key": 0.27825238957302645,
+              "value": 0.3040359388105571,
+              "filler": 0.3771630793809891
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.014943469867024415
+          }
+        },
+        {
+          "step": 1100,
+          "eval": {
+            "accuracy": 0.02734375,
+            "correct": 7,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.026462543490481494,
+            "query_read_address_std_cells": 2.7254416942596436,
+            "occupancy_mean": 74.625,
+            "occupancy_max": 131.25,
+            "effective_cells_mean": 38.92763881192327,
+            "neural_bytes": 1222656.0,
+            "beta_by_token_class": {
+              "sink": 0.15222355164587498,
+              "key": 0.2638433952233754,
+              "value": 0.3107721727574244,
+              "filler": 0.3596193676814437
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.15222355164587498,
+              "key": 0.2638433952233754,
+              "value": 0.3107721727574244,
+              "filler": 0.3596193676814437
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.019267806631680557
+          }
+        },
+        {
+          "step": 1500,
+          "eval": {
+            "accuracy": 0.61328125,
+            "correct": 157,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.01508240172659292,
+            "query_read_address_std_cells": 2.413755416870117,
+            "occupancy_mean": 70.07421875,
+            "occupancy_max": 98.5,
+            "effective_cells_mean": 36.14250610836851,
+            "neural_bytes": 1148096.0,
+            "beta_by_token_class": {
+              "sink": 0.33423087000846863,
+              "key": 0.2998394949827343,
+              "value": 0.4569650902412832,
+              "filler": 0.3466533533297479
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.33423087000846863,
+              "key": 0.2998394949827343,
+              "value": 0.4569650902412832,
+              "filler": 0.3466533533297479
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.05970379086146178
+          }
+        }
+      ]
+    },
+    "toy-p2c-curriculum-taskhead-s1-init": {
+      "config": {
+        "arm": "learned",
+        "readout": "taskhead",
+        "n_bindings": 32,
+        "n_queries": 4,
+        "filler_len": 40,
+        "steps": 1500,
+        "batch": 16,
+        "lr": 0.003,
+        "eval_every": 100,
+        "eval_batches": 4,
+        "seed": 1,
+        "sgm": {},
+        "filler_writes": true,
+        "aux_address_lambda": 0.0,
+        "checkpoint_steps": [],
+        "beta_bias_init": null,
+        "filler_len_schedule": [
+          [
+            0,
+            0
+          ],
+          [
+            1000,
+            40
+          ]
+        ]
+      },
+      "dev_rows": [
+        {
+          "step": 0,
+          "eval": {
+            "accuracy": 0.0078125,
+            "correct": 2,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.0017561681688995634,
+            "query_read_address_std_cells": 1.000291347503662,
+            "occupancy_mean": 41.171875,
+            "occupancy_max": 47.25,
+            "effective_cells_mean": 20.936655856530976,
+            "neural_bytes": 674560.0,
+            "beta_by_token_class": {
+              "sink": 0.48565108329057693,
+              "key": 0.46788902021944523,
+              "value": 0.47392691229470074,
+              "filler": 0.4773919006809592
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.48565108329057693,
+              "key": 0.46788902021944523,
+              "value": 0.47392691229470074,
+              "filler": 0.4773919006809592
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.010741295733186837
+          }
+        },
+        {
+          "step": 100,
+          "eval": {
+            "accuracy": 0.015625,
+            "correct": 4,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.05936592517870776,
+            "query_read_address_std_cells": 1.7828736305236816,
+            "occupancy_mean": 66.3984375,
+            "occupancy_max": 78.5,
+            "effective_cells_mean": 37.29151121140188,
+            "neural_bytes": 1087872.0,
+            "beta_by_token_class": {
+              "sink": 0.3084131143987179,
+              "key": 0.3502798571716994,
+              "value": 0.36347959260456264,
+              "filler": 0.39992038197815416
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.3084131143987179,
+              "key": 0.3502798571716994,
+              "value": 0.36347959260456264,
+              "filler": 0.39992038197815416
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.014943469867024415
+          }
+        },
+        {
+          "step": 500,
+          "eval": {
+            "accuracy": 0.0078125,
+            "correct": 2,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.02450297430762903,
+            "query_read_address_std_cells": 2.3037304878234863,
+            "occupancy_mean": 83.12109375,
+            "occupancy_max": 100.0,
+            "effective_cells_mean": 49.380011869943054,
+            "neural_bytes": 1361856.0,
+            "beta_by_token_class": {
+              "sink": 0.1962023638188839,
+              "key": 0.34273533045779914,
+              "value": 0.35256912326440215,
+              "filler": 0.3853718599304557
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.1962023638188839,
+              "key": 0.34273533045779914,
+              "value": 0.35256912326440215,
+              "filler": 0.3853718599304557
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.010741295733186837
+          }
+        },
+        {
+          "step": 900,
+          "eval": {
+            "accuracy": 0.02734375,
+            "correct": 7,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.0025344496642958347,
+            "query_read_address_std_cells": 3.0685882568359375,
+            "occupancy_mean": 39.3359375,
+            "occupancy_max": 50.0,
+            "effective_cells_mean": 19.077570825540334,
+            "neural_bytes": 644480.0,
+            "beta_by_token_class": {
+              "sink": 0.09432591684162617,
+              "key": 0.2425025817938149,
+              "value": 0.28321264183614403,
+              "filler": 0.32372972844168546
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.09432591684162617,
+              "key": 0.2425025817938149,
+              "value": 0.28321264183614403,
+              "filler": 0.32372972844168546
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.022143748431962814
+          }
+        },
+        {
+          "step": 1000,
+          "eval": {
+            "accuracy": 0.05078125,
+            "correct": 13,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.027166292356621824,
+            "query_read_address_std_cells": 4.8111772537231445,
+            "occupancy_mean": 43.15625,
+            "occupancy_max": 70.75,
+            "effective_cells_mean": 19.13457841460454,
+            "neural_bytes": 707072.0,
+            "beta_by_token_class": {
+              "sink": 0.12597655411809683,
+              "key": 0.2545096860267222,
+              "value": 0.3261830190895125,
+              "filler": 0.32784578707069156
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.12597655411809683,
+              "key": 0.2545096860267222,
+              "value": 0.3261830190895125,
+              "filler": 0.32784578707069156
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.024837197773282853
+          }
+        },
+        {
+          "step": 1100,
+          "eval": {
+            "accuracy": 0.203125,
+            "correct": 52,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 0.03457349143044486,
+            "query_read_address_std_cells": 6.612287521362305,
+            "occupancy_mean": 70.734375,
+            "occupancy_max": 109.5,
+            "effective_cells_mean": 35.87084963297946,
+            "neural_bytes": 1158912.0,
+            "beta_by_token_class": {
+              "sink": 0.15549852140247822,
+              "key": 0.26501479535363615,
+              "value": 0.357953533064574,
+              "filler": 0.3208288675174117
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.15549852140247822,
+              "key": 0.26501479535363615,
+              "value": 0.357953533064574,
+              "filler": 0.3208288675174117
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.04865241300970247
+          }
+        },
+        {
+          "step": 1500,
+          "eval": {
+            "accuracy": 0.6953125,
+            "correct": 178,
+            "total": 256,
+            "chance": 0.015625,
+            "query_empty_read_weight": 5.97094667013319e-05,
+            "query_read_address_std_cells": 3.5248241424560547,
+            "occupancy_mean": 51.0546875,
+            "occupancy_max": 80.5,
+            "effective_cells_mean": 28.053422335570378,
+            "neural_bytes": 836480.0,
+            "beta_by_token_class": {
+              "sink": 0.2979026008397341,
+              "key": 0.26553587382659316,
+              "value": 0.4085914664901793,
+              "filler": 0.28601108202710745
+            },
+            "effective_beta_by_token_class": {
+              "sink": 0.2979026008397341,
+              "key": 0.26553587382659316,
+              "value": 0.4085914664901793,
+              "filler": 0.28601108202710745
+            },
+            "episodes": 64,
+            "accuracy_ci95_halfwidth_episode": 0.05286835475052896
+          }
+        }
+      ]
+    }
+  },
+  "l40s_profile": {
+    "source_sha256": "b87a767baac578d94a6f778560f4fb451fd60679cca48412218adaac74f74085",
+    "environment": {
+      "python": "3.12.10",
+      "torch": "2.7.1+cu126",
+      "cuda": "12.6",
+      "gpu": "NVIDIA L40S",
+      "gpu_total_bytes": 47695921152,
+      "tf32_matmul": false
+    },
+    "phase1": {
+      "arm": "learned",
+      "phase": 1,
+      "train_filler_len": 0,
+      "updates": 10,
+      "warmup_s": [
+        11.406710953999998,
+        8.918850247999998
+      ],
+      "measured_s": [
+        8.979781575999993,
+        8.830252915000003,
+        8.771201660000003,
+        9.541492560999998,
+        10.103105962,
+        9.65651461600001,
+        9.329325642,
+        10.335851571000006
+      ],
+      "mean_measured_s_per_update": 9.443440812875002,
+      "peak_train_memory_bytes": 16981405696,
+      "dev_eval_batch_s": 9.135376684000008,
+      "peak_memory_bytes": 16981405696
+    },
+    "readout_from_profile_script": "residual_head"
+  },
+  "sources_sha256": {
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/proposal.md": "37cf82ebfe7855e92e56c32f7450e05d142e3c137b99e4e96d384fce74df217e",
+    "memsub/sgm/address_supervision.py": "7101ad8f8cf04d3bdafb95f4ef0c2ca9dc92ca5251135e52066ee8ebd4412669",
+    "memsub/sgm/synthetic_pilot.py": "aa99e0bdc742ef35544f44fedb73a98df02180851d856ed2022a20e27a8e2620",
+    "memsub/sgm/synthetic_pilot_evaluation.py": "85cf09b2ee6ba518b521826af987b5ce55f3c9ec196494c30b40a92b08d3be7a",
+    "memsub/sgm/synthetic_pilot_run.py": "7b2a7ee1ad75ea68d82a6362da341d16f60cfd0cfdcf0a7b43f5ef18549532ca",
+    "scripts/sgm-p2p5-taskhead-dead-start-address-diagnosis.py": "e9131a62ac57cca62915ae233914315412e302bf5ab954351f20544578311ea7",
+    "scripts/sgm-p2p5-local-gpu-timing-profile.py": "b5b0746a40afbd7c9feb2bcf7aa6967189903673829cf2a8d4a2afc25237a08c",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/out/run_manifest.json": "4e89b95adcff68b73fecb2f071c3fe17498c7e62fd1a97ac04f77691b5fc0bb0",
+    "plans/261008-0144-m4-sgm-p2p5-readout-recipe-rescue-probe/p2p5-readout-probe-v1/taskhead-learned-n32/volume-evidence/collect-1/taskhead-learned-n32/cells/taskhead-learned-n32-s0/epoch-1/attempt-1/out/routing_telemetry.jsonl": "8df0529558e0c0e4614d3f794224f155613ea7bcfcdd7e4224e57e5289872195",
+    "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s0/run_manifest.json": "4914e50df9e21587d1f10bd2a9e3ab0d72384eaf1b55d2393f41af892f891702",
+    "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s0/routing_telemetry.jsonl": "74b5d12909f02efc51cfcbaa33323021f9ba884776cbc47bea40670d71023a24",
+    "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s1/run_manifest.json": "dd1c00bd75291f5aa23ccd98b9d19cf6b847aba2e78289e3c2c93c4cdd2eea47",
+    "plans/261005-0210-m4-sgm-p0-p2/runs/p2c-filler-curriculum-v1-volume-mirror/curriculum-learned-n32-s1/routing_telemetry.jsonl": "d548ed1df61f4f99315bafb6e745c7d421ca722874b622cb453826b3e0e929b6",
+    "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-l40s-profile-v2/volume-evidence/p2p5-l40s-profile-v2/profile-l40s/profile.json": "ff2a7a437a3a1ae43d8c720522ff97e130650d82b2035d6c69efbc95083f862b"
+  },
+  "new_training_updates": 0,
+  "model_forward": false,
+  "modal_calls": 0,
+  "public_sources_checked": [
+    "https://modal.com/pricing",
+    "https://modal.com/docs/guide/timeouts",
+    "https://modal.com/docs/guide/apps",
+    "https://modal.com/docs/guide/functions"
+  ]
+}
