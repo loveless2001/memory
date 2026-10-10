@@ -81,4 +81,5 @@ class SparseGrowingMemoryBackend:
         if enabled and oracle_addresses is not None:
             oracle = {"read": oracle_addresses, "write": oracle_addresses}
         return self.runtime.step(scratch, prompt_ids, write=False, enabled=enabled,
-                                 oracle=oracle, logits=logits, final_hidden=final_hidden)
+                                 oracle=oracle, logits=logits, final_hidden=final_hidden,
+                                 query=True)

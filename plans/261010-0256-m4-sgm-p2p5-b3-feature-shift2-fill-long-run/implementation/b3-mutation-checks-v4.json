@@ -1,0 +1,243 @@
+[
+ {
+  "baseline": "42 passed in 8.77s"
+ },
+ {
+  "mutant": "M1 terminal check at entry removed",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"
+  ],
+  "expected": [
+   "test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"
+  ],
+  "tail": [
+   "1 failed, 15 passed in 8.40s"
+  ]
+ },
+ {
+  "mutant": "M2 no terminal marker on completion",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"
+  ],
+  "expected": [
+   "test_worker_marks_terminal_on_every_non_interruption_outcome[0-completed]"
+  ],
+  "tail": [
+   "1 failed, 15 passed in 8.56s"
+  ]
+ },
+ {
+  "mutant": "M3 worker exception not caught",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_refusals_and_exceptions_are_terminal[exception]"
+  ],
+  "expected": [
+   "test_worker_refusals_and_exceptions_are_terminal[exception]"
+  ],
+  "tail": [
+   "1 failed, 19 passed in 8.86s"
+  ]
+ },
+ {
+  "mutant": "M4 cleanup stop without --yes",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_cleanup_uses_yes_and_verifies_a_deployed_app"
+  ],
+  "expected": [
+   "test_cleanup_uses_yes_and_verifies_a_deployed_app"
+  ],
+  "tail": [
+   "1 failed, 28 passed in 8.36s"
+  ]
+ },
+ {
+  "mutant": "M5 deadline not write-once",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_precheck_and_deadline_are_fresh_and_write_once"
+  ],
+  "expected": [
+   "test_precheck_and_deadline_are_fresh_and_write_once"
+  ],
+  "tail": [
+   "1 failed, 25 passed in 8.17s"
+  ]
+ },
+ {
+  "mutant": "M6 feature_shift back to 1",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_config_is_b2_plus_feature_shift2_only"
+  ],
+  "expected": [
+   "test_config_is_b2_plus_feature_shift2_only"
+  ],
+  "tail": [
+   "1 failed in 0.99s"
+  ]
+ },
+ {
+  "mutant": "M7 precheck ignores a used Dict",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_precheck_and_deadline_are_fresh_and_write_once"
+  ],
+  "expected": [
+   "test_precheck_and_deadline_are_fresh_and_write_once"
+  ],
+  "tail": [
+   "1 failed, 25 passed in 8.22s"
+  ]
+ },
+ {
+  "mutant": "M8 deadline mismatch accepted",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_refusals_and_exceptions_are_terminal[deadline_mismatch]"
+  ],
+  "expected": [
+   "test_worker_refusals_and_exceptions_are_terminal[deadline_mismatch]"
+  ],
+  "tail": [
+   "1 failed, 20 passed in 8.13s"
+  ]
+ },
+ {
+  "mutant": "M9 ledger without build allowance",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_ledger_matches_proposal_v03"
+  ],
+  "expected": [
+   "test_ledger_matches_proposal_v03"
+  ],
+  "tail": [
+   "1 failed, 4 passed in 8.09s"
+  ]
+ },
+ {
+  "mutant": "M10 versions mismatch not terminal",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_refusals_and_exceptions_are_terminal[versions]"
+  ],
+  "expected": [
+   "test_worker_refusals_and_exceptions_are_terminal[versions]"
+  ],
+  "tail": [
+   "1 failed, 18 passed in 8.19s"
+  ]
+ },
+ {
+  "mutant": "M11 cleanup re-check cap removed",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_cleanup_recheck_loop_is_bounded_even_if_sleep_does_not_wait"
+  ],
+  "expected": [
+   "test_cleanup_recheck_loop_is_bounded_even_if_sleep_does_not_wait"
+  ],
+  "tail": [
+   "1 failed, 29 passed in 8.18s"
+  ]
+ },
+ {
+  "mutant": "M12 watchdog + Dict lookup outside the guarded block (22515 bug)",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_contains_a_failed_dict_lookup_and_cancels_its_watchdog"
+  ],
+  "expected": [
+   "test_worker_contains_a_failed_dict_lookup_and_cancels_its_watchdog"
+  ],
+  "tail": [
+   "1 failed, 38 passed in 8.35s"
+  ]
+ },
+ {
+  "mutant": "M13 terminal write failure re-raised (22515 bug)",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_worker_reports_a_failed_terminal_write_instead_of_raising[versions]"
+  ],
+  "expected": [
+   "test_worker_reports_a_failed_terminal_write_instead_of_raising[versions]"
+  ],
+  "tail": [
+   "1 failed, 39 passed in 8.42s"
+  ]
+ },
+ {
+  "mutant": "M14 any listing error means fresh (22515 bug)",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"
+  ],
+  "expected": [
+   "test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"
+  ],
+  "tail": [
+   "1 failed, 34 passed in 8.17s"
+  ]
+ },
+ {
+  "mutant": "M15 collect gate ignores what this call fetched (22515 bug)",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_collect_never_passes_on_stale_local_results"
+  ],
+  "expected": [
+   "test_collect_never_passes_on_stale_local_results"
+  ],
+  "tail": [
+   "1 failed, 37 passed in 8.27s"
+  ]
+ },
+ {
+  "mutant": "M16 precheck lets a listing error escape",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"
+  ],
+  "expected": [
+   "test_volume_listing_errors_fail_closed_in_precheck_and_collect[exc0]"
+  ],
+  "tail": [
+   "1 failed, 34 passed in 8.41s"
+  ]
+ },
+ {
+  "mutant": "M17 ledger window without the watch grace",
+  "status": "CAUGHT",
+  "rc": 1,
+  "failed": [
+   "test_ledger_matches_proposal_v03"
+  ],
+  "expected": [
+   "test_ledger_matches_proposal_v03"
+  ],
+  "tail": [
+   "1 failed, 4 passed in 8.05s"
+  ]
+ }
+]

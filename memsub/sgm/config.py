@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import asdict, dataclass, field, replace
 
 # Versioned algorithm identities (§5). Bump on any semantic change.
@@ -19,6 +20,11 @@ READ_ORDER_VERSION = "read_before_write_v1"
 INGEST_VERSION = "token_serial_v1"
 
 ADDRESS_MODES = ("learned", "random_fixed", "single_cell", "oracle")
+# Query-read fallback variants (occupied_cell_read_fallback.py). "off" = the spec read.
+READ_FALLBACKS = ("off", "occupied_softmax_fill_v1")
+# Serialized (hence in policy_id) only when read_fallback != "off", so every
+# existing policy_id is unchanged.
+_FALLBACK_FIELDS = ("read_fallback", "read_fallback_tau", "read_fallback_anchor")
 
 
 @dataclass(frozen=True)
@@ -46,6 +52,13 @@ class SGMConfig:
     update: str = UPDATE_VERSION
     read_order: str = READ_ORDER_VERSION
     ingest: str = INGEST_VERSION
+    # Variant (not the spec read): query reads fill the original stencil's
+    # absent mass from the bank's occupied cells (softmax over -dist^2 / tau,
+    # tau in cells^2); `read_fallback_anchor` weights the training-only pull of
+    # stranded query reads toward the nearest occupied cell.
+    read_fallback: str = "off"
+    read_fallback_tau: float = 1.0
+    read_fallback_anchor: float = 0.0
     resolved: dict = field(default_factory=dict, compare=False)
 
     def __post_init__(self):
@@ -58,6 +71,18 @@ class SGMConfig:
         if min(self.memory_heads, self.key_dim, self.value_dim,
                self.local_recent_tokens, self.max_cells_per_bank) < 1:
             raise ValueError("dimensions and budgets must be positive")
+        if self.read_fallback not in READ_FALLBACKS:
+            raise ValueError(f"unknown read_fallback {self.read_fallback!r}")
+        if self.read_fallback == "off":
+            if (self.read_fallback_tau, self.read_fallback_anchor) != (1.0, 0.0):
+                raise ValueError("read_fallback_tau/anchor need read_fallback != 'off'")
+        else:
+            if self.address_mode != "learned":
+                raise ValueError("read_fallback needs address_mode 'learned'")
+            if not (math.isfinite(self.read_fallback_tau) and self.read_fallback_tau > 0):
+                raise ValueError("read_fallback_tau must be finite and > 0")
+            if not (math.isfinite(self.read_fallback_anchor) and self.read_fallback_anchor >= 0):
+                raise ValueError("read_fallback_anchor must be finite and >= 0")
 
     # -- resolution against a concrete backbone ---------------------------------
     def resolve(self, model_config) -> "SGMConfig":
@@ -84,6 +109,9 @@ class SGMConfig:
     def to_json(self) -> dict:
         out = asdict(self)
         out["selected_layers"] = list(self.selected_layers)
+        if self.read_fallback == "off":
+            for key in _FALLBACK_FIELDS:
+                del out[key]
         return out
 
     @classmethod

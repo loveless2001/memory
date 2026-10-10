@@ -1,0 +1,7 @@
+# B2 resume v0.4 evidence: real start-1 checkpoint vs start-2 acceptance (CPU, read-only)
+resume.pt sha256 cd1a7e72cbbf4fc2cf92e029395c7e4f78a727d2b6d165b5030bacc1bd753394
+step 750 format m4-sgm-train-resume-v1
+ckpt b2_identity == local run_identity (train script start-2 check): True
+ckpt pilot_config == asdict(arm_config): True
+Volume identity.json snapshot == local run_identity: True
+ckpt telemetry: evals [0, 100, 200, 300, 400, 500, 600, 700] last train row 740

@@ -25,6 +25,7 @@ from .backend import SparseGrowingMemoryBackend
 from .config import SGMConfig
 from .synthetic_binding_task import N_VALUES, BindingTaskSpec, sample_batch
 from .address_supervision import address_pair_loss, bound_value_positions
+from .occupied_cell_read_fallback import query_anchor_loss
 from .training_resume_checkpoint import restore_training_state, training_state
 from .synthetic_pilot_evaluation import bank_telemetry, ingest, query_logits
 
@@ -63,6 +64,9 @@ class PilotConfig:
     def result_label(self) -> str:
         if self.backbone != "tiny":   # P2.5 evidence class (oracle stays labelled a diagnostic)
             base = f"frozen-{self.backbone}+{self.readout.replace('_', '-')}"
+            if self.sgm.get("read_fallback", "off") != "off":   # a lookup variant, never the spec read
+                base += (f"+VARIANT-{self.sgm['read_fallback']}"
+                         f"-anchor{self.sgm.get('read_fallback_anchor', 0.0):g}")
             return base + ("+DIAGNOSTIC-oracle-address" if self.arm == "oracle" else "")
         if self.arm == "oracle":
             return "DIAGNOSTIC-oracle-address"
@@ -72,7 +76,8 @@ class PilotConfig:
                                  (f"steps{self.steps}", bool(self.checkpoint_steps)),
                                  (f"beta-bias{self.beta_bias_init:g}" if self.beta_bias_init is not None else "",
                                   self.beta_bias_init is not None),
-                                 ("filler-len-schedule", bool(self.filler_len_schedule))) if on]
+                                 ("filler-len-schedule", bool(self.filler_len_schedule)),
+                                 ("read-fallback", self.sgm.get("read_fallback", "off") != "off")) if on]
         return base + ("+DIAGNOSTIC-" + "+".join(flags) if flags else "")
 
     def task_spec(self) -> BindingTaskSpec:
@@ -205,6 +210,10 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None, *,
             aux = address_pair_loss(runtime, src_traces, q_traces,
                                     bound_value_positions(batch.source, batch.query_keys, spec.n_bindings))
             loss = loss + pcfg.aux_address_lambda * aux
+        anchor = None
+        if runtime.cfg.read_fallback_anchor > 0:   # read_fallback variant: training-only pull term
+            anchor = query_anchor_loss(q_traces)
+            loss = loss + runtime.cfg.read_fallback_anchor * anchor
         opt.zero_grad(set_to_none=True)
         loss.backward()
         logging = step % 10 == 0
@@ -221,6 +230,7 @@ def train(pcfg: PilotConfig, log=print, evaluate_fn=None, on_update=None, *,
                    for k in after}
             row = {"step": step, "loss": float(loss), "train_acc": hits / (pcfg.batch * spec.n_queries),
                    "aux_address_mse": None if aux is None else float(aux),
+                   **({} if anchor is None else {"read_anchor": float(anchor)}),
                    "grad_norm": grads, "update_norm": upd,
                    "alpha": {l: float(torch.sigmoid(a.alpha_logit)) for l, a in runtime.adapters.items()},
                    "sec_per_step": time.monotonic() - t0, **bank_telemetry(state)}

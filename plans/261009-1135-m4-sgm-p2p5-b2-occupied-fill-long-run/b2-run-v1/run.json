@@ -1,0 +1,36 @@
+{
+  "app_id": "ap-VsAmnu1E7eS5rXLrKD7vXd",
+  "memsub_source_sha256": "d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532",
+  "base_image_id": "im-A7BXMB8v1cVYRvC9pMqZ3i",
+  "arms_planned": [
+    "B2"
+  ],
+  "ledger": {
+    "rate_usd_s": 0.0006785399999999999,
+    "cpu_overuse_margin": 1.25,
+    "outer_s": 23640,
+    "stop_allowance_s": 300,
+    "image_construction_usd": 0.0,
+    "reservation_usd": 16.244247599999998,
+    "cap_usd": 17.0,
+    "cleanup_budget_s": 300,
+    "assumptions": [
+      "the app stops within CLEANUP_S after the client exits (cleanup-verify checks; if unverified: manual stop, and billing past it is NOT covered)",
+      "CPU use <= 1.25 x 4.0 cores (Modal CPU limits are soft; overuse is billed)"
+    ],
+    "unenforced": "app-stop latency after client exit; CPU overuse beyond the margin"
+  },
+  "started": 1791523512.6070487,
+  "gpu": "L40S",
+  "cpu": 4.0,
+  "memory_gib": 32,
+  "arms": {
+    "B2": {
+      "outcome": "remote call failed",
+      "t_start": 1791523513.521442
+    }
+  },
+  "outcome": "error: SystemExit: SIGTERM (outer timeout)",
+  "deadline": 1791546912.6074162,
+  "client_wall_s": 8934.841123819351
+}
