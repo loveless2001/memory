@@ -3,7 +3,7 @@
 r3 supersedes r2 (kept unchanged). User 22606: "Ok stop, review and clean up". r2 round: user chose **Q1 only**
 (22370, executed, receipt 4df48f1, codex PASS 22373); Q3/Q4 were not approved and are re-offered here with B3's items.
 
-Stop check (2026-10-10 ~07:40Z): no non-stopped Modal app; no B3 watcher/collector process; worktree clean at 8bbb703
+Stop check (2026-10-10 07:32Z): no non-stopped Modal app; no B3 watcher/collector process; worktree clean at 8bbb703
 apart from the three hash-bound `trained_parameters.safetensors` (B1/B2/B3).
 Done without approval (session-private, never referenced): my scratchpad copies of B3 progress checks 1–2.
 
