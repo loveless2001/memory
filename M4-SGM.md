@@ -970,3 +970,4 @@ Closed by the user (#gravity 22357), reopened for the feature_shift lead, closed
 - B3 (branch, shift2 bundle, 1,500 updates, training seed 0, dev seed 4242): VALID_NEGATIVE, 8/256 normal = 8/256 deranged.
 - Scope: this design and these recipes on frozen Qwen3-0.6B, mostly single-seed. This does not show that a pretrained model cannot use a memory.
 - Spend ≈ $169–171 provisional (sum of per-stage snapshots; B3 $6.65 snapshot, ≈ $8.29 by wall time).
+- 2026-10-10 (user 22634/22660): branch `m4-sgm-occupied-fill-v1` MERGED into mvp (`244718e`); memsub now = the fill/shift variant (d86639b9). Closed P2.5 replays that bind the old memsub run at tag `m4-sgm-p2p5-replays-pre-sidecar-merge`; branch tip tag `m4-sgm-occupied-fill-v1-final`. Test cleanup `2a16280`/`45cf7d6` (reusable P2.5 guards re-bound to a private manifest; historical replays retired; pinned-Qwen tests opt-in via `M4_RUN_PINNED_QWEN_TESTS=1`).
