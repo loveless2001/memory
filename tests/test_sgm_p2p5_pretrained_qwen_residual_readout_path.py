@@ -1,8 +1,17 @@
 """P2.5 new-path correctness on the pinned frozen Qwen3-0.6B-Base (prereg v0.2
 `3bf8737` § Implementation checks), CPU, tiny episodes. Skipped when the
-pinned snapshot is not present locally."""
+pinned snapshot is not present locally.
+
+OPT-IN integration test (codex 22677): it loads the real pinned model and needs > 3.5 GB RAM, so it is skipped by
+default. Run it on purpose, memory-capped:
+  M4_RUN_PINNED_QWEN_TESTS=1 systemd-run --user --scope -p MemoryMax=5200M -p MemorySwapMax=0 \
+    .venv/bin/python -m pytest tests/test_sgm_p2p5_pretrained_qwen_residual_readout_path.py
+(2026-10-10, merged mvp 2a16280: 7 passed in 40 s under that cap; record in
+plans/reports/claude-261010-1605-m4-sgm-side-branch-merge-test-impact/.)"""
 
 from __future__ import annotations
+
+import os
 
 import pytest
 import torch
@@ -13,8 +22,12 @@ from memsub.sgm.synthetic_binding_task import sample_batch
 from memsub.sgm.synthetic_pilot import PilotConfig, build
 from memsub.sgm.synthetic_pilot_evaluation import evaluate, ingest, query_logits
 
-pytestmark = pytest.mark.skipif(not (snapshot_dir() / "model.safetensors").exists(),
-                                reason="pinned Qwen3-0.6B-Base snapshot absent")
+pytestmark = [
+    pytest.mark.skipif(os.environ.get("M4_RUN_PINNED_QWEN_TESTS") != "1",
+                       reason="opt-in pinned-Qwen integration test (> 3.5 GB RAM): set M4_RUN_PINNED_QWEN_TESTS=1"),
+    pytest.mark.skipif(not (snapshot_dir() / "model.safetensors").exists(),
+                       reason="pinned Qwen3-0.6B-Base snapshot absent"),
+]
 
 
 def _cfg(**over):

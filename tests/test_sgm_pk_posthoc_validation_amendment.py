@@ -39,17 +39,6 @@ def frozen():
     return grid, registry, schema
 
 
-def check(slot: Path, spec=SPEC, rec=None, registry=None):
-    grid, frozen_registry, schema = frozen()
-    registry = registry or frozen_registry["by_arm"]["learned"]          # per-arm registry
-    from memsub.sgm.packed_slot_supervisor import expand_cells
-    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
-    pilot = expand_cells(grid)["learned-n32-s1"]
-    rec = rec or json.loads((slot / "cells/learned-n32-s1/epoch-1/state.json").read_text())
-    return AMD.amended_cell_problem(slot, rec, pilot, rd.EVAL, source_tree_sha256(ROOT / "memsub"),
-                                    registry, schema["by_arm"]["learned"], spec)
-
-
 def _edit_telemetry(out: Path, fn) -> None:
     rows = [json.loads(x) for x in (out / "routing_telemetry.jsonl").read_text().splitlines()]
     for r in rows:
