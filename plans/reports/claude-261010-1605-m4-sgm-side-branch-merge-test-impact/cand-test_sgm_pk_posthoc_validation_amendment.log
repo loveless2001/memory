@@ -1,0 +1,651 @@
+FFFFFFFFFFFF.FF..                                                        [100%]
+=================================== FAILURES ===================================
+_ test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18 _
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_real_evidence_original_ga0')
+
+    @needs_evidence
+    def test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18(tmp_path):
+        root, adm = evidence_root(tmp_path)
+        grid, registry, schema = frozen()
+        from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+        memsub = source_tree_sha256(ROOT / "memsub")
+        state = root / "learned-n32/cells/learned-n32-s1/epoch-1/state.json"
+        before = AMD.sha(state)
+        orig_cells, original = rd.bind_cells(root, adm, memsub, grid, registry, schema)
+>       assert original == ORIGINAL_GATE and len(orig_cells) == 17 and "learned-n32-s1" not in orig_cells
+E       AssertionError: assert ('learned-n16-... sha mismatch' == 'learned-n32-s1: state FAILED'
+E         
+E         - learned-n32-s1: state FAILED
+E         + learned-n16-s0: output trained_parameters.safetensors missing or sha mismatch)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:83: AssertionError
+____________ test_private_copy_passes_and_every_binding_is_enforced ____________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_private_copy_passes_and_e0')
+
+    @needs_evidence
+    def test_private_copy_passes_and_every_binding_is_enforced(tmp_path):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_private_copy_passes_and_e0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+________________ test_checks_after_the_schema_stage_still_apply ________________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_checks_after_the_schema_s0')
+
+    @needs_evidence
+    def test_checks_after_the_schema_stage_still_apply(tmp_path):
+        """The original validator runs its tensor-registry / finiteness / clock checks AFTER the schema stage, so the
+        amendment re-runs it without the schema stage: a registry mismatch must still refuse the cell."""
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_checks_after_the_schema_s0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+______________ test_private_copy_byte_changes_are_refused[state] _______________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_private_copy_byte_changes0')
+target = 'state'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_private_copy_byte_changes0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+____________ test_private_copy_byte_changes_are_refused[checkpoint] ____________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_private_copy_byte_changes1')
+target = 'checkpoint'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_private_copy_byte_changes1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+_______________ test_private_copy_byte_changes_are_refused[done] _______________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_private_copy_byte_changes2')
+target = 'done'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_private_copy_byte_changes2/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+______________ test_private_copy_byte_changes_are_refused[output] ______________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_private_copy_byte_changes3')
+target = 'output'
+
+    @needs_evidence
+    @pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
+    def test_private_copy_byte_changes_are_refused(tmp_path, target):
+>       slot = private_slot(tmp_path)
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_private_copy_byte_changes3/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+__ test_exception_is_limited_to_the_listed_grad_norm_leaves[update_norm_null] __
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_exception_is_limited_to_t0')
+kind = 'update_norm_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_exception_is_limited_to_t0/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+__ test_exception_is_limited_to_the_listed_grad_norm_leaves[extra_grad_null] ___
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_exception_is_limited_to_t1')
+kind = 'extra_grad_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_exception_is_limited_to_t1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+_ test_exception_is_limited_to_the_listed_grad_norm_leaves[missing_listed_null] _
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_exception_is_limited_to_t2')
+kind = 'missing_listed_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_exception_is_limited_to_t2/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+___ test_exception_is_limited_to_the_listed_grad_norm_leaves[eval_row_null] ____
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_exception_is_limited_to_t3')
+kind = 'eval_row_null'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_exception_is_limited_to_t3/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+_ test_exception_is_limited_to_the_listed_grad_norm_leaves[unlisted_layer_key] _
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_exception_is_limited_to_t4')
+kind = 'unlisted_layer_key'
+
+    @needs_evidence
+    @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
+                                      "unlisted_layer_key"])
+    def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
+>       out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_sgm_pk_posthoc_validation_amendment.py:59: in private_slot
+    shutil.copyfile(src / f, dst / f)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/pla...wen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+dst = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/...thoc_validation_amendment/test_exception_is_limited_to_t4/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt')
+
+    def copyfile(src, dst, *, follow_symlinks=True):
+        """Copy data from src to dst in the most efficient way possible.
+    
+        If follow_symlinks is not set and src is a symbolic link, a new
+        symlink will be created instead of copying the file it points to.
+    
+        """
+        sys.audit("shutil.copyfile", src, dst)
+    
+        if _samefile(src, dst):
+            raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+    
+        file_size = 0
+        for i, fn in enumerate([src, dst]):
+            try:
+                st = _stat(fn)
+            except OSError:
+                # File most likely does not exist
+                pass
+            else:
+                # XXX What about other special files? (sockets, devices...)
+                if stat.S_ISFIFO(st.st_mode):
+                    fn = fn.path if isinstance(fn, os.DirEntry) else fn
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                if _WINDOWS and i == 0:
+                    file_size = st.st_size
+    
+        if not follow_symlinks and _islink(src):
+            os.symlink(os.readlink(src), dst)
+        else:
+>           with open(src, 'rb') as fsrc:
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/cand/plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/p2p5-qwen3-0p6b-screen-v1/learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/gen-30-step1500.pt'
+
+/home/lenovo/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/shutil.py:260: FileNotFoundError
+__ test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703d71585010>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_readings_label_the_campai0')
+
+    def test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading(monkeypatch, tmp_path):
+        rep, binds = run_readings(monkeypatch, tmp_path)
+>       assert binds[0] is None and binds[1] == SPEC                                  # original gate first, then amended
+E       IndexError: list index out of range
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:226: IndexError
+___ test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703d715e70e0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_posthoc_validation_amendment/test_failed_amended_binding_ke0')
+
+    def test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled(monkeypatch, tmp_path):
+        rep, _binds = run_readings(monkeypatch, tmp_path, amended_problem="learned-n32-s1: post-hoc amendment: x")
+        for n in ("32", "16"):
+>           assert rep["n"][n]["reading"] == "unavailable: learned-n32-s1: post-hoc amendment: x"
+E           AssertionError: assert 'unavailable:...ource differs' == 'unavailable:... amendment: x'
+E             
+E             - unavailable: learned-n32-s1: post-hoc amendment: x
+E             + unavailable: dependency manifest: memsub source differs
+
+tests/test_sgm_pk_posthoc_validation_amendment.py:241: AssertionError
+- generated xml file: /tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/test_sgm_pk_posthoc_validation_amendment.xml -
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_passes_and_every_binding_is_enforced
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_checks_after_the_schema_stage_still_apply
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[state]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[checkpoint]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[done]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_private_copy_byte_changes_are_refused[output]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[update_norm_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[extra_grad_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[missing_listed_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[eval_row_null]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_exception_is_limited_to_the_listed_grad_norm_leaves[unlisted_layer_key]
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading
+FAILED tests/test_sgm_pk_posthoc_validation_amendment.py::test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled
+14 failed, 3 passed in 1.99s

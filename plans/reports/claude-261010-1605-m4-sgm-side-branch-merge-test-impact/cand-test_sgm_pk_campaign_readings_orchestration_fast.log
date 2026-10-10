@@ -1,0 +1,165 @@
+FFFFFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+________ test_both_oracle_interfaces_precede_any_other_reserved_access _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1db38f0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_both_oracle_interfaces_pr0')
+
+    def test_both_oracle_interfaces_precede_any_other_reserved_access(monkeypatch, tmp_path):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p=0.9)
+>       assert [(a, n, s) for a, n, s, _iv in calls[:4]] == [("oracle", 32, 0), ("oracle", 32, 1),
+                                                              ("oracle", 16, 0), ("oracle", 16, 1)]
+E       AssertionError: assert [] == [('oracle', 3...acle', 16, 1)]
+E         
+E         Right contains 4 more items, first extra item: ('oracle', 32, 0)
+E         Use -v to get more diff
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:69: AssertionError
+________ test_per_n_gating_is_independent_in_both_mixed_outcomes[32-16] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1db36b0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_per_n_gating_is_independe0')
+fail_n = 32, pass_n = 16
+
+    @pytest.mark.parametrize("fail_n, pass_n", [(32, 16), (16, 32)])
+    def test_per_n_gating_is_independent_in_both_mixed_outcomes(monkeypatch, tmp_path, fail_n, pass_n):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p={fail_n: 0.1, pass_n: 0.9})
+>       assert "interface not established" in rep["n"][str(fail_n)]["reading"]
+E       AssertionError: assert 'interface not established' in 'unavailable: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:83: AssertionError
+________ test_per_n_gating_is_independent_in_both_mixed_outcomes[16-32] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1de2ba0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_per_n_gating_is_independe1')
+fail_n = 16, pass_n = 32
+
+    @pytest.mark.parametrize("fail_n, pass_n", [(32, 16), (16, 32)])
+    def test_per_n_gating_is_independent_in_both_mixed_outcomes(monkeypatch, tmp_path, fail_n, pass_n):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p={fail_n: 0.1, pass_n: 0.9})
+>       assert "interface not established" in rep["n"][str(fail_n)]["reading"]
+E       AssertionError: assert 'interface not established' in 'unavailable: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:83: AssertionError
+____________ test_failed_interfaces_leave_other_corners_unevaluated ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1de3a40>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_failed_interfaces_leave_o0')
+
+    def test_failed_interfaces_leave_other_corners_unevaluated(monkeypatch, tmp_path):
+        rep, calls = run(monkeypatch, tmp_path, oracle_p=0.1)
+>       assert all(v["interface"] is False and "interface not established" in v["reading"] for v in rep["n"].values())
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = <dict_valueiterator object at 0x78d5d1ddcbd0>
+
+>   assert all(v["interface"] is False and "interface not established" in v["reading"] for v in rep["n"].values())
+E   KeyError: 'interface'
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:90: KeyError
+______________ test_no_gain_over_one_control_is_not_a_screen_pass ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1de25d0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_no_gain_over_one_control_0')
+
+    def test_no_gain_over_one_control_is_not_a_screen_pass(monkeypatch, tmp_path):
+        rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, learned=0.5, control=0.5)
+>       assert all(v["reading"].startswith("screen not passed") for v in rep["n"].values())
+E       assert False
+E        +  where False = all(<generator object test_no_gain_over_one_control_is_not_a_screen_pass.<locals>.<genexpr> at 0x78d5d1562cf0>)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:96: AssertionError
+___________ test_decision_rule_mutation_is_refused_before_any_access ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1de1550>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_decision_rule_mutation_is0')
+
+    def test_decision_rule_mutation_is_refused_before_any_access(monkeypatch, tmp_path):
+        tree = _copied_tree(tmp_path)
+        clean = _load_readings(tree, "rd_clean")
+>       assert clean.binding_problem(clean.current_identity()) is None                # the copy itself binds
+E       AssertionError: assert 'dependency manifest: memsub source differs' is None
+E        +  where 'dependency manifest: memsub source differs' = <function binding_problem at 0x78d5d156d4e0>({'manifest': '882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492', 'memsub': 'd86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532'})
+E        +    where <function binding_problem at 0x78d5d156d4e0> = <module 'rd_clean' from '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-...pk_campaign_readings_orchestration_fast/test_decision_rule_mutation_is0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.binding_problem
+E        +    and   {'manifest': '882dd4a443307fa4e248b8393e5ec884a714dc215f2967e30b2facbc6d520492', 'memsub': 'd86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532'} = <function current_identity at 0x78d5d156d440>()
+E        +      where <function current_identity at 0x78d5d156d440> = <module 'rd_clean' from '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-...pk_campaign_readings_orchestration_fast/test_decision_rule_mutation_is0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.current_identity
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:113: AssertionError
+__________________ test_unlisted_script_dependency_is_refused __________________
+
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_unlisted_script_dependenc0')
+
+    def test_unlisted_script_dependency_is_refused(tmp_path):
+        tree = _copied_tree(tmp_path)
+        mpath = tree / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
+        manifest = json.loads(mpath.read_text())
+        del manifest["analysis"]["scripts/sgm-p2d-step2-decision-rules.py"]           # reached but not frozen
+        mpath.write_text(json.dumps(manifest))
+        r = _load_readings(tree, "rd_unlisted")
+>       assert "script closure differs" in r.binding_problem(r.current_identity())
+E       AssertionError: assert 'script closure differs' in 'dependency manifest: memsub source differs'
+E        +  where 'dependency manifest: memsub source differs' = <function binding_problem at 0x78d5d1575c60>({'manifest': 'd473031b49e10b609c9a3398ed3b90584423b667dda925f0416a03788a26db04', 'memsub': 'd86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532'})
+E        +    where <function binding_problem at 0x78d5d1575c60> = <module 'rd_unlisted' from '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/mer...pk_campaign_readings_orchestration_fast/test_unlisted_script_dependenc0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.binding_problem
+E        +    and   {'manifest': 'd473031b49e10b609c9a3398ed3b90584423b667dda925f0416a03788a26db04', 'memsub': 'd86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532'} = <function current_identity at 0x78d5d1575bc0>()
+E        +      where <function current_identity at 0x78d5d1575bc0> = <module 'rd_unlisted' from '/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/mer...pk_campaign_readings_orchestration_fast/test_unlisted_script_dependenc0/tree/scripts/sgm-p2p5-pk-campaign-readings.py'>.current_identity
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:135: AssertionError
+_____ test_change_during_the_run_makes_every_reading_unavailable[manifest] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d15176e0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_change_during_the_run_mak0')
+what = 'manifest'
+
+    @pytest.mark.parametrize("what", ["manifest", "checkpoint"])
+    def test_change_during_the_run_makes_every_reading_unavailable(monkeypatch, tmp_path, what):
+        mcopy = tmp_path / "manifest.json"
+        shutil.copy2(rd.MANIFEST, mcopy)
+        monkeypatch.setattr(rd, "MANIFEST", mcopy)
+    
+        def during(calls):
+            if len(calls) == 6:                                                         # inside phase 2
+                target = mcopy if what == "manifest" else tmp_path / "trained_parameters.safetensors"
+                target.write_bytes(target.read_bytes() + b" ")
+        rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, during=during)
+        assert what in rep["end_binding"] or ("identity" in rep["end_binding"] and what == "manifest")
+>       assert all(v["reading"].startswith("unavailable") and v["reading_before_end_binding_failure"] == f"SCREEN PASS at N{n}"
+                   for n, v in rep["n"].items())
+E       assert False
+E        +  where False = all(<generator object test_change_during_the_run_makes_every_reading_unavailable.<locals>.<genexpr> at 0x78d5d1523920>)
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:150: AssertionError
+____ test_change_during_the_run_makes_every_reading_unavailable[checkpoint] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78d5d1517050>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_orchestration_fast/test_change_during_the_run_mak1')
+what = 'checkpoint'
+
+    @pytest.mark.parametrize("what", ["manifest", "checkpoint"])
+    def test_change_during_the_run_makes_every_reading_unavailable(monkeypatch, tmp_path, what):
+        mcopy = tmp_path / "manifest.json"
+        shutil.copy2(rd.MANIFEST, mcopy)
+        monkeypatch.setattr(rd, "MANIFEST", mcopy)
+    
+        def during(calls):
+            if len(calls) == 6:                                                         # inside phase 2
+                target = mcopy if what == "manifest" else tmp_path / "trained_parameters.safetensors"
+                target.write_bytes(target.read_bytes() + b" ")
+        rep, _ = run(monkeypatch, tmp_path, oracle_p=0.9, during=during)
+>       assert what in rep["end_binding"] or ("identity" in rep["end_binding"] and what == "manifest")
+E       AssertionError: assert ('checkpoint' in 'dependency manifest: memsub source differs' or ('identity' in 'dependency manifest: memsub source differs'))
+
+tests/test_sgm_pk_campaign_readings_orchestration_fast.py:149: AssertionError
+- generated xml file: /tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/test_sgm_pk_campaign_readings_orchestration_fast.xml -
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_both_oracle_interfaces_precede_any_other_reserved_access
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_per_n_gating_is_independent_in_both_mixed_outcomes[32-16]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_per_n_gating_is_independent_in_both_mixed_outcomes[16-32]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_failed_interfaces_leave_other_corners_unevaluated
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_no_gain_over_one_control_is_not_a_screen_pass
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_decision_rule_mutation_is_refused_before_any_access
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_unlisted_script_dependency_is_refused
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_change_during_the_run_makes_every_reading_unavailable[manifest]
+FAILED tests/test_sgm_pk_campaign_readings_orchestration_fast.py::test_change_during_the_run_makes_every_reading_unavailable[checkpoint]
+9 failed in 1.27s

@@ -1,0 +1,431 @@
+....FFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+__________ test_spawn_guard_check_handles_modal_generator_keys[empty] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bd5662d0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles0')
+kind = 'empty'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+                r.spawn()
+            assert calls == [] and not (tmp_path / r.GROUP / "readings").exists()
+            assert r.APP_NAME not in dicts.get(r.CONTROL_REGISTRY_DICT, {})
+        else:
+>           r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:132: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+__________ test_spawn_guard_check_handles_modal_generator_keys[used] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bc1ef710>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles1')
+kind = 'used'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bc1ef710>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles1')
+kind = 'used'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+________ test_spawn_guard_check_handles_modal_generator_keys[none-key] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bb9a3050>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles2')
+kind = 'none-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bb9a3050>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles2')
+kind = 'none-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+________ test_spawn_guard_check_handles_modal_generator_keys[false-key] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bb9b3260>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles3')
+kind = 'false-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bb9b3260>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles3')
+kind = 'false-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+______ test_spawn_guard_check_handles_modal_generator_keys[empty-str-key] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bc13c7a0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles4')
+kind = 'empty-str-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bc13c7a0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles4')
+kind = 'empty-str-key'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+>           with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+E                              AssertionError: Regex pattern did not match.
+E                               Regex: 'readings guard already used'
+E                               Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_campaign_readings_runner.py:126: AssertionError
+_______ test_spawn_guard_check_handles_modal_generator_keys[keys-error] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d68bb995d90>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_campaign_readings_runner/test_spawn_guard_check_handles5')
+kind = 'keys-error'
+
+    @pytest.mark.parametrize("kind", list(GUARDS))
+    def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, kind):
+        """Launch attempt 2 died on `len(guard.keys())` (modal Dict.keys() is a generator): an EMPTY guard must proceed
+        to exactly one spawn; a guard with ANY key (incl. None / False / "") or a keys() error must stop before any
+        root, provenance, registration or call (codex 21645)."""
+        import types
+        r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+        price = r.file_sha(r.PRICE_FILE)
+        dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
+                 r.GUARD_DICT: GUARDS[kind]()}
+        calls = []
+        monkeypatch.setattr(r, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == r.CONTROL_APP_NAME else "ap-r")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-r")))))
+        monkeypatch.setattr(r, "slots_ready", lambda local, amendment=None: None)
+        monkeypatch.setattr(r, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(r, "LOCAL_OUT", str(tmp_path))
+        if kind != "empty":
+            with pytest.raises(RuntimeError if kind == "keys-error" else SystemExit,
+                               match="dict rpc down" if kind == "keys-error" else "readings guard already used"):
+>               r.spawn()
+
+tests/test_sgm_pk_campaign_readings_runner.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, f"{LOCAL_OUT}/prereg.md",
+                   f"{LOCAL_OUT}/prereg-amendment-pk-packed-a100-resume.md", AMENDMENT_RECORD, AMENDMENT_DOC]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = load_cp().launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-campaign-readings-runner.py:190: SystemExit
+- generated xml file: /tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/test_sgm_pk_campaign_readings_runner.xml -
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[used]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[none-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[false-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[empty-str-key]
+FAILED tests/test_sgm_pk_campaign_readings_runner.py::test_spawn_guard_check_handles_modal_generator_keys[keys-error]
+6 failed, 4 passed in 1.23s

@@ -1,0 +1,406 @@
+.......................FFFFFF                                            [100%]
+=================================== FAILURES ===================================
+_________ test_spawn_uses_one_immutable_deadline_despite_clock_advance _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51d73c50>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_spawn_uses_one_immutable_0')
+
+    def test_spawn_uses_one_immutable_deadline_despite_clock_advance(monkeypatch, tmp_path):
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        clock = iter(float(1_000_000 + i) for i in range(100))               # +1 s per time.time() call
+        monkeypatch.setattr(m.time, "time", lambda: next(clock))
+        life = m.slot_deadline_s()
+        readings = __import__("json").loads((ROOT / m.PRICE_FILE).read_text())["readings"]["reserve_life_s"]
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        first = 1_000_000.0                                                   # the single candidate's clock reading
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price,
+                                                deadline_epoch=first + life + m.VALIDATION_SETUP_S + readings + m.CONTROL_SLACK_S)}
+        fake = types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: types.SimpleNamespace(object_id="fc-x"))))
+        monkeypatch.setattr(m, "modal", fake)
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+>       m.spawn()                                                             # exactly at the horizon boundary: accepted
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:259: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[used] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51da7da0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po0')
+guard = {'app_id': 'ap-old'}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51da7da0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po0')
+guard = {'app_id': 'ap-old'}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51de3aa0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po1')
+guard = {None: 1}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51de3aa0>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po1')
+guard = {None: 1}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[false] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51de3350>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po2')
+guard = {False: 0}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f51de3350>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po2')
+guard = {False: 0}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+__ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[empty-str] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f5154dd90>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po3')
+guard = {'': ''}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f5154dd90>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po3')
+guard = {'': ''}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+>       with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'guard Dict already used'
+E        Input: 'refusing to spawn: dependency manifest: memsub source differs'
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:290: AssertionError
+____ test_slot_spawn_refuses_any_populated_guard_with_generator_keys[error] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f5150b200>
+tmp_path = PosixPath('/tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/bt-test_sgm_pk_control_plane_reaper_and_manifest_label/test_slot_spawn_refuses_any_po4')
+guard = {}
+
+    @pytest.mark.parametrize("guard", [FakeDict(app_id="ap-old"), FakeDict({None: 1}), FakeDict({False: 0}),
+                                       FakeDict({"": ""}), _RaisingKeys()], ids=["used", "none", "false", "empty-str", "error"])
+    def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch, tmp_path, guard):
+        """Launch attempt 2 (`len(guard.keys())` on modal's generator) + codex 21645: ANY key (even None / False / "")
+        or a keys() error stops the slot spawn before root, provenance, registration or call."""
+        import hashlib
+        import types
+        m = _slot(monkeypatch)
+        price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
+        dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
+        calls = []
+        monkeypatch.setattr(m, "modal", types.SimpleNamespace(
+            Dict=types.SimpleNamespace(from_name=lambda n, **k: dicts.setdefault(n, FakeDict())),
+            App=types.SimpleNamespace(lookup=lambda n, **k: types.SimpleNamespace(app_id="ap-c" if n == m.CONTROL_APP_NAME else "ap-slot")),
+            Function=types.SimpleNamespace(from_name=lambda *a: types.SimpleNamespace(
+                spawn=lambda *a: calls.append(a) or types.SimpleNamespace(object_id="fc-x")))))
+        monkeypatch.setattr(m, "app_state", lambda i: "deployed")
+        monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: types.SimpleNamespace(stdout=""))
+        monkeypatch.setattr(m, "LOCAL_OUT", str(tmp_path))
+        err = isinstance(guard, _RaisingKeys)
+        with pytest.raises(RuntimeError if err else SystemExit, match="dict rpc down" if err else "guard Dict already used"):
+>           m.spawn()
+
+tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def spawn() -> None:
+        cp = load_cp()
+        tracked = ["memsub", "scripts", "configs", "modal-runners", PRICE_FILE, cp.MANIFEST_FILE]
+        if subprocess.run(["git", "status", "--porcelain", "--", *tracked], capture_output=True, text=True,
+                          check=True).stdout.strip():
+            raise SystemExit("refusing to spawn from a dirty tree")
+        problem = cp.launch_manifest_problem(Path.cwd())
+        if problem:
+>           raise SystemExit(f"refusing to spawn: {problem}")
+E           SystemExit: refusing to spawn: dependency manifest: memsub source differs
+
+modal-runners/modal-m4-sgm-p2p5-pk-packed-campaign-slot-runner.py:203: SystemExit
+- generated xml file: /tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/test_sgm_pk_control_plane_reaper_and_manifest_label.xml -
+=========================== short test summary info ============================
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_spawn_uses_one_immutable_deadline_despite_clock_advance
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[used]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[false]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[empty-str]
+FAILED tests/test_sgm_pk_control_plane_reaper_and_manifest_label.py::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[error]
+6 failed, 23 passed in 6.43s

@@ -1,0 +1,70 @@
+{
+ "base_tree": "git archive mvp @ eaa018e",
+ "cand_tree": "trial merge 3ab163c (mvp eaa018e + m4-sgm-occupied-fill-v1 8bbb703, no conflicts)",
+ "base_counts": {
+  "failure": 72,
+  "pass": 1192,
+  "skip": 5
+ },
+ "cand_counts": {
+  "failure": 96,
+  "pass": 1277,
+  "skip": 5
+ },
+ "pass_to_fail": [
+  "tests.test_sgm_p2p5_readout_probe_validation_contract::test_frozen_registry_and_schema_equal_their_derivation",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_both_oracle_interfaces_precede_any_other_reserved_access",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_change_during_the_run_makes_every_reading_unavailable[checkpoint]",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_change_during_the_run_makes_every_reading_unavailable[manifest]",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_decision_rule_mutation_is_refused_before_any_access",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_failed_interfaces_leave_other_corners_unevaluated",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_no_gain_over_one_control_is_not_a_screen_pass",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_per_n_gating_is_independent_in_both_mixed_outcomes[16-32]",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_per_n_gating_is_independent_in_both_mixed_outcomes[32-16]",
+  "tests.test_sgm_pk_campaign_readings_orchestration_fast::test_unlisted_script_dependency_is_refused",
+  "tests.test_sgm_pk_campaign_readings_runner::test_spawn_guard_check_handles_modal_generator_keys[empty-str-key]",
+  "tests.test_sgm_pk_campaign_readings_runner::test_spawn_guard_check_handles_modal_generator_keys[empty]",
+  "tests.test_sgm_pk_campaign_readings_runner::test_spawn_guard_check_handles_modal_generator_keys[false-key]",
+  "tests.test_sgm_pk_campaign_readings_runner::test_spawn_guard_check_handles_modal_generator_keys[keys-error]",
+  "tests.test_sgm_pk_campaign_readings_runner::test_spawn_guard_check_handles_modal_generator_keys[none-key]",
+  "tests.test_sgm_pk_campaign_readings_runner::test_spawn_guard_check_handles_modal_generator_keys[used]",
+  "tests.test_sgm_pk_control_plane_reaper_and_manifest_label::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[empty-str]",
+  "tests.test_sgm_pk_control_plane_reaper_and_manifest_label::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[error]",
+  "tests.test_sgm_pk_control_plane_reaper_and_manifest_label::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[false]",
+  "tests.test_sgm_pk_control_plane_reaper_and_manifest_label::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[none]",
+  "tests.test_sgm_pk_control_plane_reaper_and_manifest_label::test_slot_spawn_refuses_any_populated_guard_with_generator_keys[used]",
+  "tests.test_sgm_pk_control_plane_reaper_and_manifest_label::test_spawn_uses_one_immutable_deadline_despite_clock_advance",
+  "tests.test_sgm_pk_posthoc_validation_amendment::test_failed_amended_binding_keeps_every_reading_unavailable_and_labelled",
+  "tests.test_sgm_pk_posthoc_validation_amendment::test_readings_label_the_campaign_and_both_n_and_keep_the_original_reading"
+ ],
+ "fail_to_pass": [],
+ "cand_only": {
+  "pass": 109
+ },
+ "file_exit_base": {
+  "test_experiment_artifact_hygiene": 1,
+  "test_mergecert_campaign_contract": 1,
+  "test_mergecert_q1_report": 1,
+  "test_sgm_p2c_filler_length_curriculum": 1,
+  "test_sgm_p2g_observer_runner_and_preflight": 1,
+  "test_sgm_p2p5_pretrained_qwen_residual_readout_path": 137,
+  "test_sgm_p2p5_previous_key_probe_orchestration_fake_capture": 1,
+  "test_sgm_pk_posthoc_validation_amendment": 1,
+  "test_sgm_runtime": 1
+ },
+ "file_exit_cand": {
+  "test_experiment_artifact_hygiene": 1,
+  "test_mergecert_campaign_contract": 1,
+  "test_mergecert_q1_report": 1,
+  "test_sgm_p2c_filler_length_curriculum": 1,
+  "test_sgm_p2g_observer_runner_and_preflight": 1,
+  "test_sgm_p2p5_pretrained_qwen_residual_readout_path": 137,
+  "test_sgm_p2p5_previous_key_probe_orchestration_fake_capture": 1,
+  "test_sgm_p2p5_readout_probe_validation_contract": 1,
+  "test_sgm_pk_campaign_readings_orchestration_fast": 1,
+  "test_sgm_pk_campaign_readings_runner": 1,
+  "test_sgm_pk_control_plane_reaper_and_manifest_label": 1,
+  "test_sgm_pk_posthoc_validation_amendment": 1,
+  "test_sgm_runtime": 1
+ }
+}

@@ -1,0 +1,29 @@
+.........F............                                                   [100%]
+=================================== FAILURES ===================================
+____________ test_frozen_registry_and_schema_equal_their_derivation ____________
+
+    def test_frozen_registry_and_schema_equal_their_derivation():
+        reg, sch = FREEZE.derive()
+        frozen_reg = json.loads((ROOT / L.REGISTRY_FILE).read_text())
+        frozen_sch = json.loads((ROOT / L.SCHEMA_FILE).read_text())
+        assert frozen_reg["learned"] == reg["learned"] and frozen_sch["learned"] == sch["learned"]
+        assert frozen_reg["learned"]["state_names_shapes"]["head.weight"] == [64, 512]
+        campaign = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_registry.json").read_text())["by_arm"]["learned"]
+        diff = {k for k in campaign["state_names_shapes"] if campaign["state_names_shapes"][k] != frozen_reg["learned"]["state_names_shapes"][k]}
+        assert diff == {"head.weight"} and set(campaign["state_names_shapes"]) == set(frozen_reg["learned"]["state_names_shapes"])
+        sha = lambda rel: hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()  # noqa: E731
+        for doc in (frozen_reg, frozen_sch):                         # recorded provenance = the current bound files
+>           assert doc["grid_sha256"] == sha(L.GRID_FILE) and doc["memsub_source_sha256"] == source_tree_sha256(ROOT / "memsub")
+E           AssertionError: assert ('b418f39e493b...9f0818b6e34d8' == 'b418f39e493b...9f0818b6e34d8'
+E             
+E             Skipping 53 identical leading characters in diff, use -v to show
+E               0818b6e34d8 and '2eee4228124e...d51333687a19b' == 'd86639b9223d...35742f444a532'
+E             
+E             - d86639b9223d4595a53cd07f3fee4da58c413414c49ed220d7135742f444a532
+E             + 2eee4228124e9d292ed4079476ca276e8ce8f9ac7c8d83d44bcd51333687a19b)
+
+tests/test_sgm_p2p5_readout_probe_validation_contract.py:185: AssertionError
+- generated xml file: /tmp/claude-1000/-home-lenovo-projects/39c47b94-d052-4208-8b37-4c7ca18c55b5/scratchpad/merge-check/pf-cand/test_sgm_p2p5_readout_probe_validation_contract.xml -
+=========================== short test summary info ============================
+FAILED tests/test_sgm_p2p5_readout_probe_validation_contract.py::test_frozen_registry_and_schema_equal_their_derivation
+1 failed, 21 passed in 54.17s
