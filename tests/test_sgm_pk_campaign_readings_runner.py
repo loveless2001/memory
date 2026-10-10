@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import pk_runner_uses_current_memsub_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -109,6 +110,7 @@ def test_spawn_guard_check_handles_modal_generator_keys(monkeypatch, tmp_path, k
     root, provenance, registration or call (codex 21645)."""
     import types
     r = _load(monkeypatch, "modal-m4-sgm-p2p5-pk-campaign-readings-runner.py", "rr_gen")
+    pk_runner_uses_current_memsub_manifest(monkeypatch, r, tmp_path / "current-memsub-manifest.json")
     price = r.file_sha(r.PRICE_FILE)
     dicts = {r.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9),
              r.GUARD_DICT: GUARDS[kind]()}

@@ -13,6 +13,11 @@ LEGACY_JSON_WITH_CONSOLE_TRAILER = {
     # codex-cleared Gate-3 rev2 evidence (indexed in SHA256SUMS-gate3-package-rev2.txt): bytes kept as cleared
     "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen/pk-prep/gate3-rev2/mutation-checks.json":
         "26710b5553dc27bfc6fcce4adbc4ba246b9402adf2678ee9980e8af51b2fe860",
+    # audited M4-SGM mutation evidence with an `EXIT_STATUS=0` console trailer: bytes kept (codex 22668 review)
+    "plans/261009-0030-m4-sgm-p2p5-taskhead-read-escape-blocker-screen/mutation-checks.json":
+        "58a2ac2d9990633679d8d951aebd7d77f63dc791854fd72416e99c9d00d87f18",
+    "plans/reports/claude-261008-2350-p2p5-taskhead-dead-start-address-diagnosis/mutation-checks.json":
+        "937e006620e240bc2fd38659a636eabd9a09c4860fb5cef93625ce3c43519186",
 }
 
 

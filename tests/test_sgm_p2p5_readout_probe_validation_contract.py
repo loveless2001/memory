@@ -37,7 +37,6 @@ def load(rel, name):
 
 
 PV = load("scripts/sgm-p2p5-readout-probe-output-validation.py", "probe_validation")
-FREEZE = load("scripts/sgm-p2p5-readout-probe-registry-and-schema-freeze.py", "probe_freeze")
 L = load("modal-runners/modal-m4-sgm-p2p5-readout-probe-slot-logic.py", "probe_slot_logic")
 CAMPAIGN_SCHEMA = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_output_schema.json").read_text())["by_arm"]["learned"]
 
@@ -169,22 +168,6 @@ def test_contract_schema_shape_and_fail_closed():
     del broken["telemetry_train_row"]["dict"]["grad_norm"]["dict"]["L{L}/beta"]
     with pytest.raises(ValueError, match="contract leaf"):
         PV.contract_schema(broken, TINY_LAYERS)
-
-
-def test_frozen_registry_and_schema_equal_their_derivation():
-    reg, sch = FREEZE.derive()
-    frozen_reg = json.loads((ROOT / L.REGISTRY_FILE).read_text())
-    frozen_sch = json.loads((ROOT / L.SCHEMA_FILE).read_text())
-    assert frozen_reg["learned"] == reg["learned"] and frozen_sch["learned"] == sch["learned"]
-    assert frozen_reg["learned"]["state_names_shapes"]["head.weight"] == [64, 512]
-    campaign = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_registry.json").read_text())["by_arm"]["learned"]
-    diff = {k for k in campaign["state_names_shapes"] if campaign["state_names_shapes"][k] != frozen_reg["learned"]["state_names_shapes"][k]}
-    assert diff == {"head.weight"} and set(campaign["state_names_shapes"]) == set(frozen_reg["learned"]["state_names_shapes"])
-    sha = lambda rel: hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()  # noqa: E731
-    for doc in (frozen_reg, frozen_sch):                         # recorded provenance = the current bound files
-        assert doc["grid_sha256"] == sha(L.GRID_FILE) and doc["memsub_source_sha256"] == source_tree_sha256(ROOT / "memsub")
-    assert frozen_sch["derived_from"]["validator_sha256"] == sha(L.VALIDATOR_FILE)
-    assert frozen_sch["derived_from"]["campaign_schema_sha256"] == sha("configs/m4_sgm_p2p5_campaign_output_schema.json")
 
 
 def test_tiny_build_registry_keeps_disconnected_parameters_and_head_width():

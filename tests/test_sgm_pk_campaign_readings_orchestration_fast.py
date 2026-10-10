@@ -13,6 +13,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from conftest import PK_ANALYSIS_MANIFEST, pk_current_memsub_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,6 +26,12 @@ def _load_readings(root: Path, name: str):
 
 
 rd = _load_readings(ROOT, "rdf")
+
+
+@pytest.fixture(autouse=True)
+def _current_memsub_manifest(monkeypatch, tmp_path):
+    """Bind the readings to a private manifest copy for this checkout's memsub (see conftest)."""
+    monkeypatch.setattr(rd, "MANIFEST", pk_current_memsub_manifest(tmp_path / "current-memsub-manifest.json"))
 
 
 def rows_for(p_correct: dict, seed: int) -> list:
@@ -101,9 +108,10 @@ def _copied_tree(tmp_path: Path) -> Path:
     root = tmp_path / "tree"
     manifest = json.loads((ROOT / "configs/m4_sgm_p2p5_campaign_analysis_manifest.json").read_text())
     shutil.copytree(ROOT / "memsub", root / "memsub", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-    for rel in [*manifest["analysis"], "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"]:
+    for rel in manifest["analysis"]:
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / rel, root / rel)
+    pk_current_memsub_manifest(root / PK_ANALYSIS_MANIFEST, root)                 # private copy bound to the copy
     return root
 
 

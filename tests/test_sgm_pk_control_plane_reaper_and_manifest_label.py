@@ -5,6 +5,7 @@ import importlib.util
 from pathlib import Path
 
 import pytest
+from conftest import pk_runner_uses_current_memsub_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("cp", ROOT / "modal-runners/modal-m4-sgm-p2p5-pk-control-plane-reaper-logic.py")
@@ -239,6 +240,7 @@ def test_spawn_uses_one_immutable_deadline_despite_clock_advance(monkeypatch, tm
     import hashlib
     import types
     m = _slot(monkeypatch)
+    pk_runner_uses_current_memsub_manifest(monkeypatch, m, tmp_path / "current-memsub-manifest.json")
     clock = iter(float(1_000_000 + i) for i in range(100))               # +1 s per time.time() call
     monkeypatch.setattr(m.time, "time", lambda: next(clock))
     life = m.slot_deadline_s()
@@ -275,6 +277,7 @@ def test_slot_spawn_refuses_any_populated_guard_with_generator_keys(monkeypatch,
     import hashlib
     import types
     m = _slot(monkeypatch)
+    pk_runner_uses_current_memsub_manifest(monkeypatch, m, tmp_path / "current-memsub-manifest.json")
     price = hashlib.sha256((ROOT / m.PRICE_FILE).read_bytes()).hexdigest()
     dicts = {m.CONTROL_GUARD_DICT: FakeDict(app_id="ap-c", price_sha256=price, deadline_epoch=4e9), m.GUARD_DICT: guard}
     calls = []

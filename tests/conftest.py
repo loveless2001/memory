@@ -90,3 +90,39 @@ def substrate(tmp_path, runtime, summarizer, embedder):
 # nondeterministic — GT1 compares top-k token sets + max prob delta (BUILD.md).
 GT1_TOP_K = 5
 GT1_MAX_PROB_DELTA = 0.03 if REFERENCE else 1e-4
+
+
+# M4-SGM P2.5 campaign tests on the merged tree (user #gravity 22660; codex 22670/22671 fixture proof).
+# The frozen analysis manifest binds the PRE-merge memsub (tag m4-sgm-p2p5-replays-pre-sidecar-merge); merging the
+# fill/shift sidecar branch changed memsub. Tests of the reusable guards (spawn guards, deadlines, reading
+# orchestration, amended labels) bind a PRIVATE manifest copy instead; the production manifest stays byte-identical.
+PK_ANALYSIS_MANIFEST = "configs/m4_sgm_p2p5_campaign_analysis_manifest.json"
+
+
+def pk_current_memsub_manifest(dest, root=None):
+    """Write a private copy of the frozen P2.5 analysis manifest to `dest` with ONLY `memsub_source_sha256` rebound to
+    `root`'s current memsub tree (default: this checkout). Every listed file sha, the script closure and the
+    start/end identity checks stay real. Returns `dest`."""
+    import json
+    from pathlib import Path
+    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
+    root = Path(root) if root is not None else Path(__file__).resolve().parents[1]
+    manifest = json.loads((Path(__file__).resolve().parents[1] / PK_ANALYSIS_MANIFEST).read_text())
+    manifest["memsub_source_sha256"] = source_tree_sha256(root / "memsub")
+    dest = Path(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(manifest, indent=2) + "\n")
+    return dest
+
+
+def pk_runner_uses_current_memsub_manifest(monkeypatch, runner, dest):
+    """Make `runner.load_cp()` return the control-plane logic reading the private manifest at `dest` (absolute path,
+    so `root / MANIFEST_FILE` resolves to it) for its launch dependency check."""
+    path = str(pk_current_memsub_manifest(dest))
+    real = runner.load_cp
+
+    def load_cp():
+        cp = real()
+        cp.MANIFEST_FILE = path
+        return cp
+    monkeypatch.setattr(runner, "load_cp", load_cp)

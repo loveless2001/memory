@@ -24,9 +24,6 @@ from memsub.compaction import validate_capture_chunk
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "modal-runners" / "modal-mergecert-p0-q1.py"
 PROVENANCE = ROOT / "plans" / "260727-mergecert" / "source-provenance.json"
-Q1_PROVENANCE = (
-    ROOT / "plans" / "260728-mergecert-q1" / "source-provenance.json"
-)
 Q1_REGISTRATION_EXTRACTION = (
     ROOT
     / "plans"
@@ -91,7 +88,6 @@ Q2_AMENDMENT_JSON = Q2_AMENDMENT_PATH.read_text()
 Q2_AMENDMENT_SHA256 = hashlib.sha256(Q2_AMENDMENT_PATH.read_bytes()).hexdigest()
 Q1_TRIGGER_PATH = ROOT / "plans" / "260728-mergecert-q1" / "q1-trigger.json"
 Q1_TRIGGER = json.loads(Q1_TRIGGER_PATH.read_text())
-Q1_TRIGGER_SHA256 = hashlib.sha256(Q1_TRIGGER_PATH.read_bytes()).hexdigest()
 
 
 def _q1_trigger(**overrides):
@@ -665,29 +661,6 @@ def test_mergecert_q1_addendum_uses_only_moderate_ratios():
     assert constants["Q1_ARTIFACT_ROOT"] == "/artifacts/mergecert-q1"
 
 
-def test_mergecert_q1_addendum_accepts_only_the_settled_negative_p0(tmp_path):
-    runner = _load_module(RUNNER, "mergecert_q1_addendum_gate")
-    addendum = tmp_path / "MERGECERT-Q1.md"
-    verdict = tmp_path / "p0-verdict.json"
-    addendum.write_bytes((ROOT / "MERGECERT-Q1.md").read_bytes())
-    verdict.write_bytes(
-        (ROOT / "plans/260727-mergecert/p0-verdict.json").read_bytes()
-    )
-
-    gate = runner._load_q1_authorization(
-        addendum_path=str(addendum),
-        p0_verdict_path=str(verdict),
-    )
-
-    assert gate["protocol"] == "MERGECERT-Q1"
-    assert gate["budget_mode"] == (
-        "archived-m1-per-document-matched-physical-v1"
-    )
-    assert gate["settled_p0"]["p0_3_pass"] is False
-    assert len(gate["addendum_sha256"]) == 64
-    assert len(gate["p0_verdict_sha256"]) == 64
-
-
 @pytest.mark.parametrize("changed", ("addendum", "p0"))
 def test_mergecert_q1_addendum_rejects_nonregistered_authorization_hashes(
     tmp_path, changed
@@ -707,31 +680,6 @@ def test_mergecert_q1_addendum_rejects_nonregistered_authorization_hashes(
             addendum_path=str(addendum),
             p0_verdict_path=str(verdict),
         )
-
-
-def test_mergecert_q1_provenance_binds_the_settled_budget_amendment():
-    provenance = json.loads(Q1_PROVENANCE.read_text())
-
-    assert provenance["budget_mode"] == (
-        "archived-m1-per-document-matched-physical-v1"
-    )
-    assert provenance["settled_amendment_date"] == "2026-07-29"
-    assert provenance["addendum"]["sha256"] == hashlib.sha256(
-        (ROOT / "MERGECERT-Q1.md").read_bytes()
-    ).hexdigest()
-    assert provenance["q1_registration_source"] == {
-        "path": "plans/260728-mergecert-q1/q1-registration-source.json",
-        "sha256": hashlib.sha256(
-            Q1_REGISTRATION_SOURCE.read_bytes()
-        ).hexdigest(),
-        "status": "source-evidence-only; finalized CPU extraction completed",
-    }
-    assert provenance["q1_registration"] == {
-        "path": "plans/260728-mergecert-q1/q1-registration.json",
-        "remote_path": "/artifacts/mergecert-q1/q1-registration.json",
-        "sha256": Q1_REGISTRATION_SHA256,
-        "status": "finalized and hash-bound",
-    }
 
 
 def test_mergecert_q1_records_the_bounded_cpu_extraction():

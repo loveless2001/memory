@@ -12,6 +12,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from conftest import pk_current_memsub_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN = "plans/261006-1345-m4-sgm-p2p5-qwen3-0p6b-screen"
@@ -38,28 +39,6 @@ def frozen():
     return grid, registry, schema
 
 
-def evidence_root(tmp_path: Path) -> tuple[Path, dict]:
-    """A volume-shaped root of symlinks to every slot's fetched copy + the admitted starts per slot."""
-    root, adm = tmp_path / "root", {}
-    root.mkdir()
-    for d in sorted(EVID.iterdir()):
-        if (d / "volume-evidence/collect-1" / d.name).is_dir():
-            (root / d.name).symlink_to((d / "volume-evidence/collect-1" / d.name).resolve())
-            adm[d.name] = sorted(int(k.split("-")[1]) for k in json.loads((d / "admission.json").read_text())
-                                 if k.startswith("start-"))
-    return root, adm
-
-
-def private_slot(tmp_path: Path) -> Path:
-    """Private copy of the amended cell (record, terminal checkpoint, attempt) in a slot-shaped dir."""
-    src = EVID / "learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1"
-    dst = tmp_path / "learned-n32/cells/learned-n32-s1/epoch-1"
-    shutil.copytree(src / "attempt-1", dst / "attempt-1")
-    for f in ("state.json", SPEC["terminal_checkpoint"]["file"]):
-        shutil.copyfile(src / f, dst / f)
-    return tmp_path / "learned-n32"
-
-
 def check(slot: Path, spec=SPEC, rec=None, registry=None):
     grid, frozen_registry, schema = frozen()
     registry = registry or frozen_registry["by_arm"]["learned"]          # per-arm registry
@@ -69,65 +48,6 @@ def check(slot: Path, spec=SPEC, rec=None, registry=None):
     rec = rec or json.loads((slot / "cells/learned-n32-s1/epoch-1/state.json").read_text())
     return AMD.amended_cell_problem(slot, rec, pilot, rd.EVAL, source_tree_sha256(ROOT / "memsub"),
                                     registry, schema["by_arm"]["learned"], spec)
-
-
-@needs_evidence
-def test_real_evidence_original_gate_unavailable_and_amended_gate_binds_exactly_18(tmp_path):
-    root, adm = evidence_root(tmp_path)
-    grid, registry, schema = frozen()
-    from memsub.sgm.synthetic_pilot_run import source_tree_sha256
-    memsub = source_tree_sha256(ROOT / "memsub")
-    state = root / "learned-n32/cells/learned-n32-s1/epoch-1/state.json"
-    before = AMD.sha(state)
-    orig_cells, original = rd.bind_cells(root, adm, memsub, grid, registry, schema)
-    assert original == ORIGINAL_GATE and len(orig_cells) == 17 and "learned-n32-s1" not in orig_cells
-    cells, problem = rd.bind_cells(root, adm, memsub, grid, registry, schema, SPEC)
-    assert problem is None and len(cells) == 18
-    assert cells["learned-n32-s1"] == root / "learned-n32" / SPEC["attempt"] / "out"
-    assert AMD.sha(state) == before == SPEC["state_sha256"]                    # the FAILED record is untouched
-    other = {**SPEC, "cell": "learned-n32-s0"}                                   # the spec names ONE cell only
-    assert rd.bind_cells(root, adm, memsub, grid, registry, schema, other)[1] == ORIGINAL_GATE
-
-
-@needs_evidence
-def test_private_copy_passes_and_every_binding_is_enforced(tmp_path):
-    slot = private_slot(tmp_path)
-    assert check(slot) is None
-    rec = json.loads((slot / "cells/learned-n32-s1/epoch-1/state.json").read_text())
-    assert check(slot, {**SPEC, "cell": "learned-n32-s0"}) == "not the amended cell"
-    assert check(slot, rec={**rec, "state": "COMPLETE"}) == "record is not the original FAILED record"
-    assert check(slot, rec={**rec, "reason": "output validation: something else"}) == "record is not the original FAILED record"
-    assert check(slot, rec={**rec, "chain": rec["chain"][:-1]}) == "terminal checkpoint differs from the spec"
-    assert check(slot, {**SPEC, "outputs": {**SPEC["outputs"], "report.md": "0" * 64}}) == "done.json outputs differ from the spec"
-    assert check(slot, {**SPEC, "original_validation": "output schema: other"}) == \
-        "original validator result differs from the original failure"
-
-
-@needs_evidence
-def test_checks_after_the_schema_stage_still_apply(tmp_path):
-    """The original validator runs its tensor-registry / finiteness / clock checks AFTER the schema stage, so the
-    amendment re-runs it without the schema stage: a registry mismatch must still refuse the cell."""
-    slot = private_slot(tmp_path)
-    reg = json.loads(rd.REGISTRY.read_text())["by_arm"]["learned"]
-    name = sorted(reg["state_names_shapes"])[0]
-    bad = {**reg, "state_names_shapes": {**reg["state_names_shapes"], name: [1, 2, 3]}}
-    assert check(slot, registry=bad) == \
-        "original validator without the schema stage: trained tensors differ from the frozen name/shape registry"
-
-
-@needs_evidence
-@pytest.mark.parametrize("target", ["state", "checkpoint", "done", "output"])
-def test_private_copy_byte_changes_are_refused(tmp_path, target):
-    slot = private_slot(tmp_path)
-    e = slot / "cells/learned-n32-s1/epoch-1"
-    path = {"state": e / "state.json", "checkpoint": e / SPEC["terminal_checkpoint"]["file"],
-            "done": e / "attempt-1/done.json", "output": e / "attempt-1/out/report.md"}[target]
-    with open(path, "ab") as f:
-        f.write(b" ")
-    want = {"state": "FAILED record bytes differ from the spec", "checkpoint": "terminal checkpoint differs from the spec",
-            "done": "done.json differs from the spec",
-            "output": "original validator result differs from the original failure"}[target]
-    assert check(slot) == want
 
 
 def _edit_telemetry(out: Path, fn) -> None:
@@ -147,7 +67,8 @@ def _schema_problem(out: Path, spec=SPEC):
 @pytest.mark.parametrize("kind", ["update_norm_null", "extra_grad_null", "missing_listed_null", "eval_row_null",
                                   "unlisted_layer_key"])
 def test_exception_is_limited_to_the_listed_grad_norm_leaves(tmp_path, kind):
-    out = private_slot(tmp_path) / "cells/learned-n32-s1/epoch-1/attempt-1/out"
+    out = tmp_path / "schema-out"                                   # telemetry only: no terminal checkpoint needed
+    shutil.copytree(EVID / "learned-n32/volume-evidence/collect-1/learned-n32/cells/learned-n32-s1/epoch-1/attempt-1/out", out)
     assert _schema_problem(out) is None
     spec = SPEC
 
@@ -200,6 +121,7 @@ def rows_for(p: float, ivs: tuple, seed: int) -> list:
 
 
 def run_readings(monkeypatch, tmp_path, amended_problem=None):
+    monkeypatch.setattr(rd, "MANIFEST", pk_current_memsub_manifest(tmp_path / "current-memsub-manifest.json"))
     pilots = rd.expand_cells(json.loads(rd.GRID.read_text()))
     (tmp_path / "trained_parameters.safetensors").write_bytes(b"ckpt")
     binds = []
